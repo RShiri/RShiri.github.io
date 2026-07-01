@@ -15,6 +15,8 @@
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   var NS = "http://www.w3.org/2000/svg";
   var GOAL_X = 340, GOAL_Y = 30;    // goal-mouth centre (top-centre) in the SVG's coord space
+  var GOAL_SCALE = 6.4;             // SVG px per WhoScored goalMouthY unit (640px pitch width / 100):
+                                    // gy 50 → x 340 (centre), gy 45/55 → x 308/372 (posts)
 
   var y = $("#year"); if (y) y.textContent = new Date().getFullYear();
   if (LINKEDIN_URL) $$("[data-linkedin]").forEach(function (a) { a.href = LINKEDIN_URL; });
@@ -55,13 +57,16 @@
      Real 2025/26 shots aggregated from WhoScored match data
      (assets/data/yamal_shots.json). xG is a geometry-based model estimate.
      out ∈ {goal, saved (on target), off, blocked}.
+     gy = WhoScored goalMouthY (0–100) where the ball crossed the line: 50 = centre,
+     ≈45/≈55 = posts. Optional — without it a path fans out to a stable, outcome-aware
+     spot (see goalEndX) so shots don't all stack on the goal centre.
      ========================================================================= */
   var FALLBACK = [
-    { x: 560, y: 222, xg: 0.34, min: 38, out: "goal",    body: "Right foot", note: "", situ: "Open play" },
-    { x: 512, y: 150, xg: 0.05, min: 21, out: "goal",    body: "Left foot",  note: "", situ: "Open play" },
-    { x: 470, y: 250, xg: 0.06, min: 12, out: "saved",   body: "Left foot",  note: "", situ: "Open play" },
-    { x: 505, y: 300, xg: 0.04, min: 60, out: "off",     body: "Left foot",  note: "", situ: "Open play" },
-    { x: 540, y: 205, xg: 0.09, min: 71, out: "blocked", body: "Right foot", note: "", situ: "Open play" }
+    { x: 560, y: 222, xg: 0.34, min: 38, out: "goal",    body: "Right foot", note: "", situ: "Open play", gy: 46.5 },
+    { x: 512, y: 150, xg: 0.05, min: 21, out: "goal",    body: "Left foot",  note: "", situ: "Open play", gy: 53   },
+    { x: 470, y: 250, xg: 0.06, min: 12, out: "saved",   body: "Left foot",  note: "", situ: "Open play", gy: 48   },
+    { x: 505, y: 300, xg: 0.04, min: 60, out: "off",     body: "Left foot",  note: "", situ: "Open play", gy: 58   },
+    { x: 540, y: 205, xg: 0.09, min: 71, out: "blocked", body: "Right foot", note: "", situ: "Open play", gy: 44   }
   ];
 
   var pathLayer = $("#pathLayer"), layer = $("#shotLayer"), tip = $("#tooltip"), caption = $("#shotTip");
@@ -88,10 +93,35 @@
     caption.classList.add("show");
   };
 
+  // --- where a shot's path ends on the goal line ---------------------------
+  // Prefer the measured WhoScored goalMouthY (s.gy). Without it, derive a
+  // STABLE, outcome-aware spot so paths fan out naturally instead of all
+  // stacking on the goal centre. Add a real gy later and it overrides exactly.
+  var hash01 = function (s) {                  // stable pseudo-random [0,1) per shot
+    var h = Math.sin(s.x * 12.9898 + s.y * 78.233 + s.min * 37.719) * 43758.5453;
+    return h - Math.floor(h);
+  };
+  var goalEndX = function (s) {
+    if (typeof s.gy === "number") return GOAL_X + (s.gy - 50) * GOAL_SCALE;
+    var jit = hash01(s) - 0.5;                 // −0.5..0.5
+    if (s.out === "off") {                      // missed: end wide of a post
+      var side = (s.x >= GOAL_X) ? 1 : -1;
+      return GOAL_X + side * (42 + Math.abs(jit) * 26);
+    }
+    var lean = (s.x - GOAL_X) / 40;            // gentle pull toward the shot's side
+    var x = GOAL_X + lean + jit * 50;          // on target/blocked: fill most of the mouth
+    return Math.max(311, Math.min(369, x));    // keep just inside the posts (308 / 372)
+  };
+
   var makePath = function (s) {
+    var ex = goalEndX(s), ey = GOAL_Y;
+    if (s.out === "blocked") {                  // blocked en route — stop short of goal
+      ex = s.x + (ex - s.x) * 0.6;
+      ey = s.y + (ey - s.y) * 0.6;
+    }
     var ln = document.createElementNS(NS, "line");
     ln.setAttribute("x1", s.x); ln.setAttribute("y1", s.y);
-    ln.setAttribute("x2", GOAL_X); ln.setAttribute("y2", GOAL_Y);
+    ln.setAttribute("x2", ex); ln.setAttribute("y2", ey);
     ln.setAttribute("class", "shot-path " + s.out);
     return ln;
   };
