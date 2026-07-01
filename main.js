@@ -14,7 +14,7 @@
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   var NS = "http://www.w3.org/2000/svg";
-  var GOAL_X = 685, GOAL_Y = 220;   // goal-mouth centre in the SVG's coord space
+  var GOAL_X = 340, GOAL_Y = 30;    // goal-mouth centre (top-centre) in the SVG's coord space
 
   var y = $("#year"); if (y) y.textContent = new Date().getFullYear();
   if (LINKEDIN_URL) $$("[data-linkedin]").forEach(function (a) { a.href = LINKEDIN_URL; });
@@ -144,7 +144,7 @@
     if (!e.target.closest || !e.target.closest(".shot")) hideTip();
   });
 
-  fetch("assets/data/yamal_shots.json?v=2", { cache: "no-cache" })
+  fetch("assets/data/yamal_shots.json?v=4", { cache: "no-cache" })
     .then(function (r) { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
     .then(function (data) { render(Array.isArray(data) && data.length ? data : FALLBACK); })
     .catch(function () { render(FALLBACK); });

@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="styles.css?v=3" />
+<link rel="stylesheet" href="styles.css?v=4" />
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -107,27 +107,27 @@
       <div class="viz-head">
         <div>
           <h3>Lamine Yamal — xG shot map · 2025/26</h3>
-          <p class="viz-sub">Every shot from his 2025/26 season (all competitions), attacking right ▸. Dot size = expected goals (xG); filled = goal. Built from WhoScored event data; xG is my model estimate.</p>
+          <p class="viz-sub">Every shot from his 2025/26 season (all competitions), goal at top ▲. Dot size = expected goals (xG); filled = goal. Built from WhoScored event data; xG is my model estimate.</p>
         </div>
         <div class="viz-stats" id="shotStats"><!-- filled by JS --></div>
       </div>
       <div class="pitch-wrap">
-        <svg id="shotmap" viewBox="0 0 700 440" role="img" aria-label="Lamine Yamal shot map">
+        <svg id="shotmap" viewBox="0 0 680 520" role="img" aria-label="Lamine Yamal shot map">
           <defs>
             <linearGradient id="goalDot" x1="0" y1="0" x2="1" y2="1">
               <stop offset="0" stop-color="#2f6bff"/><stop offset="1" stop-color="#c8154f"/>
             </linearGradient>
           </defs>
-          <rect x="4" y="4" width="692" height="432" rx="12" fill="#0f1626"/>
+          <rect x="4" y="4" width="672" height="512" rx="12" fill="#0f1626"/>
           <g fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2">
-            <rect x="18" y="18" width="664" height="404" rx="4"/>
-            <rect x="482" y="90" width="200" height="260"/>
-            <rect x="616" y="160" width="66" height="120"/>
-            <path d="M18,147 A73 73 0 0 1 18,293"/>
-            <path d="M482,160 A72 72 0 0 0 482,280"/>
+            <rect x="20" y="30" width="640" height="470" rx="4"/>
+            <rect x="164" y="30" width="352" height="141"/>
+            <rect x="260" y="30" width="160" height="47"/>
+            <path d="M276,171 A79 79 0 0 0 404,171"/>
+            <path d="M268,500 A72 72 0 0 1 412,500"/>
           </g>
-          <rect x="682" y="196" width="7" height="48" fill="rgba(255,255,255,.35)"/>
-          <circle cx="550" cy="220" r="2.5" fill="rgba(255,255,255,.5)"/>
+          <rect x="308" y="23" width="64" height="7" fill="rgba(255,255,255,.4)"/>
+          <circle cx="340" cy="124" r="2.5" fill="rgba(255,255,255,.5)"/>
           <g id="pathLayer"></g>
           <g id="shotLayer"></g>
         </svg>
@@ -278,6 +278,6 @@
 </footer>
 
 <div class="tooltip" id="tooltip" role="status" aria-live="polite"></div>
-<script src="main.js?v=3" defer></script>
+<script src="main.js?v=4" defer></script>
 </body>
 </html>
