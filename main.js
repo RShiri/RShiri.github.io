@@ -1,5 +1,5 @@
 /* ===========================================================================
-   Ram Shiri — portfolio interactions (dependency-free).
+   Ram Shiri - portfolio interactions (dependency-free).
    Nav + scrollspy + interactive Lamine Yamal shot map (real season data).
    Each shot draws a path to goal + a marker sized by xG, styled by outcome:
      goal = team colour · on target = solid · off target = hollow · blocked = black
@@ -53,12 +53,12 @@
   }
 
   /* =========================================================================
-     Lamine Yamal — xG shot map.
+     Lamine Yamal - xG shot map.
      Real 2025/26 shots aggregated from WhoScored match data
      (assets/data/yamal_shots.json). xG is a geometry-based model estimate.
      out ∈ {goal, saved (on target), off, blocked}.
      gy = WhoScored goalMouthY (0–100) where the ball crossed the line: 50 = centre,
-     ≈45/≈55 = posts. Optional — without it a path fans out to a stable, outcome-aware
+     ≈45/≈55 = posts. Optional - without it a path fans out to a stable, outcome-aware
      spot (see goalEndX) so shots don't all stack on the goal centre.
      ========================================================================= */
   var FALLBACK = [
@@ -115,7 +115,7 @@
 
   var makePath = function (s) {
     var ex = goalEndX(s), ey = GOAL_Y;
-    if (s.out === "blocked") {                  // blocked en route — stop short of goal
+    if (s.out === "blocked") {                  // blocked en route - stop short of goal
       ex = s.x + (ex - s.x) * 0.6;
       ey = s.y + (ey - s.y) * 0.6;
     }
@@ -180,7 +180,7 @@
     .catch(function () { render(FALLBACK); });
 
   /* =========================================================================
-     Lamine Yamal — take-on map (assets/data/yamal_takeons.json).
+     Lamine Yamal - take-on map (assets/data/yamal_takeons.json).
      won (beat his marker) vs failed. Toggle buttons show/hide each category.
      ========================================================================= */
   (function () {
