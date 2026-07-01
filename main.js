@@ -1,6 +1,8 @@
 /* ===========================================================================
    Ram Shiri — portfolio interactions (dependency-free).
    Nav + scrollspy + interactive Lamine Yamal shot map (real season data).
+   Each shot draws a path to goal + a marker sized by xG, styled by outcome:
+     goal = team colour · on target = solid · off target = hollow · blocked = black
    Page content is fully visible without JS; this only adds enhancements.
    =========================================================================== */
 (function () {
@@ -12,6 +14,7 @@
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   var NS = "http://www.w3.org/2000/svg";
+  var GOAL_X = 685, GOAL_Y = 220;   // goal-mouth centre in the SVG's coord space
 
   var y = $("#year"); if (y) y.textContent = new Date().getFullYear();
   if (LINKEDIN_URL) $$("[data-linkedin]").forEach(function (a) { a.href = LINKEDIN_URL; });
@@ -49,20 +52,19 @@
 
   /* =========================================================================
      Lamine Yamal — xG shot map.
-     Real 2025/26 season shots, aggregated from WhoScored match data
+     Real 2025/26 shots aggregated from WhoScored match data
      (assets/data/yamal_shots.json). xG is a geometry-based model estimate.
-     Each shot: {x,y} in the SVG's 0..700 x 0..440 space (goal on the right),
-     xg, min, out ('goal'|'miss'), body, note (opponent), situ.
+     out ∈ {goal, saved (on target), off, blocked}.
      ========================================================================= */
   var FALLBACK = [
-    { x: 512, y: 150, xg: 0.05, min: 21, out: "goal", body: "Left foot",  note: "", situ: "Open play" },
-    { x: 560, y: 222, xg: 0.34, min: 38, out: "goal", body: "Right foot", note: "", situ: "Open play" },
-    { x: 470, y: 250, xg: 0.06, min: 12, out: "miss", body: "Left foot",  note: "", situ: "Open play" },
-    { x: 548, y: 222, xg: 0.76, min: 80, out: "goal", body: "Right foot", note: "", situ: "Penalty" },
-    { x: 400, y: 210, xg: 0.03, min: 5,  out: "miss", body: "Left foot",  note: "", situ: "Open play" }
+    { x: 560, y: 222, xg: 0.34, min: 38, out: "goal",    body: "Right foot", note: "", situ: "Open play" },
+    { x: 512, y: 150, xg: 0.05, min: 21, out: "goal",    body: "Left foot",  note: "", situ: "Open play" },
+    { x: 470, y: 250, xg: 0.06, min: 12, out: "saved",   body: "Left foot",  note: "", situ: "Open play" },
+    { x: 505, y: 300, xg: 0.04, min: 60, out: "off",     body: "Left foot",  note: "", situ: "Open play" },
+    { x: 540, y: 205, xg: 0.09, min: 71, out: "blocked", body: "Right foot", note: "", situ: "Open play" }
   ];
 
-  var layer = $("#shotLayer"), tip = $("#tooltip"), caption = $("#shotTip");
+  var pathLayer = $("#pathLayer"), layer = $("#shotLayer"), tip = $("#tooltip"), caption = $("#shotTip");
   if (!layer) return;
 
   var radius = function (xg) { return Math.max(3, Math.min(14, 3.5 + xg * 12)); };
@@ -74,7 +76,7 @@
     tip.style.top = Math.max(8, yy - ht - pad) + "px";
   };
   var hideTip = function () { if (tip) tip.classList.remove("show"); };
-  var OUT_LABEL = { goal: "Goal ⚽", miss: "No goal" };
+  var OUT_LABEL = { goal: "Goal ⚽", saved: "On target", off: "Off target", blocked: "Blocked" };
   var vs = function (s) { return s.note ? "vs " + s.note : "Shot"; };
   var tipHtml = function (s) {
     return "<b>" + vs(s) + "</b><br>" + s.min + "' · " + s.body + " · " + s.situ +
@@ -86,40 +88,54 @@
     caption.classList.add("show");
   };
 
-  var makeDot = function (s) {
+  var makePath = function (s) {
+    var ln = document.createElementNS(NS, "line");
+    ln.setAttribute("x1", s.x); ln.setAttribute("y1", s.y);
+    ln.setAttribute("x2", GOAL_X); ln.setAttribute("y2", GOAL_Y);
+    ln.setAttribute("class", "shot-path " + s.out);
+    return ln;
+  };
+
+  var makeDot = function (s, line) {
     var c = document.createElementNS(NS, "circle");
     c.setAttribute("cx", s.x); c.setAttribute("cy", s.y); c.setAttribute("r", radius(s.xg));
-    c.setAttribute("class", "shot " + (s.out === "goal" ? "goal" : "miss"));
+    c.setAttribute("class", "shot " + s.out);
     c.setAttribute("tabindex", "0"); c.setAttribute("role", "img");
     c.setAttribute("aria-label", vs(s) + ", " + s.min + " min, " + OUT_LABEL[s.out] + ", xG " + Number(s.xg).toFixed(2));
     var enter = function (ev) {
-      c.classList.add("active"); setCaption(s);
+      c.classList.add("active"); if (line) line.classList.add("lit"); setCaption(s);
       var p = ("touches" in ev && ev.touches[0]) ? ev.touches[0] : ev;
       if (p && p.clientX != null && (p.clientX || p.clientY)) showTip(tipHtml(s), p.clientX, p.clientY);
       else { var r = c.getBoundingClientRect(); showTip(tipHtml(s), r.left + r.width / 2, r.top); }
     };
+    var leave = function () { c.classList.remove("active"); if (line) line.classList.remove("lit"); hideTip(); };
     c.addEventListener("mouseenter", enter);
     c.addEventListener("mousemove", function (ev) { showTip(tipHtml(s), ev.clientX, ev.clientY); });
-    c.addEventListener("mouseleave", function () { c.classList.remove("active"); hideTip(); });
+    c.addEventListener("mouseleave", leave);
     c.addEventListener("focus", enter);
-    c.addEventListener("blur", function () { c.classList.remove("active"); hideTip(); });
+    c.addEventListener("blur", leave);
     c.addEventListener("click", function (ev) { ev.preventDefault(); enter(ev); });
     return c;
   };
 
   var render = function (shots) {
-    while (layer.firstChild) layer.removeChild(layer.firstChild);
-    // draw misses first, goals on top so they stand out
-    var misses = shots.filter(function (s) { return s.out !== "goal"; });
-    var goals = shots.filter(function (s) { return s.out === "goal"; });
-    misses.concat(goals).forEach(function (s) { layer.appendChild(makeDot(s)); });
+    [pathLayer, layer].forEach(function (g) { if (g) while (g.firstChild) g.removeChild(g.firstChild); });
+    // draw non-goals first, goals last, so goals sit on top in both layers
+    var ordered = shots.filter(function (s) { return s.out !== "goal"; })
+                       .concat(shots.filter(function (s) { return s.out === "goal"; }));
+    ordered.forEach(function (s) {
+      var line = null;
+      if (pathLayer) { line = makePath(s); pathLayer.appendChild(line); }
+      layer.appendChild(makeDot(s, line));
+    });
 
+    var goals = shots.filter(function (s) { return s.out === "goal"; }).length;
     var xgSum = shots.reduce(function (a, s) { return a + Number(s.xg); }, 0);
     var stats = $("#shotStats");
     if (stats) {
       stats.innerHTML =
         "<div class='st'><b>" + shots.length + "</b><span>Shots</span></div>" +
-        "<div class='st'><b>" + goals.length + "</b><span>Goals</span></div>" +
+        "<div class='st'><b>" + goals + "</b><span>Goals</span></div>" +
         "<div class='st'><b>" + xgSum.toFixed(1) + "</b><span>Total xG</span></div>";
     }
   };
@@ -128,7 +144,7 @@
     if (!e.target.closest || !e.target.closest(".shot")) hideTip();
   });
 
-  fetch("assets/data/yamal_shots.json", { cache: "no-cache" })
+  fetch("assets/data/yamal_shots.json?v=2", { cache: "no-cache" })
     .then(function (r) { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
     .then(function (data) { render(Array.isArray(data) && data.length ? data : FALLBACK); })
     .catch(function () { render(FALLBACK); });
