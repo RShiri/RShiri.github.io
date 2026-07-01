@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="styles.css?v=4" />
+<link rel="stylesheet" href="styles.css?v=5" />
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -150,7 +150,7 @@
       <div class="viz-head">
         <div>
           <h3>Lamine Yamal — take-on map · 2025/26</h3>
-          <p class="viz-sub">388 take-ons attempted (all competitions). Won = beat his marker; failed = tackled or dispossessed. Use the buttons to remove a category.</p>
+          <p class="viz-sub">388 take-ons attempted (all competitions). Won = beat his marker (arrow shows where he carried it); failed = tackled or dispossessed. Hover a dot for details; use the buttons to remove a category.</p>
         </div>
         <div class="viz-stats" id="takeonStats"><!-- filled by JS --></div>
       </div>
@@ -160,6 +160,11 @@
       </div>
       <div class="pitch-wrap">
         <svg id="takeonmap" viewBox="0 0 700 440" role="img" aria-label="Lamine Yamal take-on map">
+          <defs>
+            <marker id="tkArrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+              <path d="M0,0 L10,5 L0,10 z" fill="#34d399"/>
+            </marker>
+          </defs>
           <rect x="4" y="4" width="692" height="432" rx="12" fill="#0f1626"/>
           <g fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2">
             <rect x="18" y="18" width="664" height="404" rx="4"/>
@@ -177,6 +182,7 @@
           <circle cx="612" cy="220" r="2" fill="rgba(255,255,255,.45)"/>
           <rect x="12" y="200" width="6" height="40" fill="rgba(255,255,255,.3)"/>
           <rect x="682" y="200" width="6" height="40" fill="rgba(255,255,255,.3)"/>
+          <g id="takeonArrows"></g>
           <g id="takeonLayer"></g>
         </svg>
       </div>
@@ -278,6 +284,6 @@
 </footer>
 
 <div class="tooltip" id="tooltip" role="status" aria-live="polite"></div>
-<script src="main.js?v=4" defer></script>
+<script src="main.js?v=5" defer></script>
 </body>
 </html>

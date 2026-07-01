@@ -148,10 +148,12 @@ img { max-width: 100%; display: block; }
 .toggle-chip.won i { background: #34d399; }
 .toggle-chip.failed i { background: transparent; border: 2px solid #ff6b81; }
 .toggle-chip[aria-pressed="false"] { opacity: .42; text-decoration: line-through; }
-.takeon { transition: opacity .12s; }
+.takeon { cursor: pointer; transition: stroke-width .12s; }
 .takeon.won { fill: #34d399; stroke: rgba(255,255,255,.3); stroke-width: .5; }
 .takeon.failed { fill: rgba(255,107,129,.10); stroke: #ff6b81; stroke-width: 1.4; }
-#takeonmap.hide-won .takeon.won { display: none; }
+.takeon:hover, .takeon.active { stroke: #fff; stroke-width: 2.2; }
+.tk-arrow { stroke: #34d399; stroke-width: 1.2; opacity: .42; pointer-events: none; }
+#takeonmap.hide-won .takeon.won, #takeonmap.hide-won .tk-arrow { display: none; }
 #takeonmap.hide-failed .takeon.failed { display: none; }
 
 .viz-foot { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; padding: 6px 22px 20px; }

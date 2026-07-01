@@ -141,7 +141,7 @@
   };
 
   document.addEventListener("click", function (e) {
-    if (!e.target.closest || !e.target.closest(".shot")) hideTip();
+    if (!e.target.closest || !e.target.closest(".shot, .takeon")) hideTip();
   });
 
   fetch("assets/data/yamal_shots.json?v=4", { cache: "no-cache" })
@@ -154,18 +154,44 @@
      won (beat his marker) vs failed. Toggle buttons show/hide each category.
      ========================================================================= */
   (function () {
-    var tkLayer = $("#takeonLayer"), tkSvg = $("#takeonmap");
+    var tkLayer = $("#takeonLayer"), tkArrows = $("#takeonArrows"), tkSvg = $("#takeonmap");
     if (!tkLayer || !tkSvg) return;
+    var tkTip = function (p, cat) {
+      return "<b>" + (p.opp ? "vs " + p.opp : "Take-on") + "</b><br>" + p.min + "' · " +
+             (cat === "won" ? "<span class='tt-x'>Won</span>" : "Failed") + " take-on";
+    };
     var dot = function (p, cat) {
       var c = document.createElementNS(NS, "circle");
-      c.setAttribute("cx", p[0]); c.setAttribute("cy", p[1]);
-      c.setAttribute("r", cat === "won" ? 4.4 : 4);
+      c.setAttribute("cx", p.x); c.setAttribute("cy", p.y);
+      c.setAttribute("r", cat === "won" ? 4.6 : 4);
       c.setAttribute("class", "takeon " + cat);
+      c.setAttribute("tabindex", "0"); c.setAttribute("role", "img");
+      c.setAttribute("aria-label", (p.opp ? "vs " + p.opp + ", " : "") + p.min + " min, " + (cat === "won" ? "won" : "failed") + " take-on");
+      var enter = function (ev) {
+        c.classList.add("active");
+        var q = ("touches" in ev && ev.touches[0]) ? ev.touches[0] : ev;
+        if (q && q.clientX != null && (q.clientX || q.clientY)) showTip(tkTip(p, cat), q.clientX, q.clientY);
+        else { var r = c.getBoundingClientRect(); showTip(tkTip(p, cat), r.left + r.width / 2, r.top); }
+      };
+      c.addEventListener("mouseenter", enter);
+      c.addEventListener("mousemove", function (ev) { showTip(tkTip(p, cat), ev.clientX, ev.clientY); });
+      c.addEventListener("mouseleave", function () { c.classList.remove("active"); hideTip(); });
+      c.addEventListener("focus", enter);
+      c.addEventListener("blur", function () { c.classList.remove("active"); hideTip(); });
+      c.addEventListener("click", function (ev) { ev.preventDefault(); enter(ev); });
       return c;
+    };
+    var arrow = function (p) {
+      var ln = document.createElementNS(NS, "line");
+      ln.setAttribute("x1", p.x); ln.setAttribute("y1", p.y);
+      ln.setAttribute("x2", p.ex); ln.setAttribute("y2", p.ey);
+      ln.setAttribute("class", "tk-arrow"); ln.setAttribute("marker-end", "url(#tkArrow)");
+      return ln;
     };
     var renderTk = function (data) {
       var won = (data && data.won) || [], failed = (data && data.failed) || [];
-      while (tkLayer.firstChild) tkLayer.removeChild(tkLayer.firstChild);
+      [tkLayer, tkArrows].forEach(function (g) { if (g) while (g.firstChild) g.removeChild(g.firstChild); });
+      won.forEach(function (p) { if (tkArrows && p.ex != null && p.ey != null) tkArrows.appendChild(arrow(p)); });
       failed.forEach(function (p) { tkLayer.appendChild(dot(p, "failed")); });
       won.forEach(function (p) { tkLayer.appendChild(dot(p, "won")); });   // won on top
       var total = won.length + failed.length;
@@ -184,7 +210,7 @@
         tkSvg.classList.toggle("hide-" + cat, !on);
       });
     });
-    fetch("assets/data/yamal_takeons.json?v=1", { cache: "no-cache" })
+    fetch("assets/data/yamal_takeons.json?v=2", { cache: "no-cache" })
       .then(function (r) { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
       .then(renderTk)
       .catch(function () {});
