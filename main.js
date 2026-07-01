@@ -148,4 +148,45 @@
     .then(function (r) { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
     .then(function (data) { render(Array.isArray(data) && data.length ? data : FALLBACK); })
     .catch(function () { render(FALLBACK); });
+
+  /* =========================================================================
+     Lamine Yamal — take-on map (assets/data/yamal_takeons.json).
+     won (beat his marker) vs failed. Toggle buttons show/hide each category.
+     ========================================================================= */
+  (function () {
+    var tkLayer = $("#takeonLayer"), tkSvg = $("#takeonmap");
+    if (!tkLayer || !tkSvg) return;
+    var dot = function (p, cat) {
+      var c = document.createElementNS(NS, "circle");
+      c.setAttribute("cx", p[0]); c.setAttribute("cy", p[1]);
+      c.setAttribute("r", cat === "won" ? 4.4 : 4);
+      c.setAttribute("class", "takeon " + cat);
+      return c;
+    };
+    var renderTk = function (data) {
+      var won = (data && data.won) || [], failed = (data && data.failed) || [];
+      while (tkLayer.firstChild) tkLayer.removeChild(tkLayer.firstChild);
+      failed.forEach(function (p) { tkLayer.appendChild(dot(p, "failed")); });
+      won.forEach(function (p) { tkLayer.appendChild(dot(p, "won")); });   // won on top
+      var total = won.length + failed.length;
+      var rate = total ? Math.round(100 * won.length / total) : 0;
+      var stats = $("#takeonStats");
+      if (stats) stats.innerHTML =
+        "<div class='st'><b>" + won.length + "</b><span>Won</span></div>" +
+        "<div class='st'><b>" + failed.length + "</b><span>Failed</span></div>" +
+        "<div class='st'><b>" + rate + "%</b><span>Success</span></div>";
+    };
+    $$("#takeonToggles .toggle-chip").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var cat = btn.getAttribute("data-cat");
+        var on = btn.getAttribute("aria-pressed") === "false";  // becomes ON
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+        tkSvg.classList.toggle("hide-" + cat, !on);
+      });
+    });
+    fetch("assets/data/yamal_takeons.json?v=1", { cache: "no-cache" })
+      .then(function (r) { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
+      .then(renderTk)
+      .catch(function () {});
+  })();
 })();

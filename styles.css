@@ -138,6 +138,22 @@ img { max-width: 100%; display: block; }
 .shot-path.blocked { stroke: #ffffff; stroke-width: .8;  opacity: .05; }
 .shot-path.lit     { stroke: #ffffff; stroke-width: 2;   opacity: 1; }
 
+/* take-on map: toggle chips + dots */
+.toggles { display: flex; gap: 10px; padding: 6px 22px 2px; flex-wrap: wrap; }
+.toggle-chip { display: inline-flex; align-items: center; gap: 8px; font-family: inherit; font-size: 13.5px; font-weight: 600;
+  cursor: pointer; padding: 7px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+  transition: opacity .15s, border-color .15s; }
+.toggle-chip:hover { border-color: var(--accent); }
+.toggle-chip i { width: 11px; height: 11px; border-radius: 50%; }
+.toggle-chip.won i { background: #34d399; }
+.toggle-chip.failed i { background: transparent; border: 2px solid #ff6b81; }
+.toggle-chip[aria-pressed="false"] { opacity: .42; text-decoration: line-through; }
+.takeon { transition: opacity .12s; }
+.takeon.won { fill: #34d399; stroke: rgba(255,255,255,.3); stroke-width: .5; }
+.takeon.failed { fill: rgba(255,107,129,.10); stroke: #ff6b81; stroke-width: 1.4; }
+#takeonmap.hide-won .takeon.won { display: none; }
+#takeonmap.hide-failed .takeon.failed { display: none; }
+
 .viz-foot { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; padding: 6px 22px 20px; }
 .legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--muted); }
 .legend span { display: inline-flex; align-items: center; gap: 7px; }
