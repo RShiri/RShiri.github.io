@@ -291,11 +291,12 @@ img { max-width: 100%; display: block; }
   .about-grid { grid-template-columns: 1fr; }
   .projects { grid-template-columns: 1fr 1fr; }
   .viz-head { flex-direction: column; }
-  .hero-inner { grid-template-columns: 1fr; gap: 18px; }
-  .hero-photo { order: -1; }
-  /* on small screens the full portrait overwhelms the headline - show a profile-style round avatar instead */
-  .hero-photo img { width: 92px; height: 92px; object-fit: cover; object-position: 50% 18%;
+  .hero-inner { grid-template-columns: 1fr; gap: 0; position: relative; }
+  /* on small screens: round avatar floated to the right of the headline, headline slightly smaller */
+  .hero-photo { position: absolute; top: 118px; right: 22px; }
+  .hero-photo img { width: 96px; height: 96px; object-fit: cover; object-position: 50% 18%;
     border-radius: 50%; border: 2px solid var(--line); box-shadow: var(--shadow-sm); }
+  .hero h1 { font-size: clamp(28px, 7.6vw, 40px); padding-right: 110px; }
 }
 @media (max-width: 680px) {
   .nav-toggle { display: flex; margin-left: 0; }
