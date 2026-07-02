@@ -21,7 +21,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="styles.css?v=5" />
+<script>/* theme before CSS paints (no flash): dark is the default */
+(function(){var t=null;try{t=localStorage.getItem("theme")}catch(e){}
+document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");})();</script>
+<link rel="stylesheet" href="styles.css?v=7" />
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -37,6 +40,7 @@
       <a href="#contact">Contact</a>
       <a class="btn btn--sm" href="assets/Ram_Shiri_CV.pdf" download>Download CV</a>
     </nav>
+    <button class="theme-toggle" id="themeToggle" aria-label="Switch to light mode">☀️</button>
     <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
       <span></span><span></span><span></span>
     </button>
@@ -49,22 +53,27 @@
 <!-- HERO -->
 <section class="hero">
   <div class="wrap hero-inner">
-    <span class="pill pill--open"><span class="dot"></span> Open to work - student / full-time</span>
-    <h1>Hi, I'm Ram Shiri.<br /><span class="grad">I turn sports data into insight.</span></h1>
-    <p class="lead">
-      3rd-year B.Sc. Data Engineering student specialising in data science.<br>
-      I build interactive analytics - xG shot maps, match centres and live dashboards - for the games I love.
-    </p>
-    <div class="hero-actions">
-      <a class="btn btn--primary" href="#analytics">See it in action</a>
-      <a class="btn btn--ghost" href="assets/Ram_Shiri_CV.pdf" download>Download CV</a>
-      <a class="btn btn--text" href="#contact">Contact →</a>
+    <div class="hero-copy">
+      <span class="pill pill--open"><span class="dot"></span> Open to work - student / full-time</span>
+      <h1>Hi, I'm Ram Shiri.<br /><span class="grad">I turn sports data into insight.</span></h1>
+      <p class="lead">
+        3rd-year B.Sc. Data Engineering student specialising in data science.<br>
+        I build interactive analytics - xG shot maps, match centres and live dashboards - for the games I love.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn--primary" href="#analytics">See it in action</a>
+        <a class="btn btn--ghost" href="assets/Ram_Shiri_CV.pdf" download>Download CV</a>
+        <a class="btn btn--text" href="#contact">Contact →</a>
+      </div>
+      <ul class="hero-stats">
+        <li><b>3</b><span>live analytics apps</span></li>
+        <li><b>10+</b><span>tools &amp; languages</span></li>
+        <li><b>⚽🏀🏎️</b><span>football · hoops · F1</span></li>
+      </ul>
     </div>
-    <ul class="hero-stats">
-      <li><b>3</b><span>live analytics apps</span></li>
-      <li><b>10+</b><span>tools &amp; languages</span></li>
-      <li><b>⚽🏀🏎️</b><span>football · hoops · F1</span></li>
-    </ul>
+    <div class="hero-photo">
+      <img src="assets/img/ram.jpg" alt="Ram Shiri" width="768" height="1024" />
+    </div>
   </div>
 </section>
 
@@ -192,20 +201,91 @@
       </div>
     </div>
 
-    <!-- Goal replay embed -->
-    <div class="viz">
+    <!-- Match centre (native) -->
+    <div class="viz" id="matchcentre">
       <div class="viz-head">
         <div>
-          <h3>Match Centre Argentina vs Algeria</h3>
-          <p class="viz-sub">Live from my WC2026 match centre. Scroll to <b>Goal replays</b> inside and press <b>Play</b> to watch the goal rebuild pass-by-pass.</p>
+          <h3>Match Centre - Argentina vs Algeria · WC2026</h3>
+          <p class="viz-sub">Built straight into this page from my World Cup 2026 event pipeline - head-to-head stats, both teams' shots, and every goal replayed pass-by-pass. Press <b>Play</b> on a goal to watch it rebuild.</p>
         </div>
-        <a class="btn btn--sm btn--outline" href="https://rshiri.github.io/XWORLDCUPTWIT/wc2026_dashboard/match.html?id=2026_06_17_Argentina_vs_Algeria" target="_blank" rel="noopener">Open full match centre ↗</a>
+        <a class="btn btn--sm btn--outline" href="https://rshiri.github.io/XWORLDCUPTWIT/wc2026_dashboard/match.html?id=2026_06_17_Argentina_vs_Algeria" target="_blank" rel="noopener">Full WC2026 match centre ↗</a>
       </div>
-      <div class="embed">
-        <iframe
-          src="https://rshiri.github.io/XWORLDCUPTWIT/wc2026_dashboard/match.html?id=2026_06_17_Argentina_vs_Algeria"
-          title="Argentina vs Algeria - WC2026 match centre goal replay"
-          loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+      <div class="mc-score" id="mcScore"><!-- filled by JS --></div>
+      <div class="mc-stats" id="mcStats"><!-- filled by JS --></div>
+
+      <h4 class="mc-subhead">Shot map <span>· dot size = xG · hover for details</span></h4>
+      <div class="pitch-wrap">
+        <svg id="mcShotmap" viewBox="0 0 700 440" role="img" aria-label="Argentina vs Algeria shot map">
+          <rect x="4" y="4" width="692" height="432" rx="12" fill="#0f1626"/>
+          <g fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2">
+            <rect x="18" y="18" width="664" height="404" rx="4"/>
+            <line x1="350" y1="18" x2="350" y2="422"/>
+            <circle cx="350" cy="220" r="54"/>
+            <rect x="18" y="100" width="104" height="240"/>
+            <rect x="18" y="166" width="34" height="108"/>
+            <path d="M122,170 A54 54 0 0 1 122,270"/>
+            <rect x="578" y="100" width="104" height="240"/>
+            <rect x="648" y="166" width="34" height="108"/>
+            <path d="M578,170 A54 54 0 0 0 578,270"/>
+          </g>
+          <circle cx="350" cy="220" r="2.5" fill="rgba(255,255,255,.5)"/>
+          <circle cx="88" cy="220" r="2" fill="rgba(255,255,255,.45)"/>
+          <circle cx="612" cy="220" r="2" fill="rgba(255,255,255,.45)"/>
+          <rect x="12" y="200" width="6" height="40" fill="rgba(255,255,255,.3)"/>
+          <rect x="682" y="200" width="6" height="40" fill="rgba(255,255,255,.3)"/>
+          <g id="mcShotLayer"></g>
+        </svg>
+      </div>
+      <div class="viz-foot">
+        <div class="legend" id="mcShotLegend"><!-- filled by JS --></div>
+        <div class="chart-tip" id="mcShotTip">Argentina attack → · ← Algeria attack. Tap or hover a shot.</div>
+      </div>
+
+      <h4 class="mc-subhead">Goal replays <span>· the ball travels the real build-up: passes, carries, then the finish</span></h4>
+      <div class="mc-goalbar">
+        <div class="toggles mc-goaltabs" id="mcGoalTabs"><!-- filled by JS --></div>
+        <button class="btn btn--sm btn--primary mc-play" id="mcPlay">▶ Play</button>
+      </div>
+      <div class="pitch-wrap">
+        <svg id="mcReplay" viewBox="0 0 700 452" role="img" aria-label="Goal replay">
+          <defs>
+            <marker id="mcArrPass" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="4.6" markerHeight="4.6" orient="auto">
+              <path d="M0,0 L10,5 L0,10 z" fill="#cfe0ff"/>
+            </marker>
+            <marker id="mcArrShot" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="4.6" markerHeight="4.6" orient="auto">
+              <path d="M0,0 L10,5 L0,10 z" fill="#ff6b81"/>
+            </marker>
+          </defs>
+          <rect x="4" y="4" width="692" height="444" rx="12" fill="#0f1626"/>
+          <g fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2">
+            <rect x="18" y="18" width="664" height="404" rx="4"/>
+            <line x1="350" y1="18" x2="350" y2="422"/>
+            <circle cx="350" cy="220" r="54"/>
+            <rect x="18" y="100" width="104" height="240"/>
+            <rect x="18" y="166" width="34" height="108"/>
+            <path d="M122,170 A54 54 0 0 1 122,270"/>
+            <rect x="578" y="100" width="104" height="240"/>
+            <rect x="648" y="166" width="34" height="108"/>
+            <path d="M578,170 A54 54 0 0 0 578,270"/>
+          </g>
+          <circle cx="350" cy="220" r="2.5" fill="rgba(255,255,255,.5)"/>
+          <circle cx="88" cy="220" r="2" fill="rgba(255,255,255,.45)"/>
+          <circle cx="612" cy="220" r="2" fill="rgba(255,255,255,.45)"/>
+          <rect x="12" y="200" width="6" height="40" fill="rgba(255,255,255,.3)"/>
+          <rect x="682" y="200" width="6" height="40" fill="rgba(255,255,255,.3)"/>
+          <text id="mcReplayDir" x="350" y="444" text-anchor="middle" fill="rgba(255,255,255,.45)" font-size="12"></text>
+          <g id="mcReplayLayer"></g>
+        </svg>
+      </div>
+      <div class="viz-foot">
+        <div class="legend">
+          <span><i class="lg-node"></i> Touch (shirt #)</span>
+          <span class="lg-line pass"><i></i> Pass</span>
+          <span class="lg-line carry"><i></i> Carry / dribble</span>
+          <span class="lg-line shot"><i></i> Shot</span>
+        </div>
+        <div class="chart-tip" id="mcReplayMeta">Pick a goal and press Play.</div>
       </div>
     </div>
   </div>
@@ -285,6 +365,6 @@
 </footer>
 
 <div class="tooltip" id="tooltip" role="status" aria-live="polite"></div>
-<script src="main.js?v=5" defer></script>
+<script src="main.js?v=7" defer></script>
 </body>
 </html>
