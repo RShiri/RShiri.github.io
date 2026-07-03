@@ -14,11 +14,12 @@
   --ink: #eaf0fb;
   --body: #a9b6d4;
   --muted: #6f7ea5;
-  --accent: #e01a5b;               /* garnet, brightened for dark contrast */
+  --accent: #a50044;               /* authentic Barça garnet (fills, borders) */
+  --accent-bright: #d6497a;        /* lifted garnet - text/marks on dark only */
   --accent-ink: #ffffff;
   --gold: #ffc72c;                 /* Barça gold trim */
   --blue: #2a5db0;                 /* Barça blue, brightened */
-  --grad: #e01a5b;                 /* flatten every gradient reference */
+  --grad: #a50044;                 /* flatten every gradient reference */
   --panel: #0f1626;
   --shadow: 0 24px 60px -30px rgba(0, 0, 0, .9);
   --shadow-sm: 0 1px 0 rgba(255, 255, 255, .04);
@@ -31,7 +32,7 @@
 html[data-theme="dark"] {
   --bg: #0a1630; --bg-soft: #0f1d3d; --line: rgba(255,255,255,.10);
   --ink: #eaf0fb; --body: #a9b6d4; --muted: #6f7ea5;
-  --accent: #e01a5b; --accent-2: #e01a5b; --accent-ink: #ffffff;
+  --accent: #a50044; --accent-2: #a50044; --accent-bright: #d6497a; --accent-ink: #ffffff;
   --gold: #ffc72c; --blue: #2a5db0;
 }
 /* light variant: Barça blue ink on warm cream, garnet accent, gold trim */
@@ -39,7 +40,7 @@ html[data-theme="light"] {
   --bg: #f4f2ec; --bg-soft: #ffffff; --line: rgba(10,29,61,.12);
   --line-strong: rgba(10,29,61,.20);
   --ink: #0c2551; --body: #3c4966; --muted: #6b7794;
-  --accent: #a5004a; --accent-2: #a5004a; --accent-ink: #ffffff;
+  --accent: #a50044; --accent-2: #a50044; --accent-bright: #a50044; --accent-ink: #ffffff;
   --gold: #b07d00; --blue: #004d98;
   color-scheme: light;
 }
@@ -61,8 +62,8 @@ a:hover { color: var(--accent); }
   background: transparent; color: var(--ink);
   border-color: var(--line-strong);
 }
-.btn--ghost:hover, .btn--outline:hover { transform: none; border-color: var(--accent); color: var(--accent); }
-.btn--text { color: var(--accent); text-transform: uppercase; font-family: var(--font-mono); font-size: 13px; }
+.btn--ghost:hover, .btn--outline:hover { transform: none; border-color: var(--accent-bright); color: var(--accent-bright); }
+.btn--text { color: var(--accent-bright); text-transform: uppercase; font-family: var(--font-mono); font-size: 13px; }
 .nav-links .btn--sm { background: var(--accent); color: var(--accent-ink); }
 
 /* ---- nav ---- */
@@ -75,10 +76,10 @@ html[data-theme="dark"] .nav { background: rgba(10, 22, 48, .78); }
 }
 .brand-name { font-family: var(--font-display); font-weight: 700; letter-spacing: -.01em; }
 .nav-links > a { font-family: var(--font-mono); font-size: 13px; letter-spacing: .01em; }
-.nav-links > a.active { color: var(--accent); }
+.nav-links > a.active { color: var(--accent-bright); }
 .nav-links > a:not(.btn) { position: relative; }
 .nav-links > a.active:not(.btn)::after {
-  content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 2px; background: var(--accent);
+  content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 2px; background: var(--accent-bright);
 }
 
 /* =========================== HERO: player card =========================== */
@@ -141,7 +142,7 @@ html[data-theme="light"] .hero { background:
   font-family: var(--font-mono); font-weight: 500; font-size: 12px; letter-spacing: .14em;
   color: var(--muted); text-transform: uppercase; display: flex; align-items: center; gap: 14px; margin-bottom: 20px;
 }
-.kicker::before { content: attr(data-idx); color: var(--accent); }
+.kicker::before { content: attr(data-idx); color: var(--accent-bright); }
 .kicker::after { content: ""; flex: 1; height: 1px; background: var(--line); max-width: 220px; }
 
 .section h2 { font-size: clamp(30px, 4vw, 46px); letter-spacing: -.02em; }
@@ -150,14 +151,14 @@ html[data-theme="light"] .hero { background:
 /* about → scouting report */
 .tag { border-radius: var(--r); font-family: var(--font-mono); font-size: 12px; font-weight: 500;
   text-transform: none; letter-spacing: 0; }
-html[data-theme="dark"] .tag { color: #ff6fa0; background: rgba(224,26,91,.10); border-color: rgba(224,26,91,.30); }
-html[data-theme="light"] .tag { color: var(--accent); background: rgba(165,0,74,.06); border-color: rgba(165,0,74,.20); }
+html[data-theme="dark"] .tag { color: var(--accent-bright); background: rgba(165,0,68,.16); border-color: rgba(214,73,122,.30); }
+html[data-theme="light"] .tag { color: var(--accent); background: rgba(165,0,68,.06); border-color: rgba(165,0,68,.20); }
 .tag--soft { color: var(--body); background: transparent; border-color: var(--line-strong); }
 .facts { border-radius: var(--r); background: var(--bg-soft); }
 .facts dt { font-family: var(--font-mono); letter-spacing: .1em; }
 .facts dd { font-family: var(--font-display); }
 .facts dd.ok { color: var(--accent); }
-html[data-theme="dark"] .facts dd.ok { color: var(--accent); }
+html[data-theme="dark"] .facts dd.ok { color: var(--accent-bright); }
 
 /* grouped, typed skill list (replaces the pill cloud) */
 .skill-rows { margin-top: 22px; display: grid; gap: 14px; }
@@ -188,7 +189,7 @@ html[data-theme="dark"] .facts dd.ok { color: var(--accent); }
   border: 1px solid var(--line-strong); border-radius: var(--r); padding: 6px 11px;
 }
 .method b { color: var(--accent); font-family: var(--font-mono); font-weight: 600; }
-html[data-theme="dark"] .method b { color: #ff6fa0; }
+html[data-theme="dark"] .method b { color: var(--accent-bright); }
 
 /* =========================== viz panels ================================= */
 .viz { border-radius: var(--r); background: var(--bg-soft); }
@@ -210,7 +211,7 @@ html[data-theme="dark"] .method b { color: #ff6fa0; }
 .project:hover .project-shot img { transform: none; }
 .project-shot { aspect-ratio: auto; border-right: 1px solid var(--line-strong); }
 .project-body { padding: 26px 4px 26px 34px; justify-content: center; position: relative; }
-.project-idx { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; color: var(--accent); text-transform: uppercase; }
+.project-idx { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; color: var(--accent-bright); text-transform: uppercase; }
 .project-body h3 { font-family: var(--font-display); font-size: clamp(20px, 2.6vw, 26px); margin: 8px 0 0; }
 .project-body p { font-size: 14.5px; color: var(--body); margin: 10px 0 16px; max-width: 480px; }
 .project-callouts { display: flex; gap: 30px; margin: 0 0 18px; }
@@ -222,8 +223,8 @@ html[data-theme="dark"] .method b { color: #ff6fa0; }
   font-size: 12px; color: var(--muted); }
 html[data-theme="dark"] .tags span { background: transparent; color: var(--muted); }
 .tags span + span::before { content: "·"; padding: 0 8px; color: var(--line-strong); }
-.project-link { font-family: var(--font-mono); font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--accent); }
-.project-fallback { background: var(--panel); color: var(--accent); }
+.project-link { font-family: var(--font-mono); font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--accent-bright); }
+.project-fallback { background: var(--panel); color: var(--accent-bright); }
 
 /* =========================== contact ==================================== */
 .contact-links a { font-family: var(--font-mono); font-size: 14px; }
@@ -236,7 +237,7 @@ html[data-theme="light"] .pill--open { color: #8a6100; background: rgba(176,125,
 /* footer */
 html[data-theme="dark"] .footer { background: #070a11; }
 .footer, .footer-inner { font-family: var(--font-mono); font-size: 12.5px; letter-spacing: .04em; }
-.to-top { color: var(--accent); }
+.to-top { color: #d6497a; }  /* footer is always dark - fixed readable garnet */
 
 /* theme toggle keeps working; just square it */
 .theme-toggle { border-radius: var(--r); }

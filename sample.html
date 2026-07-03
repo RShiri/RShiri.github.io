@@ -15,7 +15,7 @@
 (function(){var t=null;try{t=localStorage.getItem("theme")}catch(e){}
 document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");})();</script>
 <link rel="stylesheet" href="styles.css?v=9" />
-<link rel="stylesheet" href="sample.css?v=3" />
+<link rel="stylesheet" href="sample.css?v=4" />
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -145,22 +145,33 @@ document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");}
     <!-- xG method note -->
     <div class="method">
       <span class="method-tag">Method · xG model</span>
-      <h4>How the expected-goals model works</h4>
+      <h4>How my expected-goals model works</h4>
       <p>
-        Expected goals (xG) puts a number on chance quality: the probability that an average
-        shot taken from that exact situation ends up in the net. Instead of judging a shot by
-        whether it went in, xG judges it by how good the opportunity was.
+        Expected goals (xG) is the probability an average shot from a given situation ends in a
+        goal. My model reads a set of engineered features off each shot -
       </p>
-      <p>For every shot I pull from the event data, the model reads a handful of features -</p>
       <div class="feat">
-        <span>Distance to goal</span><span>Shooting angle between the posts</span>
-        <span>Header vs. foot</span><span>Assist / pass type</span><span>Open play vs. set piece</span>
+        <span>Distance to goal</span><span>Shooting angle</span><span>Header vs. foot</span>
+        <span>Assist / pass type</span><span>Open play vs. set piece</span>
       </div>
       <p>
-        - and turns them into a single probability between <b>0</b> and <b>1</b>. A tap-in from
-        the six-yard box might land near <b>0.65</b>; a speculative effort from 30 yards closer
-        to <b>0.03</b>. Sum a player's xG across a season and you get how many goals their chances
-        were <em>worth</em> - the basis for the numbers and the dot sizes on the map above.
+        - and runs them through <b>two</b> learners in parallel: an L2-regularised logistic
+        regression and a gradient-boosted tree ensemble (LightGBM) with <b>monotonic</b>
+        constraints, so closer, straighter chances can never be scored below worse ones. Their
+        outputs are blended in log-odds space at the weight that minimises out-of-fold error.
+      </p>
+      <p>
+        I anchor the shape to bookmakers' and providers' public xG by <b>distillation</b> - a
+        student model learns their values from the same features, so it still works on shots that
+        were never covered - while real goals keep the overall level honest. A final
+        <b>isotonic calibration</b>, always fit out-of-fold to avoid optimism, plus a per-league
+        level shift, forces the model's summed xG to match the goals that were actually scored.
+      </p>
+      <p>
+        Deliberately <b>no</b> resampling or class-weighting for the ~10% goal rate: reweighting
+        inflates the probabilities, and an honest probability is the whole point. The trained
+        model exports to a small JSON artifact scored by a dependency-free Python runtime - the
+        same one that powers the dots and numbers above, and my Barça xG Lab.
       </p>
     </div>
 
