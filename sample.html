@@ -15,7 +15,7 @@
 (function(){var t=null;try{t=localStorage.getItem("theme")}catch(e){}
 document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");})();</script>
 <link rel="stylesheet" href="styles.css?v=9" />
-<link rel="stylesheet" href="sample.css?v=1" />
+<link rel="stylesheet" href="sample.css?v=3" />
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -56,12 +56,6 @@ document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");}
         <a class="btn btn--outline" href="assets/Ram_Shiri_CV.pdf" download>Download CV</a>
         <a class="btn btn--text" href="#contact">Contact →</a>
       </div>
-      <ul class="scoreboard">
-        <li><b>152</b><span>Shots plotted</span></li>
-        <li><b>388</b><span>Take-ons mapped</span></li>
-        <li><b>3</b><span>Live apps</span></li>
-        <li><b>104</b><span>WC matches piped</span></li>
-      </ul>
     </div>
     <figure class="hero-card">
       <img src="assets/img/ram.jpg" alt="Ram Shiri" width="768" height="1024" />
@@ -146,6 +140,28 @@ document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");}
         </div>
         <div class="chart-tip" id="shotTip">Tap or hover a shot for details.</div>
       </div>
+    </div>
+
+    <!-- xG method note -->
+    <div class="method">
+      <span class="method-tag">Method · xG model</span>
+      <h4>How the expected-goals model works</h4>
+      <p>
+        Expected goals (xG) puts a number on chance quality: the probability that an average
+        shot taken from that exact situation ends up in the net. Instead of judging a shot by
+        whether it went in, xG judges it by how good the opportunity was.
+      </p>
+      <p>For every shot I pull from the event data, the model reads a handful of features -</p>
+      <div class="feat">
+        <span>Distance to goal</span><span>Shooting angle between the posts</span>
+        <span>Header vs. foot</span><span>Assist / pass type</span><span>Open play vs. set piece</span>
+      </div>
+      <p>
+        - and turns them into a single probability between <b>0</b> and <b>1</b>. A tap-in from
+        the six-yard box might land near <b>0.65</b>; a speculative effort from 30 yards closer
+        to <b>0.03</b>. Sum a player's xG across a season and you get how many goals their chances
+        were <em>worth</em> - the basis for the numbers and the dot sizes on the map above.
+      </p>
     </div>
 
     <!-- Take-on map -->
