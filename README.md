@@ -6,19 +6,20 @@ no dependencies. Published with **GitHub Pages** at <https://rshiri.github.io/>.
 ## Files
 | File | Purpose |
 | --- | --- |
-| `index.html` | The whole page (nav, hero, about, skills, projects, passions, contact) |
-| `styles.css` | Fresh light brand - Space Grotesk + Inter, indigo→cyan accent |
-| `main.js` | Nav, scroll-reveal, animated skill bars, scrollspy, contact-form logic |
+| `index.html` | The whole page (nav, hero, about, live analytics, projects, contact) |
+| `styles.css` | Base brand - Space Grotesk + Inter, indigo→cyan accent |
+| `main.js` | Nav, scrollspy, theme toggle, and the interactive shot / take-on maps + match-centre replays |
+| `sample.html` | Redesign preview (loads `styles.css` + `sample.css`, `noindex`) - "player card" hero, richer project cards |
+| `sample.css` | Overrides layered on top of `styles.css` for the `sample.html` redesign |
 | `assets/` | Favicon, CV PDF, project screenshots, OG image |
 
-## Before you go live - 4 quick edits
-1. **LinkedIn** - open `main.js`, set `CONFIG.LINKEDIN_URL` to your profile URL.
-2. **Contact form** - create a free form at [formspree.io](https://formspree.io), then replace
-   `XXXXXXX` in the `<form action="https://formspree.io/f/XXXXXXX">` tag in `index.html`.
-   Until then the form politely falls back to opening your email client.
-3. **CV** - replace `assets/Ram_Shiri_CV.pdf` with your real CV (keep the filename).
-4. **Screenshots** - the three images in `assets/img/` (`bcn.png`, `nba.png`, `wc2026.png`) can be
-   re-captured any time; if an image is missing the card shows a styled gradient fallback.
+## Before you go live - 3 quick edits
+1. **LinkedIn** - open `main.js` and set `LINKEDIN_URL` to your profile URL; the LinkedIn
+   link stays inactive until you do.
+2. **CV** - replace `assets/Ram_Shiri_CV.pdf` with your real CV (keep the filename).
+3. **Screenshots** - the images in `assets/img/` (`bcn.png`, `nba.png`, `wc2026.png`,
+   `f1.png`, `xepl.png`) can be re-captured any time; if an image is missing the card
+   shows a styled gradient fallback.
 
 ## Run locally
 Any static server works, e.g.:
