@@ -9,7 +9,7 @@
   "use strict";
 
   /* Set your LinkedIn URL here to activate the LinkedIn link: */
-  var LINKEDIN_URL = "";
+  var LINKEDIN_URL = "https://www.linkedin.com/in/ram-shiri-1a1056304/";
 
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
