@@ -201,11 +201,15 @@ img { max-width: 100%; display: block; }
 .mc-bar i { height: 100%; border-radius: 5px; }
 
 /* shot map dots (home = Argentina blue, away = Algeria green, brightened for the dark pitch) */
-/* very thin shot-path lines to goal (behind the dots) */
-.mc-shotpath { fill: none; stroke-width: .5; opacity: .38; pointer-events: none; }
+/* shot-path lines to goal (behind the dots), styled like the Lamine xG map:
+   goals get a prominent team-coloured line, everything else stays faint */
+.mc-shotpath { fill: none; pointer-events: none; stroke-linecap: round; }
 .mc-shotpath.home { stroke: #74acdf; }
 .mc-shotpath.away { stroke: #2fbf71; }
-.mc-shotpath.goal { stroke-width: 1; opacity: .8; }
+.mc-shotpath.goal    { stroke-width: 1.6; opacity: .62; }
+.mc-shotpath.on      { stroke-width: .7;  opacity: .20; }
+.mc-shotpath.off,
+.mc-shotpath.blocked { stroke-width: .6;  opacity: .09; }
 .mc-shot { cursor: pointer; transition: stroke-width .12s var(--ease); }
 .mc-shot.home { fill: #74acdf; stroke: rgba(255,255,255,.35); stroke-width: .8; }
 .mc-shot.away { fill: #2fbf71; stroke: rgba(255,255,255,.35); stroke-width: .8; }

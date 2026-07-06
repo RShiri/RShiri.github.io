@@ -330,16 +330,27 @@
     var OUTC = function (s) { return s.goal ? "goal" : s.blocked ? "blocked" : s.onTarget ? "on" : "off"; };
     var OUT_TXT = { goal: "Goal ⚽", on: "On target", off: "Off target", blocked: "Blocked" };
     var mcRadius = function (xg) { return Math.max(4, Math.min(15, 4 + xg * 15)); };
+    // stable per-shot [0,1) so paths fan out to DIFFERENT spots on the goal line
+    var mcHash = function (s) { var h = Math.sin(s.x * 12.9898 + s.y * 78.233 + (s.min + 1) * 37.719) * 43758.5453; return h - Math.floor(h); };
+    // across-goal endpoint (data-y 0-100): on-target/goals land between the posts
+    // (each at a different point), off-target fan wide of them so they clearly miss.
+    var mcGoalY = function (s) {
+      var f = mcHash(s) - 0.5;                                  // -0.5..0.5
+      if (OUTC(s) === "off") return 50 + (f >= 0 ? 1 : -1) * (7 + Math.abs(f) * 11);
+      return Math.max(45, Math.min(55, 50 + (s.y - 50) / 6 + f * 9));
+    };
     var renderShots = function (D) {
       while (shotLayerMc.firstChild) shotLayerMc.removeChild(shotLayerMc.firstChild);
       if (shotCaption) { shotCaption.textContent = esc(D.home.name) + " attack → · ← " + esc(D.away.name) + " attack. Tap or hover a shot."; shotCaption.classList.remove("show"); }
       var name = { home: D.home.name, away: D.away.name };
-      // very thin shot-path lines to the attacked goal (drawn first, behind the dots)
+      // shot-path lines to the attacked goal (drawn first, behind the dots): goals
+      // get a prominent team-coloured line, other shots stay faint — like the
+      // Lamine Yamal xG shot map. Endpoints fan across the goal via mcGoalY().
       D.shots.forEach(function (s) {
         shotLayerMc.appendChild(E("line", {
           x1: tx(s.team, s.x).toFixed(1), y1: ty(s.team, s.y).toFixed(1),
-          x2: tx(s.team, 100).toFixed(1), y2: ty(s.team, 50).toFixed(1),
-          "class": "mc-shotpath " + s.team + (s.goal ? " goal" : "")
+          x2: tx(s.team, 100).toFixed(1), y2: ty(s.team, mcGoalY(s)).toFixed(1),
+          "class": "mc-shotpath " + s.team + " " + OUTC(s)
         }));
       });
       var ordered = D.shots.filter(function (s) { return !s.goal; }).concat(D.shots.filter(function (s) { return s.goal; }));
