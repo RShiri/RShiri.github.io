@@ -331,6 +331,8 @@
     var OUT_TXT = { goal: "Goal ⚽", on: "On target", off: "Off target", blocked: "Blocked" };
     var mcRadius = function (xg) { return Math.max(4, Math.min(15, 4 + xg * 15)); };
     var renderShots = function (D) {
+      while (shotLayerMc.firstChild) shotLayerMc.removeChild(shotLayerMc.firstChild);
+      if (shotCaption) { shotCaption.textContent = esc(D.home.name) + " attack → · ← " + esc(D.away.name) + " attack. Tap or hover a shot."; shotCaption.classList.remove("show"); }
       var name = { home: D.home.name, away: D.away.name };
       var ordered = D.shots.filter(function (s) { return !s.goal; }).concat(D.shots.filter(function (s) { return s.goal; }));
       ordered.forEach(function (s) {
@@ -533,34 +535,91 @@
     }
 
     var renderReplays = function (D) {
-      if (!D.replays.length) return;
-      var sel = 0;
+      tabsEl.innerHTML = "";
+      if (!D.replays.length) {
+        if (playBtn) playBtn.disabled = true;
+        if (replayDir) replayDir.textContent = "";
+        while (replayLayer.firstChild) replayLayer.removeChild(replayLayer.firstChild);
+        if (replayMeta) replayMeta.textContent = "No goals in this match.";
+        return;
+      }
+      if (playBtn) playBtn.disabled = false;
       var select = function (i) {
-        sel = i;
         $$(".toggle-chip", tabsEl).forEach(function (b, j) { b.setAttribute("aria-pressed", j === i ? "true" : "false"); });
         if (playBtn) playBtn.textContent = "▶ Play";
         buildReplay(D.replays[i], D);
       };
-      tabsEl.innerHTML = "";
       D.replays.forEach(function (r, i) {
         var b = document.createElement("button");
         b.className = "toggle-chip mc-goaltab";
         b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
-        b.innerHTML = "⚽ " + r.min + "' " + esc(r.scorer.split(" ").pop());
+        var who = r.own ? "OG " + esc((r.ogBy || "").split(" ").pop()) : esc(r.scorer.split(" ").pop());
+        b.innerHTML = "⚽ " + r.min + "' " + who;
         b.addEventListener("click", function () { select(i); });
         tabsEl.appendChild(b);
       });
-      if (playBtn) playBtn.addEventListener("click", function () { if (current) { playBtn.textContent = "↻ Replay"; current.play(); } });
       select(0);
     };
 
-    fetch("assets/data/arg_alg_match.json?v=1", { cache: "no-cache" })
+    // Play button is wired once; it always drives the current replay.
+    if (playBtn) playBtn.addEventListener("click", function () {
+      if (current) { playBtn.textContent = "↻ Replay"; current.play(); }
+    });
+
+    /* ---- render one match ---- */
+    var renderMatch = function (D) {
+      renderScore(D); renderStats(D); renderShots(D); renderReplays(D);
+    };
+
+    /* ---- match picker: load the Argentina index, build tabs, swap matches ---- */
+    var matchTabs = $("#mcMatchTabs"), fullLink = $("#mcFullLink");
+    var DASH = "https://rshiri.github.io/XWORLDCUPTWIT/wc2026_dashboard/match.html?id=";
+    var loadMatch = function (m) {
+      if (replayMeta) replayMeta.textContent = "Loading…";
+      if (fullLink && m.id) fullLink.href = DASH + encodeURIComponent(m.id);
+      fetch(m.file + "?v=1", { cache: "no-cache" })
+        .then(function (r) { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
+        .then(renderMatch)
+        .catch(function () { if (replayMeta) replayMeta.textContent = "Match data could not be loaded."; });
+    };
+    var mcLabel = function (m) {
+      var arg = m.argSide === "home" ? m.home : m.away;
+      var opp = m.argSide === "home" ? m.away : m.home;
+      var dt = new Date(m.date + "T12:00:00");
+      var day = isNaN(dt) ? m.date : dt.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+      return '<b>' + esc(opp.name) + '</b> <span class="mc-mt-score">' + arg.score + "-" + opp.score +
+             '</span> <span class="mc-mt-date">' + esc(day) + "</span>";
+    };
+
+    fetch("assets/data/argentina/index.json?v=1", { cache: "no-cache" })
       .then(function (r) { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
-      .then(function (D) {
-        renderScore(D); renderStats(D); renderShots(D); renderReplays(D);
+      .then(function (idx) {
+        var matches = (idx && idx.matches) || [];
+        if (!matches.length) throw new Error("no matches");
+        var select = function (i) {
+          $$(".toggle-chip", matchTabs).forEach(function (b, j) { b.setAttribute("aria-pressed", j === i ? "true" : "false"); });
+          loadMatch(matches[i]);
+        };
+        if (matchTabs) {
+          matchTabs.innerHTML = "";
+          matches.forEach(function (m, i) {
+            var b = document.createElement("button");
+            b.className = "toggle-chip mc-matchtab";
+            b.setAttribute("role", "tab");
+            b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+            b.innerHTML = mcLabel(m);
+            b.addEventListener("click", function () { select(i); });
+            matchTabs.appendChild(b);
+          });
+        }
+        select(0);
       })
-      .catch(function (e) {
-        if (replayMeta) replayMeta.textContent = "Match data could not be loaded.";
+      .catch(function () {
+        // Fall back to the original single-match file if the index is unavailable.
+        fetch("assets/data/arg_alg_match.json?v=1", { cache: "no-cache" })
+          .then(function (r) { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
+          .then(renderMatch)
+          .catch(function () { if (replayMeta) replayMeta.textContent = "Match data could not be loaded."; });
       });
   })();
 

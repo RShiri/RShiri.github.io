@@ -8,10 +8,12 @@ no dependencies. Published with **GitHub Pages** at <https://rshiri.github.io/>.
 | --- | --- |
 | `index.html` | The whole page (nav, hero, about, live analytics, projects, contact) |
 | `styles.css` | Base brand - Space Grotesk + Inter, indigo→cyan accent |
-| `main.js` | Nav, scrollspy, theme toggle, and the interactive shot / take-on maps + match-centre replays |
+| `main.js` | Nav, scrollspy, theme toggle, and the interactive shot / take-on maps + the Argentina match centre (picker, stat bars, shot map, goal replays) |
 | `sample.html` | Redesign preview (loads `styles.css` + `sample.css`, `noindex`) - "player card" hero, richer project cards |
 | `sample.css` | Overrides layered on top of `styles.css` for the `sample.html` redesign |
 | `assets/` | Favicon, CV PDF, project screenshots, OG image |
+| `assets/data/argentina/` | One JSON per Argentina WC2026 match (+ `index.json` manifest) driving the match-centre picker |
+| `assets/data/build_argentina.py` | Regenerates `assets/data/argentina/*` from the sibling **XWORLDCUPTWIT** event pipeline (ports the dashboard's goal-sequence reconstruction). Run `python3 assets/data/build_argentina.py` after new Argentina games are scraped |
 
 ## Before you go live - 3 quick edits
 1. **LinkedIn** - open `main.js` and set `LINKEDIN_URL` to your profile URL; the LinkedIn

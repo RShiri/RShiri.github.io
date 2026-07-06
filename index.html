@@ -24,7 +24,7 @@
 <script>/* theme before CSS paints (no flash): dark is the default */
 (function(){var t=null;try{t=localStorage.getItem("theme")}catch(e){}
 document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");})();</script>
-<link rel="stylesheet" href="styles.css?v=10" />
+<link rel="stylesheet" href="styles.css?v=11" />
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -205,11 +205,13 @@ document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");}
     <div class="viz" id="matchcentre">
       <div class="viz-head">
         <div>
-          <h3>Match Centre - Argentina vs Algeria · WC2026</h3>
-          <p class="viz-sub">Built straight into this page from my World Cup 2026 event pipeline - head-to-head stats, both teams' shots, and every goal replayed pass-by-pass. Press <b>Play</b> on a goal to watch it rebuild.</p>
+          <h3>Argentina Match Centre · WC2026</h3>
+          <p class="viz-sub">Every Argentina game at the World Cup, built straight into this page from my event pipeline - head-to-head stats, both teams' shots, and every goal replayed pass-by-pass. <b>Pick a match</b> below, then press <b>Play</b> on a goal to watch it rebuild.</p>
         </div>
-        <a class="btn btn--sm btn--outline" href="https://rshiri.github.io/XWORLDCUPTWIT/wc2026_dashboard/match.html?id=2026_06_17_Argentina_vs_Algeria" target="_blank" rel="noopener">Full WC2026 match centre ↗</a>
+        <a class="btn btn--sm btn--outline" id="mcFullLink" href="https://rshiri.github.io/XWORLDCUPTWIT/wc2026_dashboard/match.html?id=2026_06_17_Argentina_vs_Algeria" target="_blank" rel="noopener">Full WC2026 match centre ↗</a>
       </div>
+
+      <div class="toggles mc-matchtabs" id="mcMatchTabs" role="tablist" aria-label="Choose an Argentina match"><!-- filled by JS --></div>
 
       <div class="mc-score" id="mcScore"><!-- filled by JS --></div>
       <div class="mc-stats" id="mcStats"><!-- filled by JS --></div>
@@ -413,6 +415,6 @@ document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");}
 </footer>
 
 <div class="tooltip" id="tooltip" role="status" aria-live="polite"></div>
-<script src="main.js?v=9" defer></script>
+<script src="main.js?v=10" defer></script>
 </body>
 </html>

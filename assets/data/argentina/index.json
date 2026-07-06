@@ -1,0 +1,69 @@
+{
+ "team": "Argentina",
+ "matches": [
+  {
+   "id": "2026_06_17_Argentina_vs_Algeria",
+   "file": "assets/data/argentina/2026_06_17_Argentina_vs_Algeria.json",
+   "date": "2026-06-17",
+   "stage": "Group Stage",
+   "home": {
+    "name": "Argentina",
+    "score": 3
+   },
+   "away": {
+    "name": "Algeria",
+    "score": 0
+   },
+   "opponent": "Algeria",
+   "argSide": "home"
+  },
+  {
+   "id": "2026_06_22_Argentina_vs_Austria",
+   "file": "assets/data/argentina/2026_06_22_Argentina_vs_Austria.json",
+   "date": "2026-06-22",
+   "stage": "Group Stage",
+   "home": {
+    "name": "Argentina",
+    "score": 2
+   },
+   "away": {
+    "name": "Austria",
+    "score": 0
+   },
+   "opponent": "Austria",
+   "argSide": "home"
+  },
+  {
+   "id": "2026_06_28_Jordan_vs_Argentina",
+   "file": "assets/data/argentina/2026_06_28_Jordan_vs_Argentina.json",
+   "date": "2026-06-28",
+   "stage": "Group Stage",
+   "home": {
+    "name": "Jordan",
+    "score": 1
+   },
+   "away": {
+    "name": "Argentina",
+    "score": 3
+   },
+   "opponent": "Jordan",
+   "argSide": "away"
+  },
+  {
+   "id": "2026_07_04_1J_vs_2H",
+   "file": "assets/data/argentina/2026_07_04_1J_vs_2H.json",
+   "date": "2026-07-03",
+   "stage": "Round of 32",
+   "home": {
+    "name": "Argentina",
+    "score": 3
+   },
+   "away": {
+    "name": "Cape Verde",
+    "score": 2
+   },
+   "opponent": "Cape Verde",
+   "argSide": "home"
+  }
+ ]
+}

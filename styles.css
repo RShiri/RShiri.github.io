@@ -220,6 +220,16 @@ img { max-width: 100%; display: block; }
 .mc-goaltabs { padding: 0; }
 .mc-goaltab[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: rgba(79,70,229,.07); }
 .mc-goaltab[aria-pressed="false"] { opacity: .75; text-decoration: none; }
+/* Argentina match picker */
+.mc-matchtabs { padding: 4px 22px 2px; }
+.mc-matchtab { gap: 7px; padding: 7px 13px; }
+.mc-matchtab[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: rgba(79,70,229,.08); }
+.mc-matchtab[aria-pressed="false"] { opacity: .72; text-decoration: none; }
+.mc-matchtab:hover { opacity: 1; }
+.mc-mt-score { font-weight: 700; }
+.mc-mt-date { font-weight: 500; color: var(--muted); font-size: 12px; }
+.mc-matchtab[aria-pressed="true"] .mc-mt-date { color: var(--accent); opacity: .8; }
+.mc-play[disabled] { opacity: .4; cursor: not-allowed; }
 .mc-pass  { fill: none; stroke: #cfe0ff; stroke-width: 2;   stroke-dasharray: 2 5; opacity: .9; }
 .mc-carry { fill: none; stroke: #ffd166; stroke-width: 2.2; stroke-dasharray: 7 5; opacity: .85; }
 .mc-shotln{ fill: none; stroke: #ff6b81; stroke-width: 2.6; }
