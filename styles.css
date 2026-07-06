@@ -246,6 +246,29 @@ img { max-width: 100%; display: block; }
 .lg-line.carry i::after { border-top-style: dashed; border-top-color: #ffd166; }
 .lg-line.shot i::after  { border-top-style: solid;  border-top-color: #ff6b81; }
 
+/* F1 race progression (bump chart on a dark panel, matches the match-centre pitches) */
+.f1p-podium { display: flex; flex-wrap: wrap; gap: 10px; padding: 16px 22px 4px; }
+.f1p-pod { display: flex; align-items: center; gap: 10px; flex: 1 1 180px; min-width: 160px;
+  padding: 10px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg-soft); }
+.f1p-pod .pos { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 20px;
+  color: var(--muted); min-width: 24px; }
+.f1p-pod .swatch { width: 5px; align-self: stretch; border-radius: 3px; }
+.f1p-pod .who { min-width: 0; }
+.f1p-pod .who b { display: block; font-size: 14.5px; color: var(--ink); font-weight: 700;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.f1p-pod .who span { font-size: 11.5px; color: var(--muted); }
+.f1p-svg { width: 100%; height: auto; background: #0f1626; border-radius: 12px; display: block; }
+.f1p-grid { stroke: rgba(255,255,255,.10); stroke-width: 1; }
+.f1p-axis { fill: rgba(255,255,255,.55); font-size: 11px; font-weight: 700; }
+.f1p-faint { fill: none; stroke-width: 1.4; opacity: .16; }
+.f1p-line { fill: none; stroke-width: 2.3; opacity: .95; stroke-linejoin: round; stroke-linecap: round; }
+.f1p-vline { stroke: rgba(255,255,255,.45); stroke-width: 1; stroke-dasharray: 3 4; }
+.f1p-dot { stroke: #0f1626; stroke-width: .8; }
+.f1p-code { font-size: 11px; font-weight: 800; paint-order: stroke; stroke: #0f1626; stroke-width: 2.6px; stroke-linejoin: round; }
+.f1p-controls { display: flex; align-items: center; gap: 14px; padding: 12px 22px 2px; }
+.f1p-slider { flex: 1; accent-color: var(--accent); height: 4px; cursor: pointer; }
+.f1p-lap { color: var(--body); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
 /* projects */
 .projects { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 26px; }
 .project { border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; background: var(--bg); box-shadow: var(--shadow-sm);

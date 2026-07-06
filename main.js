@@ -563,4 +563,197 @@
         if (replayMeta) replayMeta.textContent = "Match data could not be loaded.";
       });
   })();
+
+  /* -----------------------------------------------------------------------
+     F1 race progression - the interactive lap-by-lap bump chart from my
+     F1 Visualized dashboard, rebuilt self-contained for one race
+     (assets/data/f1_race_progression.json). Each line is a driver, coloured
+     by team; the marker + code ride the current lap as you scrub or play.
+     Positions are reconstructed grid -> classified finish (the site stores
+     lap counts, not per-lap arrays), so at every lap the running cars hold
+     unique places 1..k. Port of deriveLapPositions()/buildProgression().
+     ----------------------------------------------------------------------- */
+  (function () {
+    var svg = $("#f1pSvg");
+    if (!svg) return;
+
+    var TEAM_COLORS = {
+      "mclaren": "#ff8000", "ferrari": "#e8002d",
+      "red bull racing": "#3671c6", "red bull": "#3671c6",
+      "mercedes": "#27f4d2", "aston martin": "#229971", "alpine": "#0093cc",
+      "williams": "#1868db", "racing bulls": "#6692ff", "rb": "#6692ff",
+      "visa cash app rb": "#6692ff", "alphatauri": "#2b4562",
+      "haas": "#b6babd", "haas f1 team": "#b6babd",
+      "kick sauber": "#52e252", "sauber": "#52e252",
+      "stake f1 team kick sauber": "#52e252", "alfa romeo": "#b12039",
+      "audi": "#26c1a3", "cadillac": "#c9a24b"
+    };
+    function teamColor(team) {
+      if (!team) return "#8a8a95";
+      return TEAM_COLORS[String(team).trim().toLowerCase()] || "#8a8a95";
+    }
+    function svgEl(tag, attrs) {
+      var n = document.createElementNS(NS, tag);
+      if (attrs) for (var k in attrs) n.setAttribute(k, attrs[k]);
+      return n;
+    }
+    function esc(s) {
+      return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+      });
+    }
+
+    // Reconstruct per-lap positions from grid + classified finish (approx mode).
+    function deriveLapPositions(race) {
+      var results = race.results || [];
+      var n = results.length || 20;
+      var total = race.total_laps || 1;
+      results.forEach(function (r) { total = Math.max(total, r.laps || 1); });
+
+      var classified = results.filter(function (r) { return r.pos != null; })
+        .slice().sort(function (a, b) { return a.pos - b.pos; });
+      var dnf = results.filter(function (r) { return r.pos == null; })
+        .slice().sort(function (a, b) { return (b.laps || 0) - (a.laps || 0); });
+      var finalPos = {};
+      classified.forEach(function (r) { finalPos[r.code] = r.pos; });
+      dnf.forEach(function (r, i) { finalPos[r.code] = classified.length + i + 1; });
+
+      var curve = results.map(function (r) {
+        var fin = finalPos[r.code] || n;
+        return {
+          code: r.code, team: r.team, fin: fin,
+          grid: (r.grid && r.grid > 0) ? r.grid : fin,
+          last: Math.max(1, r.laps || total)
+        };
+      });
+
+      // At each lap, rank the running cars by their continuous (smoothstep)
+      // grid->finish value and hand out distinct places - no two share a slot.
+      var pos = {};
+      curve.forEach(function (c) { pos[c.code] = []; });
+      for (var lap = 1; lap <= total; lap++) {
+        var running = [];
+        curve.forEach(function (c) {
+          if (lap > c.last) { pos[c.code].push(null); return; }
+          var t = c.last <= 1 ? 1 : (lap - 1) / (c.last - 1);
+          var v = c.grid + (c.fin - c.grid) * (t * t * (3 - 2 * t));
+          running.push({ code: c.code, v: v, fin: c.fin, grid: c.grid });
+        });
+        running.sort(function (a, b) {
+          return a.v - b.v || a.fin - b.fin || a.grid - b.grid || (a.code < b.code ? -1 : 1);
+        });
+        running.forEach(function (d, i) { pos[d.code].push(i + 1); });
+      }
+
+      var drivers = curve.map(function (c) {
+        return { code: c.code, team: c.team, positions: pos[c.code], fin: c.fin };
+      });
+      drivers.sort(function (a, b) { return a.fin - b.fin; });
+      return { total: total, n: n, drivers: drivers };
+    }
+
+    function renderPodium(race) {
+      var host = $("#f1pPodium");
+      if (!host) return;
+      var pod = (race.podium || []).slice(0, 3);
+      host.innerHTML = pod.map(function (p) {
+        return '<div class="f1p-pod">' +
+          '<span class="pos">P' + p.pos + '</span>' +
+          '<span class="swatch" style="background:' + teamColor(p.team) + '"></span>' +
+          '<span class="who"><b>' + esc(p.name) + '</b><span>' + esc(p.team) + '</span></span>' +
+          '</div>';
+      }).join("");
+    }
+
+    function build(race) {
+      renderPodium(race);
+      var d = deriveLapPositions(race);
+      var total = d.total, n = d.n, drivers = d.drivers;
+      var W = 1000, H = 440, padL = 44, padR = 48, padT = 16, padB = 30;
+      var plotW = W - padL - padR, plotH = H - padT - padB;
+      function xOf(lap) { return padL + (total <= 1 ? 0 : ((lap - 1) / (total - 1)) * plotW); }
+      function yOf(p) { return padT + (n <= 1 ? 0 : ((p - 1) / (n - 1)) * plotH); }
+
+      var frag = document.createDocumentFragment();
+      for (var p = 1; p <= n; p++) {
+        if (p === 1 || p % 5 === 0) {
+          frag.appendChild(svgEl("line", { x1: padL, y1: yOf(p), x2: W - padR, y2: yOf(p), "class": "f1p-grid" }));
+          var yl = svgEl("text", { x: padL - 8, y: yOf(p) + 3.5, "class": "f1p-axis", "text-anchor": "end" });
+          yl.textContent = "P" + p; frag.appendChild(yl);
+        }
+      }
+      var step = total <= 30 ? 5 : 10;
+      for (var lap = 1; lap <= total; lap += (lap === 1 ? step - 1 : step)) {
+        var xl = svgEl("text", { x: xOf(lap), y: H - padB + 18, "class": "f1p-axis", "text-anchor": "middle" });
+        xl.textContent = lap; frag.appendChild(xl);
+      }
+
+      var bright = {}, marker = {}, label = {};
+      drivers.forEach(function (dr) {
+        var color = teamColor(dr.team);
+        var pts = [];
+        dr.positions.forEach(function (pp, i) { if (pp != null) pts.push(xOf(i + 1) + "," + yOf(pp)); });
+        frag.appendChild(svgEl("polyline", { points: pts.join(" "), "class": "f1p-faint", stroke: color }));
+        bright[dr.code] = svgEl("polyline", { points: "", "class": "f1p-line", stroke: color });
+        frag.appendChild(bright[dr.code]);
+      });
+      var vline = svgEl("line", { x1: xOf(1), y1: padT, x2: xOf(1), y2: H - padB, "class": "f1p-vline" });
+      frag.appendChild(vline);
+      drivers.forEach(function (dr) {
+        var color = teamColor(dr.team);
+        marker[dr.code] = svgEl("circle", { r: 3.4, "class": "f1p-dot", fill: color, cx: -20, cy: -20 });
+        frag.appendChild(marker[dr.code]);
+        var lab = svgEl("text", { "class": "f1p-code", x: -20, y: -20, fill: color });
+        lab.textContent = dr.code; label[dr.code] = lab; frag.appendChild(lab);
+      });
+      svg.appendChild(frag);
+
+      var slider = $("#f1pSlider"), playBtn = $("#f1pPlay"), lapLabel = $("#f1pLap");
+      slider.max = total; slider.value = total;
+
+      function setLap(L) {
+        L = Math.max(1, Math.min(total, L | 0));
+        vline.setAttribute("x1", xOf(L)); vline.setAttribute("x2", xOf(L));
+        slider.value = L;
+        if (lapLabel) lapLabel.textContent = "Lap " + L + " / " + total;
+        drivers.forEach(function (dr) {
+          var pts = [];
+          for (var lp = 1; lp <= L; lp++) { var pp = dr.positions[lp - 1]; if (pp != null) pts.push(xOf(lp) + "," + yOf(pp)); }
+          bright[dr.code].setAttribute("points", pts.join(" "));
+          var cur = dr.positions[L - 1];
+          var on = cur != null ? "1" : "0";
+          marker[dr.code].style.opacity = on; label[dr.code].style.opacity = on;
+          if (cur != null) {
+            marker[dr.code].setAttribute("cx", xOf(L)); marker[dr.code].setAttribute("cy", yOf(cur));
+            label[dr.code].setAttribute("x", xOf(L) + 6); label[dr.code].setAttribute("y", yOf(cur) + 3.5);
+          }
+        });
+      }
+
+      var timer = null;
+      function stop() { if (timer) { clearInterval(timer); timer = null; } if (playBtn) playBtn.textContent = "▶ Play"; }
+      function play() {
+        stop();
+        var L = (+slider.value >= total) ? 1 : +slider.value;
+        if (playBtn) playBtn.textContent = "❚❚ Pause";
+        timer = setInterval(function () {
+          L += 1;
+          if (L > total) { setLap(total); stop(); return; }
+          setLap(L);
+        }, 110);
+      }
+      slider.addEventListener("input", function () { stop(); setLap(+slider.value); });
+      if (playBtn) playBtn.addEventListener("click", function () { timer ? stop() : play(); });
+
+      setLap(total);
+    }
+
+    fetch("assets/data/f1_race_progression.json?v=1", { cache: "no-cache" })
+      .then(function (r) { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
+      .then(build)
+      .catch(function (e) {
+        var tip = $("#f1pTip");
+        if (tip) tip.textContent = "Race data could not be loaded.";
+      });
+  })();
 })();

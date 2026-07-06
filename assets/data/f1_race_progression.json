@@ -1,0 +1,241 @@
+{
+  "season": 2025,
+  "round": 24,
+  "name": "Abu Dhabi Grand Prix",
+  "circuit": "Yas Island",
+  "locality": "Yas Island",
+  "country": "United Arab Emirates",
+  "date": "2025-12-07",
+  "total_laps": 58,
+  "winner": {
+    "code": "VER",
+    "name": "Max Verstappen",
+    "nat": "NL",
+    "team": "Red Bull Racing"
+  },
+  "podium": [
+    {
+      "pos": 1,
+      "code": "VER",
+      "name": "Max Verstappen",
+      "nat": "NL",
+      "team": "Red Bull Racing"
+    },
+    {
+      "pos": 2,
+      "code": "PIA",
+      "name": "Oscar Piastri",
+      "nat": "AU",
+      "team": "McLaren"
+    },
+    {
+      "pos": 3,
+      "code": "NOR",
+      "name": "Lando Norris",
+      "nat": "GB",
+      "team": "McLaren"
+    }
+  ],
+  "results": [
+    {
+      "pos": 1,
+      "code": "VER",
+      "name": "Max Verstappen",
+      "nat": "NL",
+      "team": "Red Bull Racing",
+      "grid": 1,
+      "laps": 58,
+      "status": "Finished"
+    },
+    {
+      "pos": 2,
+      "code": "PIA",
+      "name": "Oscar Piastri",
+      "nat": "AU",
+      "team": "McLaren",
+      "grid": 3,
+      "laps": 58,
+      "status": "Finished"
+    },
+    {
+      "pos": 3,
+      "code": "NOR",
+      "name": "Lando Norris",
+      "nat": "GB",
+      "team": "McLaren",
+      "grid": 2,
+      "laps": 58,
+      "status": "Finished"
+    },
+    {
+      "pos": 4,
+      "code": "LEC",
+      "name": "Charles Leclerc",
+      "nat": "MC",
+      "team": "Ferrari",
+      "grid": 5,
+      "laps": 58,
+      "status": "Finished"
+    },
+    {
+      "pos": 5,
+      "code": "RUS",
+      "name": "George Russell",
+      "nat": "GB",
+      "team": "Mercedes",
+      "grid": 4,
+      "laps": 58,
+      "status": "Finished"
+    },
+    {
+      "pos": 6,
+      "code": "ALO",
+      "name": "Fernando Alonso",
+      "nat": "ES",
+      "team": "Aston Martin",
+      "grid": 6,
+      "laps": 58,
+      "status": "Finished"
+    },
+    {
+      "pos": 7,
+      "code": "OCO",
+      "name": "Esteban Ocon",
+      "nat": "FR",
+      "team": "Haas",
+      "grid": 8,
+      "laps": 58,
+      "status": "Finished"
+    },
+    {
+      "pos": 8,
+      "code": "HAM",
+      "name": "Lewis Hamilton",
+      "nat": "GB",
+      "team": "Ferrari",
+      "grid": 16,
+      "laps": 58,
+      "status": "Finished"
+    },
+    {
+      "pos": 9,
+      "code": "HUL",
+      "name": "Nico Hülkenberg",
+      "nat": "DE",
+      "team": "Kick Sauber",
+      "grid": 18,
+      "laps": 58,
+      "status": "Finished"
+    },
+    {
+      "pos": 10,
+      "code": "STR",
+      "name": "Lance Stroll",
+      "nat": "CA",
+      "team": "Aston Martin",
+      "grid": 15,
+      "laps": 58,
+      "status": "Finished"
+    },
+    {
+      "pos": 11,
+      "code": "BOR",
+      "name": "Gabriel Bortoleto",
+      "nat": "BR",
+      "team": "Kick Sauber",
+      "grid": 7,
+      "laps": 58,
+      "status": "Finished"
+    },
+    {
+      "pos": 12,
+      "code": "BEA",
+      "name": "Oliver Bearman",
+      "nat": "GB",
+      "team": "Haas",
+      "grid": 11,
+      "laps": 58,
+      "status": "Finished"
+    },
+    {
+      "pos": 13,
+      "code": "SAI",
+      "name": "Carlos Sainz Jr.",
+      "nat": "ES",
+      "team": "Williams",
+      "grid": 12,
+      "laps": 58,
+      "status": "Finished"
+    },
+    {
+      "pos": 14,
+      "code": "TSU",
+      "name": "Yuki Tsunoda",
+      "nat": "JP",
+      "team": "Red Bull Racing",
+      "grid": 10,
+      "laps": 58,
+      "status": "Finished"
+    },
+    {
+      "pos": 15,
+      "code": "ANT",
+      "name": "Kimi Antonelli",
+      "nat": "IT",
+      "team": "Mercedes",
+      "grid": 14,
+      "laps": 58,
+      "status": "Finished"
+    },
+    {
+      "pos": 16,
+      "code": "ALB",
+      "name": "Alexander Albon",
+      "nat": "TH",
+      "team": "Williams",
+      "grid": 17,
+      "laps": 58,
+      "status": "Finished"
+    },
+    {
+      "pos": 17,
+      "code": "HAD",
+      "name": "Isack Hadjar",
+      "nat": "FR",
+      "team": "Racing Bulls",
+      "grid": 9,
+      "laps": 57,
+      "status": "Finished"
+    },
+    {
+      "pos": 18,
+      "code": "LAW",
+      "name": "Liam Lawson",
+      "nat": "NZ",
+      "team": "Racing Bulls",
+      "grid": 13,
+      "laps": 57,
+      "status": "Finished"
+    },
+    {
+      "pos": 19,
+      "code": "GAS",
+      "name": "Pierre Gasly",
+      "nat": "FR",
+      "team": "Alpine",
+      "grid": 19,
+      "laps": 57,
+      "status": "Finished"
+    },
+    {
+      "pos": 20,
+      "code": "COL",
+      "name": "Franco Colapinto",
+      "nat": "AR",
+      "team": "Alpine",
+      "grid": 20,
+      "laps": 57,
+      "status": "Finished"
+    }
+  ]
+}
