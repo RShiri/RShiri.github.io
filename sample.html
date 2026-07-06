@@ -14,7 +14,7 @@
 <script>/* theme before CSS paints (no flash): dark is the default */
 (function(){var t=null;try{t=localStorage.getItem("theme")}catch(e){}
 document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");})();</script>
-<link rel="stylesheet" href="styles.css?v=9" />
+<link rel="stylesheet" href="styles.css?v=10" />
 <link rel="stylesheet" href="sample.css?v=4" />
 </head>
 <body>
@@ -308,6 +308,30 @@ document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");}
         <div class="chart-tip" id="mcReplayMeta">Pick a goal and press Play.</div>
       </div>
     </div>
+
+    <!-- Race progression (native, from F1 Visualized) -->
+    <div class="viz" id="f1progression">
+      <div class="viz-head">
+        <div>
+          <h3>Race Progression - Abu Dhabi GP 2025 · F1</h3>
+        </div>
+      </div>
+
+      <div class="f1p-podium" id="f1pPodium"><!-- filled by JS --></div>
+
+      <h4 class="mc-subhead">Position by lap <span>· each line is a driver, coloured by team · hover a lap on the slider</span></h4>
+      <div class="pitch-wrap">
+        <svg id="f1pSvg" viewBox="0 0 1000 440" class="f1p-svg" role="img" aria-label="Abu Dhabi Grand Prix 2025 lap-by-lap position chart"></svg>
+      </div>
+      <div class="f1p-controls" id="f1pControls">
+        <button type="button" class="btn btn--sm btn--primary f1p-play" id="f1pPlay">▶ Play</button>
+        <input type="range" class="f1p-slider" id="f1pSlider" min="1" max="58" value="58" step="1" aria-label="Lap">
+        <span class="f1p-lap" id="f1pLap">Lap 58 / 58</span>
+      </div>
+      <div class="viz-foot">
+        <div class="chart-tip" id="f1pTip">Grid → finish, reconstructed from starting grid and classified result.</div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -434,6 +458,6 @@ document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");}
 </footer>
 
 <div class="tooltip" id="tooltip" role="status" aria-live="polite"></div>
-<script src="main.js?v=8" defer></script>
+<script src="main.js?v=9" defer></script>
 </body>
 </html>
