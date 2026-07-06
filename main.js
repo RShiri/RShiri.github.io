@@ -334,6 +334,14 @@
       while (shotLayerMc.firstChild) shotLayerMc.removeChild(shotLayerMc.firstChild);
       if (shotCaption) { shotCaption.textContent = esc(D.home.name) + " attack → · ← " + esc(D.away.name) + " attack. Tap or hover a shot."; shotCaption.classList.remove("show"); }
       var name = { home: D.home.name, away: D.away.name };
+      // very thin shot-path lines to the attacked goal (drawn first, behind the dots)
+      D.shots.forEach(function (s) {
+        shotLayerMc.appendChild(E("line", {
+          x1: tx(s.team, s.x).toFixed(1), y1: ty(s.team, s.y).toFixed(1),
+          x2: tx(s.team, 100).toFixed(1), y2: ty(s.team, 50).toFixed(1),
+          "class": "mc-shotpath " + s.team + (s.goal ? " goal" : "")
+        }));
+      });
       var ordered = D.shots.filter(function (s) { return !s.goal; }).concat(D.shots.filter(function (s) { return s.goal; }));
       ordered.forEach(function (s) {
         var out = OUTC(s);
@@ -364,6 +372,7 @@
         '<span><i class="lg-mc-a"></i> ' + esc(D.away.name) + "</span>" +
         '<span><i class="lg-mc-goal"></i> Goal (white ring)</span>' +
         '<span><i class="lg-mc-off"></i> Off target (hollow)</span>' +
+        '<span><i class="lg-mc-path"></i> shot path → goal</span>' +
         '<span class="lg-size"><i></i><i></i><i></i> size = xG</span>';
     };
 
