@@ -201,6 +201,11 @@ img { max-width: 100%; display: block; }
 .mc-bar i { height: 100%; border-radius: 5px; }
 
 /* shot map dots (home = Argentina blue, away = Algeria green, brightened for the dark pitch) */
+/* very thin shot-path lines to goal (behind the dots) */
+.mc-shotpath { fill: none; stroke-width: .5; opacity: .38; pointer-events: none; }
+.mc-shotpath.home { stroke: #74acdf; }
+.mc-shotpath.away { stroke: #2fbf71; }
+.mc-shotpath.goal { stroke-width: 1; opacity: .8; }
 .mc-shot { cursor: pointer; transition: stroke-width .12s var(--ease); }
 .mc-shot.home { fill: #74acdf; stroke: rgba(255,255,255,.35); stroke-width: .8; }
 .mc-shot.away { fill: #2fbf71; stroke: rgba(255,255,255,.35); stroke-width: .8; }
@@ -214,6 +219,7 @@ img { max-width: 100%; display: block; }
 .lg-mc-a { background: #2fbf71; }
 .lg-mc-goal { background: #74acdf; border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.25); }
 .lg-mc-off { background: transparent; border: 2px solid var(--muted); }
+.lg-mc-path { width: 16px; height: 2px; border-radius: 1px; background: var(--muted); align-self: center; }
 
 /* goal replays */
 .mc-goalbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 8px 22px 0; }
