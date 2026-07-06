@@ -257,7 +257,7 @@ def build_match(detail_path, raw_dir):
         "pen": bool(g.get("pen")), "own": bool(g.get("own")),
     } for g in (D.get("goals") or [])]
 
-    return {
+    M = {
         "id": mid,
         "home": {"name": D["home"]["name"], "score": D["home"]["score"], "color": D["home"].get("color") or "#888"},
         "away": {"name": D["away"]["name"], "score": D["away"]["score"], "color": D["away"].get("color") or "#888"},
@@ -266,6 +266,33 @@ def build_match(detail_path, raw_dir):
         "goals": goals, "stats": stats, "shots": shots,
         "replays": build_goal_sequences(D),
     }
+    return normalize_home_team(M)
+
+
+def normalize_home_team(M):
+    """Present the featured team as HOME on every match, so the Argentina Match
+    Centre is consistent even when Argentina actually played AWAY (e.g. Jordan
+    vs Argentina). Each team's shot/pass coords are stored in that team's own
+    attack-rightward frame and tx()/ty() mirror the away side, so this is a pure
+    relabel — no coordinate math — and the geometry stays correct: Argentina
+    always attacks →, rendered blue on the home side; the opponent attacks ←."""
+    if M["home"]["name"] == TEAM or M["away"]["name"] != TEAM:
+        return M                                   # already home, or team not in match
+    flip = {"home": "away", "away": "home"}
+    M["home"], M["away"] = M["away"], M["home"]
+    M["xg"] = [M["xg"][1], M["xg"][0]]
+    for s in M["stats"]:
+        s["h"], s["a"] = s["a"], s["h"]
+    for g in M["goals"]:
+        g["team"] = flip[g["team"]]
+    for sh in M["shots"]:
+        sh["team"] = flip[sh["team"]]
+    for r in M["replays"]:
+        r["side"] = flip[r["side"]]
+        for st in r["steps"]:
+            if "team" in st:                        # save steps carry an explicit frame
+                st["team"] = flip[st["team"]]
+    return M
 
 
 def generate(source, out_dir):

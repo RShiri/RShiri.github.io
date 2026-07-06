@@ -39,15 +39,15 @@
    "date": "2026-06-28",
    "stage": "Group Stage",
    "home": {
-    "name": "Jordan",
-    "score": 1
-   },
-   "away": {
     "name": "Argentina",
     "score": 3
    },
+   "away": {
+    "name": "Jordan",
+    "score": 1
+   },
    "opponent": "Jordan",
-   "argSide": "away"
+   "argSide": "home"
   },
   {
    "id": "2026_07_04_1J_vs_2H",
