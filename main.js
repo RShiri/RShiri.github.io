@@ -335,7 +335,8 @@
     // across-goal endpoint (data-y 0-100): on-target/goals land between the posts
     // (each at a different point), off-target fan wide of them so they clearly miss.
     var mcGoalY = function (s) {
-      var f = mcHash(s) - 0.5;                                  // -0.5..0.5
+      if (typeof s.gy === "number") return s.gy;               // real goal-mouth crossing
+      var f = mcHash(s) - 0.5;                                  // fallback: outcome-aware fan
       if (OUTC(s) === "off") return 50 + (f >= 0 ? 1 : -1) * (7 + Math.abs(f) * 11);
       return Math.max(45, Math.min(55, 50 + (s.y - 50) / 6 + f * 9));
     };

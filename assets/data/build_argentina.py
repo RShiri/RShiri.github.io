@@ -250,6 +250,9 @@ def build_match(detail_path, raw_dir):
         "xg": round(s.get("xg") or 0, 3), "goal": bool(s.get("goal")),
         "onTarget": bool(s.get("onTarget")), "blocked": bool(s.get("blocked")),
         "body": s.get("body") or "", "sit": s.get("sit") or "",
+        # gy = real goal-mouth crossing (WhoScored goalMouthY, 0-100); lets the shot
+        # path end where the ball ACTUALLY crossed the line, not a synthetic spot.
+        "gy": round(s["gy"], 1) if s.get("gy") is not None else None,
     } for s in (D.get("shots") or [])]
 
     goals = [{
