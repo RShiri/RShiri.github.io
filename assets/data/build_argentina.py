@@ -13,8 +13,15 @@ The replay build-up reconstruction is a straight port of the dashboard's
 `buildGoalSequences()` (match.js), so the native page agrees with the full
 WC2026 match centre by construction.
 
-Run from anywhere:  python3 assets/data/build_argentina.py
+Manual run (XWORLDCUPTWIT auto-detected as a sibling checkout):
+    python3 assets/data/build_argentina.py
+
+From the XWORLDCUPTWIT auto-deploy (source + output given explicitly):
+    python3 build_argentina.py --source <XWORLDCUPTWIT root> --out <clone>/assets/data/argentina
+
+Sources may also come from the env: WC_SOURCE (XWORLDCUPTWIT root), WC_OUT (output dir).
 """
+import argparse
 import json
 import os
 import glob
@@ -22,20 +29,18 @@ import unicodedata
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", ".."))          # rshiri.github.io/
-# XWORLDCUPTWIT is checked out as a sibling of this repo.
-XW_CANDIDATES = [
-    os.path.join(os.path.dirname(REPO), "XWORLDCUPTWIT"),
-    os.path.join(REPO, "..", "XWORLDCUPTWIT"),
-]
-XW = next((p for p in XW_CANDIDATES if os.path.isdir(p)), None)
-if not XW:
-    raise SystemExit("XWORLDCUPTWIT repo not found next to rshiri.github.io")
-
-DETAIL_DIR = os.path.join(XW, "wc2026_dashboard", "matches_detail")
-RAW_DIR = os.path.join(XW, "wc2026", "matches")
-OUT_DIR = os.path.join(HERE, "argentina")
 
 TEAM = "Argentina"
+
+
+def resolve_source(explicit=None):
+    """Locate the XWORLDCUPTWIT checkout: explicit arg → WC_SOURCE env → sibling."""
+    for cand in (explicit, os.environ.get("WC_SOURCE"),
+                 os.path.join(os.path.dirname(REPO), "XWORLDCUPTWIT"),
+                 os.path.join(REPO, "..", "XWORLDCUPTWIT")):
+        if cand and os.path.isdir(cand):
+            return os.path.abspath(cand)
+    raise SystemExit("XWORLDCUPTWIT source not found (pass --source or set WC_SOURCE)")
 
 
 def norm(s):
@@ -229,10 +234,10 @@ def build_stats(D, ms, hA, aA):
     return stats, [xg_h, xg_a]
 
 
-def build_match(detail_path):
+def build_match(detail_path, raw_dir):
     D = load_detail(detail_path)
     mid = D["id"]
-    raw_path = os.path.join(RAW_DIR, mid + ".json")
+    raw_path = os.path.join(raw_dir, mid + ".json")
     ms = None
     if os.path.exists(raw_path):
         ms = json.load(open(raw_path)).get("match_stats") or None
@@ -263,18 +268,22 @@ def build_match(detail_path):
     }
 
 
-def main():
-    os.makedirs(OUT_DIR, exist_ok=True)
+def generate(source, out_dir):
+    """Rebuild every Argentina match JSON + index.json. Returns the match count."""
+    detail_dir = os.path.join(source, "wc2026_dashboard", "matches_detail")
+    raw_dir = os.path.join(source, "wc2026", "matches")
+    os.makedirs(out_dir, exist_ok=True)
+
     matches = []
-    for path in sorted(glob.glob(os.path.join(DETAIL_DIR, "*.js"))):
+    for path in sorted(glob.glob(os.path.join(detail_dir, "*.js"))):
         try:
             D = load_detail(path)
         except Exception:
             continue
         if TEAM not in (D["home"]["name"], D["away"]["name"]):
             continue
-        M = build_match(path)
-        out_path = os.path.join(OUT_DIR, M["id"] + ".json")
+        M = build_match(path, raw_dir)
+        out_path = os.path.join(out_dir, M["id"] + ".json")
         with open(out_path, "w", encoding="utf-8") as f:
             json.dump(M, f, ensure_ascii=False, separators=(",", ":"))
         arg = "home" if M["home"]["name"] == TEAM else "away"
@@ -292,9 +301,20 @@ def main():
               "-", M["away"]["score"], M["away"]["name"], "(%d goal replays)" % len(M["replays"]))
 
     matches.sort(key=lambda m: m["date"])
-    with open(os.path.join(OUT_DIR, "index.json"), "w", encoding="utf-8") as f:
+    with open(os.path.join(out_dir, "index.json"), "w", encoding="utf-8") as f:
         json.dump({"team": TEAM, "matches": matches}, f, ensure_ascii=False, indent=1)
     print("wrote index.json -", len(matches), "Argentina matches")
+    return len(matches)
+
+
+def main():
+    ap = argparse.ArgumentParser(description="Generate the Argentina Match Centre data.")
+    ap.add_argument("--source", help="XWORLDCUPTWIT repo root (else WC_SOURCE env or sibling checkout)")
+    ap.add_argument("--out", help="output dir for the argentina/*.json files (default: <here>/argentina)")
+    args = ap.parse_args()
+    source = resolve_source(args.source)
+    out_dir = args.out or os.environ.get("WC_OUT") or os.path.join(HERE, "argentina")
+    generate(source, out_dir)
 
 
 if __name__ == "__main__":
