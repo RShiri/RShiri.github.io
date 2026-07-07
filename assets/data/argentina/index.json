@@ -64,6 +64,22 @@
    },
    "opponent": "Cape Verde",
    "argSide": "home"
+  },
+  {
+   "id": "2026_07_07_1J2H_vs_2D2G",
+   "file": "assets/data/argentina/2026_07_07_1J2H_vs_2D2G.json",
+   "date": "2026-07-07",
+   "stage": "Round of 16",
+   "home": {
+    "name": "Argentina",
+    "score": 3
+   },
+   "away": {
+    "name": "Egypt",
+    "score": 2
+   },
+   "opponent": "Egypt",
+   "argSide": "home"
   }
  ]
 }
