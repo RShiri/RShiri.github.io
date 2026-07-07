@@ -98,6 +98,10 @@ document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");}
     <span class="kicker" data-idx="02">Live analytics</span>
     <h2>Data you can play with.</h2>
     <p class="section-sub">Interactive graphs I build from match data - hover a shot, or play the goal replay.</p>
+    <p class="model-note">All the <b>xG</b> / <b>xA</b> numbers on this page come from models I built and trained
+      myself: a logistic-regression + gradient-boosting blend for xG (<b>~78,000</b> real shots across La Liga,
+      the Premier League and this World Cup), and a two-stage model for xA (<b>2.4 million</b> real passes) -
+      both calibrated so the totals line up with real goals and assists.</p>
 
     <!-- Shot map -->
     <div class="viz">
