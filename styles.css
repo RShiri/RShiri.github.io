@@ -122,6 +122,12 @@ img { max-width: 100%; display: block; }
 .viz-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 20px 22px 6px; }
 .viz-head h3 { font-size: 19px; }
 .viz-sub { margin: 6px 0 0; font-size: 13.5px; color: var(--muted); max-width: 560px; }
+.model-note {
+  margin: 14px 0 0; padding: 12px 16px; max-width: 720px;
+  font-size: 13.5px; line-height: 1.55; color: var(--body);
+  background: var(--bg-soft); border-left: 3px solid var(--accent); border-radius: 8px;
+}
+.model-note b { color: var(--ink); }
 .viz-stats { display: flex; gap: 18px; }
 .viz-stats .st { text-align: right; }
 .viz-stats .st b { display: block; font-family: "Space Grotesk", sans-serif; font-size: 22px; color: var(--ink); line-height: 1; }
