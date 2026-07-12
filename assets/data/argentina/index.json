@@ -80,6 +80,22 @@
    },
    "opponent": "Egypt",
    "argSide": "home"
+  },
+  {
+   "id": "2026_07_12_Winner_EF_7_vs_Winner_EF_8",
+   "file": "assets/data/argentina/2026_07_12_Winner_EF_7_vs_Winner_EF_8.json",
+   "date": "2026-07-12",
+   "stage": "Quarterfinal",
+   "home": {
+    "name": "Argentina",
+    "score": 3
+   },
+   "away": {
+    "name": "Switzerland",
+    "score": 1
+   },
+   "opponent": "Switzerland",
+   "argSide": "home"
   }
  ]
 }
