@@ -96,6 +96,22 @@
    },
    "opponent": "Switzerland",
    "argSide": "home"
+  },
+  {
+   "id": "2026_07_15_Winner_QF_3_vs_Winner_QF_4",
+   "file": "assets/data/argentina/2026_07_15_Winner_QF_3_vs_Winner_QF_4.json",
+   "date": "2026-07-15",
+   "stage": "Semifinal",
+   "home": {
+    "name": "Argentina",
+    "score": 2
+   },
+   "away": {
+    "name": "England",
+    "score": 1
+   },
+   "opponent": "England",
+   "argSide": "home"
   }
  ]
 }
