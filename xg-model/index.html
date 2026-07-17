@@ -147,6 +147,9 @@ svg.pitch{ width:100%; max-width:420px; height:auto; }
 .shot-line{ stroke:var(--floodlight); stroke-width:.4; stroke-dasharray:1.4 1.2; opacity:.85; }
 .pass-line{ stroke:var(--dusk); stroke-width:.5; opacity:.9; }
 .origin-dot{ fill:var(--dusk); stroke:var(--ink); stroke-width:.6; }
+.pitch-goal{ fill:rgba(255,255,255,.05); stroke:var(--paper-faint); stroke-width:.35; opacity:.75; }
+.pitch-net{ stroke:var(--paper-faint); stroke-width:.15; opacity:.4; }
+.angle-wedge{ fill:var(--floodlight); opacity:.09; stroke:none; }
 
 /* --------------------------------------------------------- FEATURE CARDS */
 .fgroup{ margin-top:56px; }
@@ -370,14 +373,23 @@ footer .fglossary b{ color:var(--paper); }
         <line class="pitch-line" x1="36" y1="0" x2="44" y2="0"></line>
         <circle class="pitch-line" cx="40" cy="12" r=".7" fill="var(--paper-faint)"></circle>
         <path class="pitch-arc" d="M 31.5 18 A 9.15 9.15 0 0 0 48.5 18"></path>
+        <rect class="pitch-goal" x="36" y="-3" width="8" height="3"></rect>
+        <line class="pitch-net" x1="36" y1="-3" x2="36" y2="0"></line>
+        <line class="pitch-net" x1="38.7" y1="-3" x2="38.7" y2="0"></line>
+        <line class="pitch-net" x1="41.3" y1="-3" x2="41.3" y2="0"></line>
+        <line class="pitch-net" x1="44" y1="-3" x2="44" y2="0"></line>
+        <line class="pitch-net" x1="36" y1="-1.5" x2="44" y2="-1.5"></line>
+        <path class="angle-wedge" d="M 36,19 L 36,0 L 44,0 Z"></path>
         <line class="pass-line" x1="76" y1="6" x2="36" y2="19"></line>
         <circle class="origin-dot" cx="76" cy="6" r="1.3"></circle>
-        <line class="shot-line" x1="36" y1="19" x2="40" y2="0"></line>
+        <line class="shot-line" x1="36" y1="19" x2="36" y2="0"></line>
+        <line class="shot-line" x1="36" y1="19" x2="44" y2="0"></line>
         <circle class="shot-dot" cx="36" cy="19" r="1.6"></circle>
       </svg>
     </div>
     <p style="text-align:center; font-size:12.5px; color:var(--paper-faint); font-family:var(--mono); margin-top:-14px;">
-      violet = the assisting pass &middot; amber = the shot, 19.4m out at a 22.8&deg; angle
+      violet = the assisting pass &middot; amber = the shot, 19.4m out at a 22.8&deg; angle &middot;
+      shaded wedge = how much of the goal it can see
     </p>
   </div>
 </section>
@@ -577,19 +589,28 @@ footer .fglossary b{ color:var(--paper); }
 <section id="lab-section">
   <div class="wrap">
     <div class="eyebrow">try it yourself</div>
-    <h2 style="font-size:34px;">Place a shot. Watch the number move.</h2>
+    <h2 style="font-size:34px;">Place a shot &mdash; or a pass. Watch the number move.</h2>
     <p style="margin-top:18px; font-size:15.5px; color:var(--paper-dim); max-width:720px; line-height:1.65;">
-      This runs the real trained model, live, in your browser &mdash; the actual intercept,
-      coefficients, 156-point calibration curve, and league adjustments extracted straight from
-      the shipped artifact. It's the logistic-regression layer only (the version the model falls
-      back to on a machine without the extra ML libraries installed) &mdash; the live site adds
-      the LightGBM and market layers on top, which typically move the number by a few hundredths.
+      This runs the real trained models, live, in your browser &mdash; the actual intercepts,
+      coefficients, calibration curves, and league adjustments extracted straight from the shipped
+      artifacts. It's the logistic-regression layer only (the version each model falls back to on
+      a machine without the extra ML libraries installed) &mdash; the live site adds the LightGBM
+      and market layers on top, which typically move the number by a few hundredths.
     </p>
+    <div class="seg" id="seg-mode" style="margin-top:18px;">
+      <button data-v="shot" class="on">Shot &middot; xG</button>
+      <button data-v="pass">Pass &middot; xA</button>
+    </div>
 
     <div class="lab">
       <div class="lab-grid">
         <div class="lab-pitch">
           <svg class="labpitch" viewBox="-4 -4 88 70" id="lab-svg">
+            <defs>
+              <marker id="lab-pass-arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="4.2" markerHeight="4.2" orient="auto">
+                <path d="M0,0 L10,5 L0,10 z" fill="var(--dusk)"></path>
+              </marker>
+            </defs>
             <rect class="pitch-fill" x="-4" y="-4" width="88" height="70"></rect>
             <rect class="pitch-line" x="0" y="0" width="80" height="62"></rect>
             <rect class="pitch-line" x="18" y="0" width="44" height="18"></rect>
@@ -597,38 +618,69 @@ footer .fglossary b{ color:var(--paper); }
             <line class="pitch-line" x1="36" y1="0" x2="44" y2="0"></line>
             <circle class="pitch-line" cx="40" cy="12" r=".7" fill="var(--paper-faint)"></circle>
             <path class="pitch-arc" d="M 31.5 18 A 9.15 9.15 0 0 0 48.5 18"></path>
+            <rect class="pitch-goal" x="36" y="-3" width="8" height="3"></rect>
+            <line class="pitch-net" x1="36" y1="-3" x2="36" y2="0"></line>
+            <line class="pitch-net" x1="38.7" y1="-3" x2="38.7" y2="0"></line>
+            <line class="pitch-net" x1="41.3" y1="-3" x2="41.3" y2="0"></line>
+            <line class="pitch-net" x1="44" y1="-3" x2="44" y2="0"></line>
+            <line class="pitch-net" x1="36" y1="-1.5" x2="44" y2="-1.5"></line>
+            <path id="angle-wedge" class="angle-wedge" d="" style="display:none;"></path>
+            <line id="angle-line-l" class="shot-line" x1="0" y1="0" x2="0" y2="0" style="display:none;"></line>
+            <line id="angle-line-r" class="shot-line" x1="0" y1="0" x2="0" y2="0" style="display:none;"></line>
+            <line id="pass-line" class="pass-line" x1="0" y1="0" x2="0" y2="0" marker-end="url(#lab-pass-arrow)" style="display:none;"></line>
+            <circle id="pass-origin-dot" class="origin-dot" cx="0" cy="0" r="1.5" style="display:none;"></circle>
+            <circle id="pass-end-dot" class="shot-dot" cx="0" cy="0" r="1.6" style="display:none;"></circle>
             <circle id="lab-dot" class="shot-dot" cx="40" cy="18" r="1.8"></circle>
           </svg>
-          <div class="lab-hint">click or tap anywhere on the pitch to place the shot</div>
+          <div class="lab-hint" id="lab-hint">click or tap anywhere on the pitch to place the shot</div>
         </div>
         <div class="lab-controls">
-          <div class="lab-field">
-            <label>Body part</label>
-            <div class="seg" id="seg-body">
-              <button data-v="foot" class="on">Foot</button>
-              <button data-v="header">Header</button>
-              <button data-v="other">Other</button>
+          <div id="shot-fields">
+            <div class="lab-field">
+              <label>Body part</label>
+              <div class="seg" id="seg-body">
+                <button data-v="foot" class="on">Foot</button>
+                <button data-v="header">Header</button>
+                <button data-v="other">Other</button>
+              </div>
+            </div>
+            <div class="lab-field" style="margin-top:18px;">
+              <label>Situation</label>
+              <select class="lab-select" id="sel-situation">
+                <option value="Open Play">Open play</option>
+                <option value="Free Kick">Direct free kick</option>
+                <option value="Corner">From a corner</option>
+                <option value="Set Piece">Indirect set piece</option>
+                <option value="Fast Break">Fast break</option>
+                <option value="Penalty">Penalty</option>
+              </select>
+            </div>
+            <div class="lab-field" style="margin-top:18px;">
+              <label>Tags</label>
+              <div class="seg" id="seg-tags">
+                <button data-v="big">Big chance</button>
+                <button data-v="assisted">Assisted</button>
+              </div>
             </div>
           </div>
-          <div class="lab-field">
-            <label>Situation</label>
-            <select class="lab-select" id="sel-situation">
-              <option value="Open Play">Open play</option>
-              <option value="Free Kick">Direct free kick</option>
-              <option value="Corner">From a corner</option>
-              <option value="Set Piece">Indirect set piece</option>
-              <option value="Fast Break">Fast break</option>
-              <option value="Penalty">Penalty</option>
-            </select>
-          </div>
-          <div class="lab-field">
-            <label>Tags</label>
-            <div class="seg" id="seg-tags">
-              <button data-v="big">Big chance</button>
-              <button data-v="assisted">Assisted</button>
+          <div id="pass-fields" style="display:none;">
+            <div class="lab-field">
+              <label>Delivery type</label>
+              <select class="lab-select" id="sel-passtype">
+                <option value="none">Ground pass / other</option>
+                <option value="cross">Cross</option>
+                <option value="throughball">Through ball</option>
+                <option value="chipped">Chipped</option>
+                <option value="longball">Long ball</option>
+                <option value="layoff">Lay-off</option>
+                <option value="headpass">Head pass</option>
+                <option value="corner">Corner</option>
+                <option value="freekick">Free kick</option>
+                <option value="throwin">Throw-in</option>
+              </select>
             </div>
           </div>
-          <div class="lab-field">
+          <div class="lab-field" style="margin-top:18px;">
             <label>Competition</label>
             <select class="lab-select" id="sel-league">
               <option value="WorldCup">World Cup</option>
@@ -638,10 +690,10 @@ footer .fglossary b{ color:var(--paper); }
             </select>
           </div>
           <div class="lab-readout">
-            <div class="row" title="Straight-line distance from the shot to the middle of the goal."><span>distance</span><b id="ro-dist">&mdash;</b></div>
-            <div class="row" title="How much of the goal mouth is visible from the shot spot, as an angle — not a compass direction. Dead centre a few metres out sees almost the whole goal (a wide angle); tight to the byline sees only a sliver (a narrow angle), even if it's technically closer."><span>angle</span><b id="ro-angle">&mdash;</b></div>
-            <p class="lab-note" style="margin:2px 0 0;">Distance = straight line to the goal's centre. Angle = how much of the goal mouth is actually visible from there &mdash; wide dead-on, narrow from a tight byline sliver, even at the same distance.</p>
-            <div class="lab-xg"><span class="n" id="ro-xg">&mdash;</span><span class="lbl">calibrated xG</span></div>
+            <div class="row" id="ro-row1"><span id="ro-lbl1">distance</span><b id="ro-dist">&mdash;</b></div>
+            <div class="row" id="ro-row2"><span id="ro-lbl2">angle</span><b id="ro-angle">&mdash;</b></div>
+            <p class="lab-note" id="ro-geomnote" style="margin:2px 0 0;">Distance = straight line to the goal's centre. Angle = how much of the goal mouth is actually visible from there &mdash; wide dead-on, narrow from a tight byline sliver, even at the same distance.</p>
+            <div class="lab-xg"><span class="n" id="ro-xg">&mdash;</span><span class="lbl" id="ro-xg-lbl">calibrated xG</span></div>
             <p class="lab-note" id="ro-bigswing"></p>
             <p class="lab-note" id="ro-note">Click the pitch to place a shot.</p>
           </div>
@@ -757,17 +809,18 @@ footer .fglossary b{ color:var(--paper); }
 
   function sigmoid(z){ if(z<-35)return 0; if(z>35)return 1; return 1/(1+Math.exp(-z)); }
   function logit(p){ p=Math.min(Math.max(p,1e-6),1-1e-6); return Math.log(p/(1-p)); }
-  function isotonic(p){
-    if(p<=CAL_X[0]) return CAL_Y[0];
-    if(p>=CAL_X[CAL_X.length-1]) return CAL_Y[CAL_Y.length-1];
-    for(var i=1;i<CAL_X.length;i++){
-      if(p<=CAL_X[i]){
-        var x0=CAL_X[i-1], x1=CAL_X[i], y0=CAL_Y[i-1], y1=CAL_Y[i];
+  function isotonicOn(xs, ys, p){
+    if(p<=xs[0]) return ys[0];
+    if(p>=xs[xs.length-1]) return ys[ys.length-1];
+    for(var i=1;i<xs.length;i++){
+      if(p<=xs[i]){
+        var x0=xs[i-1], x1=xs[i], y0=ys[i-1], y1=ys[i];
         return x1===x0 ? y0 : y0 + (y1-y0)*(p-x0)/(x1-x0);
       }
     }
-    return CAL_Y[CAL_Y.length-1];
+    return ys[ys.length-1];
   }
+  function isotonic(p){ return isotonicOn(CAL_X, CAL_Y, p); }
   function shotAngle(x,y){
     var a = Math.hypot(120-x, 36-y), b = Math.hypot(120-x, 44-y);
     if(a<=0||b<=0) return Math.PI;
@@ -797,6 +850,46 @@ footer .fglossary b{ color:var(--paper); }
     p = sigmoid(logit(p) + shift);
     p = Math.min(Math.max(p, CLIP[0]), CLIP[1]);
     return { p: Math.round(p*1000)/1000, dist:dist, angle: ang*180/Math.PI, penalty:false };
+  }
+
+  /* ---------------------------------------------------------- xA model (real xa_artifact.json) */
+  var XA_SHOT_LR_INTERCEPT = -0.03817377484435003;
+  var XA_SHOT_LR_COEF = {end_dist:-0.07902927263880329, end_log_dist:-0.18545695328748646, end_angle:0.7421542112984678, end_dist_x_angle:0.36515990545481203, start_dist:-0.07122557890353683, delta_dist:0.0445446458643745, length:0.03747210239727293, into_box:-0.13515089535766592, into_six:0.10401275463378304, cross:0.07107787665834436, throughball:1.793427793913209, cutback:0.2755049205364243, chipped:-0.36548172189559236, longball:-0.28792839286588134, layoff:0.28891456166524826, headpass:-0.627529103786266, corner:-0.11678544173400322, freekick:-0.13930436046033334, throwin:-1.366691462866958};
+  var XA_XG_LINREG_INTERCEPT = 0.8047601927737271;
+  var XA_XG_LINREG_COEF = {end_dist:0.016569469673385868, end_log_dist:-1.610977702627519, end_angle:1.1241588690798021, end_dist_x_angle:0.05386915258739915, start_dist:0.013775267504428701, delta_dist:-0.0027942021688978575, length:0.005040382731174737, into_box:-0.06098628856187536, into_six:-0.07628897531316048, cross:-0.5779231815064235, throughball:0.8787475276038672, cutback:-0.013131283662950771, chipped:-0.5111070465424514, longball:0.03767070427997977, layoff:0.057470480147651645, headpass:-0.2662241212949242, corner:-0.7833291589142843, freekick:-0.6021100545566315, throwin:-0.8263980317333752};
+  var XA_LEAGUE_SHIFTS = { _global: -0.000954, EPL: -0.026876, LaLiga: 0.022183, WorldCup: 0.11918 };
+  var XA_CLIP = [0.0, 0.6];
+  var XA_CAL_X = [1.7495969e-08,3.3286545e-05,3.3286569e-05,8.2131976e-05,8.213299e-05,0.00011379425,0.00011379484,0.00014850584,0.00014850596,0.00033502026,0.00033502053,0.00060327847,0.00060327847,0.00096304043,0.00096304613,0.0010145544,0.0010145554,0.001179115,0.0011791253,0.0014441782,0.0014441792,0.0015534349,0.0015534441,0.0019331236,0.0019331313,0.0020032234,0.0020032397,0.0022554455,0.0022554904,0.0024600699,0.0024601523,0.0025152613,0.0025152884,0.0027631314,0.0027631372,0.0030179951,0.0030179961,0.0034273989,0.0034274234,0.0036765372,0.003676571,0.003950559,0.0039506664,0.0040312766,0.0040313223,0.0050391985,0.0050394775,0.0056285991,0.0056286901,0.0058091949,0.00580924,0.0060666366,0.0060666463,0.0078259778,0.0078260885,0.0088441271,0.0088442518,0.0095398292,0.0095409564,0.0098753979,0.0098755447,0.0099065421,0.0099066077,0.01005786,0.010058022,0.011567021,0.011567352,0.012091037,0.012091081,0.013412603,0.013412868,0.014297488,0.014298892,0.014800377,0.014800752,0.018142979,0.01814322,0.018823739,0.018824146,0.024091867,0.024092727,0.024164055,0.024165486,0.025135433,0.025136586,0.025231988,0.025234543,0.025480042,0.025484797,0.02598349,0.025983987,0.030453727,0.030454938,0.030548056,0.030550463,0.031548753,0.031548823,0.040654806,0.040655101,0.041291208,0.041292463,0.042567984,0.042568888,0.04329165,0.043293131,0.049632273,0.049634935,0.054355726,0.054355991,0.057053013,0.057059331,0.065667042,0.065670112,0.075382917,0.075382938,0.077504049,0.077504096,0.082929074,0.082936129,0.083201855,0.083207217,0.088357059,0.088358896,0.091047278,0.091068228,0.10201123,0.10201376,0.1051835,0.10518925,0.10944586,0.10944817,0.12000972,0.1200136,0.1257132,0.12572669,0.16154374,0.1615531,0.17700267,0.17706372,0.18450259,0.18453158,0.21298984,0.21309615,0.22605971,0.22607364,0.24480633,0.24495944,0.24865609,0.24867905,0.26995667,0.26999295,0.27740796,0.27750228,0.27839917,0.27843923,0.37114065,0.37201759,0.40562813,0.40578077,0.41004551,0.41015756,0.41637514,0.41692188,0.41974894,0.42008883,0.4695807,0.46958821,0.51884895,0.51890497,0.52593636,0.52595057,0.55438486,0.55457352,0.56943732,0.57085626,0.5777736,0.57835819,0.58349507,0.58377836,0.71954984,0.72491015,0.79497317,0.79758217,0.86700463];
+  var XA_CAL_Y = [0,0,4.3768273e-06,4.3768273e-06,1.0379905e-05,1.0379905e-05,1.2259109e-05,1.2259109e-05,4.0322761e-05,4.0322761e-05,6.5071864e-05,6.5071864e-05,8.7555817e-05,8.7555817e-05,0.000124533,0.000124533,0.00027165301,0.00027165301,0.00028971861,0.00028971861,0.0003261224,0.0003261224,0.00046907982,0.00046907982,0.000508647,0.000508647,0.00056297249,0.00056297249,0.00057776751,0.00057776751,0.00091365921,0.00091365921,0.0012115872,0.0012115872,0.0012348728,0.0012348728,0.0012824036,0.0012824036,0.0015742522,0.0015742522,0.0015870217,0.0015870217,0.0019367334,0.0019367334,0.0023834912,0.0023834912,0.0028797696,0.0028797696,0.0041819132,0.0041819132,0.0047281324,0.0047281324,0.0047835991,0.0047835991,0.0056589996,0.0056589996,0.0073062262,0.0073062262,0.0075700227,0.0075700227,0.0083333333,0.0083333333,0.0087719298,0.0087719298,0.0096469226,0.0096469226,0.0098684211,0.0098684211,0.010714286,0.010714286,0.011397423,0.011397423,0.016831683,0.016831683,0.018609743,0.018609743,0.01985371,0.01985371,0.024146545,0.024146545,0.025,0.025,0.025613661,0.025613661,0.025862069,0.025862069,0.026217228,0.026217228,0.033264033,0.033264033,0.034926025,0.034926025,0.04109589,0.04109589,0.041561713,0.041561713,0.042743377,0.042743377,0.046920821,0.046920821,0.047361299,0.047361299,0.059125964,0.059125964,0.059362172,0.059362172,0.061477442,0.061477442,0.064899452,0.064899452,0.075796412,0.075796412,0.088783195,0.088783195,0.098468271,0.098468271,0.10218978,0.10218978,0.1025641,0.1025641,0.11273957,0.11273957,0.11337868,0.11337868,0.11354582,0.11354582,0.12668464,0.12668464,0.14739229,0.14739229,0.15392157,0.15392157,0.16210046,0.16210046,0.17492984,0.17492984,0.20805369,0.20805369,0.21509434,0.21509434,0.22023047,0.22023047,0.23616236,0.23616236,0.25745257,0.25745257,0.27272727,0.27272727,0.28391167,0.28391167,0.2875,0.2875,0.3,0.3,0.33333333,0.33333333,0.34042553,0.34042553,0.35,0.35,0.35294118,0.35294118,0.38888889,0.38888889,0.45086705,0.45086705,0.475,0.475,0.5,0.5,0.52272727,0.52272727,0.55555556,0.55555556,0.57142857,0.57142857,0.66666667,0.66666667,0.67567568,0.67567568,0.69444444,0.69444444,0.77777778,0.77777778];
+
+  function passFeatureDict(x_sb, y_sb, ex_sb, ey_sb, type){
+    var end_dist = Math.max(Math.hypot(120-ex_sb, 40-ey_sb), 0.5);
+    var start_dist = Math.max(Math.hypot(120-x_sb, 40-y_sb), 0.5);
+    var ang = shotAngle(ex_sb, ey_sb);
+    var length = Math.hypot(ex_sb-x_sb, ey_sb-y_sb);
+    var cutback = (x_sb>=105 && (y_sb<=30 || y_sb>=50) && ey_sb>=30 && ey_sb<=50 && ex_sb<=x_sb) ? 1 : 0;
+    return {
+      end_dist:end_dist, end_log_dist:Math.log1p(end_dist), end_angle:ang, end_dist_x_angle:end_dist*ang,
+      start_dist:start_dist, delta_dist:start_dist-end_dist, length:length,
+      into_box: (ex_sb>=102 && ey_sb>=18 && ey_sb<=62) ? 1:0,
+      into_six: (ex_sb>=114 && ey_sb>=30 && ey_sb<=50) ? 1:0,
+      cross: type==='cross'?1:0, throughball: type==='throughball'?1:0, cutback: cutback,
+      chipped: type==='chipped'?1:0, longball: type==='longball'?1:0, layoff: type==='layoff'?1:0,
+      headpass: type==='headpass'?1:0, corner: type==='corner'?1:0, freekick: type==='freekick'?1:0,
+      throwin: type==='throwin'?1:0
+    };
+  }
+  function computeXA(x_sb, y_sb, ex_sb, ey_sb, type, league){
+    var f = passFeatureDict(x_sb, y_sb, ex_sb, ey_sb, type);
+    var zA = XA_SHOT_LR_INTERCEPT; for(var k in XA_SHOT_LR_COEF){ zA += XA_SHOT_LR_COEF[k]*f[k]; }
+    var zB = XA_XG_LINREG_INTERCEPT; for(var k2 in XA_XG_LINREG_COEF){ zB += XA_XG_LINREG_COEF[k2]*f[k2]; }
+    var pShot = sigmoid(zA), pQual = sigmoid(zB);
+    var p = isotonicOn(XA_CAL_X, XA_CAL_Y, pShot*pQual);
+    var shift = XA_LEAGUE_SHIFTS[league] != null ? XA_LEAGUE_SHIFTS[league] : XA_LEAGUE_SHIFTS._global;
+    p = sigmoid(logit(p) + shift);
+    p = Math.min(Math.max(p, XA_CLIP[0]), XA_CLIP[1]);
+    return { p: Math.round(p*10000)/10000, pShot:pShot, pQual:pQual, startDist:f.start_dist,
+             endDist:f.end_dist, length:f.length, cutback: f.cutback===1, angle: f.end_angle*180/Math.PI };
   }
 
   /* ---------------------------------------------------------- feature data */
@@ -927,27 +1020,98 @@ footer .fglossary b{ color:var(--paper); }
   (function(){
     var svg = document.getElementById('lab-svg');
     var dot = document.getElementById('lab-dot');
-    var state = { x_sb:102, y_sb:44, body:'foot', situation:'Open Play', big:false, assisted:false, league:'WorldCup' };
+    var angleWedge = document.getElementById('angle-wedge');
+    var angleLineL = document.getElementById('angle-line-l');
+    var angleLineR = document.getElementById('angle-line-r');
+    var passLine = document.getElementById('pass-line');
+    var passOriginDot = document.getElementById('pass-origin-dot');
+    var passEndDot = document.getElementById('pass-end-dot');
+    var hintEl = document.getElementById('lab-hint');
+    var state = {
+      mode:'shot', x_sb:102, y_sb:44, body:'foot', situation:'Open Play', big:false, assisted:false,
+      league:'WorldCup', passType:'none',
+      pass:{ stage:'idle', ox_sb:null, oy_sb:null, ex_sb:null, ey_sb:null }
+    };
 
+    function toXY(x_sb, y_sb){ return { cx:y_sb, cy:120-x_sb }; }
     function svgPoint(evt){
       var pt = svg.createSVGPoint();
-      var t = evt.touches ? evt.touches[0] : evt;
+      var t = evt.changedTouches ? evt.changedTouches[0] : evt;
       pt.x = t.clientX; pt.y = t.clientY;
       var loc = pt.matrixTransform(svg.getScreenCTM().inverse());
-      return loc;
-    }
-    function place(evt){
-      var loc = svgPoint(evt);
       var y_sb = Math.min(80, Math.max(0, loc.x));
       var x_sb = Math.min(119.5, Math.max(60, 120-loc.y));
-      state.x_sb = x_sb; state.y_sb = y_sb;
-      dot.setAttribute('cx', y_sb); dot.setAttribute('cy', 120-x_sb);
+      return { x_sb:x_sb, y_sb:y_sb };
+    }
+
+    function renderShot(){
+      var xy = toXY(state.x_sb, state.y_sb);
+      dot.setAttribute('cx', xy.cx); dot.setAttribute('cy', xy.cy);
+      dot.style.display = '';
+      passLine.style.display = 'none'; passOriginDot.style.display = 'none'; passEndDot.style.display = 'none';
+      angleWedge.setAttribute('d', 'M '+xy.cx+','+xy.cy+' L 36,0 L 44,0 Z');
+      angleLineL.setAttribute('x1', xy.cx); angleLineL.setAttribute('y1', xy.cy);
+      angleLineL.setAttribute('x2', 36); angleLineL.setAttribute('y2', 0);
+      angleLineR.setAttribute('x1', xy.cx); angleLineR.setAttribute('y1', xy.cy);
+      angleLineR.setAttribute('x2', 44); angleLineR.setAttribute('y2', 0);
+      angleWedge.style.display = ''; angleLineL.style.display = ''; angleLineR.style.display = '';
+    }
+    function renderPass(){
+      dot.style.display = 'none';
+      angleWedge.style.display = 'none'; angleLineL.style.display = 'none'; angleLineR.style.display = 'none';
+      var p = state.pass;
+      if(p.ox_sb != null){
+        var o = toXY(p.ox_sb, p.oy_sb);
+        passOriginDot.setAttribute('cx', o.cx); passOriginDot.setAttribute('cy', o.cy);
+        passOriginDot.style.display = '';
+      } else { passOriginDot.style.display = 'none'; }
+      if(p.ex_sb != null){
+        var o2 = toXY(p.ox_sb, p.oy_sb), e = toXY(p.ex_sb, p.ey_sb);
+        passLine.setAttribute('x1', o2.cx); passLine.setAttribute('y1', o2.cy);
+        passLine.setAttribute('x2', e.cx); passLine.setAttribute('y2', e.cy);
+        passEndDot.setAttribute('cx', e.cx); passEndDot.setAttribute('cy', e.cy);
+        passLine.style.display = ''; passEndDot.style.display = '';
+      } else { passLine.style.display = 'none'; passEndDot.style.display = 'none'; }
+    }
+    function updateHint(){
+      if(state.mode === 'shot'){ hintEl.textContent = 'click or tap anywhere on the pitch to place the shot'; return; }
+      if(state.pass.stage === 'hasOrigin'){ hintEl.textContent = 'click again to set where the pass ends'; }
+      else { hintEl.textContent = 'click to set where the pass starts'; }
+    }
+
+    function place(evt){
+      var pt = svgPoint(evt);
+      if(state.mode === 'shot'){
+        state.x_sb = pt.x_sb; state.y_sb = pt.y_sb;
+        renderShot();
+      } else {
+        var p = state.pass;
+        if(p.stage === 'idle' || p.stage === 'hasBoth'){
+          p.ox_sb = pt.x_sb; p.oy_sb = pt.y_sb; p.ex_sb = null; p.ey_sb = null; p.stage = 'hasOrigin';
+        } else {
+          p.ex_sb = pt.x_sb; p.ey_sb = pt.y_sb; p.stage = 'hasBoth';
+        }
+        renderPass();
+      }
+      updateHint();
       update();
       evt.preventDefault();
     }
     svg.addEventListener('click', place);
     svg.addEventListener('touchstart', place, {passive:false});
 
+    document.querySelectorAll('#seg-mode button').forEach(function(b){
+      b.addEventListener('click', function(){
+        document.querySelectorAll('#seg-mode button').forEach(function(x){x.classList.remove('on');});
+        b.classList.add('on');
+        state.mode = b.dataset.v;
+        document.getElementById('shot-fields').style.display = state.mode==='shot' ? '' : 'none';
+        document.getElementById('pass-fields').style.display = state.mode==='pass' ? '' : 'none';
+        if(state.mode === 'pass'){ state.pass = { stage:'idle', ox_sb:null, oy_sb:null, ex_sb:null, ey_sb:null }; renderPass(); }
+        else { renderShot(); }
+        updateHint(); update();
+      });
+    });
     document.querySelectorAll('#seg-body button').forEach(function(b){
       b.addEventListener('click', function(){
         document.querySelectorAll('#seg-body button').forEach(function(x){x.classList.remove('on');});
@@ -963,11 +1127,18 @@ footer .fglossary b{ color:var(--paper); }
     });
     document.getElementById('sel-situation').addEventListener('change', function(){ state.situation=this.value; update(); });
     document.getElementById('sel-league').addEventListener('change', function(){ state.league=this.value; update(); });
+    document.getElementById('sel-passtype').addEventListener('change', function(){ state.passType=this.value; update(); });
 
-    function update(){
+    function updateShot(){
       var isPen = state.situation === 'Penalty';
       var r = computeXG(state.x_sb, state.y_sb, state.body, state.situation, state.big, state.assisted, state.league);
       document.getElementById('ro-xg').textContent = r.p.toFixed(3);
+      document.getElementById('ro-xg-lbl').textContent = 'calibrated xG';
+      document.getElementById('ro-lbl1').textContent = 'distance';
+      document.getElementById('ro-lbl2').textContent = 'angle';
+      document.getElementById('ro-row1').title = 'Straight-line distance from the shot to the middle of the goal.';
+      document.getElementById('ro-row2').title = 'How much of the goal mouth is visible from the shot spot, as an angle — not a compass direction. Dead centre a few metres out sees almost the whole goal (a wide angle); tight to the byline sees only a sliver (a narrow angle), even if it’s technically closer.';
+      document.getElementById('ro-geomnote').textContent = 'Distance = straight line to the goal’s centre. Angle = how much of the goal mouth is actually visible from there — wide dead-on, narrow from a tight byline sliver, even at the same distance. The shaded wedge on the pitch is that same angle, drawn to scale.';
       var swingEl = document.getElementById('ro-bigswing');
       if(isPen){
         document.getElementById('ro-dist').textContent = '11.0 m (spot)';
@@ -986,6 +1157,45 @@ footer .fglossary b{ color:var(--paper); }
         }
       }
     }
+    function updatePass(){
+      document.getElementById('ro-xg-lbl').textContent = 'calibrated xA';
+      document.getElementById('ro-lbl1').textContent = 'P(shot follows)';
+      document.getElementById('ro-lbl2').textContent = 'shot quality';
+      document.getElementById('ro-row1').title = 'Stage A of the two-stage xA model: how likely is it that any shot at all follows this pass, learned purely from where it started, where it ended, and its delivery type.';
+      document.getElementById('ro-row2').title = 'Stage B: given that a shot does follow, how good a chance would it typically be — before either stage is calibrated against real outcomes.';
+      var p = state.pass;
+      if(p.ox_sb == null){
+        document.getElementById('ro-dist').textContent = '—';
+        document.getElementById('ro-angle').textContent = '—';
+        document.getElementById('ro-xg').textContent = '—';
+        document.getElementById('ro-geomnote').textContent = 'Click the pitch to set where the pass starts, then click again for where it ends.';
+        document.getElementById('ro-bigswing').textContent = '';
+        document.getElementById('ro-note').textContent = 'xA(pass) = the calibrated probability this specific completed pass becomes a goal assist.';
+        return;
+      }
+      if(p.ex_sb == null){
+        document.getElementById('ro-dist').textContent = '—';
+        document.getElementById('ro-angle').textContent = '—';
+        document.getElementById('ro-xg').textContent = '—';
+        document.getElementById('ro-geomnote').textContent = 'Origin set — click again on the pitch to set where the pass ends.';
+        document.getElementById('ro-bigswing').textContent = '';
+        document.getElementById('ro-note').textContent = 'xA(pass) = the calibrated probability this specific completed pass becomes a goal assist.';
+        return;
+      }
+      var r = computeXA(p.ox_sb, p.oy_sb, p.ex_sb, p.ey_sb, state.passType, state.league);
+      document.getElementById('ro-dist').textContent = (r.pShot*100).toFixed(1)+'%';
+      document.getElementById('ro-angle').textContent = r.pQual.toFixed(3);
+      document.getElementById('ro-xg').textContent = r.p.toFixed(3);
+      document.getElementById('ro-geomnote').textContent = 'Stage A × Stage B, multiplied together, is the raw product this model then runs through its own isotonic calibration curve and league shift to get the final xA below.';
+      document.getElementById('ro-bigswing').innerHTML = 'start '+r.startDist.toFixed(1)+'m from goal → end '+r.endDist.toFixed(1)+'m from goal · pass length '+r.length.toFixed(1)+'m' +
+        (r.cutback ? ' · <b>cutback</b> — detected automatically from the geometry, not a tag you set' : '');
+      document.getElementById('ro-note').textContent = 'This is the calibrated logistic-regression layer only — the live site blends in a LightGBM version of both stages (95% weight) for the final number.';
+    }
+    function update(){
+      if(state.mode === 'shot'){ updateShot(); } else { updatePass(); }
+    }
+    renderShot();
+    updateHint();
     update();
   })();
 })();
