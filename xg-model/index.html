@@ -301,6 +301,9 @@ svg.labpitch{ width:100%; max-width:460px; height:auto; cursor:crosshair; touch-
 footer{ padding:56px 0 80px; border-top:1px solid var(--line-soft); }
 footer .fmeta{ font-family:var(--mono); font-size:12.5px; color:var(--paper-faint); display:flex; gap:24px; flex-wrap:wrap; }
 footer .fnote{ margin-top:18px; font-size:13.5px; color:var(--paper-dim); max-width:560px; line-height:1.6; }
+footer .fglossary{ margin-top:20px; display:grid; gap:10px; max-width:640px; }
+footer .fglossary div{ font-size:13px; color:var(--paper-dim); line-height:1.6; }
+footer .fglossary b{ color:var(--paper); }
 </style>
 
 <div class="hero">
@@ -701,6 +704,24 @@ footer .fnote{ margin-top:18px; font-size:13.5px; color:var(--paper-dim); max-wi
       <div>Brier <b>0.0722</b></div>
       <div>AUC <b>0.805</b></div>
       <div>&Sigma;xG&nbsp;/&nbsp;goals <b>1.00</b></div>
+    </div>
+    <div class="fglossary">
+      <div><b>Brier score</b> &mdash; how far the model's predictions land from what actually
+        happened, averaged over every shot in the test set (0 = perfect, 1 = worst possible).
+        Since goals only happen on about 1 shot in 10, a model that just guessed "10%, every
+        single time" would already score around 0.09 without knowing anything about any
+        individual shot. This model scores lower than that &mdash; <b>0.0722</b> &mdash; meaning
+        it's genuinely telling good chances from bad ones, not just repeating the average.</div>
+      <div><b>AUC</b> &mdash; pick one random shot that scored and one random shot that didn't:
+        this is how often the model correctly rates the goal as the more likely of the two.
+        0.5 would mean a coin flip (no better than guessing); 1.0 would mean it's never wrong.
+        <b>0.805</b> means it gets that ranking right about 80.5% of the time.</div>
+      <div><b>&Sigma;xG&nbsp;/&nbsp;goals</b> &mdash; add up the predicted xG of every shot in
+        the test set, then divide by how many of those shots actually went in. A perfect
+        <b>1.00</b> means the model's totals aren't systematically inflated or deflated across
+        the board &mdash; even though any single shot's number is still just a probability, not
+        a promise. (A popular public xG provider runs 9&ndash;11% high on this same check,
+        every league, every season &mdash; see principle 04 above.)</div>
     </div>
     <p class="fnote">The same scorer feeds the PNG match reports and the live dashboard &mdash;
       one model, never two competing implementations, so the numbers always agree.</p>
