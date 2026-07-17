@@ -635,6 +635,7 @@ footer .fnote{ margin-top:18px; font-size:13.5px; color:var(--paper-dim); max-wi
             <div class="row"><span>distance</span><b id="ro-dist">&mdash;</b></div>
             <div class="row"><span>angle</span><b id="ro-angle">&mdash;</b></div>
             <div class="lab-xg"><span class="n" id="ro-xg">&mdash;</span><span class="lbl">calibrated xG</span></div>
+            <p class="lab-note" id="ro-bigswing"></p>
             <p class="lab-note" id="ro-note">Click the pitch to place a shot.</p>
           </div>
         </div>
@@ -791,8 +792,8 @@ footer .fnote{ margin-top:18px; font-size:13.5px; color:var(--paper-dim); max-wi
       ["one_on_one","Just the shooter and the goalkeeper, nobody else in the way &mdash; a different kind of pressure than a shot through a crowd.","0"]
     ]},
     { title:"Chance quality", note:"does the moment itself look dangerous", feats:[
-      ["big_chance","A human-verified tag: a player should reasonably be expected to score. This sees something the raw geometry can't &mdash; where the goalkeeper and defenders actually were standing.","1", true],
-      ["big_x_dist","Stops the big-chance bonus applying at full strength no matter the distance. A clear sight of goal from 6m and from 25m aren't equally “big.”","19.4", true]
+      ["big_chance","A human-verified tag from the event data: the shooter had time and space to pick their spot, with no defender or goalkeeper realistically able to stop it &mdash; a clean one-on-one, an open header with the goal gaping, a tap-in after the keeper's already beaten. It sees something the raw geometry can't: where the goalkeeper and defenders were actually standing, not just how far away the shot was struck from. Among every yes/no signal in this logistic-regression layer &mdash; header, free kick, fast break, assisted, all of them &mdash; this one alone shifts the odds more than twice as much as the next largest (a direct free kick) and roughly fifty times as much as the smallest (an assisted shot). That's not the model overweighting it &mdash; it's that a genuinely clear-cut chance really is that much more likely to go in than an average shot from the same spot. Try flipping it on the calculator below to see the swing for yourself, on any shot.","1", true],
+      ["big_x_dist","Stops the big-chance bonus applying at full strength no matter the distance. A clear sight of goal from 6m and from 25m aren't equally “big” &mdash; this shaves a small amount back off per metre, so the tag still respects distance instead of overriding it completely.","19.4", true]
     ]},
     { title:"Match situation", note:"what phase of play produced it", feats:[
       ["freekick","Struck directly from a free kick &mdash; a practiced, specialist technique.","0"],
@@ -942,14 +943,22 @@ footer .fnote{ margin-top:18px; font-size:13.5px; color:var(--paper-dim); max-wi
       var isPen = state.situation === 'Penalty';
       var r = computeXG(state.x_sb, state.y_sb, state.body, state.situation, state.big, state.assisted, state.league);
       document.getElementById('ro-xg').textContent = r.p.toFixed(3);
+      var swingEl = document.getElementById('ro-bigswing');
       if(isPen){
         document.getElementById('ro-dist').textContent = '11.0 m (spot)';
         document.getElementById('ro-angle').textContent = 'fixed';
         document.getElementById('ro-note').textContent = 'Penalties are never modelled from geometry — they’re a hard-coded empirical constant, the real conversion rate from 148 historical kicks. Too small and noisy a sample for a model to add anything.';
+        swingEl.textContent = '';
       } else {
         document.getElementById('ro-dist').textContent = r.dist.toFixed(1)+' m';
         document.getElementById('ro-angle').textContent = r.angle.toFixed(1)+'°';
         document.getElementById('ro-note').textContent = 'This is the calibrated logistic-regression layer only — the live site’s number for a similar shot runs slightly different once the LightGBM and market layers are blended in.';
+        var flipped = computeXG(state.x_sb, state.y_sb, state.body, state.situation, !state.big, state.assisted, state.league);
+        if(state.big){
+          swingEl.innerHTML = 'Flip <b>Big chance</b> off for this exact spot and it falls to <b>'+flipped.p.toFixed(3)+'</b> — same distance, same angle, nothing else changed.';
+        } else {
+          swingEl.innerHTML = 'Tag this as a <b>Big chance</b> instead and it jumps to <b>'+flipped.p.toFixed(3)+'</b> — same distance, same angle, nothing else changed.';
+        }
       }
     }
     update();

@@ -128,6 +128,7 @@ img { max-width: 100%; display: block; }
   background: var(--bg-soft); border-left: 3px solid var(--accent); border-radius: 8px;
 }
 .model-note b { color: var(--ink); }
+.model-note a { display: inline-block; margin-top: 8px; font-weight: 600; }
 .viz-stats { display: flex; gap: 18px; }
 .viz-stats .st { text-align: right; }
 .viz-stats .st b { display: block; font-family: "Space Grotesk", sans-serif; font-size: 22px; color: var(--ink); line-height: 1; }
