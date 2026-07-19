@@ -112,6 +112,22 @@
    },
    "opponent": "England",
    "argSide": "home"
+  },
+  {
+   "id": "2026_07_19_Winner_SF_1_vs_Winner_SF_2",
+   "file": "assets/data/argentina/2026_07_19_Winner_SF_1_vs_Winner_SF_2.json",
+   "date": "2026-07-19",
+   "stage": "Final",
+   "home": {
+    "name": "Argentina",
+    "score": 0
+   },
+   "away": {
+    "name": "Spain",
+    "score": 1
+   },
+   "opponent": "Spain",
+   "argSide": "home"
   }
  ]
 }
