@@ -307,6 +307,52 @@ footer .fnote{ margin-top:18px; font-size:13.5px; color:var(--paper-dim); max-wi
 footer .fglossary{ margin-top:20px; display:grid; gap:10px; max-width:640px; }
 footer .fglossary div{ font-size:13px; color:var(--paper-dim); line-height:1.6; }
 footer .fglossary b{ color:var(--paper); }
+
+/* ------------------------------------------------------ PLAIN-WORDS TLDR */
+.tldr{
+  margin-top:38px; background:var(--panel); border:1px solid var(--line);
+  border-radius:var(--r-lg); padding:22px 24px; max-width:620px;
+}
+.tldr .t{ font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--floodlight); }
+.tldr ul{ margin:12px 0 0; padding:0 0 0 18px; display:grid; gap:8px; }
+.tldr li{ font-size:14.5px; color:var(--paper-dim); line-height:1.55; }
+.tldr li b{ color:var(--paper); }
+.jump-btn{
+  display:inline-block; margin-top:18px; background:var(--floodlight); color:var(--ink);
+  font-weight:600; font-size:14px; padding:10px 18px; border-radius:100px; text-decoration:none;
+}
+.jump-btn:hover{ filter:brightness(1.08); }
+
+/* ------------------------------------------------------- COLLAPSIBLES */
+details.fold{ margin-top:28px; border:1px solid var(--line); border-radius:var(--r-lg); background:var(--panel); }
+details.fold>summary{
+  list-style:none; cursor:pointer; padding:16px 20px; display:flex; align-items:center;
+  justify-content:space-between; gap:14px; font-weight:600; font-size:15px; color:var(--paper);
+}
+details.fold>summary::-webkit-details-marker{ display:none; }
+details.fold>summary .hint{ font-family:var(--mono); font-size:12px; color:var(--paper-faint); font-weight:400; }
+details.fold>summary::after{ content:'+'; font-family:var(--mono); font-size:20px; color:var(--floodlight); flex:none; }
+details.fold[open]>summary::after{ content:'\2212'; }
+details.fold>.fold-body{ padding:0 20px 20px; }
+
+/* --------------------------------------------------------------- MOBILE */
+@media (max-width:640px){
+  section{ padding:52px 0; }
+  section.tight{ padding:40px 0; }
+  .hero{ padding:64px 0 50px; }
+  .hero-sub{ font-size:16.5px; margin-top:18px; }
+  .hero-meta{ margin-top:28px; gap:14px 22px; }
+  .lede{ font-size:17.5px; }
+  h2{ font-size:27px !important; }
+  .wrap, .prose{ padding:0 20px; }
+  .output-card{ padding:24px 22px; gap:20px; }
+  .output-card .big{ font-size:60px; }
+  .fgroup{ margin-top:32px; }
+  .pitch-figure{ margin:24px 0; }
+  .tracker{ position:static; }
+  .numline{ gap:10px; }
+  .numline .step{ min-width:100px; padding:8px 12px; }
+}
 </style>
 
 <div class="hero">
@@ -314,10 +360,20 @@ footer .fglossary b{ color:var(--paper); }
   <div class="wrap">
     <div class="eyebrow">XWORLDCUPTWIT &middot; how the xG / xA model works</div>
     <h1>What makes this shot worth <span class="num">0.36</span> of a goal?</h1>
-    <p class="hero-sub">Every shot and pass on this site gets a number attached to it &mdash;
-      an xG or an xA. This page follows one real shot, and the pass that created it,
-      through the actual trained model, stage by stage, using its real numbers.
-      No step is simplified away, and every one of its 42 signals is listed below.</p>
+    <p class="hero-sub">Every shot on this site gets a number &mdash; its chance of becoming
+      a goal. This page shows how that number is made, following one real shot from
+      start to finish. No maths or coding needed &mdash; the deep detail is folded away,
+      and you can tap it open if you're curious.</p>
+    <div class="tldr">
+      <div class="t">the whole idea in 20 seconds</div>
+      <ul>
+        <li><b>xG</b> is a score from 0 to 1 for every shot: its chance of going in.
+          <b>0.36</b> means roughly 1 goal in every 3 tries.</li>
+        <li>The model learned that from <b>77,627 real shots</b> &mdash; what scored, what didn't, and why.</li>
+        <li><b>xA</b> does the same for the pass before the shot: how likely it was to create a goal.</li>
+      </ul>
+      <a class="jump-btn" href="#lab-section">Skip ahead: try it on a real pitch &darr;</a>
+    </div>
     <div class="hero-meta">
       <div><b>23</b> shot features</div>
       <div><b>19</b> pass features</div>
@@ -384,15 +440,12 @@ footer .fglossary b{ color:var(--paper); }
     <div class="eyebrow"><span class="stage-no">01</span> the raw event</div>
     <h2 style="font-size:34px;">A shot is just three numbers when it happens</h2>
     <p style="margin-top:18px; font-size:15.5px; color:var(--paper-dim); line-height:1.65;">
-      WhoScored's live feed logs every touch on a 0&ndash;100 grid, regardless of the real pitch's
-      size. Before anything else, the model converts that shot's <span class="mono">(x, y)</span> into real
-      metres on a standard pitch, goal at <span class="mono">x = 120</span>, posts at
-      <span class="mono">y = 36</span> and <span class="mono">y = 44</span> (an 8-metre goal mouth).
-      Our example: a low, driven left-footed strike, played first-time off a cutback cross from the
-      byline, tagged as a <b style="color:var(--paper)">big chance</b> &mdash; meaning the shooter had
-      time and space to pick their spot, with no defender or goalkeeper realistically able to stop it.
-      It's a human-verified tag, not something derived from geometry, and as the feature breakdown
-      below shows, it moves this model's estimate more than almost anything else it looks at.
+      The live data feed records every touch of the ball as a dot on a grid. The model first turns
+      that dot into two real-world facts: <b style="color:var(--paper)">how far from goal</b>, and
+      <b style="color:var(--paper)">how much of the goal the shooter could see</b>. Our example: a
+      left-footed shot from the edge of the box, set up by a cutback cross, and tagged by a human
+      analyst as a <b style="color:var(--paper)">big chance</b> &mdash; the shooter had time and
+      space to pick a spot. That one tag ends up moving the final number more than almost anything else.
     </p>
     <div class="pitch-figure">
       <svg class="pitch" viewBox="-4 -4 88 70">
@@ -427,15 +480,17 @@ footer .fglossary b{ color:var(--paper); }
 <section class="tight" style="background:var(--panel-2); border-top:1px solid var(--line-soft); border-bottom:1px solid var(--line-soft);">
   <div class="wrap">
     <div class="eyebrow"><span class="stage-no">02</span> feature extraction</div>
-    <h2 style="font-size:34px; max-width:760px;">Every signal the model is allowed to look at &mdash; all 23</h2>
+    <h2 style="font-size:34px; max-width:760px;">The 23 facts the model is allowed to see</h2>
     <p style="margin-top:18px; font-size:15.5px; color:var(--paper-dim); max-width:720px; line-height:1.65;">
-      The shot becomes a row of 23 numbers. Fourteen describe the shot's geometry and situation;
-      nine more &mdash; new in this version &mdash; look one step further back, at the pass that
-      created it. Values below are the running example's real, computed numbers. A card marked
-      <span class="mono" style="color:var(--paper-faint)">0</span> genuinely didn't apply to this shot.
+      The shot becomes a list of 23 facts: where it was taken from, how it was struck, and what
+      kind of move created it. The two that matter most by far are
+      <b style="color:var(--paper)">distance to goal</b> and that
+      <b style="color:var(--paper)">big chance</b> tag.
     </p>
-
-    <div id="feature-groups"></div>
+    <details class="fold">
+      <summary>See all 23 facts, with this shot's real values <span class="hint">optional deep dive</span></summary>
+      <div class="fold-body"><div id="feature-groups"></div></div>
+    </details>
   </div>
 </section>
 
@@ -444,38 +499,33 @@ footer .fglossary b{ color:var(--paper); }
     <div class="eyebrow"><span class="stage-no">03</span> three separate judges, blended</div>
     <h2 style="font-size:34px;">No single model gets the final say</h2>
     <p style="margin-top:18px; font-size:15.5px; color:var(--paper-dim); line-height:1.65;">
-      The 23 numbers get scored three different ways, and the three verdicts are blended into one.
-      Each layer is weighted by how much it actually reduced error on shots the model had never seen
-      &mdash; not by hand.
+      The 23 facts get scored by three separate judges, and their verdicts are averaged into one.
+      How much say each judge gets was decided by testing, not by hand.
     </p>
     <div class="blend-row">
       <div class="blend-lane lr">
-        <div><div class="lname">Logistic<br>Regression</div><div class="ltag">always runs</div></div>
-        <div class="ldesc">A straight statistical model: each of the 23 signals gets a fixed weight,
-          and they add up. Transparent, auditable, and the only layer guaranteed to run &mdash; if a
-          machine has no fancy ML libraries installed, this alone still produces a calibrated number.</div>
+        <div><div class="lname">The simple<br>judge</div><div class="ltag">always runs</div></div>
+        <div class="ldesc">A transparent points system: each fact adds or subtracts a fixed amount.
+          Easy to inspect, and it always works.</div>
         <div class="lweight" style="color:var(--floodlight-dim)">base</div>
       </div>
       <div class="blend-lane gbm">
-        <div><div class="lname">LightGBM</div><div class="ltag">monotonic</div></div>
-        <div class="ldesc">A tree-based model that can find patterns the straight-line version can't
-          &mdash; but it's placed under a hard rule: it is <i>mathematically forbidden</i> from ever
-          learning that a shot from further out, or from a tighter angle, is more likely to score.
-          That stops it from over-fitting to a handful of lucky long-range goals in the training data.</div>
+        <div><div class="lname">The smart<br>judge</div><div class="ltag">rule-bound</div></div>
+        <div class="ldesc">A machine-learning model that spots patterns the points system misses
+          &mdash; under one hard rule: it can never claim a longer shot, or one with a worse view
+          of goal, is <i>more</i> likely to score. That stops it learning from flukes.</div>
         <div class="lweight" style="color:var(--whistle)">weight 0.50</div>
       </div>
       <div class="blend-lane mkt">
-        <div><div class="lname">Market<br>Distillation</div><div class="ltag">shape only</div></div>
-        <div class="ldesc">A third model trained to predict what a well-known public xG provider
-          (Understat) would say about this shot &mdash; using only our own 23 features, never their
-          number as an input, since that number doesn't exist yet for a shot that hasn't happened.
-          It nudges the <i>shape</i> of the curve; it never sets the <i>level</i>.</div>
+        <div><div class="lname">The industry<br>check</div><div class="ltag">shape only</div></div>
+        <div class="ldesc">A small nudge toward how well-known public xG models behave &mdash;
+          without ever copying their numbers.</div>
         <div class="lweight" style="color:var(--dusk)">weight 0.05</div>
       </div>
     </div>
 
     <div class="numline">
-      <div class="step"><div class="k">Blended logit</div><div class="v">&minus;0.85</div></div>
+      <div class="step"><div class="k">Combined score</div><div class="v">&minus;0.85</div></div>
       <div class="arrow">&rarr;</div>
       <div class="step"><div class="k">Raw probability</div><div class="v">0.300</div></div>
     </div>
@@ -487,10 +537,10 @@ footer .fglossary b{ color:var(--paper); }
     <div class="eyebrow"><span class="stage-no">04</span> calibration</div>
     <h2 style="font-size:34px;">Stop trusting the model's confidence &mdash; check its receipts</h2>
     <p style="margin-top:18px; font-size:15.5px; color:var(--paper-dim); line-height:1.65;">
-      A raw model's 0.30 doesn't automatically mean shots like this go in 30% of the time &mdash;
-      it might be a systematically over- or under-confident 0.30. So every prediction is run back
-      through a lookup curve built from the model's own historical predictions vs. what actually
-      happened, on shots the model was never trained on. This is the real curve, all 156 points of it.
+      Models, like people, can be over-confident. So every prediction is checked against reality:
+      on thousands of shots the model had never seen, did the ones it called &ldquo;0.30&rdquo;
+      actually go in 30% of the time? Wherever the answer was no, the number gets corrected.
+      The curve below is that correction, built entirely from real results.
     </p>
     <div class="chart-wrap">
       <svg class="chart" viewBox="0 0 560 300" id="cal-chart"></svg>
@@ -507,10 +557,9 @@ footer .fglossary b{ color:var(--paper); }
     <div class="eyebrow"><span class="stage-no">05</span> adjusted for competition, then capped</div>
     <h2 style="font-size:34px;">The same shot doesn't mean the same thing everywhere</h2>
     <p style="margin-top:18px; font-size:15.5px; color:var(--paper-dim); line-height:1.65;">
-      Different competitions score at systematically different rates for reasons the 23 features
-      don't capture &mdash; squad quality gaps, sample size, goalkeeping standards. One number per
-      competition nudges the calibrated probability up or down before it ships, fitted so each
-      competition's own total predicted xG lines up with its own total real goals.
+      The same shot scores at slightly different rates in different competitions &mdash; different
+      defending, goalkeeping and squad depth. So each competition gets one small nudge up or down,
+      sized so the model's totals match that competition's real goals.
     </p>
     <div class="league-strip">
       <div class="league-chip">World Cup <span class="shift pos">+0.178</span></div>
@@ -518,16 +567,11 @@ footer .fglossary b{ color:var(--paper); }
       <div class="league-chip">everything else <span class="shift pos">+0.002</span></div>
       <div class="league-chip">La Liga <span class="shift neg">&minus;0.015</span></div>
     </div>
-    <p style="margin-top:16px; font-size:14px; color:var(--paper-faint); line-height:1.6;">
-      (These are logit-space shifts, not straight percentage points &mdash; which is why World
-      Cup's is so much larger: it's a far smaller sample than a full league season, so it's pulled
-      harder toward matching its own real goal count exactly.)
-    </p>
     <p style="margin-top:22px; font-size:15.5px; color:var(--paper-dim); line-height:1.65;">
-      One last step: the number is floored at <span class="mono" style="color:var(--paper)">0.002</span>
-      and capped at <span class="mono" style="color:var(--paper)">0.97</span>. No shot is ever
-      truly a certainty or a total impossibility, and a flood of hopeless 40-metre efforts
-      shouldn't be able to sum to a fake half-goal of "expected" quality between them.
+      One last step: the number is never allowed below
+      <span class="mono" style="color:var(--paper)">0.002</span> or above
+      <span class="mono" style="color:var(--paper)">0.97</span> &mdash; no shot is ever a
+      certainty, and none is truly impossible.
     </p>
   </div>
 </section>
@@ -543,14 +587,14 @@ footer .fglossary b{ color:var(--paper); }
       <div class="arrow">&rarr;</div>
       <div class="step"><div class="k">+ World Cup</div><div class="v">0.346</div></div>
       <div class="arrow">&rarr;</div>
-      <div class="step final"><div class="k">+ GBM &amp; market layers</div><div class="v">0.364</div></div>
+      <div class="step final"><div class="k">+ all three judges</div><div class="v">0.364</div></div>
     </div>
     <div class="output-card">
       <div class="big">0.36</div>
-      <div class="capt">The full model &mdash; every layer, including the LightGBM and market
-        blend &mdash; puts this exact shot at <b>xG&nbsp;0.364</b>. That's what actually ships to
-        the site and the PNG reports. Roughly a little better than one in three, from that spot,
-        struck that way, after that delivery.</div>
+      <div class="capt">The full model &mdash; all three judges, every correction &mdash; puts
+        this exact shot at <b>xG&nbsp;0.364</b>. That's the number that ships to the site and the
+        match reports: a bit better than one goal in three, from that spot, struck that way,
+        after that delivery.</div>
     </div>
   </div>
 </section>
@@ -562,13 +606,10 @@ footer .fglossary b{ color:var(--paper); }
     <div class="eyebrow">the other half &middot; xA</div>
     <h2>The pass gets scored too, on its own terms</h2>
     <p style="margin-top:18px; font-size:15.5px; color:var(--paper-dim); line-height:1.65;">
-      The old approach credited a passer with the xG of whatever shot happened to follow &mdash;
-      so a perfect through-ball the striker skied over the bar earned its passer <i>nothing</i>,
-      and a scuffed shot off a mediocre pass earned <i>full</i> credit. That's backwards. This model
-      scores <b style="color:var(--paper)">the pass itself</b>:
-      <span style="color:var(--paper)">xA(pass) = the calibrated probability that this specific
-      completed pass becomes a goal assist</span>, summed over everything a player plays.
-      A failed pass can't assist anything &mdash; it scores zero by definition and is never modelled.
+      The old way gave the passer credit only for whatever shot happened next &mdash; so a perfect
+      through-ball the striker blazed over earned its passer <i>nothing</i>. That's backwards.
+      This model scores <b style="color:var(--paper)">the pass itself</b>: how likely was
+      <i>this</i> pass, on its own merits, to end up creating a goal?
     </p>
 
     <div class="xa-flow">
@@ -589,8 +630,8 @@ footer .fglossary b{ color:var(--paper); }
       <div class="xa-stagebox" style="border-color:var(--dusk-dim);">
         <div class="st" style="color:var(--dusk)">Product, then calibrated</div>
         <h5>xA</h5>
-        <p>The two stages multiply, then get the same isotonic calibration + league-shift treatment
-          as the shot model &mdash; checked against real assists, Opta's own strict definition.</p>
+        <p>The two stages multiply together, then get the same honesty check against real
+          recorded assists that the shot model gets against real goals.</p>
       </div>
     </div>
 
@@ -612,7 +653,10 @@ footer .fglossary b{ color:var(--paper); }
   <div class="wrap">
     <div class="eyebrow">every signal the pass model looks at &mdash; all 19</div>
     <h2 style="font-size:32px; max-width:760px;">What makes one pass more dangerous than another</h2>
-    <div id="xa-feature-groups"></div>
+    <details class="fold">
+      <summary>See all 19 pass facts <span class="hint">optional deep dive</span></summary>
+      <div class="fold-body"><div id="xa-feature-groups"></div></div>
+    </details>
   </div>
 </section>
 
@@ -621,11 +665,9 @@ footer .fglossary b{ color:var(--paper); }
     <div class="eyebrow">try it yourself</div>
     <h2 style="font-size:34px;">Place a shot &mdash; or a pass. Watch the number move.</h2>
     <p style="margin-top:18px; font-size:15.5px; color:var(--paper-dim); max-width:720px; line-height:1.65;">
-      This runs the real trained models, live, in your browser &mdash; the actual intercepts,
-      coefficients, calibration curves, and league adjustments extracted straight from the shipped
-      artifacts. It's the logistic-regression layer only (the version each model falls back to on
-      a machine without the extra ML libraries installed) &mdash; the live site adds the LightGBM
-      and market layers on top, which typically move the number by a few hundredths.
+      This is the real trained model, running live in your browser. Tap anywhere on the pitch to
+      place a shot &mdash; or switch to pass mode &mdash; and watch the number react as you move
+      closer, wider, or change how the chance came about.
     </p>
     <div class="seg" id="seg-mode" style="margin-top:18px;">
       <button data-v="shot" class="on">Shot &middot; xG</button>
@@ -737,6 +779,13 @@ footer .fglossary b{ color:var(--paper); }
   <div class="prose">
     <div class="eyebrow">why it's built this way</div>
     <h2 style="font-size:32px;">The decisions that keep it honest</h2>
+    <p style="margin-top:18px; font-size:15.5px; color:var(--paper-dim); line-height:1.65;">
+      Five deliberate choices stop this model from flattering itself &mdash; from training on
+      real, unbalanced data to grading itself only on shots it has never seen.
+    </p>
+    <details class="fold">
+      <summary>Read the five decisions <span class="hint">for the curious</span></summary>
+      <div class="fold-body">
     <div class="principles">
       <div class="principle">
         <div class="mark">01</div>
@@ -777,6 +826,8 @@ footer .fglossary b{ color:var(--paper); }
             testing would let the model quietly peek at its own answers.</p></div>
       </div>
     </div>
+      </div>
+    </details>
   </div>
 </section>
 
@@ -788,7 +839,10 @@ footer .fglossary b{ color:var(--paper); }
       <div>AUC <b>0.805</b></div>
       <div>&Sigma;xG&nbsp;/&nbsp;goals <b>1.00</b></div>
     </div>
-    <div class="fglossary">
+    <details class="fold" style="max-width:640px;">
+      <summary>What those three scores mean <span class="hint">plain-words glossary</span></summary>
+      <div class="fold-body">
+    <div class="fglossary" style="margin-top:0;">
       <div><b>Brier score</b> &mdash; how far the model's predictions land from what actually
         happened, averaged over every shot in the test set (0 = perfect, 1 = worst possible).
         Since goals only happen on about 1 shot in 10, a model that just guessed "10%, every
@@ -806,6 +860,8 @@ footer .fglossary b{ color:var(--paper); }
         a promise. (A popular public xG provider runs 9&ndash;11% high on this same check,
         every league, every season &mdash; see principle 04 above.)</div>
     </div>
+      </div>
+    </details>
     <p class="fnote">The same scorer feeds the PNG match reports and the live dashboard &mdash;
       one model, never two competing implementations, so the numbers always agree.</p>
   </div>
@@ -1178,7 +1234,7 @@ footer .fglossary b{ color:var(--paper); }
       } else {
         document.getElementById('ro-dist').textContent = r.dist.toFixed(1)+' m';
         document.getElementById('ro-angle').textContent = r.angle.toFixed(1)+'°';
-        document.getElementById('ro-note').textContent = 'This is the calibrated logistic-regression layer only — the live site’s number for a similar shot runs slightly different once the LightGBM and market layers are blended in.';
+        document.getElementById('ro-note').textContent = 'This calculator runs the simple judge only — the live site adds the smart judge and industry check on top, which nudge the number by a few hundredths.';
         var flipped = computeXG(state.x_sb, state.y_sb, state.body, state.situation, !state.big, state.assisted, state.league);
         if(state.big){
           swingEl.innerHTML = 'Flip <b>Big chance</b> off for this exact spot and it falls to <b>'+flipped.p.toFixed(3)+'</b> — same distance, same angle, nothing else changed.';
@@ -1216,10 +1272,10 @@ footer .fglossary b{ color:var(--paper); }
       document.getElementById('ro-dist').textContent = (r.pShot*100).toFixed(1)+'%';
       document.getElementById('ro-angle').textContent = r.pQual.toFixed(3);
       document.getElementById('ro-xg').textContent = r.p.toFixed(3);
-      document.getElementById('ro-geomnote').textContent = 'Stage A × Stage B, multiplied together, is the raw product this model then runs through its own isotonic calibration curve and league shift to get the final xA below.';
+      document.getElementById('ro-geomnote').textContent = 'The two stages multiply together, then get the same honesty-check correction as the shot model — that gives the final xA below.';
       document.getElementById('ro-bigswing').innerHTML = 'start '+r.startDist.toFixed(1)+'m from goal → end '+r.endDist.toFixed(1)+'m from goal · pass length '+r.length.toFixed(1)+'m' +
         (r.cutback ? ' · <b>cutback</b> — detected automatically from the geometry, not a tag you set' : '');
-      document.getElementById('ro-note').textContent = 'This is the calibrated logistic-regression layer only — the live site blends in a LightGBM version of both stages (95% weight) for the final number.';
+      document.getElementById('ro-note').textContent = 'This calculator runs the simple judge only — the live site blends in a smarter model of both stages for its final number.';
     }
     function update(){
       if(state.mode === 'shot'){ updateShot(); } else { updatePass(); }
