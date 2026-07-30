@@ -183,6 +183,7 @@ section h2 { font-size: clamp(23px, 3.4vw, 30px); margin-bottom: 6px; }
 .formula { font-family: var(--mono); font-size: clamp(13px, 2.4vw, 15.5px); color: var(--ink); background: var(--bg-soft);
   border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; overflow-x: auto; white-space: nowrap; margin: 14px 0; }
 .model-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: start; margin-top: 24px; }
+.model-grid > * { min-width: 0; }
 .model-grid h3 { font-size: 16.5px; margin-bottom: 10px; }
 .tbl-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
 table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
@@ -306,15 +307,17 @@ html[data-theme="dark"] .footer { background: #070b15; }
         <text x="676" y="142" class="dg-mono">tradepipe/consumer.py</text>
         <!-- flows -->
         <path d="M220 90 H322" class="dg-arrow" marker-end="url(#ah1)"/>
-        <text x="232" y="82" class="dg-mono">publish → feed.&lt;fixture&gt;</text>
+        <text x="271" y="78" text-anchor="middle" class="dg-mono">publish</text>
+        <text x="271" y="106" text-anchor="middle" class="dg-mono">feed.&lt;fixture&gt;</text>
         <path d="M550 90 H652" class="dg-arrow" marker-end="url(#ah1)"/>
-        <text x="562" y="82" class="dg-mono">subscribe feed.#</text>
+        <text x="601" y="78" text-anchor="middle" class="dg-mono">subscribe</text>
+        <text x="601" y="106" text-anchor="middle" class="dg-mono">feed.#</text>
         <path d="M660 130 H558" class="dg-arrow-2" marker-end="url(#ah2)"/>
-        <text x="566" y="150" class="dg-mono">MarketUpdate out → markets.&lt;fixture&gt;</text>
+        <text x="609" y="148" text-anchor="middle" class="dg-mono">MarketUpdate out</text>
         <!-- snapshot RPC loop -->
-        <path d="M700 156 C 620 230, 300 230, 226 160" class="dg-rpc" marker-end="url(#ah3)"/>
-        <text x="330" y="206" class="dg-text">late joiner detects MsgSeq gap → GetSnapshot RPC</text>
-        <text x="330" y="222" class="dg-mono">snapshot.&lt;fixture&gt; → replies with current state → consumer resumes</text>
+        <path d="M700 156 C 620 205, 300 205, 226 160" class="dg-rpc" marker-end="url(#ah3)"/>
+        <text x="453" y="226" text-anchor="middle" class="dg-text">late joiner detects MsgSeq gap → GetSnapshot RPC</text>
+        <text x="453" y="243" text-anchor="middle" class="dg-mono">snapshot.&lt;fixture&gt; → replies with current state → consumer resumes</text>
         <!-- message type chips -->
         <text x="20" y="266" class="dg-text">message types on the feed:</text>
         <rect x="20"  y="276" width="176" height="26" rx="13" class="dg-chip"/><text x="34"  y="293" class="dg-mono">1 · FixtureMetadataUpdate</text>
