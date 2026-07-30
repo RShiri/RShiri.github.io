@@ -689,6 +689,7 @@ python3 -m pytest live-pipeline/tests -q</pre>
       ? Promise.resolve(replay.cache[meta.id])
       : fetchJson(DATA_BASE + meta.id + ".json").then(function (d) { replay.cache[meta.id] = d; return d; });
     p.then(function (data) {
+      data.meta = meta;                          /* manifest row: real full-time score */
       replay.match = data;
       $("#replayShell").hidden = false;
       buildChart(data);
@@ -870,7 +871,8 @@ python3 -m pytest live-pipeline/tests -q</pre>
     $("#scoreA").textContent = row.scoreA;
     $("#xgH").textContent = row.xgH.toFixed(2);
     $("#xgA").textContent = row.xgA.toFixed(2);
-    $("#minuteLbl").textContent = min >= 90 ? "FT (90')" : Math.floor(min) + "'";
+    $("#minuteLbl").textContent = min >= 90 ? (wentToExtraTime() ? "90' · to extra time" : "FT (90')")
+      : Math.floor(min) + "'";
     $("#scrub").value = min;
 
     /* odds ticker */
@@ -946,6 +948,13 @@ python3 -m pytest live-pipeline/tests -q</pre>
     for (var i = 0; i < evs.length; i++) list.insertBefore(feedItem(evs[i]), list.firstChild);
     replay.feedShown = evs.length;
   }
+  function wentToExtraTime() {
+    /* the timeline's final is the 90' score; the manifest row carries the
+       real full-time score - when they differ, extra time was played */
+    var m = replay.match;
+    return !!(m && m.meta &&
+      (m.meta.home.score !== m.final.scoreH || m.meta.away.score !== m.final.scoreA));
+  }
   function showEndstate() {
     var m = replay.match;
     var f = m.final, last = m.timeline[m.timeline.length - 1];
@@ -960,10 +969,18 @@ python3 -m pytest live-pipeline/tests -q</pre>
     var p2 = document.createElement("div");
     p2.textContent = "Model at 90': H " + Math.round(last.pH * 100) + "% · D " + Math.round(last.pD * 100) +
       "% · A " + Math.round(last.pA * 100) + "%.";
+    body.appendChild(p1); body.appendChild(p2);
+    if (wentToExtraTime()) {
+      var p3 = document.createElement("div");
+      p3.textContent = "This one didn't end at 90': " + m.meta.home.name + " " + m.meta.home.score +
+        "–" + m.meta.away.score + " " + m.meta.away.name + " after extra time. The 1X2 (90 min) " +
+        "market still settles on the 90' score - extra time is a different market.";
+      body.appendChild(p3);
+    }
     var s = document.createElement("span");
     s.className = "settle";
     s.textContent = "market settled: " + (f.settled || actual);
-    body.appendChild(p1); body.appendChild(p2); body.appendChild(s);
+    body.appendChild(s);
   }
 
   /* ---------------- hover tooltip on the win-prob chart */
