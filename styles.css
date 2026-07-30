@@ -208,6 +208,20 @@ img { max-width: 100%; display: block; }
 .mc-bar { display: flex; gap: 2px; height: 7px; margin-top: 5px; border-radius: 5px; overflow: hidden; background: var(--bg-soft); }
 .mc-bar i { height: 100%; border-radius: 5px; }
 
+/* win probability (in-play model, fed by assets/data/winprob/<id>.json) */
+.mc-winprob { padding: 14px 22px 10px; border-top: 1px solid var(--line); }
+.mc-wp-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.mc-wp-head .mc-subhead { margin: 0; }
+.mc-wp-link { font-size: 13px; font-weight: 600; white-space: nowrap; }
+.mc-wp-svg { width: 100%; height: auto; display: block; margin-top: 8px; }
+.mc-wp-grid { stroke: var(--line); stroke-width: 1; }
+.mc-wp-tick { fill: var(--muted); font-size: 9px; font-variant-numeric: tabular-nums; }
+.mc-wp-goal { stroke-width: 1.2; opacity: .55; }
+.mc-wp-line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.mc-wp-line.draw { stroke: var(--muted); stroke-width: 1.6; stroke-dasharray: 4 4; opacity: .8; }
+.mc-wp-legend { margin-top: 6px; }
+.mc-wp-lg-draw { background: var(--muted); }
+
 /* shot map dots (home = Argentina blue, away = Algeria green, brightened for the dark pitch) */
 /* shot-path lines to goal (behind the dots), styled like the Lamine xG map:
    goals get a prominent team-coloured line, everything else stays faint */

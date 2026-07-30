@@ -207,6 +207,7 @@ document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");}
 
       <div class="mc-score" id="mcScore"><!-- filled by JS --></div>
       <div class="mc-stats" id="mcStats"><!-- filled by JS --></div>
+      <div class="mc-winprob" id="mcWinprob" hidden><!-- filled by JS --></div>
 
       <h4 class="mc-subhead">Shot map <span>· dot size = xG · hover for details</span></h4>
       <div class="pitch-wrap">
@@ -362,6 +363,18 @@ document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");}
           <p>An interactive walkthrough of the xG model behind my World Cup dashboard - real shot data, 23 features, a calibration curve, and a live in-browser calculator.</p>
           <div class="tags"><span>Machine Learning</span><span>xG model</span><span>JavaScript</span></div>
           <a class="project-link" href="xg-model/" target="_blank" rel="noopener">Open explainer ↗</a>
+        </div>
+      </article>
+      <article class="project">
+        <a class="project-shot" href="live-pipeline/" target="_blank" rel="noopener">
+          <img src="assets/img/live-pipeline.png" alt="Live match data pipeline demo styled after TRADE360" loading="lazy" onerror="this.closest('.project-shot').classList.add('noshot')" />
+          <span class="project-fallback">Live Data<br />Pipeline</span>
+        </a>
+        <div class="project-body">
+          <h3>Live Match Pipeline - a mini TRADE360</h3>
+          <p>Real-time feed replay over RabbitMQ-style messages, an in-play xG win-probability model pricing the 1X2 market, and snapshot recovery.</p>
+          <div class="tags"><span>Real-time</span><span>Message queue</span><span>In-play model</span></div>
+          <a class="project-link" href="live-pipeline/" target="_blank" rel="noopener">Open demo ↗</a>
         </div>
       </article>
       <article class="project">

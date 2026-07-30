@@ -587,6 +587,66 @@
       if (current) { playBtn.textContent = "↻ Replay"; current.play(); }
     });
 
+    /* ---- win probability (in-play model, assets/data/winprob/<id>.json) ----
+       Static three-line chart of the minute-by-minute 1X2 probabilities from
+       my live-pipeline demo: home/away in team colours, draw dashed grey,
+       thin vertical ticks at goals, hover for the exact 1X2 read at a minute. */
+    var winprobEl = $("#mcWinprob");
+    var renderWinprob = function (D, W) {
+      if (!winprobEl) return;
+      if (!W || !W.timeline || !W.timeline.length) { winprobEl.hidden = true; return; }
+      var tl = W.timeline, last = tl[tl.length - 1];
+      var homeC = (D.home && D.home.color) || (W.home && W.home.color) || "#74acdf";
+      var awayC = (W.away && W.away.color) || (D.away && D.away.color) || "#2fbf71";
+      var WX0 = 34, WX1 = 630, WY0 = 10, WY1 = 102;
+      var px = function (min) { return WX0 + (WX1 - WX0) * min / 90; };
+      var py = function (p) { return WY1 - (WY1 - WY0) * p; };
+      var pts = function (key) { return tl.map(function (r) { return px(r.min).toFixed(1) + "," + py(r[key]).toFixed(1); }).join(" "); };
+      var pct = function (p) { return Math.round(p * 100) + "%"; };
+
+      winprobEl.innerHTML =
+        '<div class="mc-wp-head"><h4 class="mc-subhead">Win probability <span>· in-play model</span></h4>' +
+        '<a class="mc-wp-link" href="live-pipeline/" target="_blank" rel="noopener">full demo ↗</a></div>';
+      var svg = E("svg", { viewBox: "0 0 640 120", "class": "mc-wp-svg", role: "img",
+                           "aria-label": "Win probability by minute: " + D.home.name + " vs " + D.away.name });
+      [0, 0.5, 1].forEach(function (p) {
+        svg.appendChild(E("line", { x1: WX0, x2: WX1, y1: py(p).toFixed(1), y2: py(p).toFixed(1), "class": "mc-wp-grid" }));
+        var t = E("text", { x: WX0 - 5, y: (py(p) + 3).toFixed(1), "class": "mc-wp-tick", "text-anchor": "end" });
+        t.textContent = Math.round(p * 100) + (p === 1 ? "%" : "");
+        svg.appendChild(t);
+      });
+      tl.forEach(function (r) {
+        (r.events || []).forEach(function (ev) {
+          if (ev.type !== "goal") return;
+          var gx = px(ev.min).toFixed(1);
+          svg.appendChild(E("line", { x1: gx, x2: gx, y1: WY0, y2: WY1, "class": "mc-wp-goal",
+                                      style: "stroke:" + (ev.team === "home" ? homeC : awayC) }));
+        });
+      });
+      svg.appendChild(E("polyline", { points: pts("pD"), "class": "mc-wp-line draw" }));
+      svg.appendChild(E("polyline", { points: pts("pA"), "class": "mc-wp-line", style: "stroke:" + awayC }));
+      svg.appendChild(E("polyline", { points: pts("pH"), "class": "mc-wp-line", style: "stroke:" + homeC }));
+      svg.addEventListener("mousemove", function (e) {
+        var rect = svg.getBoundingClientRect();
+        if (!rect.width) return;
+        var vx = (e.clientX - rect.left) / rect.width * 640;
+        var min = Math.max(0, Math.min(90, Math.round((vx - WX0) / (WX1 - WX0) * 90)));
+        var row = tl[Math.min(min, tl.length - 1)] || last;
+        showTip("<b>" + row.min + "'</b> · " + esc(D.home.name) + " " + pct(row.pH) +
+                " / Draw " + pct(row.pD) + " / " + esc(D.away.name) + " " + pct(row.pA), e.clientX, e.clientY);
+      });
+      svg.addEventListener("mouseleave", hideTip);
+      winprobEl.appendChild(svg);
+      var leg = document.createElement("div");
+      leg.className = "legend mc-wp-legend";
+      leg.innerHTML =
+        '<span><i style="background:' + homeC + '"></i> ' + esc(D.home.name) + " " + pct(last.pH) + "</span>" +
+        '<span><i class="mc-wp-lg-draw"></i> Draw ' + pct(last.pD) + "</span>" +
+        '<span><i style="background:' + awayC + '"></i> ' + esc(D.away.name) + " " + pct(last.pA) + "</span>";
+      winprobEl.appendChild(leg);
+      winprobEl.hidden = false;
+    };
+
     /* ---- render one match ---- */
     var renderMatch = function (D) {
       renderScore(D); renderStats(D); renderShots(D); renderReplays(D);
@@ -600,7 +660,15 @@
       if (fullLink && m.id) fullLink.href = DASH + encodeURIComponent(m.id);
       fetch(m.file + "?v=1", { cache: "no-cache" })
         .then(function (r) { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
-        .then(renderMatch)
+        .then(function (D) {
+          renderMatch(D);
+          // win-prob timeline is optional: render it when the file exists, hide otherwise
+          if (!winprobEl || !m.id) { if (winprobEl) winprobEl.hidden = true; return; }
+          fetch("assets/data/winprob/" + m.id + ".json?v=1", { cache: "no-cache" })
+            .then(function (r) { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
+            .then(function (W) { renderWinprob(D, W); })
+            .catch(function () { winprobEl.hidden = true; });
+        })
         .catch(function () { if (replayMeta) replayMeta.textContent = "Match data could not be loaded."; });
     };
     var mcLabel = function (m) {
