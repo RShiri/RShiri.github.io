@@ -45,6 +45,12 @@ class MatchProducer:
         with open(self.match_path, encoding="utf-8") as f:
             self.match = json.load(f)
         self.fixture_id = self.match_path.stem
+        # The argentina files are all World Cup matches with clean stage
+        # labels ("Group Stage", "Round of 32", "Final", ...), so group-ish
+        # stage => no extra time, anything else => knockout with extra time.
+        # model.effective_min stays pure; this adapter owns the stage logic.
+        stage = (self.match.get("stage") or "").lower()
+        self.has_extra_time = "group" not in stage and "grp" not in stage
         self.kickoff_ms = self._kickoff_ms(self.match["date"])
         self.messages_published = 0          # doubles as the MsgSeq counter
 
@@ -202,7 +208,7 @@ class MatchProducer:
         return h, a
 
     def _eff_min(self, event_min):
-        return effective_min(event_min, self.match.get("stage", ""))
+        return effective_min(event_min, self.has_extra_time)
 
     def _xg_at(self, side, t):
         total = 0.0

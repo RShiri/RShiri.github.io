@@ -1,55 +1,563 @@
 {
- "mu": 1.4325,
+ "version": 2,
+ "mu": {
+  "EPL": 1.4184,
+  "LaLiga": 1.2871,
+  "WC": 1.3397
+ },
+ "hfa": 1.1295,
  "k": 1,
  "w": 0.35,
+ "decay": 0.8,
  "teams": {
-  "Algeria": {
-   "att": 0.82625,
-   "def": 1.26125,
-   "matches": 1
+  "EPL/AFC Bournemouth": {
+   "att": 1.4762,
+   "def": 1.4105,
+   "matches": 152
   },
-  "Argentina": {
-   "att": 1.9925,
-   "def": 0.8725,
+  "EPL/Arsenal": {
+   "att": 1.7627,
+   "def": 0.895,
+   "matches": 152
+  },
+  "EPL/Aston Villa": {
+   "att": 1.4542,
+   "def": 1.3725,
+   "matches": 152
+  },
+  "EPL/Brentford": {
+   "att": 1.5129,
+   "def": 1.4184,
+   "matches": 152
+  },
+  "EPL/Brighton & Hove Albion": {
+   "att": 1.5752,
+   "def": 1.3446,
+   "matches": 152
+  },
+  "EPL/Burnley": {
+   "att": 0.9516,
+   "def": 1.8745,
+   "matches": 76
+  },
+  "EPL/Chelsea": {
+   "att": 1.6795,
+   "def": 1.3415,
+   "matches": 152
+  },
+  "EPL/Crystal Palace": {
+   "att": 1.3724,
+   "def": 1.3731,
+   "matches": 152
+  },
+  "EPL/Everton": {
+   "att": 1.2166,
+   "def": 1.4365,
+   "matches": 152
+  },
+  "EPL/Fulham": {
+   "att": 1.2319,
+   "def": 1.4509,
+   "matches": 152
+  },
+  "EPL/Ipswich Town": {
+   "att": 0.991,
+   "def": 1.9726,
+   "matches": 38
+  },
+  "EPL/Leeds United": {
+   "att": 1.3512,
+   "def": 1.4516,
+   "matches": 76
+  },
+  "EPL/Leicester City": {
+   "att": 1.0118,
+   "def": 1.7282,
+   "matches": 76
+  },
+  "EPL/Liverpool": {
+   "att": 1.9378,
+   "def": 1.1882,
+   "matches": 152
+  },
+  "EPL/Luton Town": {
+   "att": 1.1693,
+   "def": 2.07,
+   "matches": 38
+  },
+  "EPL/Manchester City": {
+   "att": 1.9234,
+   "def": 1.0849,
+   "matches": 152
+  },
+  "EPL/Manchester United": {
+   "att": 1.5512,
+   "def": 1.3937,
+   "matches": 152
+  },
+  "EPL/Newcastle United": {
+   "att": 1.6794,
+   "def": 1.2942,
+   "matches": 152
+  },
+  "EPL/Nottingham Forest": {
+   "att": 1.1709,
+   "def": 1.4288,
+   "matches": 152
+  },
+  "EPL/Sheffield United": {
+   "att": 1.0477,
+   "def": 1.9527,
+   "matches": 38
+  },
+  "EPL/Southampton": {
+   "att": 0.9268,
+   "def": 1.9289,
+   "matches": 76
+  },
+  "EPL/Sunderland": {
+   "att": 1.0357,
+   "def": 1.3829,
+   "matches": 38
+  },
+  "EPL/Tottenham Hotspur": {
+   "att": 1.3896,
+   "def": 1.4599,
+   "matches": 152
+  },
+  "EPL/West Ham United": {
+   "att": 1.2329,
+   "def": 1.6021,
+   "matches": 152
+  },
+  "EPL/Wolverhampton Wanderers": {
+   "att": 1.034,
+   "def": 1.5695,
+   "matches": 152
+  },
+  "LaLiga/Almeria": {
+   "att": 1.1934,
+   "def": 1.6112,
+   "matches": 76
+  },
+  "LaLiga/Athletic Club": {
+   "att": 1.3571,
+   "def": 1.0234,
+   "matches": 152
+  },
+  "LaLiga/Atletico Madrid": {
+   "att": 1.5793,
+   "def": 1.0894,
+   "matches": 152
+  },
+  "LaLiga/Barcelona": {
+   "att": 2.1387,
+   "def": 1.0475,
+   "matches": 152
+  },
+  "LaLiga/Cadiz": {
+   "att": 0.9501,
+   "def": 1.4087,
+   "matches": 76
+  },
+  "LaLiga/Celta Vigo": {
+   "att": 1.277,
+   "def": 1.255,
+   "matches": 152
+  },
+  "LaLiga/Deportivo Alaves": {
+   "att": 1.1783,
+   "def": 1.2396,
+   "matches": 114
+  },
+  "LaLiga/Elche": {
+   "att": 1.0458,
+   "def": 1.6752,
+   "matches": 76
+  },
+  "LaLiga/Espanyol": {
+   "att": 1.1091,
+   "def": 1.396,
+   "matches": 114
+  },
+  "LaLiga/Getafe": {
+   "att": 0.9491,
+   "def": 1.188,
+   "matches": 152
+  },
+  "LaLiga/Girona": {
+   "att": 1.3186,
+   "def": 1.417,
+   "matches": 152
+  },
+  "LaLiga/Granada": {
+   "att": 1.0704,
+   "def": 1.6268,
+   "matches": 38
+  },
+  "LaLiga/Las Palmas": {
+   "att": 0.9372,
+   "def": 1.5947,
+   "matches": 76
+  },
+  "LaLiga/Leganes": {
+   "att": 0.9509,
+   "def": 1.5655,
+   "matches": 38
+  },
+  "LaLiga/Levante": {
+   "att": 1.3878,
+   "def": 1.5642,
+   "matches": 38
+  },
+  "LaLiga/Mallorca": {
+   "att": 1.0382,
+   "def": 1.287,
+   "matches": 152
+  },
+  "LaLiga/Osasuna": {
+   "att": 1.1176,
+   "def": 1.2772,
+   "matches": 152
+  },
+  "LaLiga/Rayo Vallecano": {
+   "att": 1.2297,
+   "def": 1.2568,
+   "matches": 152
+  },
+  "LaLiga/Real Betis": {
+   "att": 1.3365,
+   "def": 1.2277,
+   "matches": 152
+  },
+  "LaLiga/Real Madrid": {
+   "att": 1.9395,
+   "def": 1.0417,
+   "matches": 152
+  },
+  "LaLiga/Real Oviedo": {
+   "att": 0.9286,
+   "def": 1.575,
+   "matches": 38
+  },
+  "LaLiga/Real Sociedad": {
+   "att": 1.2975,
+   "def": 1.1932,
+   "matches": 152
+  },
+  "LaLiga/Real Valladolid": {
+   "att": 0.9045,
+   "def": 1.6863,
+   "matches": 76
+  },
+  "LaLiga/Sevilla": {
+   "att": 1.0814,
+   "def": 1.3659,
+   "matches": 152
+  },
+  "LaLiga/Valencia": {
+   "att": 1.1707,
+   "def": 1.2581,
+   "matches": 152
+  },
+  "LaLiga/Villarreal": {
+   "att": 1.5745,
+   "def": 1.2759,
+   "matches": 152
+  },
+  "WC/Algeria": {
+   "att": 1.1733,
+   "def": 1.2081,
+   "matches": 4
+  },
+  "WC/Argentina": {
+   "att": 1.6114,
+   "def": 0.7037,
+   "matches": 19
+  },
+  "WC/Australia": {
+   "att": 0.6782,
+   "def": 1.264,
+   "matches": 11
+  },
+  "WC/Austria": {
+   "att": 1.1835,
+   "def": 1.7537,
+   "matches": 4
+  },
+  "WC/Belgium": {
+   "att": 1.7816,
+   "def": 1.3442,
+   "matches": 16
+  },
+  "WC/Bosnia and Herzegovina": {
+   "att": 0.8179,
+   "def": 1.3855,
+   "matches": 4
+  },
+  "WC/Brazil": {
+   "att": 2.2611,
+   "def": 0.6718,
+   "matches": 15
+  },
+  "WC/Cameroon": {
+   "att": 1.2027,
+   "def": 1.8816,
+   "matches": 3
+  },
+  "WC/Canada": {
+   "att": 1.7902,
+   "def": 0.978,
    "matches": 8
   },
-  "Austria": {
-   "att": 1.01125,
-   "def": 2.00625,
-   "matches": 1
+  "WC/Cape Verde": {
+   "att": 0.7729,
+   "def": 1.4969,
+   "matches": 4
   },
-  "Cape Verde": {
-   "att": 1.02125,
-   "def": 1.90125,
-   "matches": 1
+  "WC/Colombia": {
+   "att": 1.3249,
+   "def": 0.9663,
+   "matches": 9
   },
-  "Egypt": {
-   "att": 1.24125,
-   "def": 2.37625,
-   "matches": 1
+  "WC/Costa Rica": {
+   "att": 0.8341,
+   "def": 2.3682,
+   "matches": 6
   },
-  "England": {
-   "att": 1.02625,
-   "def": 1.59125,
-   "matches": 1
+  "WC/Croatia": {
+   "att": 1.1503,
+   "def": 1.4816,
+   "matches": 18
   },
-  "Jordan": {
-   "att": 0.99625,
-   "def": 1.92125,
-   "matches": 1
+  "WC/Curacao": {
+   "att": 0.7037,
+   "def": 2.6714,
+   "matches": 3
   },
-  "Spain": {
-   "att": 1.78125,
-   "def": 0.78625,
-   "matches": 1
+  "WC/Czechia": {
+   "att": 0.9929,
+   "def": 1.8884,
+   "matches": 3
   },
-  "Switzerland": {
-   "att": 1.03625,
-   "def": 2.13625,
-   "matches": 1
+  "WC/DR Congo": {
+   "att": 1.1269,
+   "def": 1.2003,
+   "matches": 4
+  },
+  "WC/Denmark": {
+   "att": 0.98,
+   "def": 1.3262,
+   "matches": 7
+  },
+  "WC/Ecuador": {
+   "att": 1.4704,
+   "def": 1.0947,
+   "matches": 7
+  },
+  "WC/Egypt": {
+   "att": 1.2366,
+   "def": 1.7545,
+   "matches": 8
+  },
+  "WC/England": {
+   "att": 1.8058,
+   "def": 1.1123,
+   "matches": 20
+  },
+  "WC/France": {
+   "att": 1.8078,
+   "def": 1.0347,
+   "matches": 22
+  },
+  "WC/Germany": {
+   "att": 2.4465,
+   "def": 1.2001,
+   "matches": 10
+  },
+  "WC/Ghana": {
+   "att": 0.9586,
+   "def": 1.5191,
+   "matches": 7
+  },
+  "WC/Haiti": {
+   "att": 0.9227,
+   "def": 2.0342,
+   "matches": 3
+  },
+  "WC/Iceland": {
+   "att": 1.5786,
+   "def": 1.5742,
+   "matches": 3
+  },
+  "WC/Iran": {
+   "att": 1.3362,
+   "def": 1.331,
+   "matches": 9
+  },
+  "WC/Iraq": {
+   "att": 0.7547,
+   "def": 2.7239,
+   "matches": 3
+  },
+  "WC/Ivory Coast": {
+   "att": 1.4165,
+   "def": 1.5171,
+   "matches": 4
+  },
+  "WC/Japan": {
+   "att": 1.1663,
+   "def": 1.3118,
+   "matches": 12
+  },
+  "WC/Jordan": {
+   "att": 0.8042,
+   "def": 1.9264,
+   "matches": 3
+  },
+  "WC/Mexico": {
+   "att": 1.3956,
+   "def": 1.2047,
+   "matches": 12
+  },
+  "WC/Morocco": {
+   "att": 0.9815,
+   "def": 1.1886,
+   "matches": 16
+  },
+  "WC/Netherlands": {
+   "att": 1.1828,
+   "def": 1.0904,
+   "matches": 9
+  },
+  "WC/New Zealand": {
+   "att": 1.1499,
+   "def": 2.4039,
+   "matches": 3
+  },
+  "WC/Nigeria": {
+   "att": 1.3616,
+   "def": 1.4363,
+   "matches": 3
+  },
+  "WC/Norway": {
+   "att": 1.9337,
+   "def": 1.3457,
+   "matches": 6
+  },
+  "WC/Panama": {
+   "att": 0.9099,
+   "def": 1.7019,
+   "matches": 6
+  },
+  "WC/Paraguay": {
+   "att": 0.629,
+   "def": 1.6443,
+   "matches": 5
+  },
+  "WC/Peru": {
+   "att": 1.0701,
+   "def": 1.3408,
+   "matches": 3
+  },
+  "WC/Poland": {
+   "att": 1.1147,
+   "def": 1.5555,
+   "matches": 7
+  },
+  "WC/Portugal": {
+   "att": 1.5127,
+   "def": 1.2038,
+   "matches": 14
+  },
+  "WC/Qatar": {
+   "att": 0.6722,
+   "def": 2.1193,
+   "matches": 6
+  },
+  "WC/Russia": {
+   "att": 0.9649,
+   "def": 1.3366,
+   "matches": 5
+  },
+  "WC/Saudi Arabia": {
+   "att": 0.9207,
+   "def": 1.8688,
+   "matches": 9
+  },
+  "WC/Scotland": {
+   "att": 1.0937,
+   "def": 1.8404,
+   "matches": 3
+  },
+  "WC/Senegal": {
+   "att": 1.7181,
+   "def": 1.1754,
+   "matches": 11
+  },
+  "WC/Serbia": {
+   "att": 1.1642,
+   "def": 1.9928,
+   "matches": 6
+  },
+  "WC/South Africa": {
+   "att": 0.8015,
+   "def": 1.4985,
+   "matches": 4
+  },
+  "WC/South Korea": {
+   "att": 1.1699,
+   "def": 1.4742,
+   "matches": 10
+  },
+  "WC/Spain": {
+   "att": 1.692,
+   "def": 0.5681,
+   "matches": 16
+  },
+  "WC/Sweden": {
+   "att": 1.363,
+   "def": 1.3429,
+   "matches": 9
+  },
+  "WC/Switzerland": {
+   "att": 1.5348,
+   "def": 1.143,
+   "matches": 14
+  },
+  "WC/Tunisia": {
+   "att": 0.8761,
+   "def": 1.6056,
+   "matches": 9
+  },
+  "WC/Turkiye": {
+   "att": 2.1359,
+   "def": 1.1884,
+   "matches": 3
+  },
+  "WC/USA": {
+   "att": 1.3168,
+   "def": 1.2446,
+   "matches": 9
+  },
+  "WC/Uruguay": {
+   "att": 1.314,
+   "def": 0.8539,
+   "matches": 11
+  },
+  "WC/Uzbekistan": {
+   "att": 0.7499,
+   "def": 2.3014,
+   "matches": 3
+  },
+  "WC/Wales": {
+   "att": 1.0879,
+   "def": 1.6291,
+   "matches": 3
   }
  },
  "brier": {
+  "design": "temporal holdout: train on league seasons 2022-23..2024-25 + WC2018 + WC2022, evaluate on 2025-26 leagues + WC2026; production rates refit on all data with the chosen k",
   "checkpoints": [
    0,
    15,
@@ -60,25 +568,134 @@
    90
   ],
   "model": [
-   0.707564,
-   0.704264,
-   0.789373,
-   0.645332,
-   0.498977,
-   0.424047,
+   0.6187,
+   0.6029,
+   0.5822,
+   0.5243,
+   0.4538,
+   0.3641,
    0.0
   ],
   "baseline_w0": [
-   0.838693,
-   0.786738,
-   0.758086,
-   0.680377,
-   0.520824,
-   0.43521,
+   0.6092,
+   0.5841,
+   0.5589,
+   0.5135,
+   0.446,
+   0.361,
    0.0
   ],
-  "n_matches": 8,
-  "note": "mean Brier per checkpoint minute vs the 90-min outcome; n=8 matches so indicative only"
+  "constant": [
+   0.646,
+   0.646,
+   0.646,
+   0.646,
+   0.646,
+   0.646,
+   0.646
+  ],
+  "constant_probs": [
+   0.4506,
+   0.2421,
+   0.3073
+  ],
+  "n_eval": 864,
+  "per_competition": {
+   "EPL": {
+    "model": [
+     0.6147,
+     0.6038,
+     0.5907,
+     0.5159,
+     0.4388,
+     0.3681,
+     0.0
+    ],
+    "baseline_w0": [
+     0.6161,
+     0.5876,
+     0.5653,
+     0.5035,
+     0.4263,
+     0.3568,
+     0.0
+    ],
+    "constant": [
+     0.655,
+     0.655,
+     0.655,
+     0.655,
+     0.655,
+     0.655,
+     0.655
+    ],
+    "n": 380
+   },
+   "LaLiga": {
+    "model": [
+     0.6167,
+     0.6048,
+     0.578,
+     0.5449,
+     0.4708,
+     0.3584,
+     0.0
+    ],
+    "baseline_w0": [
+     0.593,
+     0.578,
+     0.5538,
+     0.5314,
+     0.4631,
+     0.3628,
+     0.0
+    ],
+    "constant": [
+     0.6331,
+     0.6331,
+     0.6331,
+     0.6331,
+     0.6331,
+     0.6331,
+     0.6331
+    ],
+    "n": 380
+   },
+   "WC": {
+    "model": [
+     0.6406,
+     0.5925,
+     0.5658,
+     0.48,
+     0.4462,
+     0.3702,
+     0.0
+    ],
+    "baseline_w0": [
+     0.6435,
+     0.5938,
+     0.5539,
+     0.485,
+     0.4555,
+     0.3699,
+     0.0
+    ],
+    "constant": [
+     0.6604,
+     0.6604,
+     0.6604,
+     0.6604,
+     0.6604,
+     0.6604,
+     0.6604
+    ],
+    "n": 104
+   }
+  }
  },
- "generated_from": "assets/data/argentina"
+ "generated_from": [
+  "EPL: 1520 matches, 39451 shots",
+  "LaLiga: 1520 matches, 37193 shots",
+  "WC: 232 matches, 5666 shots"
+ ]
 }

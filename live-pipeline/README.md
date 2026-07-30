@@ -68,28 +68,39 @@ side, tail renormalized) that buckets every final score into P(home)/P(draw)/P(a
 fair odds and 5%-margin book prices.
 
 Pre-match rates come from `calibrate.py`: a Dixon-Coles-lite fit with empirical-Bayes
-shrinkage (k = 1 pseudo-match at the tournament baseline `mu = 1.4325` xG per
-team-match), `lam(A vs B) = att_A * def_B / mu`, no home advantage (neutral WC venues).
+shrinkage over ALL of the scraped corpora (`corpus.py`: EPL + La Liga 2022-23..2025-26
+plus World Cups 2018/2022/2026 — 3,272 matches, 82k shots), one baseline `mu` per
+competition, team rates namespaced as `EPL/Arsenal` / `WC/Argentina`, recency-weighted
+(`0.8^seasons_ago`) so current form dominates. `lam_home = att_H * def_A / mu * hfa`,
+with the home-field boost `hfa ≈ 1.13` fit from league matches and dropped to 1.0 on
+neutral World Cup venues. Shrinkage strength k is tuned over {1,2,4,8,16} by holdout
+Brier (k = 1 wins). With no scraper clones present calibrate falls back to the 8
+argentina match JSONs.
 
-**90-minute market clock**: the model prices the 1X2 (90 min) market, so group-stage
-stoppage-time events fold into minute 90 (a 90+4' goal settles the market) while knockout
-minutes above 90 are extra time and never enter the replay (`model.effective_min`).
+**90-minute market clock**: the model prices the 1X2 (90 min) market. Matches without
+extra time — every league match and every WC group game — fold stoppage-time events into
+minute 90 (a 90+4' goal settles the market); in WC knockouts minutes above 90 are extra
+time and never enter (`model.effective_min(minute, has_extra_time)`).
 
-Back-test (mean Brier per checkpoint vs the 90-minute outcome, from
-`assets/data/winprob/model_params.json`):
+Back-test (mean Brier per checkpoint vs the 90-minute outcome; temporal holdout: train
+on 2022-23..2024-25 leagues + WC2018 + WC2022, evaluate on the 864 held-out 2025-26
+league matches + WC2026 — from `assets/data/winprob/model_params.json`):
 
-| Minute | Model (w=0.35) | Baseline (w=0) |
-| --- | --- | --- |
-| 0 | 0.7076 | 0.8387 |
-| 15 | 0.7043 | 0.7867 |
-| 30 | 0.7894 | 0.7581 |
-| 45 | 0.6453 | 0.6804 |
-| 60 | 0.4990 | 0.5208 |
-| 75 | 0.4240 | 0.4352 |
-| 90 | 0.0000 | 0.0000 |
+| Minute | Model (w=0.35) | Baseline (w=0) | Constant base-rate |
+| --- | --- | --- | --- |
+| 0 | 0.6187 | 0.6092 | 0.6460 |
+| 15 | 0.6029 | 0.5841 | 0.6460 |
+| 30 | 0.5822 | 0.5589 | 0.6460 |
+| 45 | 0.5243 | 0.5135 | 0.6460 |
+| 60 | 0.4538 | 0.4460 | 0.6460 |
+| 75 | 0.3641 | 0.3610 | 0.6460 |
+| 90 | 0.0000 | 0.0000 | 0.6460 |
 
-The momentum model beats the pre-match-only baseline at 6 of 7 checkpoints - but n = 8
-matches, so treat this as a smoke test, not a benchmark.
+Both model variants clearly beat the constant always-quote-the-base-rate baseline. The
+honest surprise: at this scale the w=0 (score + clock + pre-match rates, no momentum)
+variant edges out the momentum blend at most checkpoints — 15-minute xG is noisy, and
+w = 0.35 overweights it. The production params keep w = 0.35 for the live-momentum demo,
+but the holdout table reports both so the number is not oversold.
 
 ## Run it
 
@@ -134,10 +145,12 @@ Regeneration order after new match data: `calibrate.py` (rewrites
 | `tradepipe/state.py` | `MatchState`: rebuilds score/xG/incidents from the feed, MsgSeq gap detection |
 | `tradepipe/consumer.py` | `TradeConsumer`: pricing, MarketUpdate publishing, snapshot recovery, timeline recording |
 | `tradepipe/model.py` | `InPlayModel`: `lam_remaining`, Poisson grid, fair odds, book prices |
-| `tradepipe/calibrate.py` | Fits team att/def rates (shrinkage k=1) + Brier back-test, writes `model_params.json` |
+| `tradepipe/corpus.py` | Loads + normalizes the scraped corpora (EPL, La Liga, WC 2018/2022/2026) |
+| `tradepipe/calibrate.py` | Fits per-competition mu, namespaced att/def rates, hfa; tunes k by holdout Brier; writes `model_params.json` + dashboard `winprob_params.js` files |
 | `tradepipe/build_timelines.py` | Replays every match through the pipeline, writes `assets/data/winprob/*` |
 | `tests/test_model.py` | Model unit tests |
-| `tests/test_pipeline.py` | End-to-end pipeline tests (replay, recovery, settlement) |
+| `tests/test_corpus.py` | Corpus loader tests (synthetic matches_detail fixtures) |
+| `tests/test_pipeline.py` | End-to-end pipeline tests (replay, recovery, settlement) + v2 params shape |
 
 ## Why this project
 

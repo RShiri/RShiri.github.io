@@ -37,9 +37,13 @@ class TradeConsumer:
         self.quiet = quiet
         with open(params_path or DEFAULT_PARAMS, encoding="utf-8") as f:
             params = json.load(f)
-        self.mu = params["mu"]
+        # v2 params: mu is per-competition and team keys are namespaced
+        # ("WC/Argentina"). The argentina fixtures are all World Cup games,
+        # so this consumer prices with the "WC" slice; unknown countries
+        # fall back to mu_WC inside prematch_lams.
+        self.mu = params["mu"]["WC"]
         self.w = params.get("w", 0.35)
-        self.teams = params["teams"]        # unknown names fall back to mu
+        self.teams = params["teams"]
 
         self.state = None                   # MatchState once metadata/snapshot seen
         self.model = None                   # InPlayModel once team names known
@@ -103,9 +107,11 @@ class TradeConsumer:
                      self.state.last_seq))
 
     def _build_model(self):
+        # World Cup venues are neutral, so no home-advantage boost (hfa=1).
         lam_h, lam_a = prematch_lams(self.teams, self.mu,
-                                     self.state.home_name,
-                                     self.state.away_name)
+                                     "WC/" + self.state.home_name,
+                                     "WC/" + self.state.away_name,
+                                     hfa=1.0)
         self.model = InPlayModel(lam_h, lam_a, w=self.w)
 
     # --------------------------------------------------------------- pricing

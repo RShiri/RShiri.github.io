@@ -17,6 +17,30 @@ from tradepipe.consumer import TradeConsumer      # noqa: E402
 REPO = HERE.parent.parent
 DATA = REPO / "assets" / "data" / "argentina"
 MATCH = DATA / "2026_06_17_Argentina_vs_Algeria.json"
+PARAMS = REPO / "assets" / "data" / "winprob" / "model_params.json"
+
+
+def test_model_params_v2_shape():
+    """The checked-in params file is v2: per-competition mu, namespaced
+    team keys, hfa, and the holdout Brier block the dashboard reads."""
+    with open(PARAMS, encoding="utf-8") as f:
+        params = json.load(f)
+    assert params["version"] == 2
+    assert isinstance(params["mu"], dict) and "WC" in params["mu"]
+    for mu in params["mu"].values():
+        assert 0.5 < mu < 3.0
+    assert params["hfa"] >= 1.0              # home teams out-create away teams
+    assert params["k"] >= 1 and 0.0 <= params["w"] <= 1.0
+    for key, t in params["teams"].items():
+        comp, _, name = key.partition("/")
+        assert comp in params["mu"] and name
+        assert t["att"] > 0 and t["def"] > 0 and t["matches"] >= 1
+    brier = params["brier"]
+    assert brier["checkpoints"][0] == 0 and brier["checkpoints"][-1] == 90
+    assert len(brier["model"]) == len(brier["checkpoints"])
+    assert len(brier["baseline_w0"]) == len(brier["checkpoints"])
+    # "Argentina" must resolve through the WC namespace for the consumer
+    assert "WC/Argentina" in params["teams"]
 
 
 def run_pipeline(match_path, late_join=None, spy=None):

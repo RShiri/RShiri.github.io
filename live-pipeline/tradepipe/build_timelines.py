@@ -84,7 +84,9 @@ def main():
 
     index = {
         "generated_from": "live-pipeline (mini-TRADE360 replay)",
-        "model": {"mu": params["mu"], "w": params["w"], "k": params["k"]},
+        "model": {"mu": params["mu"], "w": params["w"], "k": params["k"],
+                  "hfa": params.get("hfa", 1.0),
+                  "version": params.get("version", 1)},
         "matches": manifest,
     }
     with open(OUT / "index.json", "w", encoding="utf-8") as f:

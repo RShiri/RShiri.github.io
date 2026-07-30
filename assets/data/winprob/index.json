@@ -1,9 +1,15 @@
 {
  "generated_from": "live-pipeline (mini-TRADE360 replay)",
  "model": {
-  "mu": 1.4325,
+  "mu": {
+   "EPL": 1.4184,
+   "LaLiga": 1.2871,
+   "WC": 1.3397
+  },
   "w": 0.35,
-  "k": 1
+  "k": 1,
+  "hfa": 1.1295,
+  "version": 2
  },
  "matches": [
   {

@@ -16,6 +16,23 @@ model = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(model)
 
 
+def test_effective_min_truth_table():
+    # regulation minutes pass through untouched
+    assert model.effective_min(1, False) == 1
+    assert model.effective_min(45, True) == 45
+    assert model.effective_min(90, False) == 90
+    assert model.effective_min(90, True) == 90
+    # no extra time (leagues, WC group games): min > 90 is stoppage -> 90.
+    # A league 90+4' goal MUST settle the 90-minute market.
+    assert model.effective_min(94, False) == 90
+    assert model.effective_min(92, False) == 90
+    assert model.effective_min(98, False) == 90
+    # extra time (WC knockouts): min > 90 never enters the 90-min market
+    assert model.effective_min(94, True) is None
+    assert model.effective_min(105, True) is None
+    assert model.effective_min(120, True) is None
+
+
 def test_probs_sum_to_one_across_state_grid():
     for lam_h, lam_a in [(0.3, 0.3), (1.5, 0.8), (2.4, 2.4), (0.05, 3.0)]:
         m = model.InPlayModel(lam_h, lam_a)
