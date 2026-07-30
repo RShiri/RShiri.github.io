@@ -192,12 +192,17 @@ td { color: var(--body); }
 td.num { font-family: var(--mono); text-align: right; }
 th.num { text-align: right; }
 tr:last-child td { border-bottom: 0; }
-.brier-legend { display: flex; gap: 18px; font-size: 13px; margin: 6px 0 4px; }
+.brier-legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; margin: 6px 0 4px; }
 .brier-legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 7px; }
 .brier-legend .lm i { background: var(--viz-model); }
 .brier-legend .lb i { background: var(--viz-base); }
+.brier-legend .lc i { background: var(--viz-draw); }
 .bar-model { fill: var(--viz-model); }
 .bar-base { fill: var(--viz-base); }
+.bar-const { fill: var(--viz-draw); }
+.comp-chip { display: inline-block; font-family: var(--mono); font-size: 10px; letter-spacing: .05em;
+  color: var(--accent-2); border: 1px solid var(--line); background: var(--bg); border-radius: 999px;
+  padding: 1px 8px; margin-right: 8px; vertical-align: 1px; }
 .caveat { font-size: 13px; color: var(--muted); margin-top: 10px; }
 ul.plain { margin: 0 0 14px; padding-left: 20px; }
 ul.plain li { margin-bottom: 8px; }
@@ -258,7 +263,8 @@ html[data-theme="dark"] .footer { background: #070b15; }
     <p class="lead">A real-time sports data pipeline in the style of LSports' TRADE360.
       A producer replays World Cup matches as RabbitMQ-style messages. A consumer rebuilds
       match state from those messages and prices the 1X2 market live, minute by minute,
-      with an xG-driven model.</p>
+      with an xG-driven model calibrated on 82,000 shots across four seasons of the EPL
+      and La Liga plus three World Cups.</p>
     <p class="sub">Python, stdlib-only core, runnable locally —
       <a href="https://github.com/RShiri/RShiri.github.io/tree/main/live-pipeline">source on GitHub</a>.</p>
   </div>
@@ -403,41 +409,54 @@ html[data-theme="dark"] .footer { background: #070b15; }
     </div>
 
     <ul class="plain">
-      <li><b>λ_prematch</b> is what we expected before kick-off, from each team's fitted attack and defence rates.</li>
+      <li><b>λ_prematch</b> is what we expected before kick-off, from each team's fitted attack and
+        defence rates — calibrated per competition on 3,272 matches (EPL + La Liga 2022–26 plus
+        World Cups 2018/22/26), recency-weighted so current form dominates.</li>
       <li><b>pace</b> is what's actually happening: the team's xG over the last 15 minutes, per minute.
         A team peppering the goal gets its remaining-goals estimate pulled up; a parked bus pulls it down.</li>
       <li><b>w = 0.35</b> blends the two. The (90 − t)/90 factor just scales it to the minutes left.</li>
       <li>With a remaining-goals rate for each side, a small <b>Poisson grid</b> sums P(win), P(draw), P(lose)
         over every remaining scoreline, on top of the current score.</li>
-      <li><b>No home advantage</b> — World Cup venues are neutral, so none is modelled.</li>
-      <li><b>90-minute market convention</b>: stoppage time counts (that's how a group-stage match ends),
-        extra time never does. A knockout tie that's level at 90' settles as X, whatever happens after.</li>
+      <li><b>Home advantage</b> is a fitted <span id="hfaVal" class="mono">×1.13</span> boost to the
+        home side's rate, learned from league matches. World Cup venues are neutral, so the
+        replays on this page don't use it.</li>
+      <li><b>90-minute market convention</b>: stoppage time counts — every league match and World Cup
+        group game folds 90+' events into minute 90 — but extra time never does. A knockout tie
+        that's level at 90' settles as X, whatever happens after.</li>
     </ul>
 
     <div class="model-grid">
       <div>
-        <h3>Fitted team rates</h3>
+        <h3>Fitted team rates — top 3 attacks per competition</h3>
         <div class="tbl-scroll">
-          <table id="teamTable" aria-label="Fitted attack and defence rates per team">
+          <table id="teamTable" aria-label="Top three fitted attack rates in each competition, with defence rate and matches seen">
             <thead><tr><th>team</th><th class="num">att</th><th class="num">def</th><th class="num">n</th></tr></thead>
             <tbody><tr><td colspan="4">loading…</td></tr></tbody>
           </table>
         </div>
-        <p class="caveat">att &gt; 1 scores more than the average side, def &lt; 1 concedes less.
-          Most teams here were seen once — Argentina is the only well-estimated row.</p>
+        <p class="caveat">A curated slice of the <span id="teamCount">109</span> fitted teams.
+          att &gt; 1 scores more than its competition's baseline
+          (<span id="muLine" class="mono">μ: EPL 1.42 · La Liga 1.29 · WC 1.34</span> goals per team
+          per match), def &lt; 1 concedes less. Rates are recency-weighted (0.8 per season) with
+          empirical-Bayes shrinkage, so league teams with 152 matches are far better estimated than
+          World Cup sides seen a handful of times.</p>
       </div>
       <div>
-        <h3>Does the momentum term help? Brier score by checkpoint</h3>
+        <h3>Held-out Brier score by checkpoint</h3>
         <div class="brier-legend">
           <span class="lm"><i></i>model (w = 0.35)</span>
-          <span class="lb"><i></i>baseline (w = 0, prematch only)</span>
+          <span class="lb"><i></i>no momentum (w = 0)</span>
+          <span class="lc"><i></i>constant base-rate</span>
         </div>
         <div class="chart-wrap" style="padding:8px 4px 2px;">
-          <svg id="brierChart" viewBox="0 0 440 240" role="img" aria-label="Grouped bar chart of mean Brier score at each checkpoint minute, model versus w equals zero baseline. Lower is better."></svg>
+          <svg id="brierChart" viewBox="0 0 440 240" role="img" aria-label="Grouped bar chart of mean Brier score at each checkpoint minute: momentum model, no-momentum baseline and constant base-rate quote. Lower is better."></svg>
         </div>
-        <p class="caveat">Lower is better. Across 8 matches the momentum blend is ahead at five of the
-          seven checkpoints, behind at 30', and level at 90' (once the result is known both score zero).
-          Eight matches is a smoke test, not a benchmark.</p>
+        <p class="caveat">Lower is better. Honest holdout: trained on 2022–25 plus World Cups
+          2018/22, tested blind on 2025–26 and World Cup 2026 — <span id="brierN">864</span> matches.
+          Both variants clearly beat always quoting the base rates, and the honest caveat: at this
+          scale the no-momentum w = 0 variant edges out the momentum blend at most checkpoints —
+          15-minute xG is noisy. The live demo keeps w = 0.35 so momentum stays visible; the chart
+          reports both so the number isn't oversold.</p>
       </div>
     </div>
   </div>
@@ -965,62 +984,102 @@ python3 -m pytest live-pipeline/tests -q</pre>
     });
   })();
 
-  /* ---------------- model params: team table + Brier chart */
+  /* ---------------- model params: team table + Brier chart (v2 params shape) */
   var FALLBACK_PARAMS = {
-    mu: 1.4325, k: 1, w: 0.35,
+    /* file:// fallback — a curated slice of assets/data/winprob/model_params.json (v2, 109 teams) */
+    version: 2,
+    mu: { EPL: 1.4184, LaLiga: 1.2871, WC: 1.3397 },
+    hfa: 1.1295, k: 1, w: 0.35, decay: 0.8,
+    teams_total: 109,
     teams: {
-      "Argentina": { att: 1.9925, def: 0.8725, matches: 8 },
-      "Spain": { att: 1.78125, def: 0.78625, matches: 1 },
-      "Egypt": { att: 1.24125, def: 2.37625, matches: 1 },
-      "Switzerland": { att: 1.03625, def: 2.13625, matches: 1 },
-      "England": { att: 1.02625, def: 1.59125, matches: 1 },
-      "Cape Verde": { att: 1.02125, def: 1.90125, matches: 1 },
-      "Austria": { att: 1.01125, def: 2.00625, matches: 1 },
-      "Jordan": { att: 0.99625, def: 1.92125, matches: 1 },
-      "Algeria": { att: 0.82625, def: 1.26125, matches: 1 }
+      "EPL/Liverpool": { att: 1.9378, def: 1.1882, matches: 152 },
+      "EPL/Manchester City": { att: 1.9234, def: 1.0849, matches: 152 },
+      "EPL/Arsenal": { att: 1.7627, def: 0.895, matches: 152 },
+      "LaLiga/Barcelona": { att: 2.1387, def: 1.0475, matches: 152 },
+      "LaLiga/Real Madrid": { att: 1.9395, def: 1.0417, matches: 152 },
+      "LaLiga/Atletico Madrid": { att: 1.5793, def: 1.0894, matches: 152 },
+      "WC/Germany": { att: 2.4465, def: 1.2001, matches: 10 },
+      "WC/Brazil": { att: 2.2611, def: 0.6718, matches: 15 },
+      "WC/Turkiye": { att: 2.1359, def: 1.1884, matches: 3 }
     },
     brier: {
       checkpoints: [0, 15, 30, 45, 60, 75, 90],
-      model: [0.707564, 0.704264, 0.789373, 0.645332, 0.498977, 0.424047, 0.0],
-      baseline_w0: [0.838693, 0.786738, 0.758086, 0.680377, 0.520824, 0.43521, 0.0],
-      n_matches: 8
+      model: [0.6187, 0.6029, 0.5822, 0.5243, 0.4538, 0.3641, 0.0],
+      baseline_w0: [0.6092, 0.5841, 0.5589, 0.5135, 0.446, 0.361, 0.0],
+      constant: [0.646, 0.646, 0.646, 0.646, 0.646, 0.646, 0.646],
+      n_eval: 864
     }
   };
+  var COMP_LABELS = { EPL: "EPL", LaLiga: "La Liga", WC: "WC" };
   function renderTeamTable(params) {
     var tbody = $("#teamTable tbody");
     tbody.innerHTML = "";
-    var rows = Object.keys(params.teams).map(function (name) {
-      var t = params.teams[name];
-      return { name: name, att: t.att, def: t.def, n: t.matches };
-    }).sort(function (a, b) { return b.att - a.att; });
-    rows.forEach(function (r) {
-      var tr = document.createElement("tr");
-      [r.name, r.att.toFixed(2), r.def.toFixed(2), String(r.n)].forEach(function (v, i) {
-        var td = document.createElement("td");
-        if (i > 0) td.className = "num";
-        td.textContent = v;
-        tr.appendChild(td);
+    /* keys are namespaced "EPL/Arsenal" — bucket per competition, show top-3 attacks of each */
+    var byComp = {};
+    Object.keys(params.teams).forEach(function (key) {
+      var cut = key.indexOf("/");
+      var comp = cut > 0 ? key.slice(0, cut) : "WC";
+      var t = params.teams[key];
+      (byComp[comp] = byComp[comp] || []).push({
+        comp: comp, name: cut > 0 ? key.slice(cut + 1) : key, att: t.att, def: t.def, n: t.matches
       });
-      tbody.appendChild(tr);
     });
+    ["EPL", "LaLiga", "WC"].forEach(function (comp) {
+      (byComp[comp] || []).sort(function (a, b) { return b.att - a.att; })
+        .slice(0, 3).forEach(function (r) {
+          var tr = document.createElement("tr");
+          var td0 = document.createElement("td");
+          var chip = document.createElement("span");
+          chip.className = "comp-chip";
+          chip.textContent = COMP_LABELS[r.comp] || r.comp;
+          td0.appendChild(chip);
+          td0.appendChild(document.createTextNode(r.name));
+          tr.appendChild(td0);
+          [r.att.toFixed(2), r.def.toFixed(2), String(r.n)].forEach(function (v) {
+            var td = document.createElement("td");
+            td.className = "num";
+            td.textContent = v;
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+    });
+  }
+  function renderParamFacts(params) {
+    /* the copy quotes hfa / mu / team count — keep it in sync with the fitted params */
+    var n = params.teams_total || Object.keys(params.teams).length;
+    var countEl = document.getElementById("teamCount");
+    if (countEl) countEl.textContent = String(n);
+    var hfaEl = document.getElementById("hfaVal");
+    if (hfaEl && params.hfa) hfaEl.textContent = "×" + params.hfa.toFixed(2);
+    var muEl = document.getElementById("muLine");
+    if (muEl && params.mu && typeof params.mu === "object") {
+      muEl.textContent = "μ: EPL " + params.mu.EPL.toFixed(2) +
+        " · La Liga " + params.mu.LaLiga.toFixed(2) + " · WC " + params.mu.WC.toFixed(2);
+    }
+    var nEl = document.getElementById("brierN");
+    if (nEl && params.brier && params.brier.n_eval) nEl.textContent = String(params.brier.n_eval);
   }
   function renderBrier(params) {
     var svg = $("#brierChart");
     while (svg.firstChild) svg.removeChild(svg.firstChild);
     var W = 440, H = 240, L = 40, R = 8, T = 12, B = 28;
     var cps = params.brier.checkpoints, mv = params.brier.model, bv = params.brier.baseline_w0;
-    var maxV = 0.9;
+    var cv = params.brier.constant || cps.map(function () { return 0; });
+    var maxV = 0.75;
     var bx = function (i) { return L + (i + 0.5) * ((W - L - R) / cps.length); };
     var by = function (v) { return T + (1 - v / maxV) * (H - T - B); };
-    [0, 0.3, 0.6, 0.9].forEach(function (v) {
+    [0, 0.25, 0.5, 0.75].forEach(function (v) {
       svg.appendChild(el("line", { x1: L, x2: W - R, y1: by(v), y2: by(v), "class": "gridline" }));
-      svg.appendChild(el("text", { x: L - 6, y: by(v) + 4, "text-anchor": "end", "class": "axis-t" }, v.toFixed(1)));
+      svg.appendChild(el("text", { x: L - 6, y: by(v) + 4, "text-anchor": "end", "class": "axis-t" }, v.toFixed(2)));
     });
-    var bw = 15, gap = 2;                        /* 2px surface gap between the pair */
+    var bw = 12, gap = 2;                        /* 2px surface gap inside each trio */
     cps.forEach(function (cp, i) {
       var cx = bx(i);
-      [[mv[i], "bar-model", "model"], [bv[i], "bar-base", "baseline w=0"]].forEach(function (s, j) {
-        var x = cx - bw - gap / 2 + j * (bw + gap);
+      [[mv[i], "bar-model", "model w=0.35"],
+       [bv[i], "bar-base", "no momentum w=0"],
+       [cv[i], "bar-const", "constant base-rate"]].forEach(function (s, j) {
+        var x = cx - (1.5 * bw + gap) + j * (bw + gap);
         var y = by(s[0]), h = Math.max(0, by(0) - y);
         if (h < 1 && s[0] > 0) h = 1;
         var rect = el("rect", { x: x, y: h ? y : by(0) - 0, width: bw, height: h, rx: 3, "class": s[1] });
@@ -1040,9 +1099,9 @@ python3 -m pytest live-pipeline/tests -q</pre>
   }).catch(showDataNote);
 
   fetchJson(DATA_BASE + "model_params.json").then(function (p) {
-    renderTeamTable(p); renderBrier(p);
+    renderTeamTable(p); renderParamFacts(p); renderBrier(p);
   }).catch(function () {
-    renderTeamTable(FALLBACK_PARAMS); renderBrier(FALLBACK_PARAMS);
+    renderTeamTable(FALLBACK_PARAMS); renderParamFacts(FALLBACK_PARAMS); renderBrier(FALLBACK_PARAMS);
   });
 })();
 </script>
