@@ -866,12 +866,15 @@ python3 -m pytest live-pipeline/tests -q</pre>
     chartRefs.playhead.setAttribute("x2", x);
     chartRefs.endG.setAttribute("opacity", min >= 90 ? 1 : 0);
 
-    /* scoreboard */
-    $("#scoreH").textContent = row.scoreH;
-    $("#scoreA").textContent = row.scoreA;
+    /* scoreboard - during the replay this is the 90-min market clock; once
+       it ends, an extra-time match shows its real final score */
+    var ended = min >= 90, et = ended && wentToExtraTime();
+    $("#scoreH").textContent = et ? replay.match.meta.home.score : row.scoreH;
+    $("#scoreA").textContent = et ? replay.match.meta.away.score : row.scoreA;
     $("#xgH").textContent = row.xgH.toFixed(2);
     $("#xgA").textContent = row.xgA.toFixed(2);
-    $("#minuteLbl").textContent = min >= 90 ? (wentToExtraTime() ? "90' · to extra time" : "FT (90')")
+    $("#minuteLbl").textContent = ended
+      ? (et ? "FT after extra time · " + row.scoreH + "–" + row.scoreA + " at 90'" : "FT (90')")
       : Math.floor(min) + "'";
     $("#scrub").value = min;
 
