@@ -1,0 +1,84 @@
+{
+ "mu": 1.4325,
+ "k": 1,
+ "w": 0.35,
+ "teams": {
+  "Algeria": {
+   "att": 0.82625,
+   "def": 1.26125,
+   "matches": 1
+  },
+  "Argentina": {
+   "att": 1.9925,
+   "def": 0.8725,
+   "matches": 8
+  },
+  "Austria": {
+   "att": 1.01125,
+   "def": 2.00625,
+   "matches": 1
+  },
+  "Cape Verde": {
+   "att": 1.02125,
+   "def": 1.90125,
+   "matches": 1
+  },
+  "Egypt": {
+   "att": 1.24125,
+   "def": 2.37625,
+   "matches": 1
+  },
+  "England": {
+   "att": 1.02625,
+   "def": 1.59125,
+   "matches": 1
+  },
+  "Jordan": {
+   "att": 0.99625,
+   "def": 1.92125,
+   "matches": 1
+  },
+  "Spain": {
+   "att": 1.78125,
+   "def": 0.78625,
+   "matches": 1
+  },
+  "Switzerland": {
+   "att": 1.03625,
+   "def": 2.13625,
+   "matches": 1
+  }
+ },
+ "brier": {
+  "checkpoints": [
+   0,
+   15,
+   30,
+   45,
+   60,
+   75,
+   90
+  ],
+  "model": [
+   0.707564,
+   0.704264,
+   0.789373,
+   0.645332,
+   0.498977,
+   0.424047,
+   0.0
+  ],
+  "baseline_w0": [
+   0.838693,
+   0.786738,
+   0.758086,
+   0.680377,
+   0.520824,
+   0.43521,
+   0.0
+  ],
+  "n_matches": 8,
+  "note": "mean Brier per checkpoint minute vs the 90-min outcome; n=8 matches so indicative only"
+ },
+ "generated_from": "assets/data/argentina"
+}
