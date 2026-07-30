@@ -26,6 +26,18 @@ def poisson_pmf(i, lam):
     return math.exp(-lam) * lam ** i / math.factorial(i)
 
 
+def effective_min(event_min, stage):
+    """Minute an event counts at for the 90-minute market, or None if it
+    doesn't count. Group-stage matches have no extra time, so min > 90 is
+    second-half stoppage and folds into minute 90 (a 90+4' goal settles the
+    market). In knockout stages min > 90 is extra time and never enters."""
+    if event_min <= 90:
+        return event_min
+    if "group" in (stage or "").lower():
+        return 90
+    return None
+
+
 def win_probs(lam_rem_h, lam_rem_a, h, a, max_goals=MAX_GOALS):
     """(pH, pD, pA) given expected REMAINING goals and the current score.
 

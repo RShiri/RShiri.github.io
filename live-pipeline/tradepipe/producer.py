@@ -29,6 +29,7 @@ from pathlib import Path
 
 from .messages import (fixture_metadata_update, livescore_update, keep_alive,
                        settlement)
+from .model import effective_min
 from .snapshot import build_snapshot
 
 KICKOFF_HOUR_UTC = 18
@@ -187,25 +188,37 @@ class MatchProducer:
         }
 
     def score_at(self, t):
-        """(home, away) goals up to and including minute t (90-min market:
-        extra-time goals never enter the 0..90 replay)."""
-        h = sum(1 for g in self.match["goals"]
-                if g["team"] == "home" and g["min"] <= t)
-        a = sum(1 for g in self.match["goals"]
-                if g["team"] == "away" and g["min"] <= t)
+        """(home, away) goals up to and including minute t on the 90-minute
+        market clock: group-stage stoppage goals fold into minute 90,
+        extra-time goals never enter the replay (see model.effective_min)."""
+        h = a = 0
+        for g in self.match["goals"]:
+            m = self._eff_min(g["min"])
+            if m is not None and m <= t:
+                if g["team"] == "home":
+                    h += 1
+                else:
+                    a += 1
         return h, a
 
+    def _eff_min(self, event_min):
+        return effective_min(event_min, self.match.get("stage", ""))
+
     def _xg_at(self, side, t):
-        return sum(s["xg"] for s in self.match["shots"]
-                   if s["team"] == side and s["min"] <= t)
+        total = 0.0
+        for s in self.match["shots"]:
+            m = self._eff_min(s["min"])
+            if s["team"] == side and m is not None and m <= t:
+                total += s["xg"]
+        return total
 
     def _incidents_at(self, t):
         """This minute's shots (goals are shots with goal=true) as wire dicts."""
         out = []
         for s in self.match["shots"]:
-            if s["min"] == t:
+            if self._eff_min(s["min"]) == t:
                 out.append({
-                    "Min": s["min"],
+                    "Min": t,
                     "Team": s["team"],
                     "Type": "Goal" if s.get("goal") else "Shot",
                     "Player": s.get("player", ""),

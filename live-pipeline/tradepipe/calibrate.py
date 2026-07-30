@@ -88,22 +88,34 @@ def prematch_lams(teams, mu, home_name, away_name):
 
 
 def score_at(M, t):
-    """(home, away) score counting goals up to and including minute t."""
-    h = sum(1 for g in M["goals"] if g["team"] == "home" and g["min"] <= t)
-    a = sum(1 for g in M["goals"] if g["team"] == "away" and g["min"] <= t)
+    """(home, away) score counting goals up to and including minute t on the
+    90-minute market clock (model.effective_min: group-stage stoppage goals
+    fold into minute 90, extra-time goals don't count)."""
+    h = a = 0
+    for g in M["goals"]:
+        m = model.effective_min(g["min"], M.get("stage", ""))
+        if m is not None and m <= t:
+            if g["team"] == "home":
+                h += 1
+            else:
+                a += 1
     return h, a
 
 
 def xg_recent15(M, side, t):
     """xG a side generated in the (t-15, t] window, from the shot stream."""
-    return sum(s["xg"] for s in M["shots"]
-               if s["team"] == side and t - 15 < s["min"] <= t)
+    total = 0.0
+    for s in M["shots"]:
+        m = model.effective_min(s["min"], M.get("stage", ""))
+        if s["team"] == side and m is not None and t - 15 < m <= t:
+            total += s["xg"]
+    return total
 
 
 def outcome_90(M):
-    """One-hot (H, D, A) of the score AT 90 minutes. Extra-time goals
-    (min > 90, e.g. the Final's 105' winner) do not count: the model
-    prices the 90-minute market."""
+    """One-hot (H, D, A) of the 90-minute result. Stoppage-time goals count
+    (they settle real 1X2 markets); extra-time goals (e.g. the Final's 105'
+    winner) do not: the model prices the 90-minute market."""
     h, a = score_at(M, 90)
     if h > a:
         return (1.0, 0.0, 0.0)
