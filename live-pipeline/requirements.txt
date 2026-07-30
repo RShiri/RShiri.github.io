@@ -1,0 +1,6 @@
+# mini-TRADE360 pipeline — the core (messages, broker "memory" mode, model,
+# producer/consumer, run_demo.py) is pure Python stdlib: nothing to install.
+#
+# Optional extras:
+pika>=1.3       # only for --broker rabbit (RabbitMQ transport)
+# pytest        # dev only: python3 -m pytest live-pipeline/tests -q
