@@ -4,10 +4,12 @@
 For every Argentina match in assets/data/argentina/index.json this replays
 the recorded match through the mini-TRADE360 pipeline — MatchProducer ->
 InMemoryBroker -> TradeConsumer — instantly and deterministically, then
-writes the consumer's 91-row minute-by-minute timeline (win/draw/win
+writes the consumer's minute-by-minute timeline (win/draw/win
 probabilities, fair odds, cumulative xG, score, shot/goal events) to
 assets/data/winprob/<match_id>.json, plus an index.json manifest that
-mirrors the argentina one and carries the model constants.
+mirrors the argentina one and carries the model constants. Timelines run
+0..endMin: 91 rows for a 90-minute match, 121 for a knockout that goes
+to extra time.
 
 Re-run after new matches are scraped (build_argentina.py output changed)
 or after the model is refit (calibrate.py rewrote model_params.json):
@@ -51,6 +53,7 @@ def build_timeline(entry):
         "home": {"name": M["home"]["name"], "color": M["home"].get("color") or "#888"},
         "away": {"name": M["away"]["name"], "color": M["away"].get("color") or "#888"},
         "date": M.get("date"), "stage": M.get("stage") or "",
+        "endMin": producer.end_min,
         "final": {"scoreH": consumer.state.score_h, "scoreA": consumer.state.score_a,
                   "settled": consumer.settlement_result},
         "prematch": {"lamH": round(model.lam_h, 6), "lamA": round(model.lam_a, 6),
@@ -73,14 +76,14 @@ def main():
         manifest.append({
             "id": T["id"],
             "file": "assets/data/winprob/" + T["id"] + ".json",
-            "date": T["date"], "stage": T["stage"],
+            "date": T["date"], "stage": T["stage"], "endMin": T["endMin"],
             "home": {"name": entry["home"]["name"], "score": entry["home"]["score"]},
             "away": {"name": entry["away"]["name"], "score": entry["away"]["score"]},
         })
-        print("%-42s final %d-%d ('%s') | 0' P %.3f/%.3f/%.3f | %d rows"
+        print("%-42s final %d-%d ('%s') | 0' P %.3f/%.3f/%.3f | %d rows | endMin %d"
               % (T["id"], T["final"]["scoreH"], T["final"]["scoreA"],
                  T["final"]["settled"], T["prematch"]["pH"], T["prematch"]["pD"],
-                 T["prematch"]["pA"], len(T["timeline"])))
+                 T["prematch"]["pA"], len(T["timeline"]), T["endMin"]))
 
     index = {
         "generated_from": "live-pipeline (mini-TRADE360 replay)",

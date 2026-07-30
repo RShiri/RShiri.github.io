@@ -49,6 +49,10 @@ def summary(producer, consumer):
     print()
     print("=== summary ===============================================")
     print("actual 90' result: %d-%d ('%s')" % (h, a, actual))
+    if producer.end_min > 90:
+        fh, fa = producer.score_raw_at(producer.end_min)
+        print("after extra time: %d-%d at %d' (1X2 market settled on the 90' score)"
+              % (fh, fa, producer.end_min))
     if consumer is not None and consumer.timeline:
         last = consumer.timeline[-1]
         print("final model probs: H %.3f / D %.3f / A %.3f (at %d')"
@@ -74,7 +78,7 @@ def run_memory(args, match_path):
         if args.late_join and consumer is None and t == args.late_join - 1:
             print("[consumer] joined at minute %d" % args.late_join)
             consumer = TradeConsumer(broker, producer.fixture_id)
-        if delay > 0 and t < 90:
+        if delay > 0 and t < producer.end_min:
             time.sleep(delay)
     summary(producer, consumer)
 
@@ -98,7 +102,7 @@ def run_rabbit(args, match_path):
             threading.Thread(target=sub.start, daemon=True).start()
         # process_data_events on the producer connection also serves
         # snapshot RPC requests while pacing the replay
-        producer._sleep(max(delay, 0.001) if t < 90 else 0.5)
+        producer._sleep(max(delay, 0.001) if t < producer.end_min else 0.5)
     time.sleep(0.5)                        # let the consumer thread drain
     summary(producer, consumer)
     sub.close()

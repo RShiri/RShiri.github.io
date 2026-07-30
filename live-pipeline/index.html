@@ -144,6 +144,8 @@ section h2 { font-size: clamp(23px, 3.4vw, 30px); margin-bottom: 6px; }
 .wp-path { fill: none; stroke-width: 2.5; stroke-linejoin: round; }
 .wp-draw { stroke: var(--viz-draw); stroke-dasharray: 6 5; stroke-width: 2; }
 .playhead { stroke: var(--accent-2); stroke-width: 1.4; }
+.market-line { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 5 4; }
+.market-lbl { font: 400 10.5px var(--mono); fill: var(--muted); }
 .goal-line { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 2 3; }
 .goal-lbl { font: 600 11px var(--mono); fill: var(--ink); }
 .end-lbl { font: 600 11.5px "Inter", sans-serif; fill: var(--ink); }
@@ -158,6 +160,8 @@ section h2 { font-size: clamp(23px, 3.4vw, 30px); margin-bottom: 6px; }
 .odds-card .o-prob { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
 .odds-card.flash .o-val { animation: oddsflash 1s var(--ease); }
 @keyframes oddsflash { 0% { color: var(--accent-2); } 100% { color: var(--ink); } }
+.ticker.settled .odds-card { opacity: .55; }
+.ticker.settled .o-name::after { content: " · settled at 90'"; }
 
 .replay-lower { display: grid; grid-template-columns: 1.2fr .8fr; gap: 14px; align-items: start; }
 .feed { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; max-height: 240px; overflow-y: auto; }
@@ -337,7 +341,8 @@ html[data-theme="dark"] .footer { background: #070b15; }
     <h2>Watch the consumer price a match</h2>
     <p class="section-note">These are the exact timelines the pipeline produced for eight recorded
       World Cup matches. Pick one and press play: the win-probability lines draw forward in match
-      time, the fair odds re-quote every minute, and the market settles at 90'.</p>
+      time, the fair odds re-quote every minute, and the market settles at 90' — knockout replays
+      then continue through extra time, while the 1X2 (90 min) market stays settled on the 90' score.</p>
 
     <div class="picker" id="picker" role="group" aria-label="Choose a match to replay"></div>
 
@@ -369,7 +374,7 @@ html[data-theme="dark"] .footer { background: #070b15; }
 
       <div class="chart-wrap">
         <div class="legend" id="legend"></div>
-        <svg id="wpChart" viewBox="0 0 880 330" role="img" aria-label="Win probability over 90 minutes for home win, draw and away win"></svg>
+        <svg id="wpChart" viewBox="0 0 880 330" role="img" aria-label="Win probability over the match for home win, draw and away win"></svg>
         <div class="chart-tip" id="chartTip"></div>
       </div>
 
@@ -637,15 +642,15 @@ python3 -m pytest live-pipeline/tests -q</pre>
 
   /* ---------------- replay state */
   var replay = {
-    manifest: null, cache: {}, match: null,
+    manifest: null, cache: {}, match: null, end: 90,
     min: 0, playing: false, speed: 1, raf: 0, lastTs: 0,
     lastOdds: { H: 0, D: 0, A: 0 }, feedShown: 0, ended: false
   };
-  var MIN_PER_SEC = 90 / 45;                       /* 1× ≈ 45 s for the full match */
+  var SECS_1X = 45;                                /* 1× ≈ 45 s whatever the match length */
   var CH = { W: 880, H: 330, L: 46, R: 18, T: 34, B: 30 };
   var chartRefs = null;
 
-  function xPos(min) { return CH.L + (min / 90) * (CH.W - CH.L - CH.R); }
+  function xPos(min) { return CH.L + (min / replay.end) * (CH.W - CH.L - CH.R); }
   function yPos(p) { return CH.T + (1 - p) * (CH.H - CH.T - CH.B); }
   function el(tag, attrs, text) {
     var n = document.createElementNS(SVGNS, tag);
@@ -691,10 +696,11 @@ python3 -m pytest live-pipeline/tests -q</pre>
     p.then(function (data) {
       data.meta = meta;                          /* manifest row: real full-time score */
       replay.match = data;
+      replay.end = data.endMin || data.timeline.length - 1;   /* 90, or 120 after ET */
       $("#replayShell").hidden = false;
       buildChart(data);
       resetPlayback();
-      if (REDUCED) { setMinute(90); }            /* no animation: show the full story */
+      if (REDUCED) { setMinute(replay.end); }    /* no animation: show the full story */
       $("#replayShell").scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "nearest" });
     }).catch(showDataNote);
   }
@@ -714,9 +720,9 @@ python3 -m pytest live-pipeline/tests -q</pre>
       svg.appendChild(el("line", { x1: CH.L, x2: CH.W - CH.R, y1: yPos(p), y2: yPos(p), "class": "gridline" }));
       svg.appendChild(el("text", { x: CH.L - 8, y: yPos(p) + 4, "text-anchor": "end", "class": "axis-t" }, Math.round(p * 100) + "%"));
     });
-    [0, 15, 30, 45, 60, 75, 90].forEach(function (t) {
+    for (var t = 0; t <= replay.end; t += 15) {
       svg.appendChild(el("text", { x: xPos(t), y: CH.H - 8, "text-anchor": "middle", "class": "axis-t" }, t + "'"));
-    });
+    }
 
     /* clipped, progressively revealed group */
     var defs = el("defs", {});
@@ -743,11 +749,18 @@ python3 -m pytest live-pipeline/tests -q</pre>
     goals.forEach(function (gEv, i) {
       var x = xPos(gEv.min), yTop = CH.T + 12 + (i % 2) * 16;
       g.appendChild(el("line", { x1: x, x2: x, y1: yTop + 6, y2: yPos(0), "class": "goal-line" }));
-      var anchor = gEv.min > 74 ? "end" : (gEv.min < 8 ? "start" : "middle");
+      var anchor = gEv.min > replay.end - 16 ? "end" : (gEv.min < 8 ? "start" : "middle");
       g.appendChild(el("text", { x: x, y: yTop, "text-anchor": anchor, "class": "goal-lbl" },
         "⚽ " + gEv.min + "' " + gEv.player.split(" ").pop()));
     });
     svg.appendChild(g);
+
+    /* extra-time matches: dashed guide where the 90' market settles */
+    if (replay.end > 90) {
+      svg.appendChild(el("line", { x1: xPos(90), x2: xPos(90), y1: CH.T - 4, y2: yPos(0), "class": "market-line" }));
+      svg.appendChild(el("text", { x: xPos(90), y: CH.T - 12, "text-anchor": "middle", "class": "market-lbl" },
+        "90' · market settles"));
+    }
 
     /* playhead (outside clip) */
     var playhead = el("line", { x1: CH.L, x2: CH.L, y1: CH.T - 4, y2: yPos(0), "class": "playhead" });
@@ -804,6 +817,7 @@ python3 -m pytest live-pipeline/tests -q</pre>
   function resetPlayback() {
     replay.min = 0; replay.playing = false; replay.ended = false;
     replay.feedShown = 0; replay.lastOdds = { H: 0, D: 0, A: 0 };
+    $("#scrub").max = replay.end;
     $("#feedList").innerHTML = "<li class='empty'>Kick-off pending — press play.</li>";
     $("#endBody").className = "pending";
     $("#endBody").textContent = "The market settles when the replay reaches 90'.";
@@ -816,7 +830,7 @@ python3 -m pytest live-pipeline/tests -q</pre>
   }
   function updatePlayBtn() {
     var b = $("#play");
-    b.textContent = replay.playing ? "⏸ Pause" : (replay.min >= 90 ? "↺ Replay" : "▶ Play");
+    b.textContent = replay.playing ? "⏸ Pause" : (replay.min >= replay.end ? "↺ Replay" : "▶ Play");
     b.setAttribute("aria-label", replay.playing ? "Pause replay" : "Play replay");
   }
   function stop() {
@@ -828,14 +842,14 @@ python3 -m pytest live-pipeline/tests -q</pre>
     if (!replay.playing) return;
     var dt = Math.min(0.25, (ts - replay.lastTs) / 1000);
     replay.lastTs = ts;
-    setMinute(Math.min(90, replay.min + dt * MIN_PER_SEC * replay.speed));
-    if (replay.min >= 90) { stop(); updatePlayBtn(); return; }
+    setMinute(Math.min(replay.end, replay.min + dt * (replay.end / SECS_1X) * replay.speed));
+    if (replay.min >= replay.end) { stop(); updatePlayBtn(); return; }
     replay.raf = requestAnimationFrame(tick);
   }
   $("#play").addEventListener("click", function () {
     if (!replay.match) return;
     if (replay.playing) { stop(); updatePlayBtn(); return; }
-    if (replay.min >= 90) setMinute(0);
+    if (replay.min >= replay.end) setMinute(0);
     replay.playing = true;
     replay.lastTs = performance.now();
     replay.raf = requestAnimationFrame(tick);
@@ -857,31 +871,36 @@ python3 -m pytest live-pipeline/tests -q</pre>
   function setMinute(min) {
     replay.min = min;
     var m = replay.match; if (!m || !chartRefs) return;
-    var row = m.timeline[Math.max(0, Math.min(90, Math.floor(min)))];
+    var END = replay.end;
+    var idx = Math.max(0, Math.min(END, Math.floor(min)));
+    var row = m.timeline[idx];
 
     /* chart reveal + playhead */
     var x = xPos(min);
     chartRefs.clipRect.setAttribute("width", Math.max(0, x - (CH.L - 2)));
     chartRefs.playhead.setAttribute("x1", x);
     chartRefs.playhead.setAttribute("x2", x);
-    chartRefs.endG.setAttribute("opacity", min >= 90 ? 1 : 0);
+    chartRefs.endG.setAttribute("opacity", min >= END ? 1 : 0);
 
-    /* scoreboard - during the replay this is the 90-min market clock; once
-       it ends, an extra-time match shows its real final score */
-    var ended = min >= 90, et = ended && wentToExtraTime();
-    $("#scoreH").textContent = et ? replay.match.meta.home.score : row.scoreH;
-    $("#scoreA").textContent = et ? replay.match.meta.away.score : row.scoreA;
+    /* scoreboard - the 90-min market clock up to 90', then the live
+       extra-time score straight from the row */
+    var ended = min >= END, et = wentToExtraTime();
+    var r90 = m.timeline[Math.min(90, m.timeline.length - 1)];
+    $("#scoreH").textContent = row.scoreH;
+    $("#scoreA").textContent = row.scoreA;
     $("#xgH").textContent = row.xgH.toFixed(2);
     $("#xgA").textContent = row.xgA.toFixed(2);
     $("#minuteLbl").textContent = ended
-      ? (et ? "FT after extra time · " + row.scoreH + "–" + row.scoreA + " at 90'" : "FT (90')")
-      : Math.floor(min) + "'";
+      ? (et ? "FT after extra time · " + r90.scoreH + "–" + r90.scoreA + " at 90'" : "FT (90')")
+      : Math.floor(min) + (idx > 90 ? "' · ET" : "'");
     $("#scrub").value = min;
 
-    /* odds ticker */
-    setOdds("1", row.fairH, row.pH, "H");
-    setOdds("X", row.fairD, row.pD, "D");
-    setOdds("2", row.fairA, row.pA, "A");
+    /* odds ticker: quotes stop at 90' — the market is settled after that */
+    var orow = m.timeline[Math.min(90, idx)];
+    setOdds("1", orow.fairH, orow.pH, "H");
+    setOdds("X", orow.fairD, orow.pD, "D");
+    setOdds("2", orow.fairA, orow.pA, "A");
+    document.querySelector(".ticker").classList.toggle("settled", idx > 90);
 
     /* event feed */
     var evs = eventsUpTo(Math.floor(min));
@@ -889,8 +908,8 @@ python3 -m pytest live-pipeline/tests -q</pre>
     else while (replay.feedShown < evs.length) appendFeed(evs[replay.feedShown++]);
 
     /* full-time panel */
-    if (min >= 90 && !replay.ended) { replay.ended = true; showEndstate(); updatePlayBtn(); }
-    if (min < 90 && replay.ended) {
+    if (min >= END && !replay.ended) { replay.ended = true; showEndstate(); updatePlayBtn(); }
+    if (min < END && replay.ended) {
       replay.ended = false;
       $("#endBody").className = "pending";
       $("#endBody").textContent = "The market settles when the replay reaches 90'.";
@@ -952,32 +971,32 @@ python3 -m pytest live-pipeline/tests -q</pre>
     replay.feedShown = evs.length;
   }
   function wentToExtraTime() {
-    /* the timeline's final is the 90' score; the manifest row carries the
-       real full-time score - when they differ, extra time was played */
-    var m = replay.match;
-    return !!(m && m.meta &&
-      (m.meta.home.score !== m.final.scoreH || m.meta.away.score !== m.final.scoreA));
+    /* a timeline that runs past minute 90 is a knockout that went to ET */
+    return replay.end > 90;
   }
   function showEndstate() {
     var m = replay.match;
-    var f = m.final, last = m.timeline[m.timeline.length - 1];
-    var actual = f.scoreH > f.scoreA ? "1" : (f.scoreH === f.scoreA ? "X" : "2");
+    var f = m.final, tl = m.timeline;
+    var r90 = tl[Math.min(90, tl.length - 1)];
+    var actual = r90.scoreH > r90.scoreA ? "1" : (r90.scoreH === r90.scoreA ? "X" : "2");
     var names = { "1": m.home.name + " win", "X": "draw", "2": m.away.name + " win" };
     var body = $("#endBody");
     body.className = "";
     body.innerHTML = "";
     var p1 = document.createElement("div");
-    p1.textContent = "90' score: " + m.home.name + " " + f.scoreH + "–" + f.scoreA + " " + m.away.name +
+    p1.textContent = "90' score: " + m.home.name + " " + r90.scoreH + "–" + r90.scoreA + " " + m.away.name +
       " → result “" + actual + "” (" + names[actual] + ").";
     var p2 = document.createElement("div");
-    p2.textContent = "Model at 90': H " + Math.round(last.pH * 100) + "% · D " + Math.round(last.pD * 100) +
-      "% · A " + Math.round(last.pA * 100) + "%.";
+    p2.textContent = "Model at 90': H " + Math.round(r90.pH * 100) + "% · D " + Math.round(r90.pD * 100) +
+      "% · A " + Math.round(r90.pA * 100) + "%.";
     body.appendChild(p1); body.appendChild(p2);
     if (wentToExtraTime()) {
+      var last = tl[tl.length - 1];
       var p3 = document.createElement("div");
-      p3.textContent = "This one didn't end at 90': " + m.meta.home.name + " " + m.meta.home.score +
-        "–" + m.meta.away.score + " " + m.meta.away.name + " after extra time. The 1X2 (90 min) " +
-        "market still settles on the 90' score - extra time is a different market.";
+      p3.textContent = "This one didn't end at 90': " + m.home.name + " " + last.scoreH +
+        "–" + last.scoreA + " " + m.away.name + " after extra time — the chart above keeps " +
+        "going to " + replay.end + "'. The 1X2 (90 min) market still settles on the 90' " +
+        "score - extra time is a different market.";
       body.appendChild(p3);
     }
     var s = document.createElement("span");
@@ -995,8 +1014,8 @@ python3 -m pytest live-pipeline/tests -q</pre>
       var m = replay.match; if (!m) return;
       var box = svg.getBoundingClientRect();
       var vx = (ev.clientX - box.left) * (CH.W / box.width);
-      var minute = Math.round((vx - CH.L) / (CH.W - CH.L - CH.R) * 90);
-      if (minute < 0 || minute > 90 || minute > replay.min) { hide(); return; }
+      var minute = Math.round((vx - CH.L) / (CH.W - CH.L - CH.R) * replay.end);
+      if (minute < 0 || minute > replay.end || minute > replay.min) { hide(); return; }
       var r = m.timeline[minute];
       tip.textContent = minute + "'  H " + (r.pH * 100).toFixed(1) + "% · D " + (r.pD * 100).toFixed(1) +
         "% · A " + (r.pA * 100).toFixed(1) + "%  (" + r.scoreH + "–" + r.scoreA + ")";

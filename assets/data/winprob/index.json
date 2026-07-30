@@ -17,6 +17,7 @@
    "file": "assets/data/winprob/2026_06_17_Argentina_vs_Algeria.json",
    "date": "2026-06-17",
    "stage": "Group Stage",
+   "endMin": 90,
    "home": {
     "name": "Argentina",
     "score": 3
@@ -31,6 +32,7 @@
    "file": "assets/data/winprob/2026_06_22_Argentina_vs_Austria.json",
    "date": "2026-06-22",
    "stage": "Group Stage",
+   "endMin": 90,
    "home": {
     "name": "Argentina",
     "score": 2
@@ -45,6 +47,7 @@
    "file": "assets/data/winprob/2026_06_28_Jordan_vs_Argentina.json",
    "date": "2026-06-28",
    "stage": "Group Stage",
+   "endMin": 90,
    "home": {
     "name": "Argentina",
     "score": 3
@@ -59,6 +62,7 @@
    "file": "assets/data/winprob/2026_07_04_1J_vs_2H.json",
    "date": "2026-07-03",
    "stage": "Round of 32",
+   "endMin": 120,
    "home": {
     "name": "Argentina",
     "score": 3
@@ -73,6 +77,7 @@
    "file": "assets/data/winprob/2026_07_07_1J2H_vs_2D2G.json",
    "date": "2026-07-07",
    "stage": "Round of 16",
+   "endMin": 120,
    "home": {
     "name": "Argentina",
     "score": 3
@@ -87,6 +92,7 @@
    "file": "assets/data/winprob/2026_07_12_Winner_EF_7_vs_Winner_EF_8.json",
    "date": "2026-07-12",
    "stage": "Quarterfinal",
+   "endMin": 120,
    "home": {
     "name": "Argentina",
     "score": 3
@@ -101,6 +107,7 @@
    "file": "assets/data/winprob/2026_07_15_Winner_QF_3_vs_Winner_QF_4.json",
    "date": "2026-07-15",
    "stage": "Semifinal",
+   "endMin": 120,
    "home": {
     "name": "Argentina",
     "score": 2
@@ -115,6 +122,7 @@
    "file": "assets/data/winprob/2026_07_19_Winner_SF_1_vs_Winner_SF_2.json",
    "date": "2026-07-19",
    "stage": "Final",
+   "endMin": 120,
    "home": {
     "name": "Argentina",
     "score": 0

@@ -599,7 +599,8 @@
       var homeC = (D.home && D.home.color) || (W.home && W.home.color) || "#74acdf";
       var awayC = (W.away && W.away.color) || (D.away && D.away.color) || "#2fbf71";
       var WX0 = 34, WX1 = 630, WY0 = 10, WY1 = 102;
-      var px = function (min) { return WX0 + (WX1 - WX0) * min / 90; };
+      var endMin = W.endMin || last.min || 90;   /* 90, or 120 when a knockout went to ET */
+      var px = function (min) { return WX0 + (WX1 - WX0) * min / endMin; };
       var py = function (p) { return WY1 - (WY1 - WY0) * p; };
       var pts = function (key) { return tl.map(function (r) { return px(r.min).toFixed(1) + "," + py(r[key]).toFixed(1); }).join(" "); };
       var pct = function (p) { return Math.round(p * 100) + "%"; };
@@ -615,6 +616,10 @@
         t.textContent = Math.round(p * 100) + (p === 1 ? "%" : "");
         svg.appendChild(t);
       });
+      if (endMin > 90) {  /* thin tick where the 90' market settles */
+        svg.appendChild(E("line", { x1: px(90).toFixed(1), x2: px(90).toFixed(1),
+                                    y1: WY0, y2: WY1, "class": "mc-wp-grid" }));
+      }
       tl.forEach(function (r) {
         (r.events || []).forEach(function (ev) {
           if (ev.type !== "goal") return;
@@ -630,7 +635,7 @@
         var rect = svg.getBoundingClientRect();
         if (!rect.width) return;
         var vx = (e.clientX - rect.left) / rect.width * 640;
-        var min = Math.max(0, Math.min(90, Math.round((vx - WX0) / (WX1 - WX0) * 90)));
+        var min = Math.max(0, Math.min(endMin, Math.round((vx - WX0) / (WX1 - WX0) * endMin)));
         var row = tl[Math.min(min, tl.length - 1)] || last;
         showTip("<b>" + row.min + "'</b> · " + esc(D.home.name) + " " + pct(row.pH) +
                 " / Draw " + pct(row.pD) + " / " + esc(D.away.name) + " " + pct(row.pA), e.clientX, e.clientY);

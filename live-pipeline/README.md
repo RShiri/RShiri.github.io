@@ -18,7 +18,7 @@ for the optional RabbitMQ mode, `pytest` only for the tests.
                         topic exchange "trade"
 +----------------+      +-----------------+      +------------------+
 | MatchProducer  | ---> |  feed.<fixture> | ---> |  TradeConsumer   |
-| replay 0'..90' |      |                 |      |  MatchState      |
+| replay 0'..FT  |      |                 |      |  MatchState      |
 | (recorded xG   |      |                 | <--- |  InPlayModel     |
 |  match JSON)   |      | markets.<fixt.> |      |  1X2 pricing     |
 +----------------+      +-----------------+      +------------------+
@@ -42,10 +42,10 @@ list. Timestamps are supplied by the producer, so replays are fully deterministi
 | Type | Name | When sent | Key payload fields |
 | --- | --- | --- | --- |
 | 1 | FixtureMetadataUpdate | Kickoff (`InProgress`) and full time (`Finished`) | `Fixture`: Sport, Venue, Stage, StartDate, Status, Participants |
-| 2 | LivescoreUpdate | Every simulated minute 0..90 | `Scoreboard` (period, minute, score), `Statistics` (cumulative xG), `Incidents` (that minute's shots/goals with xG) |
-| 3 | MarketUpdate | Consumer output, per priced minute | `Markets`: 1X2 (90 min) with `Probability`, fair `Price`, `BookPrice` (5% overround) |
+| 2 | LivescoreUpdate | Every simulated minute, 0..90 (0..120 when a knockout goes to extra time) | `Scoreboard` (period, minute, score), `Statistics` (cumulative xG), `Incidents` (that minute's shots/goals with xG) |
+| 3 | MarketUpdate | Consumer output, per priced minute up to 90' | `Markets`: 1X2 (90 min) with `Probability`, fair `Price`, `BookPrice` (5% overround) |
 | 31 | KeepAlive | Every 10 simulated minutes | `FixtureId` only (heartbeat) |
-| 35 | Settlement | Full time | 1X2 bets with `Settlement` 1/0 |
+| 35 | Settlement | Minute 90 (the 1X2 market clock) | 1X2 bets with `Settlement` 1/0 |
 
 Recovery: the producer is the fixture's snapshot authority and serves the RPC queue
 `snapshot.<fixture_id>` from the moment it is constructed. If the consumer sees a
@@ -80,7 +80,11 @@ argentina match JSONs.
 **90-minute market clock**: the model prices the 1X2 (90 min) market. Matches without
 extra time — every league match and every WC group game — fold stoppage-time events into
 minute 90 (a 90+4' goal settles the market); in WC knockouts minutes above 90 are extra
-time and never enter (`model.effective_min(minute, has_extra_time)`).
+time and never enter (`model.effective_min(minute, has_extra_time)`). A knockout that is
+level at 90' keeps replaying through extra time to 120': the market stays settled on the
+90' score (no more MarketUpdates), while the timeline keeps one row per minute pricing
+who wins in extra time on the raw scoreline — so timelines have 91 rows for a 90-minute
+match and 121 for one that went the distance.
 
 Back-test (mean Brier per checkpoint vs the 90-minute outcome; temporal holdout: train
 on 2022-23..2024-25 leagues + WC2018 + WC2022, evaluate on the 864 held-out 2025-26
@@ -140,7 +144,7 @@ Regeneration order after new match data: `calibrate.py` (rewrites
 | `requirements.txt` | Documents that the core has no deps; `pika` optional for rabbit mode |
 | `tradepipe/messages.py` | TRADE360-style envelope + builders for MsgTypes 1/2/3/31/35 |
 | `tradepipe/broker.py` | `Broker` API, synchronous `InMemoryBroker`, `RabbitBroker` (topic exchange `trade`, RPC) |
-| `tradepipe/producer.py` | `MatchProducer`: deterministic minute 0..90 replay, snapshot authority |
+| `tradepipe/producer.py` | `MatchProducer`: deterministic minute 0..end replay (90', or 120' after extra time), snapshot authority |
 | `tradepipe/snapshot.py` | Snapshot payload contract shared by producer (build) and consumer (parse) |
 | `tradepipe/state.py` | `MatchState`: rebuilds score/xG/incidents from the feed, MsgSeq gap detection |
 | `tradepipe/consumer.py` | `TradeConsumer`: pricing, MarketUpdate publishing, snapshot recovery, timeline recording |

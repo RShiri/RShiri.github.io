@@ -12,6 +12,13 @@ runs the InPlayModel (pre-match rates from model_params.json blended with
      "scoreH": ..., "scoreA": ...,
      "events": [{"min", "team", "type": "goal"|"shot", "player", "xg"}, ...]}
 
+Past 90' (a knockout in extra time) the 1X2 (90 min) market is already
+settled, so no MarketUpdate is published — but the timeline keeps one row
+per minute, pricing who wins in extra time on the raw scoreline with the
+same formula over the remaining 120 - t minutes. At 120' the probabilities
+collapse to the extra-time result (a level score at 120' -> pD = 1,
+i.e. the tie goes to penalties).
+
 Recovery: if a LivescoreUpdate arrives with no local state (late join) or
 with a MsgSeq gap (missed messages), the consumer calls the RPC queue
 "snapshot.<fixture_id>", rebuilds MatchState from the reply, drops anything
@@ -22,7 +29,7 @@ from pathlib import Path
 
 from .messages import MsgType, market_update
 from .calibrate import prematch_lams
-from .model import InPlayModel
+from .model import LAM_FLOOR, InPlayModel, fair_odds, win_probs
 from .state import MatchState
 
 REPO = Path(__file__).resolve().parent.parent.parent
@@ -118,22 +125,27 @@ class TradeConsumer:
 
     def _price_minute(self, message):
         st = self.state
-        p = self.model.probs(st.minute, st.score_h, st.score_a,
-                             st.xg_recent15("home"), st.xg_recent15("away"))
+        if st.minute <= 90:
+            p = self.model.probs(st.minute, st.score_h, st.score_a,
+                                 st.xg_recent15("home"), st.xg_recent15("away"))
 
-        self.markets_published += 1
-        markets = [{"Name": "1X2 (90 min)", "Bets": [
-            {"Name": "1", "Probability": round(p["pH"], 6),
-             "Price": round(p["fairH"], 3), "BookPrice": round(p["bookH"], 3)},
-            {"Name": "X", "Probability": round(p["pD"], 6),
-             "Price": round(p["fairD"], 3), "BookPrice": round(p["bookD"], 3)},
-            {"Name": "2", "Probability": round(p["pA"], 6),
-             "Price": round(p["fairA"], 3), "BookPrice": round(p["bookA"], 3)},
-        ]}]
-        self.broker.publish("markets.%s" % self.fixture_id,
-                            market_update(self.fixture_id, markets,
-                                          self.markets_published,
-                                          message.server_timestamp))
+            self.markets_published += 1
+            markets = [{"Name": "1X2 (90 min)", "Bets": [
+                {"Name": "1", "Probability": round(p["pH"], 6),
+                 "Price": round(p["fairH"], 3), "BookPrice": round(p["bookH"], 3)},
+                {"Name": "X", "Probability": round(p["pD"], 6),
+                 "Price": round(p["fairD"], 3), "BookPrice": round(p["bookD"], 3)},
+                {"Name": "2", "Probability": round(p["pA"], 6),
+                 "Price": round(p["fairA"], 3), "BookPrice": round(p["bookA"], 3)},
+            ]}]
+            self.broker.publish("markets.%s" % self.fixture_id,
+                                market_update(self.fixture_id, markets,
+                                              self.markets_published,
+                                              message.server_timestamp))
+        else:
+            # Extra time: the 90' market is settled, so publishing prices
+            # for it would be wrong — record the timeline row only.
+            p = self._extra_time_probs(st)
 
         events = []
         for ev in message.events:
@@ -166,6 +178,23 @@ class TradeConsumer:
                   % (st.minute, st.score_h, st.score_a, st.xg_h, st.xg_a,
                      100 * p["pH"], 100 * p["pD"], 100 * p["pA"],
                      p["fairH"], p["fairD"], p["fairA"], goals))
+
+    def _extra_time_probs(self, st):
+        """Who-wins-in-extra-time probabilities at minute t (90 < t <= 120):
+        the same one formula, with the remaining horizon 120 - t and the raw
+        extra-time scoreline. At t = 120 the remaining rates are 0 and the
+        triple is the one-hot of the result (level -> pD = 1: penalties)."""
+        R = 120 - st.minute
+        lams = []
+        for side, lam_pre in (("home", self.model.lam_h), ("away", self.model.lam_a)):
+            pace = st.xg_recent15(side) / 15.0
+            lam = (R / 90.0) * ((1.0 - self.model.w) * lam_pre
+                                + self.model.w * 90.0 * pace)
+            lams.append(max(lam, LAM_FLOOR * R / 90.0))
+        ph, pd, pa = win_probs(lams[0], lams[1], st.score_h, st.score_a)
+        return {"pH": ph, "pD": pd, "pA": pa,
+                "fairH": fair_odds(ph), "fairD": fair_odds(pd),
+                "fairA": fair_odds(pa)}
 
     # ------------------------------------------------------------ settlement
 

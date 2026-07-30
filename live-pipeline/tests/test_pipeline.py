@@ -16,7 +16,8 @@ from tradepipe.consumer import TradeConsumer      # noqa: E402
 
 REPO = HERE.parent.parent
 DATA = REPO / "assets" / "data" / "argentina"
-MATCH = DATA / "2026_06_17_Argentina_vs_Algeria.json"
+MATCH = DATA / "2026_06_17_Argentina_vs_Algeria.json"            # group stage
+KO_MATCH = DATA / "2026_07_15_Winner_QF_3_vs_Winner_QF_4.json"   # semifinal, ET
 PARAMS = REPO / "assets" / "data" / "winprob" / "model_params.json"
 
 
@@ -84,11 +85,42 @@ def test_full_replay_argentina_algeria():
                                             match["away"]["score"])
     assert consumer.final_state.status == "Finished"
 
-    assert len(consumer.timeline) == 91
-    assert [row["min"] for row in consumer.timeline] == list(range(0, 91))
+    assert producer.end_min == 90                     # group game: no extra time
+    assert len(consumer.timeline) == producer.end_min + 1
+    assert [row["min"] for row in consumer.timeline] == list(range(0, producer.end_min + 1))
     for row in consumer.timeline:
         assert abs(row["pH"] + row["pD"] + row["pA"] - 1.0) < 2e-4  # rounded to 4dp
     assert consumer.settlement_result == "1"
+
+
+def test_knockout_replays_through_extra_time():
+    producer, consumer = run_pipeline(KO_MATCH)
+    with open(KO_MATCH, encoding="utf-8") as f:
+        match = json.load(f)
+
+    # level at 90' in a knockout -> the replay runs through extra time
+    assert producer.end_min == 120
+    assert len(consumer.timeline) == producer.end_min + 1
+    assert [row["min"] for row in consumer.timeline] == list(range(0, producer.end_min + 1))
+
+    # the final recorded score is the match's real full-time score
+    last = consumer.timeline[-1]
+    assert (last["scoreH"], last["scoreA"]) == (match["home"]["score"],
+                                                match["away"]["score"])
+    assert consumer.final_state.status == "Finished"
+
+    # settlement still fires at 90' with the 90' result
+    h90, a90 = producer.score_at(90)
+    expected = "1" if h90 > a90 else ("X" if h90 == a90 else "2")
+    assert consumer.settlement_result == expected == "X"
+    row90 = consumer.timeline[90]
+    assert (row90["scoreH"], row90["scoreA"]) == (h90, a90)
+
+    # no MarketUpdates past 90' — the 90' market is settled
+    assert consumer.markets_published == 91
+
+    # at 120' there is no time left: the probs are the one-hot of the result
+    assert (last["pH"], last["pD"], last["pA"]) == (1.0, 0.0, 0.0)
 
 
 def test_late_join_recovers_and_matches_uninterrupted():

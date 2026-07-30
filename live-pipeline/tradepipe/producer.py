@@ -1,14 +1,19 @@
 """Feed producer: replays one recorded match as a live TRADE360-style feed.
 
 MatchProducer loads a match JSON (assets/data/argentina/<id>.json) and
-replays minutes 0..90 on routing key "feed.<fixture_id>":
+replays minutes 0..end_min on routing key "feed.<fixture_id>", where
+end_min is 90 — or 120 for a knockout that is level at 90' and goes to
+extra time (no golden goal: extra time always runs to 120):
 
     minute 0    FixtureMetadataUpdate (Status InProgress), then LivescoreUpdate
     each minute LivescoreUpdate (scoreboard, cumulative xG, that minute's
                 shots/goals as Incidents)
     every 10'   KeepAlive
-    minute 90   final LivescoreUpdate, FixtureMetadataUpdate (Finished),
-                Settlement of the 1X2 (90 min) market
+    minute 90   Settlement of the 1X2 (90 min) market (the market clock)
+    end_min     final LivescoreUpdate, FixtureMetadataUpdate (Finished)
+
+Up to 90' the scoreboard runs on the 90-minute market clock (group-stage
+stoppage folds into minute 90); past 90' it is the raw extra-time score.
 
 Timestamps are deterministic (kickoff = match date at 18:00 UTC, +1 simulated
 minute = +60000 ms) and MsgSeq is a per-fixture counter starting at 1.
@@ -51,6 +56,9 @@ class MatchProducer:
         # model.effective_min stays pure; this adapter owns the stage logic.
         stage = (self.match.get("stage") or "").lower()
         self.has_extra_time = "group" not in stage and "grp" not in stage
+        # Extra time is played exactly when a knockout is level at 90'.
+        h90, a90 = self.score_at(90)
+        self.end_min = 120 if (self.has_extra_time and h90 == a90) else 90
         self.kickoff_ms = self._kickoff_ms(self.match["date"])
         self.messages_published = 0          # doubles as the MsgSeq counter
 
@@ -68,9 +76,9 @@ class MatchProducer:
     # ------------------------------------------------------------- replaying
 
     def replay(self):
-        """Generator over minutes 0..90; publishes each minute's messages,
-        then yields the minute. The caller controls pacing."""
-        for t in range(0, 91):
+        """Generator over minutes 0..end_min; publishes each minute's
+        messages, then yields the minute. The caller controls pacing."""
+        for t in range(0, self.end_min + 1):
             if t == 0:
                 self._publish_metadata("InProgress", t)
                 if not self.quiet:
@@ -78,13 +86,20 @@ class MatchProducer:
                     print("[producer] %s: %s vs %s, kickoff %s 18:00 UTC"
                           % (self.fixture_id, home, away, self.match["date"]))
             self._publish_livescore(t)
-            if t > 0 and t < 90 and t % 10 == 0:
+            if t > 0 and t < self.end_min and t % 10 == 0:
                 self._publish(keep_alive(self.fixture_id,
                                          self._next_seq(), self._ts(t)))
-            if t == 90:
+            if t == self.end_min:
                 self._publish_metadata("Finished", t)
+            if t == 90:
                 self._publish_settlement(t)
-                if not self.quiet:
+            if t == self.end_min and not self.quiet:
+                if self.end_min > 90:
+                    h, a = self.score_raw_at(self.end_min)
+                    print("[producer] full time %d-%d after extra time, fixture "
+                          "Finished, 1X2 settled at 90' (%d messages)"
+                          % (h, a, self.messages_published))
+                else:
                     h, a = self.score_at(90)
                     print("[producer] full time %d-%d, fixture Finished, "
                           "1X2 settled (%d messages)" % (h, a, self.messages_published))
@@ -96,7 +111,7 @@ class MatchProducer:
         build_timelines)."""
         delay = 0.0 if instant else 60.0 / self.speed
         for t in self.replay():
-            if delay > 0.0 and t < 90:
+            if delay > 0.0 and t < self.end_min:
                 self._sleep(delay)
 
     def _sleep(self, seconds):
@@ -126,9 +141,14 @@ class MatchProducer:
         self._fixture = fixture
 
     def _publish_livescore(self, t):
-        h, a = self.score_at(t)
+        if t <= 90:
+            h, a = self.score_at(t)
+            period = "1st Half" if t <= 45 else "2nd Half"
+        else:
+            h, a = self.score_raw_at(t)
+            period = "Extra Time"
         scoreboard = {
-            "CurrentPeriod": "1st Half" if t <= 45 else "2nd Half",
+            "CurrentPeriod": period,
             "Time": t,
             "HomeScore": h,
             "AwayScore": a,
@@ -196,7 +216,8 @@ class MatchProducer:
     def score_at(self, t):
         """(home, away) goals up to and including minute t on the 90-minute
         market clock: group-stage stoppage goals fold into minute 90,
-        extra-time goals never enter the replay (see model.effective_min)."""
+        extra-time goals never enter (see model.effective_min). Used to
+        settle the 1X2 (90 min) market at t == 90."""
         h = a = 0
         for g in self.match["goals"]:
             m = self._eff_min(g["min"])
@@ -207,22 +228,43 @@ class MatchProducer:
                     a += 1
         return h, a
 
+    def score_raw_at(self, t):
+        """(home, away) RAW goal count up to and including raw minute t —
+        the extra-time scoreboard past 90'. No 90-market folding."""
+        h = a = 0
+        for g in self.match["goals"]:
+            if g["min"] <= t:
+                if g["team"] == "home":
+                    h += 1
+                else:
+                    a += 1
+        return h, a
+
     def _eff_min(self, event_min):
         return effective_min(event_min, self.has_extra_time)
+
+    def _clock_min(self, event_min, t):
+        """The minute an event counts at, given the replay is at minute t:
+        the 90-market clock up to 90' (stoppage folds), the raw extra-time
+        minute past 90'."""
+        if t <= 90:
+            return self._eff_min(event_min)
+        return event_min
 
     def _xg_at(self, side, t):
         total = 0.0
         for s in self.match["shots"]:
-            m = self._eff_min(s["min"])
+            m = self._clock_min(s["min"], t)
             if s["team"] == side and m is not None and m <= t:
                 total += s["xg"]
         return total
 
     def _incidents_at(self, t):
-        """This minute's shots (goals are shots with goal=true) as wire dicts."""
+        """This minute's shots (goals are shots with goal=true) as wire
+        dicts. Past 90' the raw extra-time minute is matched directly."""
         out = []
         for s in self.match["shots"]:
-            if self._eff_min(s["min"]) == t:
+            if self._clock_min(s["min"], t) == t:
                 out.append({
                     "Min": t,
                     "Team": s["team"],
