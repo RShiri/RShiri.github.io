@@ -17,9 +17,14 @@ can consume. Two hard-won rules live here:
     left "Group Stage" in every file (a template leftover) and the WC files
     mix "Group Stage" / "Group I" / "World Cup Grp. A" / "" freely.
     Competition comes from which directory the file was loaded from.
-  * has_extra_time is True only for World Cup knockout matches. League
-    matches and WC group games end at 90' + stoppage, so events past
-    minute 90 fold into minute 90 for the 1X2 market (model.effective_min).
+  * has_extra_time is True only for World Cup knockout matches that
+    ACTUALLY played extra time (knockout_played_extra_time below — maxMin
+    is decisive when present). League matches, WC group games, and WC
+    knockouts settled in regulation end at 90' + stoppage, so their events
+    past minute 90 fold into minute 90 for the 1X2 market
+    (model.effective_min). A knockout decided by a stoppage-time winner is
+    NOT an extra-time match: 90+1' counts toward the 90' market exactly
+    like group-stage stoppage.
 """
 import json
 import re
@@ -52,16 +57,76 @@ def is_groupish(stage):
     return "group" in s or "grp" in s
 
 
-def wc_has_extra_time(stage, date):
-    """Extra time is played only in WC knockouts. Group-ish stage => no.
-    An empty stage (one WC2026 file has stage="" AND date="") is knockout
-    only if the date falls in the WC2026 knockout window (from 2026-06-29);
-    an empty or earlier date means it was a group game."""
+def has_shootout_evidence(raw):
+    """True when the file records a penalty shootout: home/away pens
+    non-null, or a non-empty shootout array. Shootouts only happen after
+    extra time in a knockout, so this evidence is unambiguous."""
+    if (raw.get("home") or {}).get("pens") is not None:
+        return True
+    if (raw.get("away") or {}).get("pens") is not None:
+        return True
+    return bool(raw.get("shootout"))
+
+
+def wc_is_knockout(raw):
+    """Was this WC match a knockout tie? Stage label first — EXCEPT that
+    penalty-shootout evidence always wins: a shootout cannot happen in a
+    group game, and one WC2026 R32 file (2026_06_29_1E_vs_3ABCDF, pens
+    3-4) kept the scraper's "Group Stage" template stage. An empty stage
+    (one WC2026 file has stage="" AND date="") is knockout only if the
+    date falls in the WC2026 knockout window (from 2026-06-29)."""
+    if has_shootout_evidence(raw):
+        return True
+    stage = raw.get("stage") or ""
     if is_groupish(stage):
         return False
-    if not (stage or "").strip():
+    if not stage.strip():
+        date = raw.get("date") or ""
         return bool(date) and date >= "2026-06-29"
     return True
+
+
+def knockout_played_extra_time(raw):
+    """Did this KNOCKOUT match actually play extra time? Decided per match,
+    in priority order:
+
+      1. maxMin (last minute on the match clock, present in every
+         /workspace matches_detail file): >= 115 => extra time was played.
+         ET always reaches 120' (recorded 120-131 with its own stoppage),
+         while regulation with long stoppage tops out around 108 in this
+         data - nothing legitimate lives in 109..119, so 115 splits the
+         two clusters. < 115 => no ET.
+      2. Penalty-shootout evidence (pens / shootout) => ET.
+      3. Any recorded event (shot or goal) with min > 95 => ET.
+      4. Otherwise fold events at 91..95 into minute 90 (second-half
+         stoppage). A LEVEL folded 90' score => ET (a level knockout must
+         have played it; its events just weren't recorded past 90'). A
+         decided score => no ET: a regulation win via a stoppage-time
+         goal, which settles the 90' market like any stoppage goal.
+    """
+    max_min = raw.get("maxMin")
+    if max_min is not None:
+        return max_min >= 115
+    if has_shootout_evidence(raw):
+        return True
+    ev_mins = ([s["min"] for s in raw.get("shots") or []]
+               + [g["min"] for g in raw.get("goals") or []])
+    if any(m > 95 for m in ev_mins):
+        return True
+    h = a = 0
+    for g in raw.get("goals") or []:
+        if g["min"] <= 95:                   # 91..95 folds into minute 90
+            if g["team"] == "home":
+                h += 1
+            else:
+                a += 1
+    return h == a
+
+
+def wc_has_extra_time(raw):
+    """has_extra_time for a raw WC match dict: knockouts that actually
+    played extra time. Group games never play it."""
+    return wc_is_knockout(raw) and knockout_played_extra_time(raw)
 
 
 def normalize(raw, competition, edition=None):
@@ -69,13 +134,13 @@ def normalize(raw, competition, edition=None):
 
     90-minute xG per side is summed from the shot stream on the market
     clock: stoppage-time shots fold into minute 90, extra-time shots (WC
-    knockouts only) are excluded — there is no top-level xg field in these
-    corpora (unlike the argentina JSONs)."""
+    knockouts that actually played ET) are excluded — there is no
+    top-level xg field in these corpora (unlike the argentina JSONs)."""
     stage = raw.get("stage") or ""
     date = raw.get("date") or ""
     if competition == "WC":
         season = str(edition)
-        has_et = wc_has_extra_time(stage, date)
+        has_et = wc_has_extra_time(raw)
         is_neutral = True
     else:
         season = league_season(date)

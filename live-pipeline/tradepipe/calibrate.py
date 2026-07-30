@@ -241,7 +241,10 @@ def split_holdout(matches):
 
 def load_argentina(data_dir):
     """Fallback corpus: the 8 argentina match JSONs, normalized to the
-    corpus shape (competition "WC", clean stage labels drive extra time)."""
+    corpus shape (competition "WC"; clean stage labels pick out the
+    knockouts, and corpus.knockout_played_extra_time decides — from the
+    event stream, these files have no maxMin — whether a knockout
+    actually played extra time)."""
     idx = json.load(open(data_dir / "index.json", encoding="utf-8"))
     matches = []
     for m in idx["matches"]:
@@ -256,7 +259,8 @@ def load_argentina(data_dir):
             "away": raw["away"]["name"],
             "shots": raw.get("shots") or [],
             "goals": raw.get("goals") or [],
-            "has_extra_time": not corpus.is_groupish(stage),
+            "has_extra_time": (not corpus.is_groupish(stage)
+                               and corpus.knockout_played_extra_time(raw)),
             "is_neutral": True,
             "xg": list(raw["xg"]),
         })

@@ -446,7 +446,7 @@ html[data-theme="dark"] .footer { background: #070b15; }
         </div>
         <p class="caveat">A curated slice of the <span id="teamCount">109</span> fitted teams.
           att &gt; 1 scores more than its competition's baseline
-          (<span id="muLine" class="mono">μ: EPL 1.42 · La Liga 1.29 · WC 1.34</span> goals per team
+          (<span id="muLine" class="mono">μ: EPL 1.42 · La Liga 1.29 · WC 1.37</span> goals per team
           per match), def &lt; 1 concedes less. Rates are recency-weighted (0.8 per season) with
           empirical-Bayes shrinkage, so league teams with 152 matches are far better estimated than
           World Cup sides seen a handful of times.</p>
@@ -1032,7 +1032,7 @@ python3 -m pytest live-pipeline/tests -q</pre>
   var FALLBACK_PARAMS = {
     /* file:// fallback — a curated slice of assets/data/winprob/model_params.json (v2, 109 teams) */
     version: 2,
-    mu: { EPL: 1.4184, LaLiga: 1.2871, WC: 1.3397 },
+    mu: { EPL: 1.4184, LaLiga: 1.2871, WC: 1.3674 },
     hfa: 1.1295, k: 1, w: 0.35, decay: 0.8,
     teams_total: 109,
     teams: {
@@ -1042,15 +1042,15 @@ python3 -m pytest live-pipeline/tests -q</pre>
       "LaLiga/Barcelona": { att: 2.1387, def: 1.0475, matches: 152 },
       "LaLiga/Real Madrid": { att: 1.9395, def: 1.0417, matches: 152 },
       "LaLiga/Atletico Madrid": { att: 1.5793, def: 1.0894, matches: 152 },
-      "WC/Germany": { att: 2.4465, def: 1.2001, matches: 10 },
-      "WC/Brazil": { att: 2.2611, def: 0.6718, matches: 15 },
-      "WC/Turkiye": { att: 2.1359, def: 1.1884, matches: 3 }
+      "WC/Germany": { att: 2.3718, def: 1.1989, matches: 10 },
+      "WC/Brazil": { att: 2.3363, def: 0.6818, matches: 15 },
+      "WC/Turkiye": { att: 2.1428, def: 1.1953, matches: 3 }
     },
     brier: {
       checkpoints: [0, 15, 30, 45, 60, 75, 90],
-      model: [0.6187, 0.6029, 0.5822, 0.5243, 0.4538, 0.3641, 0.0],
-      baseline_w0: [0.6092, 0.5841, 0.5589, 0.5135, 0.446, 0.361, 0.0],
-      constant: [0.646, 0.646, 0.646, 0.646, 0.646, 0.646, 0.646],
+      model: [0.6176, 0.6014, 0.5812, 0.5252, 0.4548, 0.3652, 0.0],
+      baseline_w0: [0.6072, 0.5832, 0.5587, 0.5141, 0.4472, 0.3625, 0.0],
+      constant: [0.6449, 0.6449, 0.6449, 0.6449, 0.6449, 0.6449, 0.6449],
       n_eval: 864
     }
   };

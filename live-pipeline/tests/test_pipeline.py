@@ -17,7 +17,8 @@ from tradepipe.consumer import TradeConsumer      # noqa: E402
 REPO = HERE.parent.parent
 DATA = REPO / "assets" / "data" / "argentina"
 MATCH = DATA / "2026_06_17_Argentina_vs_Algeria.json"            # group stage
-KO_MATCH = DATA / "2026_07_15_Winner_QF_3_vs_Winner_QF_4.json"   # semifinal, ET
+KO_MATCH = DATA / "2026_07_12_Winner_EF_7_vs_Winner_EF_8.json"   # quarterfinal, real ET
+SF_MATCH = DATA / "2026_07_15_Winner_QF_3_vs_Winner_QF_4.json"   # semifinal: 90+1' winner, NO ET
 PARAMS = REPO / "assets" / "data" / "winprob" / "model_params.json"
 
 
@@ -120,6 +121,25 @@ def test_knockout_replays_through_extra_time():
     assert consumer.markets_published == 91
 
     # at 120' there is no time left: the probs are the one-hot of the result
+    assert (last["pH"], last["pD"], last["pA"]) == (1.0, 0.0, 0.0)
+
+
+def test_stoppage_winner_is_not_extra_time():
+    """The semifinal's only post-90 event is the 91' winner: that's a 90+1'
+    stoppage goal, not extra time. The replay ends at 90', the goal folds
+    into minute 90, and it settles the 1X2 market."""
+    producer, consumer = run_pipeline(SF_MATCH)
+    with open(SF_MATCH, encoding="utf-8") as f:
+        match = json.load(f)
+
+    assert producer.has_extra_time is False
+    assert producer.end_min == 90
+    assert len(consumer.timeline) == 91
+
+    last = consumer.timeline[-1]
+    assert (last["scoreH"], last["scoreA"]) == (match["home"]["score"],
+                                                match["away"]["score"]) == (2, 1)
+    assert consumer.settlement_result == "1"
     assert (last["pH"], last["pD"], last["pA"]) == (1.0, 0.0, 0.0)
 
 

@@ -4,7 +4,7 @@
   "mu": {
    "EPL": 1.4184,
    "LaLiga": 1.2871,
-   "WC": 1.3397
+   "WC": 1.3674
   },
   "w": 0.35,
   "k": 1,
@@ -77,7 +77,7 @@
    "file": "assets/data/winprob/2026_07_07_1J2H_vs_2D2G.json",
    "date": "2026-07-07",
    "stage": "Round of 16",
-   "endMin": 120,
+   "endMin": 90,
    "home": {
     "name": "Argentina",
     "score": 3
@@ -107,7 +107,7 @@
    "file": "assets/data/winprob/2026_07_15_Winner_QF_3_vs_Winner_QF_4.json",
    "date": "2026-07-15",
    "stage": "Semifinal",
-   "endMin": 120,
+   "endMin": 90,
    "home": {
     "name": "Argentina",
     "score": 2

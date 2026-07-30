@@ -2,8 +2,11 @@
 
 MatchProducer loads a match JSON (assets/data/argentina/<id>.json) and
 replays minutes 0..end_min on routing key "feed.<fixture_id>", where
-end_min is 90 — or 120 for a knockout that is level at 90' and goes to
-extra time (no golden goal: extra time always runs to 120):
+end_min is 90 — or 120 for a knockout that actually played extra time
+(corpus.knockout_played_extra_time; no golden goal: extra time always
+runs to 120). A knockout decided by a stoppage-time winner did NOT play
+extra time: it ends at 90' and its 90+X' events fold into minute 90,
+exactly like group-stage stoppage:
 
     minute 0    FixtureMetadataUpdate (Status InProgress), then LivescoreUpdate
     each minute LivescoreUpdate (scoreboard, cumulative xG, that minute's
@@ -32,6 +35,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+from .corpus import is_groupish, knockout_played_extra_time
 from .messages import (fixture_metadata_update, livescore_update, keep_alive,
                        settlement)
 from .model import effective_min
@@ -51,14 +55,18 @@ class MatchProducer:
             self.match = json.load(f)
         self.fixture_id = self.match_path.stem
         # The argentina files are all World Cup matches with clean stage
-        # labels ("Group Stage", "Round of 32", "Final", ...), so group-ish
-        # stage => no extra time, anything else => knockout with extra time.
-        # model.effective_min stays pure; this adapter owns the stage logic.
-        stage = (self.match.get("stage") or "").lower()
-        self.has_extra_time = "group" not in stage and "grp" not in stage
-        # Extra time is played exactly when a knockout is level at 90'.
-        h90, a90 = self.score_at(90)
-        self.end_min = 120 if (self.has_extra_time and h90 == a90) else 90
+        # labels ("Group Stage", "Round of 32", "Final", ...): group-ish
+        # stage => never extra time; a knockout played extra time only when
+        # corpus.knockout_played_extra_time says so (these files carry no
+        # maxMin/pens/shootout fields, so the event-based steps decide: an
+        # event past 95' or a level folded 90' score => ET; a regulation
+        # win via a stoppage-time goal => no ET, the 90+X' events fold into
+        # minute 90 like group-stage stoppage). model.effective_min stays
+        # pure; this adapter owns the classification.
+        is_knockout = not is_groupish(self.match.get("stage"))
+        self.has_extra_time = (is_knockout
+                               and knockout_played_extra_time(self.match))
+        self.end_min = 120 if self.has_extra_time else 90
         self.kickoff_ms = self._kickoff_ms(self.match["date"])
         self.messages_published = 0          # doubles as the MsgSeq counter
 

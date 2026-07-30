@@ -92,13 +92,13 @@ league matches + WC2026 — from `assets/data/winprob/model_params.json`):
 
 | Minute | Model (w=0.35) | Baseline (w=0) | Constant base-rate |
 | --- | --- | --- | --- |
-| 0 | 0.6187 | 0.6092 | 0.6460 |
-| 15 | 0.6029 | 0.5841 | 0.6460 |
-| 30 | 0.5822 | 0.5589 | 0.6460 |
-| 45 | 0.5243 | 0.5135 | 0.6460 |
-| 60 | 0.4538 | 0.4460 | 0.6460 |
-| 75 | 0.3641 | 0.3610 | 0.6460 |
-| 90 | 0.0000 | 0.0000 | 0.6460 |
+| 0 | 0.6176 | 0.6072 | 0.6449 |
+| 15 | 0.6014 | 0.5832 | 0.6449 |
+| 30 | 0.5812 | 0.5587 | 0.6449 |
+| 45 | 0.5252 | 0.5141 | 0.6449 |
+| 60 | 0.4548 | 0.4472 | 0.6449 |
+| 75 | 0.3652 | 0.3625 | 0.6449 |
+| 90 | 0.0000 | 0.0000 | 0.6449 |
 
 Both model variants clearly beat the constant always-quote-the-base-rate baseline. The
 honest surprise: at this scale the w=0 (score + clock + pre-match rates, no momentum)

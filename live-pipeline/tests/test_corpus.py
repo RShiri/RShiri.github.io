@@ -16,11 +16,12 @@ corpus = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(corpus)
 
 
-def write_match(dir_path, name, home, away, date, stage, shots, goals=()):
+def write_match(dir_path, name, home, away, date, stage, shots, goals=(),
+                max_min=95):
     obj = {
         "home": {"name": home, "raw": home, "score": 0, "pens": None, "color": "#111"},
         "away": {"name": away, "raw": away, "score": 0, "pens": None, "color": "#222"},
-        "date": date, "venue": "", "stage": stage, "maxMin": 95,
+        "date": date, "venue": "", "stage": stage, "maxMin": max_min,
         "shots": list(shots), "goals": list(goals), "id": name,
     }
     path = Path(dir_path) / (name + ".js")
@@ -65,9 +66,11 @@ def test_wc_group_vs_knockout_and_stage_labels(tmp_path):
     # group-ish labels in all their scraped disguises => no extra time
     write_match(tmp_path, "g1", "France", "Peru", "2018-06-21",
                 "World Cup Grp. C", shots=[shot("home", 92, 0.4)])
-    # knockout label => extra time, min > 90 xG excluded from the 90' total
+    # knockout that played ET (maxMin on the ET clock) => min > 90 xG
+    # excluded from the 90' total
     write_match(tmp_path, "k1", "France", "Croatia", "2018-07-15",
-                "Final", shots=[shot("home", 30, 0.6), shot("home", 100, 0.9)])
+                "Final", shots=[shot("home", 30, 0.6), shot("home", 100, 0.9)],
+                max_min=121)
     matches = {M["home"] + "/" + M["away"]: M
                for M in corpus.iter_matches([("WC", tmp_path, 2018)])}
     g, k = matches["France/Peru"], matches["France/Croatia"]
@@ -81,10 +84,13 @@ def test_wc_group_vs_knockout_and_stage_labels(tmp_path):
 def test_wc_empty_stage_date_window(tmp_path):
     # empty stage: group unless the date is in the WC2026 knockout window
     write_match(tmp_path, "e1", "Iran", "New Zealand", "", "", shots=[])
-    write_match(tmp_path, "e2", "Spain", "Belgium", "2026-07-10", "", shots=[])
+    write_match(tmp_path, "e2", "Spain", "Belgium", "2026-07-10", "", shots=[],
+                max_min=121)
+    write_match(tmp_path, "e3", "France", "Ghana", "2026-07-11", "", shots=[])
     matches = {M["home"]: M for M in corpus.iter_matches([("WC", tmp_path, 2026)])}
     assert matches["Iran"]["has_extra_time"] is False      # no date -> group
-    assert matches["Spain"]["has_extra_time"] is True      # knockout window
+    assert matches["Spain"]["has_extra_time"] is True      # knockout window + ET clock
+    assert matches["France"]["has_extra_time"] is False    # knockout, but maxMin 95 = regulation
 
 
 def test_wc2026_dedup_prefers_real_id(tmp_path):
@@ -100,3 +106,27 @@ def test_wc2026_dedup_prefers_real_id(tmp_path):
     assert len(matches) == 2                 # dup pair collapsed to one
     assert {(M["home"], M["away"]) for M in matches} == {
         ("South Africa", "Canada"), ("Mexico", "Japan")}
+
+
+def test_knockout_extra_time_rule():
+    """knockout_played_extra_time, branch by branch. ET always reaches
+    120' on the match clock; regulation stoppage tops out around 108."""
+    et = corpus.knockout_played_extra_time
+    base = {"home": {"pens": None}, "away": {"pens": None}}
+    # 1. maxMin decides when present
+    assert et({**base, "maxMin": 121}) is True
+    assert et({**base, "maxMin": 101}) is False   # deep stoppage, not ET
+    # 2. no maxMin: a shootout is unambiguous ET evidence
+    assert et({"home": {"pens": 3}, "away": {"pens": 4}}) is True
+    # 3. no maxMin: any event past 95'
+    assert et({**base, "shots": [{"team": "home", "min": 104, "xg": 0.1}],
+               "goals": []}) is True
+    # 4a. stoppage winner: 91' goal breaks a 1-1 -> regulation (the semifinal)
+    assert et({**base, "shots": [],
+               "goals": [{"team": "home", "min": 54},
+                         {"team": "away", "min": 84},
+                         {"team": "home", "min": 91}]}) is False
+    # 4b. still level after folding -> ET must have been played
+    assert et({**base, "shots": [],
+               "goals": [{"team": "home", "min": 54},
+                         {"team": "away", "min": 84}]}) is True
