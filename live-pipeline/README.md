@@ -42,7 +42,7 @@ list. Timestamps are supplied by the producer, so replays are fully deterministi
 | Type | Name | When sent | Key payload fields |
 | --- | --- | --- | --- |
 | 1 | FixtureMetadataUpdate | Kickoff (`InProgress`) and full time (`Finished`) | `Fixture`: Sport, Venue, Stage, StartDate, Status, Participants |
-| 2 | LivescoreUpdate | Every simulated minute, 0..90 (0..120 when a knockout goes to extra time) | `Scoreboard` (period, minute, score), `Statistics` (cumulative xG), `Incidents` (that minute's shots/goals with xG) |
+| 2 | LivescoreUpdate | Every simulated minute on the raw clock, 0..final whistle (`maxMin`) | `Scoreboard` (period, minute, score), `Statistics` (cumulative xG), `Incidents` (that minute's shots/goals with xG) |
 | 3 | MarketUpdate | Consumer output, per priced minute up to 90' | `Markets`: 1X2 (90 min) with `Probability`, fair `Price`, `BookPrice` (5% overround) |
 | 31 | KeepAlive | Every 10 simulated minutes | `FixtureId` only (heartbeat) |
 | 35 | Settlement | Minute 90 (the 1X2 market clock) | 1X2 bets with `Settlement` 1/0 |
@@ -77,14 +77,17 @@ neutral World Cup venues. Shrinkage strength k is tuned over {1,2,4,8,16} by hol
 Brier (k = 1 wins). With no scraper clones present calibrate falls back to the 8
 argentina match JSONs.
 
-**90-minute market clock**: the model prices the 1X2 (90 min) market. Matches without
-extra time — every league match and every WC group game — fold stoppage-time events into
-minute 90 (a 90+4' goal settles the market); in WC knockouts minutes above 90 are extra
-time and never enter (`model.effective_min(minute, has_extra_time)`). A knockout that is
-level at 90' keeps replaying through extra time to 120': the market stays settled on the
-90' score (no more MarketUpdates), while the timeline keeps one row per minute pricing
-who wins in extra time on the raw scoreline — so timelines have 91 rows for a 90-minute
-match and 121 for one that went the distance.
+**Two clocks, cleanly separated.** The replay runs on the RAW match clock to the real
+final whistle (the file's `maxMin`): a group game with long stoppage ends at 90+7', a
+knockout that went the distance at ~121', and every event appears at its true minute.
+The 1X2 (90 min) MARKET clock is separate: for calibration and settlement, stoppage
+events fold into minute 90 (a 90+4' goal settles the market) while extra-time events
+never enter (`model.effective_min(minute, has_extra_time)`). Whether a knockout actually
+played extra time is classified from the data — `maxMin` >= 115 (ET always reaches 120';
+regulation stoppage tops out ~108), shootout evidence, or the event stream — so a
+stoppage-time winner is a regulation result, not extra time. The market settles at the
+whistle (or at 90' when ET follows, after which MarketUpdates stop); the timeline keeps
+one row per raw minute to the end, converging to the one-hot result at the whistle.
 
 Back-test (mean Brier per checkpoint vs the 90-minute outcome; temporal holdout: train
 on 2022-23..2024-25 leagues + WC2018 + WC2022, evaluate on the 864 held-out 2025-26
@@ -144,7 +147,7 @@ Regeneration order after new match data: `calibrate.py` (rewrites
 | `requirements.txt` | Documents that the core has no deps; `pika` optional for rabbit mode |
 | `tradepipe/messages.py` | TRADE360-style envelope + builders for MsgTypes 1/2/3/31/35 |
 | `tradepipe/broker.py` | `Broker` API, synchronous `InMemoryBroker`, `RabbitBroker` (topic exchange `trade`, RPC) |
-| `tradepipe/producer.py` | `MatchProducer`: deterministic minute 0..end replay (90', or 120' after extra time), snapshot authority |
+| `tradepipe/producer.py` | `MatchProducer`: deterministic raw-clock replay to the real final whistle, snapshot authority |
 | `tradepipe/snapshot.py` | Snapshot payload contract shared by producer (build) and consumer (parse) |
 | `tradepipe/state.py` | `MatchState`: rebuilds score/xG/incidents from the feed, MsgSeq gap detection |
 | `tradepipe/consumer.py` | `TradeConsumer`: pricing, MarketUpdate publishing, snapshot recovery, timeline recording |

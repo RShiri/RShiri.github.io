@@ -265,6 +265,7 @@ def build_match(detail_path, raw_dir):
         "home": {"name": D["home"]["name"], "score": D["home"]["score"], "color": D["home"].get("color") or "#888"},
         "away": {"name": D["away"]["name"], "score": D["away"]["score"], "color": D["away"].get("color") or "#888"},
         "date": D.get("date"), "venue": D.get("venue") or "", "stage": D.get("stage") or "",
+        "maxMin": D.get("maxMin"),
         "xg": [round(xg[0], 2) if xg[0] is not None else 0, round(xg[1], 2) if xg[1] is not None else 0],
         "goals": goals, "stats": stats, "shots": shots,
         "replays": build_goal_sequences(D),

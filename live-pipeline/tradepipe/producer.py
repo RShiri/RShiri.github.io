@@ -1,22 +1,25 @@
 """Feed producer: replays one recorded match as a live TRADE360-style feed.
 
 MatchProducer loads a match JSON (assets/data/argentina/<id>.json) and
-replays minutes 0..end_min on routing key "feed.<fixture_id>", where
-end_min is 90 — or 120 for a knockout that actually played extra time
-(corpus.knockout_played_extra_time; no golden goal: extra time always
-runs to 120). A knockout decided by a stoppage-time winner did NOT play
-extra time: it ends at 90' and its 90+X' events fold into minute 90,
-exactly like group-stage stoppage:
+replays it on the RAW match clock, minutes 0..end_min, on routing key
+"feed.<fixture_id>". end_min is the real final-whistle minute: the file's
+maxMin when present (96' for a group game with long stoppage, 123' for
+extra time), else 120/90 from the extra-time classification
+(corpus.knockout_played_extra_time). A knockout decided by a
+stoppage-time winner did NOT play extra time — its replay simply ends
+when the match did, in the 90+X' range:
 
     minute 0    FixtureMetadataUpdate (Status InProgress), then LivescoreUpdate
-    each minute LivescoreUpdate (scoreboard, cumulative xG, that minute's
-                shots/goals as Incidents)
+    each minute LivescoreUpdate (raw scoreboard, cumulative xG, that raw
+                minute's shots/goals as Incidents)
     every 10'   KeepAlive
-    minute 90   Settlement of the 1X2 (90 min) market (the market clock)
+    settle_min  Settlement of the 1X2 (90 min) market — minute 90 when
+                extra time follows, else the final whistle (stoppage
+                goals count toward the 90-minute market)
     end_min     final LivescoreUpdate, FixtureMetadataUpdate (Finished)
 
-Up to 90' the scoreboard runs on the 90-minute market clock (group-stage
-stoppage folds into minute 90); past 90' it is the raw extra-time score.
+The scoreboard and incidents always carry raw minutes; the 90-minute
+market folding (model.effective_min) is used only to settle the market.
 
 Timestamps are deterministic (kickoff = match date at 18:00 UTC, +1 simulated
 minute = +60000 ms) and MsgSeq is a per-fixture counter starting at 1.
@@ -66,7 +69,19 @@ class MatchProducer:
         is_knockout = not is_groupish(self.match.get("stage"))
         self.has_extra_time = (is_knockout
                                and knockout_played_extra_time(self.match))
-        self.end_min = 120 if self.has_extra_time else 90
+        # The replay runs on the RAW match clock to the real final whistle:
+        # maxMin when the file carries it (96' for a group game with long
+        # stoppage, 123' for extra time), else 120/90 from the ET flag.
+        max_min = self.match.get("maxMin")
+        if max_min:
+            self.end_min = max(90, min(131, int(max_min)))
+        else:
+            self.end_min = 120 if self.has_extra_time else 90
+        # The 1X2 (90 min) market settles at the final whistle of regulation:
+        # minute 90 on this feed's clock when extra time follows, otherwise
+        # the end of the replay (stoppage goals count, so the folded score
+        # equals the raw final score there).
+        self.settle_min = 90 if self.has_extra_time else self.end_min
         self.kickoff_ms = self._kickoff_ms(self.match["date"])
         self.messages_published = 0          # doubles as the MsgSeq counter
 
@@ -97,20 +112,20 @@ class MatchProducer:
             if t > 0 and t < self.end_min and t % 10 == 0:
                 self._publish(keep_alive(self.fixture_id,
                                          self._next_seq(), self._ts(t)))
+            if t == self.settle_min:
+                self._publish_settlement(t)
             if t == self.end_min:
                 self._publish_metadata("Finished", t)
-            if t == 90:
-                self._publish_settlement(t)
             if t == self.end_min and not self.quiet:
-                if self.end_min > 90:
-                    h, a = self.score_raw_at(self.end_min)
+                h, a = self.score_raw_at(self.end_min)
+                if self.has_extra_time:
                     print("[producer] full time %d-%d after extra time, fixture "
                           "Finished, 1X2 settled at 90' (%d messages)"
                           % (h, a, self.messages_published))
                 else:
-                    h, a = self.score_at(90)
-                    print("[producer] full time %d-%d, fixture Finished, "
-                          "1X2 settled (%d messages)" % (h, a, self.messages_published))
+                    print("[producer] full time %d-%d at %d', fixture Finished, "
+                          "1X2 settled (%d messages)"
+                          % (h, a, self.end_min, self.messages_published))
             yield t
 
     def run(self, instant=False):
@@ -149,11 +164,12 @@ class MatchProducer:
         self._fixture = fixture
 
     def _publish_livescore(self, t):
-        if t <= 90:
-            h, a = self.score_at(t)
-            period = "1st Half" if t <= 45 else "2nd Half"
+        h, a = self.score_raw_at(t)
+        if t <= 45:
+            period = "1st Half"
+        elif t <= 90 or not self.has_extra_time:
+            period = "2nd Half"              # incl. second-half stoppage
         else:
-            h, a = self.score_raw_at(t)
             period = "Extra Time"
         scoreboard = {
             "CurrentPeriod": period,
@@ -213,6 +229,8 @@ class MatchProducer:
             "Stage": M.get("stage", ""),
             "StartDate": "%sT%02d:00:00.000Z" % (M["date"], KICKOFF_HOUR_UTC),
             "Status": status,
+            "MatchLength": self.end_min,     # replay of a recorded match:
+                                             # the real final-whistle minute
             "Participants": [
                 {"Name": M["home"]["name"], "Position": "1",
                  "Color": M["home"].get("color", "")},
@@ -223,9 +241,9 @@ class MatchProducer:
 
     def score_at(self, t):
         """(home, away) goals up to and including minute t on the 90-minute
-        market clock: group-stage stoppage goals fold into minute 90,
-        extra-time goals never enter (see model.effective_min). Used to
-        settle the 1X2 (90 min) market at t == 90."""
+        market clock: stoppage goals fold into minute 90, extra-time goals
+        never enter (see model.effective_min). Used only to settle the
+        1X2 (90 min) market at t == settle_min."""
         h = a = 0
         for g in self.match["goals"]:
             m = self._eff_min(g["min"])
@@ -251,30 +269,20 @@ class MatchProducer:
     def _eff_min(self, event_min):
         return effective_min(event_min, self.has_extra_time)
 
-    def _clock_min(self, event_min, t):
-        """The minute an event counts at, given the replay is at minute t:
-        the 90-market clock up to 90' (stoppage folds), the raw extra-time
-        minute past 90'."""
-        if t <= 90:
-            return self._eff_min(event_min)
-        return event_min
-
     def _xg_at(self, side, t):
-        total = 0.0
-        for s in self.match["shots"]:
-            m = self._clock_min(s["min"], t)
-            if s["team"] == side and m is not None and m <= t:
-                total += s["xg"]
-        return total
+        """Cumulative RAW xG through minute t - the replay runs on the real
+        match clock, so nothing folds for display."""
+        return sum(s["xg"] for s in self.match["shots"]
+                   if s["team"] == side and s["min"] <= t)
 
     def _incidents_at(self, t):
-        """This minute's shots (goals are shots with goal=true) as wire
-        dicts. Past 90' the raw extra-time minute is matched directly."""
+        """This raw minute's shots (goals are shots with goal=true) as wire
+        dicts - a 90+4' shot appears at minute 94 on the feed."""
         out = []
         for s in self.match["shots"]:
-            if self._clock_min(s["min"], t) == t:
+            if s["min"] == t:
                 out.append({
-                    "Min": t,
+                    "Min": s["min"],
                     "Team": s["team"],
                     "Type": "Goal" if s.get("goal") else "Shot",
                     "Player": s.get("player", ""),

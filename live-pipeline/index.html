@@ -161,7 +161,8 @@ section h2 { font-size: clamp(23px, 3.4vw, 30px); margin-bottom: 6px; }
 .odds-card.flash .o-val { animation: oddsflash 1s var(--ease); }
 @keyframes oddsflash { 0% { color: var(--accent-2); } 100% { color: var(--ink); } }
 .ticker.settled .odds-card { opacity: .55; }
-.ticker.settled .o-name::after { content: " · settled at 90'"; }
+.ticker.settled .o-name::after { content: " · settled"; }
+.ticker.settled.set90 .o-name::after { content: " · settled at 90'"; }
 
 .replay-lower { display: grid; grid-template-columns: 1.2fr .8fr; gap: 14px; align-items: start; }
 .feed { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; max-height: 240px; overflow-y: auto; }
@@ -340,9 +341,10 @@ html[data-theme="dark"] .footer { background: #070b15; }
     <div class="kicker">02 · live replay</div>
     <h2>Watch the consumer price a match</h2>
     <p class="section-note">These are the exact timelines the pipeline produced for eight recorded
-      World Cup matches. Pick one and press play: the win-probability lines draw forward in match
-      time, the fair odds re-quote every minute, and the market settles at 90' — knockout replays
-      then continue through extra time, while the 1X2 (90 min) market stays settled on the 90' score.</p>
+      World Cup matches. Pick one and press play: the win-probability lines draw forward on the real
+      match clock — through second-half stoppage to the final whistle, and on to 120' when a knockout
+      went to extra time. The fair odds re-quote every minute while the 1X2 (90 min) market is open;
+      it settles at the whistle, or at 90' when extra time follows.</p>
 
     <div class="picker" id="picker" role="group" aria-label="Choose a match to replay"></div>
 
@@ -391,7 +393,7 @@ html[data-theme="dark"] .footer { background: #070b15; }
         </div>
         <div class="endstate" id="endstate">
           <h3>Full time</h3>
-          <div id="endBody" class="pending">The market settles when the replay reaches 90'.</div>
+          <div id="endBody" class="pending">The market settles at the final whistle.</div>
         </div>
       </div>
     </div>
@@ -721,7 +723,11 @@ python3 -m pytest live-pipeline/tests -q</pre>
       svg.appendChild(el("text", { x: CH.L - 8, y: yPos(p) + 4, "text-anchor": "end", "class": "axis-t" }, Math.round(p * 100) + "%"));
     });
     for (var t = 0; t <= replay.end; t += 15) {
+      if (replay.end - t < 8 && t !== replay.end) continue;   /* keep room for the end tick */
       svg.appendChild(el("text", { x: xPos(t), y: CH.H - 8, "text-anchor": "middle", "class": "axis-t" }, t + "'"));
+    }
+    if (replay.end % 15 !== 0) {
+      svg.appendChild(el("text", { x: xPos(replay.end), y: CH.H - 8, "text-anchor": "middle", "class": "axis-t" }, replay.end + "'"));
     }
 
     /* clipped, progressively revealed group */
@@ -755,11 +761,12 @@ python3 -m pytest live-pipeline/tests -q</pre>
     });
     svg.appendChild(g);
 
-    /* extra-time matches: dashed guide where the 90' market settles */
+    /* dashed guide at 90': where the market settles before extra time,
+       or just the start of stoppage for a regulation finish */
     if (replay.end > 90) {
       svg.appendChild(el("line", { x1: xPos(90), x2: xPos(90), y1: CH.T - 4, y2: yPos(0), "class": "market-line" }));
       svg.appendChild(el("text", { x: xPos(90), y: CH.T - 12, "text-anchor": "middle", "class": "market-lbl" },
-        "90' · market settles"));
+        m.extraTime ? "90' · market settles" : "90'"));
     }
 
     /* playhead (outside clip) */
@@ -820,7 +827,7 @@ python3 -m pytest live-pipeline/tests -q</pre>
     $("#scrub").max = replay.end;
     $("#feedList").innerHTML = "<li class='empty'>Kick-off pending — press play.</li>";
     $("#endBody").className = "pending";
-    $("#endBody").textContent = "The market settles when the replay reaches 90'.";
+    $("#endBody").textContent = "The market settles at the final whistle.";
     if (REDUCED) {
       $("#play").disabled = true;
       $("#play").title = "Animation disabled by your reduced-motion setting — use the slider.";
@@ -882,25 +889,30 @@ python3 -m pytest live-pipeline/tests -q</pre>
     chartRefs.playhead.setAttribute("x2", x);
     chartRefs.endG.setAttribute("opacity", min >= END ? 1 : 0);
 
-    /* scoreboard - the 90-min market clock up to 90', then the live
-       extra-time score straight from the row */
+    /* scoreboard - the raw match clock, straight from the row */
     var ended = min >= END, et = wentToExtraTime();
     var r90 = m.timeline[Math.min(90, m.timeline.length - 1)];
+    var whole = Math.floor(min);
     $("#scoreH").textContent = row.scoreH;
     $("#scoreA").textContent = row.scoreA;
     $("#xgH").textContent = row.xgH.toFixed(2);
     $("#xgA").textContent = row.xgA.toFixed(2);
     $("#minuteLbl").textContent = ended
-      ? (et ? "FT after extra time · " + r90.scoreH + "–" + r90.scoreA + " at 90'" : "FT (90')")
-      : Math.floor(min) + (idx > 90 ? "' · ET" : "'");
+      ? (et ? "FT after extra time · " + r90.scoreH + "–" + r90.scoreA + " at 90'"
+            : (END > 90 ? "FT (90+" + (END - 90) + "')" : "FT (90')"))
+      : (whole > 90 ? (et ? whole + "' · ET" : "90+" + (whole - 90) + "'") : whole + "'");
     $("#scrub").value = min;
 
-    /* odds ticker: quotes stop at 90' — the market is settled after that */
-    var orow = m.timeline[Math.min(90, idx)];
+    /* odds ticker: the 1X2 market is open until the whistle — or until
+       90' when extra time follows (extra time is a different market) */
+    var marketEnd = et ? 90 : END;
+    var orow = m.timeline[Math.min(marketEnd, idx)];
     setOdds("1", orow.fairH, orow.pH, "H");
     setOdds("X", orow.fairD, orow.pD, "D");
     setOdds("2", orow.fairA, orow.pA, "A");
-    document.querySelector(".ticker").classList.toggle("settled", idx > 90);
+    var tick = document.querySelector(".ticker");
+    tick.classList.toggle("settled", et ? idx > 90 : ended);
+    tick.classList.toggle("set90", et);
 
     /* event feed */
     var evs = eventsUpTo(Math.floor(min));
@@ -912,7 +924,7 @@ python3 -m pytest live-pipeline/tests -q</pre>
     if (min < END && replay.ended) {
       replay.ended = false;
       $("#endBody").className = "pending";
-      $("#endBody").textContent = "The market settles when the replay reaches 90'.";
+      $("#endBody").textContent = "The market settles at the final whistle.";
     }
   }
   function setOdds(which, price, prob, key) {
@@ -971,27 +983,35 @@ python3 -m pytest live-pipeline/tests -q</pre>
     replay.feedShown = evs.length;
   }
   function wentToExtraTime() {
-    /* a timeline that runs past minute 90 is a knockout that went to ET */
-    return replay.end > 90;
+    /* the timeline says so directly; endMin >= 115 is the data fallback
+       (regulation stoppage never runs that deep) */
+    var m = replay.match;
+    if (!m) return false;
+    if (typeof m.extraTime === "boolean") return m.extraTime;
+    return replay.end >= 115;
   }
   function showEndstate() {
     var m = replay.match;
-    var f = m.final, tl = m.timeline;
+    var f = m.final, tl = m.timeline, et = wentToExtraTime();
+    var last = tl[tl.length - 1];
     var r90 = tl[Math.min(90, tl.length - 1)];
-    var actual = r90.scoreH > r90.scoreA ? "1" : (r90.scoreH === r90.scoreA ? "X" : "2");
+    /* the 1X2 settles on the regulation final whistle: the 90' row for an
+       extra-time tie, the last row (stoppage included) otherwise */
+    var mrow = et ? r90 : last;
+    var actual = mrow.scoreH > mrow.scoreA ? "1" : (mrow.scoreH === mrow.scoreA ? "X" : "2");
     var names = { "1": m.home.name + " win", "X": "draw", "2": m.away.name + " win" };
     var body = $("#endBody");
     body.className = "";
     body.innerHTML = "";
+    var whistle = et ? "90'" : (replay.end > 90 ? "90+" + (replay.end - 90) + "'" : "90'");
     var p1 = document.createElement("div");
-    p1.textContent = "90' score: " + m.home.name + " " + r90.scoreH + "–" + r90.scoreA + " " + m.away.name +
-      " → result “" + actual + "” (" + names[actual] + ").";
+    p1.textContent = "Full time (" + whistle + "): " + m.home.name + " " + mrow.scoreH + "–" +
+      mrow.scoreA + " " + m.away.name + " → result “" + actual + "” (" + names[actual] + ").";
     var p2 = document.createElement("div");
-    p2.textContent = "Model at 90': H " + Math.round(r90.pH * 100) + "% · D " + Math.round(r90.pD * 100) +
-      "% · A " + Math.round(r90.pA * 100) + "%.";
+    p2.textContent = "Model at the whistle: H " + Math.round(mrow.pH * 100) + "% · D " +
+      Math.round(mrow.pD * 100) + "% · A " + Math.round(mrow.pA * 100) + "%.";
     body.appendChild(p1); body.appendChild(p2);
-    if (wentToExtraTime()) {
-      var last = tl[tl.length - 1];
+    if (et) {
       var p3 = document.createElement("div");
       p3.textContent = "This one didn't end at 90': " + m.home.name + " " + last.scoreH +
         "–" + last.scoreA + " " + m.away.name + " after extra time — the chart above keeps " +

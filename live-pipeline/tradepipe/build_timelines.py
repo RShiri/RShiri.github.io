@@ -54,6 +54,7 @@ def build_timeline(entry):
         "away": {"name": M["away"]["name"], "color": M["away"].get("color") or "#888"},
         "date": M.get("date"), "stage": M.get("stage") or "",
         "endMin": producer.end_min,
+        "extraTime": producer.has_extra_time,
         "final": {"scoreH": consumer.state.score_h, "scoreA": consumer.state.score_a,
                   "settled": consumer.settlement_result},
         "prematch": {"lamH": round(model.lam_h, 6), "lamA": round(model.lam_a, 6),

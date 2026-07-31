@@ -86,7 +86,10 @@ def test_full_replay_argentina_algeria():
                                             match["away"]["score"])
     assert consumer.final_state.status == "Finished"
 
-    assert producer.end_min == 90                     # group game: no extra time
+    # group game: raw clock to the real final whistle (maxMin), no ET
+    assert producer.has_extra_time is False
+    assert producer.end_min == match["maxMin"] == 96
+    assert producer.settle_min == producer.end_min    # market settles at the whistle
     assert len(consumer.timeline) == producer.end_min + 1
     assert [row["min"] for row in consumer.timeline] == list(range(0, producer.end_min + 1))
     for row in consumer.timeline:
@@ -99,8 +102,11 @@ def test_knockout_replays_through_extra_time():
     with open(KO_MATCH, encoding="utf-8") as f:
         match = json.load(f)
 
-    # level at 90' in a knockout -> the replay runs through extra time
-    assert producer.end_min == 120
+    # level at 90' in a knockout -> the replay runs through extra time,
+    # to the real final whistle on the ET clock
+    assert producer.has_extra_time is True
+    assert producer.end_min == match["maxMin"] == 123
+    assert producer.settle_min == 90
     assert len(consumer.timeline) == producer.end_min + 1
     assert [row["min"] for row in consumer.timeline] == list(range(0, producer.end_min + 1))
 
@@ -117,24 +123,29 @@ def test_knockout_replays_through_extra_time():
     row90 = consumer.timeline[90]
     assert (row90["scoreH"], row90["scoreA"]) == (h90, a90)
 
-    # no MarketUpdates past 90' — the 90' market is settled
+    # no MarketUpdates past the 90' settlement — extra time is off-market
     assert consumer.markets_published == 91
 
-    # at 120' there is no time left: the probs are the one-hot of the result
+    # at the whistle there is no time left: probs are the one-hot result
     assert (last["pH"], last["pD"], last["pA"]) == (1.0, 0.0, 0.0)
 
 
 def test_stoppage_winner_is_not_extra_time():
-    """The semifinal's only post-90 event is the 91' winner: that's a 90+1'
-    stoppage goal, not extra time. The replay ends at 90', the goal folds
-    into minute 90, and it settles the 1X2 market."""
+    """The semifinal ended in second-half stoppage (maxMin 101, winner at
+    90+1'): no extra time. The replay runs the raw clock to the whistle,
+    shows the goal at its real minute, and the stoppage goal settles the
+    1X2 market."""
     producer, consumer = run_pipeline(SF_MATCH)
     with open(SF_MATCH, encoding="utf-8") as f:
         match = json.load(f)
 
     assert producer.has_extra_time is False
-    assert producer.end_min == 90
-    assert len(consumer.timeline) == 91
+    assert producer.end_min == match["maxMin"] == 101
+    assert producer.settle_min == producer.end_min
+    assert len(consumer.timeline) == producer.end_min + 1
+    # the 91' winner appears at its raw minute on the feed
+    assert any(e["min"] == 91 and e["type"] == "goal"
+               for row in consumer.timeline for e in row["events"])
 
     last = consumer.timeline[-1]
     assert (last["scoreH"], last["scoreA"]) == (match["home"]["score"],
@@ -150,8 +161,9 @@ def test_late_join_recovers_and_matches_uninterrupted():
     assert late.recoveries == 1
     late_rows = late.timeline
     full_rows = [row for row in full.timeline if row["min"] >= 60]
-    assert [row["min"] for row in late_rows] == list(range(60, 91))
-    assert len(late_rows) == len(full_rows) == 31
+    end = len(full.timeline) - 1
+    assert [row["min"] for row in late_rows] == list(range(60, end + 1))
+    assert len(late_rows) == len(full_rows) == end - 59
     for a, b in zip(late_rows, full_rows):
         assert rows_equal(a, b), (a, b)
 
@@ -173,11 +185,13 @@ def test_msgseq_monotonic_and_markets_routing():
     assert feed_seqs == list(range(1, len(feed_seqs) + 1))     # contiguous from 1
     assert feed_seqs[-1] == producer.messages_published
 
+    # the 1X2 market stays open through stoppage: one MarketUpdate per
+    # minute until Settlement lands at the whistle
     market_msgs = [m for rk, m in received if rk == "markets.%s" % fid]
-    assert len(market_msgs) == 91
+    assert len(market_msgs) == producer.settle_min + 1
     assert all(m.msg_type == MsgType.MARKET_UPDATE for m in market_msgs)
     market_seqs = [m.msg_seq for m in market_msgs]
-    assert market_seqs == list(range(1, 92))                   # monotonic per publisher
+    assert market_seqs == list(range(1, len(market_msgs) + 1))  # monotonic per publisher
     # no MarketUpdates ever leak onto the feed routing key
     assert all(m.msg_type != MsgType.MARKET_UPDATE
                for rk, m in received if rk.startswith("feed."))

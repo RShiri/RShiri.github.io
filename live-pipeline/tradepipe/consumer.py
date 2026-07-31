@@ -12,12 +12,14 @@ runs the InPlayModel (pre-match rates from model_params.json blended with
      "scoreH": ..., "scoreA": ...,
      "events": [{"min", "team", "type": "goal"|"shot", "player", "xg"}, ...]}
 
-Past 90' (a knockout in extra time) the 1X2 (90 min) market is already
-settled, so no MarketUpdate is published — but the timeline keeps one row
-per minute, pricing who wins in extra time on the raw scoreline with the
-same formula over the remaining 120 - t minutes. At 120' the probabilities
-collapse to the extra-time result (a level score at 120' -> pD = 1,
-i.e. the tie goes to penalties).
+Past 90' the timeline keeps one row per minute on the raw match clock,
+pricing the final result with the same formula over the minutes left to
+the real final whistle (the fixture's MatchLength): second-half stoppage
+first — where the 1X2 market is still open and MarketUpdates keep
+flowing until Settlement lands — then extra time, where the market is
+settled and rows are recorded only. At the whistle the probabilities
+collapse to the result (level at 120' -> pD = 1: the tie goes to
+penalties).
 
 Recovery: if a LivescoreUpdate arrives with no local state (late join) or
 with a MsgSeq gap (missed messages), the consumer calls the RPC queue
@@ -29,7 +31,7 @@ from pathlib import Path
 
 from .messages import MsgType, market_update
 from .calibrate import prematch_lams
-from .model import LAM_FLOOR, InPlayModel, fair_odds, win_probs
+from .model import LAM_FLOOR, InPlayModel, book_prices, fair_odds, win_probs
 from .state import MatchState
 
 REPO = Path(__file__).resolve().parent.parent.parent
@@ -128,7 +130,12 @@ class TradeConsumer:
         if st.minute <= 90:
             p = self.model.probs(st.minute, st.score_h, st.score_a,
                                  st.xg_recent15("home"), st.xg_recent15("away"))
+        else:
+            p = self._post90_probs(st)
 
+        if self.settlement_result is None:
+            # The 1X2 market is open until the Settlement message lands —
+            # through second-half stoppage, but not into extra time.
             self.markets_published += 1
             markets = [{"Name": "1X2 (90 min)", "Bets": [
                 {"Name": "1", "Probability": round(p["pH"], 6),
@@ -142,10 +149,6 @@ class TradeConsumer:
                                 market_update(self.fixture_id, markets,
                                               self.markets_published,
                                               message.server_timestamp))
-        else:
-            # Extra time: the 90' market is settled, so publishing prices
-            # for it would be wrong — record the timeline row only.
-            p = self._extra_time_probs(st)
 
         events = []
         for ev in message.events:
@@ -179,12 +182,15 @@ class TradeConsumer:
                      100 * p["pH"], 100 * p["pD"], 100 * p["pA"],
                      p["fairH"], p["fairD"], p["fairA"], goals))
 
-    def _extra_time_probs(self, st):
-        """Who-wins-in-extra-time probabilities at minute t (90 < t <= 120):
-        the same one formula, with the remaining horizon 120 - t and the raw
-        extra-time scoreline. At t = 120 the remaining rates are 0 and the
-        triple is the one-hot of the result (level -> pD = 1: penalties)."""
-        R = 120 - st.minute
+    def _post90_probs(self, st):
+        """Probabilities past minute 90 - second-half stoppage or extra
+        time: the same one formula, with the remaining horizon running to
+        the real final whistle (the fixture's MatchLength) and the raw
+        scoreline. At the final whistle the remaining rates are 0 and the
+        triple is the one-hot of the result (level at 120' -> pD = 1:
+        penalties)."""
+        length = self.state.fixture.get("MatchLength") or 120
+        R = max(0, length - st.minute)
         lams = []
         for side, lam_pre in (("home", self.model.lam_h), ("away", self.model.lam_a)):
             pace = st.xg_recent15(side) / 15.0
@@ -192,9 +198,11 @@ class TradeConsumer:
                                 + self.model.w * 90.0 * pace)
             lams.append(max(lam, LAM_FLOOR * R / 90.0))
         ph, pd, pa = win_probs(lams[0], lams[1], st.score_h, st.score_a)
+        bh, bd, ba = book_prices(ph, pd, pa)
         return {"pH": ph, "pD": pd, "pA": pa,
                 "fairH": fair_odds(ph), "fairD": fair_odds(pd),
-                "fairA": fair_odds(pa)}
+                "fairA": fair_odds(pa),
+                "bookH": bh, "bookD": bd, "bookA": ba}
 
     # ------------------------------------------------------------ settlement
 

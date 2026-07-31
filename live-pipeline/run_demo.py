@@ -49,10 +49,12 @@ def summary(producer, consumer):
     print()
     print("=== summary ===============================================")
     print("actual 90' result: %d-%d ('%s')" % (h, a, actual))
-    if producer.end_min > 90:
+    if producer.has_extra_time:
         fh, fa = producer.score_raw_at(producer.end_min)
         print("after extra time: %d-%d at %d' (1X2 market settled on the 90' score)"
               % (fh, fa, producer.end_min))
+    elif producer.end_min > 90:
+        print("final whistle at 90+%d'" % (producer.end_min - 90))
     if consumer is not None and consumer.timeline:
         last = consumer.timeline[-1]
         print("final model probs: H %.3f / D %.3f / A %.3f (at %d')"

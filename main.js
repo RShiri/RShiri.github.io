@@ -599,7 +599,7 @@
       var homeC = (D.home && D.home.color) || (W.home && W.home.color) || "#74acdf";
       var awayC = (W.away && W.away.color) || (D.away && D.away.color) || "#2fbf71";
       var WX0 = 34, WX1 = 630, WY0 = 10, WY1 = 102;
-      var endMin = W.endMin || last.min || 90;   /* 90, or 120 when a knockout went to ET */
+      var endMin = W.endMin || last.min || 90;   /* the real final-whistle minute */
       var px = function (min) { return WX0 + (WX1 - WX0) * min / endMin; };
       var py = function (p) { return WY1 - (WY1 - WY0) * p; };
       var pts = function (key) { return tl.map(function (r) { return px(r.min).toFixed(1) + "," + py(r[key]).toFixed(1); }).join(" "); };
@@ -616,7 +616,7 @@
         t.textContent = Math.round(p * 100) + (p === 1 ? "%" : "");
         svg.appendChild(t);
       });
-      if (endMin > 90) {  /* thin tick where the 90' market settles */
+      if (endMin > 90) {  /* thin tick at the 90-minute mark */
         svg.appendChild(E("line", { x1: px(90).toFixed(1), x2: px(90).toFixed(1),
                                     y1: WY0, y2: WY1, "class": "mc-wp-grid" }));
       }
