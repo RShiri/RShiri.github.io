@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Fit team attack/defence rates from ALL of Ram's scraped football data
-(EPL + La Liga + three World Cups, ~3,275 matches) and back-test the
-in-play model, mini-TRADE360 style.
+"""Fit the in-play win-probability model from ALL of Ram's scraped football
+data (EPL + La Liga + three World Cups, ~3,272 matches) and back-test it,
+mini-TRADE360 style.
 
-The fit is a Dixon-Coles-lite with empirical-Bayes shrinkage, one baseline
-per COMPETITION (an EPL goal habitat is not a World Cup goal habitat):
+TEAM RATINGS are a Dixon-Coles-lite fit with empirical-Bayes shrinkage, one
+baseline per COMPETITION (an EPL goal habitat is not a World Cup one):
 
     mu_c  = competition baseline = weighted mean single-team 90-min xG
     att_T = (sum w_i * xG for  T + k*mu_c) / (sum w_i + k)   [per-match rate]
@@ -12,25 +12,36 @@ per COMPETITION (an EPL goal habitat is not a World Cup goal habitat):
     lam_home = att_H * def_A / mu_c * hfa      [hfa = 1 on neutral venues]
     lam_away = att_A * def_H / mu_c / hfa
 
-Weights w_i are a recency decay (DECAY ** seasons_ago, WC editions age in
-4-year steps) so 2025-26 form dominates a club's rate. Home advantage hfa
-is fit as sqrt(mean home xG / mean away xG) over league matches only —
-World Cup venues are neutral. Shrinkage strength k is tuned over
-{1, 2, 4, 8, 16} by holdout Brier.
+Weights w_i are a recency decay (decay ** seasons_ago, WC editions age in
+4-year steps). Home advantage hfa is fit as sqrt(mean home xG / mean away
+xG) over league matches only — World Cup venues are neutral.
 
-Honest evaluation: train on league seasons 2022-23..2024-25 + WC2018 +
-WC2022, evaluate the Brier score at minutes 0/15/.../90 on the held-out
-2025-26 league seasons + WC2026, against two baselines: the same model
-with w = 0 (no momentum) and a constant global base-rate triple. The
-production params are then refit on ALL data.
+MODEL SHAPE (the in-play part) is tuned rather than assumed: the momentum
+weight w and its window, the empirical remaining-scoring profile, the
+score-state multipliers, the Dixon-Coles rho, and the rating hypers k and
+decay. Red-card multipliers are not tuned by score at all — they are
+measured directly from post-dismissal xG (fit_red_effect).
+
+THE PROTOCOL matters more than any of it. Three disjoint blocks in time:
+
+    inner   league 2022-23, 2023-24 + WC2018      fit ratings while tuning
+    val     league 2024-25      + WC2022          choose every hyper
+    holdout league 2025-26      + WC2026          scored ONCE, at the end
+
+Every hyper is chosen on `val`; the holdout is touched exactly once, by the
+single finished configuration, and reported against two baselines (the same
+model with w = 0, and a constant base-rate triple). v2 of this script tuned
+k on the holdout it then reported, which flatters the number — the split
+above is the fix. Production rates are refit on ALL data with the chosen
+hypers once the reporting is done.
 
 Run from anywhere:
     python3 live-pipeline/tradepipe/calibrate.py
-Writes assets/data/winprob/model_params.json (v2) and, when the scraper
-clones are present, a winprob_params.js into each dashboard.
+Writes assets/data/winprob/model_params.json (v3) and, when the corpora are
+present, a winprob_params.js into each dashboard.
 
-With no scraper clones at all it falls back to the 8 argentina match
-JSONs (competition "WC" only) so the pipeline demo keeps working.
+With no corpora at all it falls back to the 8 argentina match JSONs
+(competition "WC" only) so the pipeline demo keeps working.
 """
 import argparse
 import importlib.util
@@ -52,11 +63,20 @@ def _load(name, filename):
 model = _load("winprob_model", "model.py")
 corpus = _load("winprob_corpus", "corpus.py")
 
-K_GRID = [1, 2, 4, 8, 16]   # shrinkage strengths tried (pseudo-matches at mu)
-W = 0.35                    # momentum weight used by the live model
-DECAY = 0.8                 # recency: weight = DECAY ** seasons_ago
 CHECKPOINTS = [0, 15, 30, 45, 60, 75, 90]
+LIVE_CPS = [t for t in CHECKPOINTS if t < 90]       # 90' is one-hot for everyone
 HOLDOUT = {"EPL": "2025-26", "LaLiga": "2025-26", "WC": "2026"}
+VALIDATION = {"EPL": "2024-25", "LaLiga": "2024-25", "WC": "2022"}
+
+# Search grids for the staged (greedy coordinate) tune on `val`.
+W_GRID = [0.0, 0.05, 0.10, 0.20, 0.35]
+WINDOW_GRID = [10, 15, 20, 30]
+B_LEAD_GRID = [-0.15, -0.10, -0.05, 0.0, 0.05]
+B_TRAIL_GRID = [0.0, 0.10, 0.15, 0.20, 0.25, 0.30]
+RHO_GRID = [0.0, 0.03, 0.05, 0.08, 0.12]
+K_GRID = [1, 2, 4, 8]
+DECAY_GRID = [0.5, 0.6, 0.7, 0.8, 0.9]
+RELIABILITY_BINS = 10
 
 
 # ------------------------------------------------------------------ fitting
@@ -70,7 +90,7 @@ def season_age(competition, season, latest):
     return int(latest[:4]) - int(season[:4])
 
 
-def fit(matches, k, decay=DECAY):
+def fit(matches, k, decay=0.8):
     """Fit {mu per competition, namespaced team rates, hfa} from matches.
 
     Returns {"mu": {comp: mu_c}, "teams": {"EPL/Arsenal": {...}, ...},
@@ -145,96 +165,317 @@ def match_lams(F, M):
                          c + "/" + M["away"], hfa)
 
 
+# ------------------------------------------------------- per-match precompute
+
+def precompute(M):
+    """Attach market-clock lookups used by every evaluation pass.
+
+    Everything here is on the 90-minute market clock (model.effective_min):
+    stoppage folds into 90', extra time is excluded. Prefix sums make
+    "xG in the last N minutes" an O(1) subtraction instead of a scan over
+    the shot list, which is what makes a full grid search affordable."""
+    het = M["has_extra_time"]
+    per_min = {"home": [0.0] * 91, "away": [0.0] * 91}
+    for s in M["shots"]:
+        m = model.effective_min(s["min"], het)
+        if m is not None:
+            per_min[s["team"]][m] += s["xg"]
+    M["_pre"] = {}
+    for side in ("home", "away"):
+        acc, prefix = 0.0, []
+        for t in range(91):
+            acc += per_min[side][t]
+            prefix.append(acc)
+        M["_pre"][side] = prefix            # xG in minutes 0..t inclusive
+
+    goals = []
+    for g in M["goals"]:
+        m = model.effective_min(g["min"], het)
+        if m is not None:
+            goals.append((g["team"], m))
+    M["_goals"] = goals
+    M["_score"] = {}
+    for t in range(91):
+        h = sum(1 for tm, m in goals if tm == "home" and m <= t)
+        a = sum(1 for tm, m in goals if tm == "away" and m <= t)
+        M["_score"][t] = (h, a)
+    h90, a90 = M["_score"][90]
+    M["_outcome"] = ((1.0, 0.0, 0.0) if h90 > a90
+                     else (0.0, 1.0, 0.0) if h90 == a90 else (0.0, 0.0, 1.0))
+
+    M["_reds"] = {"home": [], "away": []}
+    for side, minute in M.get("reds") or []:
+        m = model.effective_min(minute, het)
+        if m is not None:
+            M["_reds"][side].append(m)
+    # Dismissal COUNTS are reliable even where the minute is not, so corpus
+    # statistics count these and the model uses only the timed ones.
+    M["_red_counts"] = tuple(M.get("red_counts") or (0, 0))
+    return M
+
+
+def xg_window(M, side, t, window):
+    """xG a side generated in the (t - window, t] market-clock window."""
+    prefix = M["_pre"][side]
+    hi = min(90, int(t))
+    lo = int(t) - window
+    return prefix[hi] - (prefix[lo] if lo >= 0 else 0.0)
+
+
+def reds_at(M, t):
+    """(home reds, away reds) shown by minute t."""
+    return (sum(1 for m in M["_reds"]["home"] if m <= t),
+            sum(1 for m in M["_reds"]["away"] if m <= t))
+
+
+def build_profile(matches):
+    """Empirical remaining-scoring curve: profile[t] = the share of a
+    match's xG that is still to come after minute t, averaged over the fit
+    population. profile[0] = 1.0 and profile[90] = 0.0 by construction.
+
+    This replaces the straight line (90 - t) / 90. Football does not
+    distribute its chances evenly — the opening ten minutes are quiet and
+    the closing twenty are not — so the linear clock systematically
+    over-values early time and under-values late time."""
+    per_min = [0.0] * 91
+    for M in matches:
+        for side in ("home", "away"):
+            prefix = M["_pre"][side]
+            for t in range(91):
+                per_min[t] += prefix[t] - (prefix[t - 1] if t else 0.0)
+    total = sum(per_min)
+    if total <= 0:
+        return None
+    profile, remaining = [], total
+    for t in range(91):
+        remaining -= per_min[t]              # xG struck strictly after t
+        profile.append(max(0.0, remaining / total))
+    return profile
+
+
+def fit_red_effect(matches, F, profile, min_time_left=10):
+    """Measure the red-card multipliers directly from post-dismissal xG.
+
+    For every match with exactly one dismissal at a KNOWN minute, compare
+    what each side actually created after the card with what the model
+    expected over the same window (its pre-match rate times the
+    remaining-scoring share). The ratio of the two totals is the
+    multiplier. This is a measurement, not a tune: red cards land in ~14%
+    of matches and mostly late, so a Brier search over them reads noise,
+    while the xG response is direct and has an obvious sign.
+
+    On the current corpora this returns n = 0, and that is the honest
+    answer rather than a failure: the scraped files record that a player
+    was sent off but not when (corpus.red_cards), so there is no minute to
+    measure against. The multipliers stay neutral until a source supplies
+    dismissal minutes — the model carries the hook (model.red_card_factors)
+    and the pipeline carries the incident, so the day a feed provides them
+    nothing else has to change.
+
+    Returns (self_factor, opp_factor, n_matches)."""
+    act = {"self": 0.0, "opp": 0.0}
+    exp = {"self": 0.0, "opp": 0.0}
+    n = 0
+    for M in matches:
+        cards = [(side, m) for side in ("home", "away") for m in M["_reds"][side]]
+        if len(cards) != 1:
+            continue                         # keep the clean single-card case
+        side, minute = cards[0]
+        if minute > 90 - min_time_left:
+            continue                         # too little left to measure
+        other = "away" if side == "home" else "home"
+        lam_h, lam_a = match_lams(F, M)
+        lam = {"home": lam_h, "away": lam_a}
+        frac = model.remaining_fraction(minute, profile)
+        prefix_end = M["_pre"]
+        for role, team in (("self", side), ("opp", other)):
+            act[role] += prefix_end[team][90] - prefix_end[team][minute]
+            exp[role] += lam[team] * frac
+        n += 1
+    if not n:
+        return 1.0, 1.0, 0
+    return (act["self"] / exp["self"] if exp["self"] else 1.0,
+            act["opp"] / exp["opp"] if exp["opp"] else 1.0, n)
+
+
 # --------------------------------------------------------------- evaluation
 
-def score_at(M, t):
-    """(home, away) score counting goals up to and including minute t on
-    the 90-minute market clock (model.effective_min: stoppage goals fold
-    into minute 90, extra-time goals in WC knockouts don't count)."""
-    h = a = 0
-    for g in M["goals"]:
-        m = model.effective_min(g["min"], M["has_extra_time"])
-        if m is not None and m <= t:
-            if g["team"] == "home":
-                h += 1
+def build_model(F, M, cfg, profile):
+    lam_h, lam_a = match_lams(F, M)
+    red = cfg.get("red") or {}
+    return model.InPlayModel(
+        lam_h, lam_a, w=cfg.get("w", 0.05),
+        profile=profile if cfg.get("profile", True) else None,
+        window=cfg.get("window", 15), rho=cfg.get("rho", 0.0),
+        b_lead=cfg.get("b_lead", 0.0), b_trail=cfg.get("b_trail", 0.0),
+        red_self=red.get("self", 1.0), red_opp=red.get("opp", 1.0))
+
+
+def evaluate(matches, F, cfg, profile, constant=None, reliability=False):
+    """Score a configuration on a match set.
+
+    Returns a dict with per-checkpoint Brier and log loss, their means over
+    the live checkpoints (90' is one-hot for every model and carries no
+    information), per-competition Brier, and optionally reliability bins
+    pooled over the live checkpoints.
+
+    constant=(pH,pD,pA) scores that fixed triple instead of the model — the
+    same number at every checkpoint, it never looks at the pitch."""
+    brier = {t: 0.0 for t in CHECKPOINTS}
+    logloss = {t: 0.0 for t in CHECKPOINTS}
+    comp_brier, comp_n = {}, {}
+    bins = [[0.0, 0.0, 0] for _ in range(RELIABILITY_BINS)]
+    for M in matches:
+        c = M["competition"]
+        cb = comp_brier.setdefault(c, {t: 0.0 for t in CHECKPOINTS})
+        comp_n[c] = comp_n.get(c, 0) + 1
+        target = M["_outcome"]
+        live = None if constant is not None else build_model(F, M, cfg, profile)
+        window = cfg.get("window", 15)
+        for t in CHECKPOINTS:
+            if constant is not None:
+                probs = constant
             else:
-                a += 1
-    return h, a
-
-
-def xg_recent15(M, side, t):
-    """xG a side generated in the (t-15, t] window, from the shot stream."""
-    total = 0.0
-    for s in M["shots"]:
-        m = model.effective_min(s["min"], M["has_extra_time"])
-        if s["team"] == side and m is not None and t - 15 < m <= t:
-            total += s["xg"]
-    return total
+                h, a = M["_score"][t]
+                red_h, red_a = reds_at(M, t)
+                p = live.probs(t, h, a, xg_window(M, "home", t, window),
+                               xg_window(M, "away", t, window), red_h, red_a)
+                probs = (p["pH"], p["pD"], p["pA"])
+            b = sum((pi - oi) ** 2 for pi, oi in zip(probs, target))
+            brier[t] += b
+            cb[t] += b
+            logloss[t] += -math.log(max(probs[target.index(1.0)], 1e-12))
+            if reliability and t in LIVE_CPS and t > 0:
+                for pi, oi in zip(probs, target):
+                    idx = min(RELIABILITY_BINS - 1, int(pi * RELIABILITY_BINS))
+                    bins[idx][0] += pi
+                    bins[idx][1] += oi
+                    bins[idx][2] += 1
+    n = float(len(matches))
+    out = {
+        "brier": {t: brier[t] / n for t in CHECKPOINTS},
+        "logloss": {t: logloss[t] / n for t in CHECKPOINTS},
+        "per_competition": {c: {t: comp_brier[c][t] / comp_n[c]
+                                for t in CHECKPOINTS} for c in comp_brier},
+        "n": comp_n,
+    }
+    out["mean_brier"] = sum(out["brier"][t] for t in LIVE_CPS) / len(LIVE_CPS)
+    out["mean_logloss"] = sum(out["logloss"][t] for t in LIVE_CPS) / len(LIVE_CPS)
+    if reliability:
+        total = sum(b[2] for b in bins) or 1
+        rel, ece = [], 0.0
+        for pred_sum, act_sum, cnt in bins:
+            if not cnt:
+                rel.append(None)
+                continue
+            pred, act = pred_sum / cnt, act_sum / cnt
+            ece += abs(pred - act) * cnt / total
+            rel.append({"pred": round(pred, 4), "actual": round(act, 4), "n": cnt})
+        out["reliability"] = rel
+        out["ece"] = ece
+    return out
 
 
 def outcome_90(M):
-    """One-hot (H, D, A) of the 90-minute result. Stoppage-time goals count
-    (they settle real 1X2 markets); extra-time goals do not: the model
-    prices the 90-minute market."""
-    h, a = score_at(M, 90)
-    if h > a:
-        return (1.0, 0.0, 0.0)
-    if h == a:
-        return (0.0, 1.0, 0.0)
-    return (0.0, 0.0, 1.0)
+    """One-hot (H, D, A) of the 90-minute result."""
+    return M["_outcome"]
 
 
 def base_rates(matches):
     """Global (pH, pD, pA) frequency of 90-minute outcomes — the
-    "always quote 0.44/0.27/0.29" constant baseline."""
+    "always quote 0.45/0.24/0.31" constant baseline."""
     counts = [0, 0, 0]
     for M in matches:
-        o = outcome_90(M)
-        counts[o.index(1.0)] += 1
+        counts[M["_outcome"].index(1.0)] += 1
     n = float(len(matches))
     return tuple(c / n for c in counts)
 
 
-def evaluate(matches, F, w, constant=None):
-    """Mean Brier per checkpoint minute, overall and per competition.
-
-    constant=(pH,pD,pA) scores that fixed triple instead of the model —
-    the same number at every checkpoint, it never looks at the pitch."""
-    sums = {t: 0.0 for t in CHECKPOINTS}
-    comp_sums = {}                           # comp -> {t: sum}, comp -> n
-    comp_n = {}
+def split_by(matches, table):
+    """(rest, selected) split on a {competition: season} table."""
+    rest, selected = [], []
     for M in matches:
-        c = M["competition"]
-        cs = comp_sums.setdefault(c, {t: 0.0 for t in CHECKPOINTS})
-        comp_n[c] = comp_n.get(c, 0) + 1
-        target = outcome_90(M)
-        if constant is None:
-            lam_h, lam_a = match_lams(F, M)
-            live = model.InPlayModel(lam_h, lam_a, w=w)
-        for t in CHECKPOINTS:
-            if constant is None:
-                h, a = score_at(M, t)
-                p = live.probs(t, h, a, xg_recent15(M, "home", t),
-                               xg_recent15(M, "away", t))
-                probs = (p["pH"], p["pD"], p["pA"])
-            else:
-                probs = constant
-            b = sum((pi - oi) ** 2 for pi, oi in zip(probs, target))
-            sums[t] += b
-            cs[t] += b
-    n = len(matches)
-    overall = {t: sums[t] / n for t in CHECKPOINTS}
-    per_comp = {c: {t: comp_sums[c][t] / comp_n[c] for t in CHECKPOINTS}
-                for c in comp_sums}
-    return overall, per_comp, comp_n
+        (selected if M["season"] == table.get(M["competition"]) else rest).append(M)
+    return rest, selected
 
 
-def split_holdout(matches):
-    """(train, eval) split: the newest league season + WC2026 held out."""
-    train, held = [], []
-    for M in matches:
-        (held if M["season"] == HOLDOUT.get(M["competition"]) else train).append(M)
-    return train, held
+# ------------------------------------------------------------------- tuning
+
+def tune(inner, val, verbose=True):
+    """Staged coordinate search for the model shape, scored on `val` with
+    ratings fit on `inner`. Each stage keeps the best value found so far and
+    moves on, which is enough for a search space this smooth and keeps the
+    whole tune to a few thousand evaluations."""
+    F = fit(inner, k=1)
+    profile = build_profile(inner)
+    cfg = {"w": 0.0, "window": 15, "profile": False, "rho": 0.0,
+           "b_lead": 0.0, "b_trail": 0.0}
+    trace = []
+
+    def score(candidate):
+        return evaluate(val, F, candidate, profile)["mean_brier"]
+
+    def stage(name, options):
+        """Try each override dict; keep the best if it beats the incumbent."""
+        best, winner = score(cfg), None
+        for override in options:
+            trial = dict(cfg)
+            trial.update(override)
+            s = score(trial)
+            if s < best:
+                best, winner = s, override
+        if winner:
+            cfg.update(winner)
+        trace.append({"stage": name, "val_brier": round(best, 5),
+                      "chosen": dict(winner or {})})
+        if verbose:
+            kept = (", ".join("%s=%s" % (k, winner[k]) for k in sorted(winner))
+                    if winner else "no change")
+            print("  %-14s val Brier %.5f  ->  %s" % (name, best, kept))
+        return best
+
+    if verbose:
+        print("tuning on val (%d matches), ratings from inner (%d):"
+              % (len(val), len(inner)))
+        print("  %-14s val Brier %.5f  (linear clock, no momentum)"
+              % ("start", score(cfg)))
+    stage("clock", [{"profile": True}])
+    stage("momentum", [{"w": w, "window": win} for w in W_GRID
+                       for win in (WINDOW_GRID if w else [15])])
+    stage("score state", [{"b_lead": bl, "b_trail": bt}
+                          for bl in B_LEAD_GRID for bt in B_TRAIL_GRID])
+    stage("draw (rho)", [{"rho": r} for r in RHO_GRID])
+
+    # Red-card multipliers are measured, not tuned (see fit_red_effect).
+    red_self, red_opp, n_red = fit_red_effect(inner, F, profile)
+    cfg["red"] = {"self": round(red_self, 4), "opp": round(red_opp, 4),
+                  "n": n_red}
+    if verbose:
+        if n_red:
+            print("  %-14s measured from %d single-card matches: self x%.3f, "
+                  "opponent x%.3f" % ("red cards", n_red, red_self, red_opp))
+        else:
+            print("  %-14s NOT FIT: the corpus records dismissals but not "
+                  "their minute" % "red cards")
+            print("  %-14s multipliers left neutral; the model and feed carry "
+                  "the hook" % "")
+
+    # Rating hypers last: they change the fit, so re-fit inside the loop.
+    best = (None, None, None)
+    for k in K_GRID:
+        for decay in DECAY_GRID:
+            Fk = fit(inner, k, decay=decay)
+            prof_k = build_profile(inner)
+            s = evaluate(val, Fk, cfg, prof_k)["mean_brier"]
+            if best[0] is None or s < best[0]:
+                best = (s, k, decay)
+    _, k_best, decay_best = best
+    trace.append({"stage": "ratings", "val_brier": round(best[0], 5),
+                  "chosen": {"k": k_best, "decay": decay_best}})
+    if verbose:
+        print("  %-14s val Brier %.5f  ->  k=%d, decay=%.1f"
+              % ("ratings", best[0], k_best, decay_best))
+    return cfg, k_best, decay_best, trace
 
 
 # ------------------------------------------------------------ data loading
@@ -259,6 +500,15 @@ def load_argentina(data_dir):
             "away": raw["away"]["name"],
             "shots": raw.get("shots") or [],
             "goals": raw.get("goals") or [],
+            "reds": [(c["team"], c["min"]) for c in (raw.get("cards") or [])
+                     if (c.get("type") or "").lower() == "red"
+                     and c.get("min") is not None],
+            "red_counts": (sum(1 for c in (raw.get("cards") or [])
+                               if (c.get("type") or "").lower() == "red"
+                               and c.get("team") == "home"),
+                           sum(1 for c in (raw.get("cards") or [])
+                               if (c.get("type") or "").lower() == "red"
+                               and c.get("team") == "away")),
             "has_extra_time": (not corpus.is_groupish(stage)
                                and corpus.knockout_played_extra_time(raw)),
             "is_neutral": True,
@@ -280,14 +530,20 @@ def corpus_summary(matches):
             for c, (n, s) in sorted(agg.items())]
 
 
-def write_params(out_path, F, brier_block, generated_from):
+def write_params(out_path, F, cfg, profile, brier_block, generated_from):
     params = {
-        "version": 2,
+        "version": 3,
         "mu": {c: round(v, 4) for c, v in sorted(F["mu"].items())},
         "hfa": round(F["hfa"], 4),
         "k": F["k"],
-        "w": W,
         "decay": F["decay"],
+        "w": cfg["w"],
+        "window": cfg["window"],
+        "rho": cfg["rho"],
+        "b_lead": cfg["b_lead"],
+        "b_trail": cfg["b_trail"],
+        "red": cfg.get("red") or {"self": 1.0, "opp": 1.0, "n": 0},
+        "profile": [round(p, 6) for p in profile] if cfg.get("profile") else None,
         "teams": {key: {"att": round(t["att"], 4), "def": round(t["def"], 4),
                         "matches": t["matches"]}
                   for key, t in F["teams"].items()},
@@ -300,17 +556,43 @@ def write_params(out_path, F, brier_block, generated_from):
     print("wrote %s (%.1f KB)" % (out_path, out_path.stat().st_size / 1024))
 
 
-def write_dashboard_params(roots, F):
+DASHBOARDS = {
+    "EPL": ("epl_dashboard", "xepl"),
+    "LaLiga": ("laliga_dashboard", "xlaliga"),
+    "WC": ("wc2026_dashboard", "xworldcuptwit"),
+}
+
+
+def dashboard_targets(roots, repo_root=REPO):
+    """[(competition, dashboard dir)] to write params into.
+
+    Both the corpus root the fit was read from AND this repo's vendored
+    projects/ copy, because the portfolio now serves the vendored one — a
+    refit that updated only the source clone would leave the published
+    dashboards quoting stale numbers. Deduped by resolved path so a run
+    whose corpus root IS the vendored copy writes once."""
+    out, seen = [], set()
+    for comp, (dash, vendor) in DASHBOARDS.items():
+        for root in (roots.get(comp), repo_root / "projects" / vendor):
+            if root is None:
+                continue
+            path = Path(root) / dash
+            if not path.is_dir():
+                continue
+            key = str(path.resolve())
+            if key not in seen:
+                seen.add(key)
+                out.append((comp, path))
+    return out
+
+
+def write_dashboard_params(roots, F, cfg, profile):
     """One winprob_params.js per scraper dashboard, with that competition's
     teams only (names WITHOUT the namespace prefix). The WC dashboard gets
     hfa 1.0 and a neutral flag — every World Cup venue is neutral."""
-    targets = {
-        "EPL": ("epl_dashboard", roots.get("EPL")),
-        "LaLiga": ("laliga_dashboard", roots.get("LaLiga")),
-        "WC": ("wc2026_dashboard", roots.get("WC")),
-    }
-    for comp, (dash, root) in targets.items():
-        if root is None or comp not in F["mu"]:
+    written = []
+    for comp, dash_dir in dashboard_targets(roots):
+        if comp not in F["mu"]:
             continue
         neutral = comp == "WC"
         teams = {key.split("/", 1)[1]: {"att": round(t["att"], 4),
@@ -318,53 +600,67 @@ def write_dashboard_params(roots, F):
                  for key, t in F["teams"].items()
                  if key.startswith(comp + "/")}
         payload = {
-            "version": 2,
+            "version": 3,
             "competition": comp,
             "mu": round(F["mu"][comp], 4),
             "hfa": 1.0 if neutral else round(F["hfa"], 4),
             "neutral": neutral,
-            "w": W,
+            "w": cfg["w"],
+            "window": cfg["window"],
+            "rho": cfg["rho"],
+            "bLead": cfg["b_lead"],
+            "bTrail": cfg["b_trail"],
+            "red": cfg.get("red") or {"self": 1.0, "opp": 1.0},
+            "profile": [round(p, 5) for p in profile] if cfg.get("profile") else None,
             "maxGoals": model.MAX_GOALS,
             "lamFloor": model.LAM_FLOOR,
             "teams": teams,
         }
-        out = Path(root) / dash / "winprob_params.js"
+        out = dash_dir / "winprob_params.js"
         text = ("// generated by rshiri.github.io/live-pipeline/tradepipe/"
                 "calibrate.py - do not edit by hand\n"
                 "window.WINPROB_PARAMS = %s;\n"
                 % json.dumps(payload, ensure_ascii=False, separators=(",", ":")))
         out.write_text(text, encoding="utf-8")
+        written.append(out)
         print("wrote %s (%.1f KB, %d teams)" % (out, out.stat().st_size / 1024,
                                                 len(teams)))
+        # Ship the model itself alongside its parameters, so a dashboard can
+        # never end up running last year's maths against this year's numbers.
+        source = HERE.parent / "web" / "winprob_model.js"
+        if source.is_file():
+            (dash_dir / "winprob_model.js").write_text(
+                source.read_text(encoding="utf-8"), encoding="utf-8")
+    return written
 
 
 # -------------------------------------------------------------------- main
 
-def print_brier_table(title, cps, rows, n_eval):
+def print_table(title, rows, n_eval):
     print(title + " (n=%d matches)" % n_eval)
     print("  min  " + "".join("%12s" % name for name, _ in rows))
-    for t in cps:
+    for t in CHECKPOINTS:
         print("  %3d  " % t + "".join("%12.4f" % vals[t] for _, vals in rows))
 
 
 def main():
     ap = argparse.ArgumentParser(
         description="Fit win-prob model params from all scraped corpora.")
-    ap.add_argument("--epl", help="XEPL repo root (default: sibling clone or /workspace/xepl)")
-    ap.add_argument("--laliga", help="XLALIGA repo root (default: sibling clone or /workspace/xlaliga)")
-    ap.add_argument("--wc", help="XWORLDCUPTWIT repo root (default: sibling clone or /workspace/xworldcuptwit)")
+    ap.add_argument("--epl", help="XEPL repo root (default: sibling clone, /workspace/xepl, or projects/xepl)")
+    ap.add_argument("--laliga", help="XLALIGA repo root (default: sibling clone, /workspace/xlaliga, or projects/xlaliga)")
+    ap.add_argument("--wc", help="XWORLDCUPTWIT repo root (default: sibling clone, /workspace/xworldcuptwit, or projects/xworldcuptwit)")
     ap.add_argument("--data", default=str(REPO / "assets" / "data" / "argentina"),
                     help="fallback argentina match dir when no corpora found")
     ap.add_argument("--out", default=str(REPO / "assets" / "data" / "winprob" / "model_params.json"),
                     help="output params file (default: assets/data/winprob/model_params.json)")
     ap.add_argument("--no-dashboards", action="store_true",
-                    help="skip writing winprob_params.js into the scraper clones")
+                    help="skip writing winprob_params.js into the dashboards")
     args = ap.parse_args()
 
     corpora, roots = corpus.default_corpora(args.epl, args.laliga, args.wc,
                                             repo_root=REPO)
     if corpora:
-        matches = list(corpus.iter_matches(corpora))
+        matches = [precompute(M) for M in corpus.iter_matches(corpora)]
         run_full(args, matches, roots)
     else:
         print("WARNING: no scraper corpora found (../XEPL, ../XLALIGA, "
@@ -373,100 +669,152 @@ def main():
         print("WARNING: falling back to the 8 argentina match JSONs -- "
               "params will cover competition 'WC' only and the Brier "
               "numbers are an in-sample smoke test, not a benchmark.")
-        matches = load_argentina(Path(args.data))
+        matches = [precompute(M) for M in load_argentina(Path(args.data))]
         run_fallback(args, matches)
 
 
 def run_full(args, matches, roots):
     n_shots = sum(len(M["shots"]) for M in matches)
-    print("total: %d matches, %d shots" % (len(matches), n_shots))
+    n_reds = sum(1 for M in matches if sum(M["_red_counts"]))
+    n_timed = sum(1 for M in matches if M["_reds"]["home"] or M["_reds"]["away"])
+    print("total: %d matches, %d shots, %d with a red card (%d with a known "
+          "dismissal minute)" % (len(matches), n_shots, n_reds, n_timed))
     print()
 
-    # ---- honest evaluation: temporal holdout ----
-    train, held = split_holdout(matches)
-    print("holdout: train %d matches (2022-23..2024-25 leagues + WC2018 + "
-          "WC2022), eval %d (2025-26 leagues + WC2026)" % (len(train), len(held)))
-
-    best_k, best_score, best_brier = None, None, None
-    for k in K_GRID:
-        Fk = fit(train, k)
-        overall, _, _ = evaluate(held, Fk, w=W)
-        score = sum(overall.values()) / len(overall)
-        print("  k=%-2d  mean holdout Brier %.5f" % (k, score))
-        if best_score is None or score < best_score:
-            best_k, best_score = k, score
-    print("chosen k = %d (lowest mean holdout Brier)" % best_k)
+    train, held = split_by(matches, HOLDOUT)
+    inner, val = split_by(train, VALIDATION)
+    print("protocol: inner %d (tune-time ratings) | val %d (chooses every "
+          "hyper) | train %d (inner+val, final ratings) | holdout %d "
+          "(scored once)" % (len(inner), len(val), len(train), len(held)))
     print()
 
-    F_train = fit(train, best_k)
+    cfg, k_best, decay_best, trace = tune(inner, val)
+    print()
+
+    # ---- the single holdout evaluation ----
+    F_train = fit(train, k_best, decay=decay_best)
+    profile = build_profile(train)
+    # Red multipliers are a property of the data, not of the split: re-measure
+    # on the full training block now that its ratings are the final ones.
+    red_self, red_opp, n_red = fit_red_effect(train, F_train, profile)
+    cfg["red"] = {"self": round(red_self, 4), "opp": round(red_opp, 4), "n": n_red}
+
     const = base_rates(train)
-    b_model, b_model_pc, comp_n = evaluate(held, F_train, w=W)
-    b_w0, b_w0_pc, _ = evaluate(held, F_train, w=0.0)
-    b_const, b_const_pc, _ = evaluate(held, F_train, w=W, constant=const)
+    v3 = evaluate(held, F_train, cfg, profile, reliability=True)
+    v2_cfg = {"w": 0.35, "window": 15, "profile": False, "rho": 0.0,
+              "b_lead": 0.0, "b_trail": 0.0}
+    F_v2 = fit(train, 1, decay=0.8)
+    v2 = evaluate(held, F_v2, v2_cfg, None, reliability=True)
+    w0 = evaluate(held, F_v2, dict(v2_cfg, w=0.0), None)
+    constant = evaluate(held, F_v2, v2_cfg, None, constant=const)
 
     print("constant baseline (train outcome rates): H %.3f / D %.3f / A %.3f"
           % const)
-    print_brier_table("mean Brier vs 90-min outcome, temporal holdout",
-                      CHECKPOINTS,
-                      [("model w=%.2f" % W, b_model), ("w=0", b_w0),
-                       ("constant", b_const)], len(held))
-    for c in sorted(comp_n):
-        print_brier_table("  -- %s holdout" % c, CHECKPOINTS,
-                          [("model", b_model_pc[c]), ("w=0", b_w0_pc[c]),
-                           ("constant", b_const_pc[c])], comp_n[c])
+    print_table("mean Brier vs the 90-minute outcome, HOLDOUT (scored once)",
+                [("v3", v3["brier"]), ("v2 (w=.35)", v2["brier"]),
+                 ("v2 w=0", w0["brier"]), ("constant", constant["brier"])],
+                len(held))
+    print("  mean over live checkpoints: v3 %.5f | v2 %.5f | v2 w=0 %.5f | "
+          "constant %.5f" % (v3["mean_brier"], v2["mean_brier"],
+                             w0["mean_brier"], constant["mean_brier"]))
+    print("  mean log loss:              v3 %.5f | v2 %.5f | v2 w=0 %.5f"
+          % (v3["mean_logloss"], v2["mean_logloss"], w0["mean_logloss"]))
+    print("  calibration error (ECE):    v3 %.4f | v2 %.4f"
+          % (v3["ece"], v2["ece"]))
+    print()
+    for c in sorted(v3["n"]):
+        print("  %-7s n=%3d   v3 %.5f   v2 %.5f   (%+.5f)"
+              % (c, v3["n"][c],
+                 sum(v3["per_competition"][c][t] for t in LIVE_CPS) / len(LIVE_CPS),
+                 sum(v2["per_competition"][c][t] for t in LIVE_CPS) / len(LIVE_CPS),
+                 sum(v3["per_competition"][c][t] - v2["per_competition"][c][t]
+                     for t in LIVE_CPS) / len(LIVE_CPS)))
+    print()
+    print("  reliability (predicted -> actual, pooled 15'-75'):")
+    for tag, res in (("v2", v2), ("v3", v3)):
+        cells = " ".join("%.2f/%.2f" % (b["pred"], b["actual"]) if b else "  -  "
+                         for b in res["reliability"])
+        print("    %-3s ECE %.4f  %s" % (tag, res["ece"], cells))
     print()
 
-    # ---- production fit: everything, best k ----
-    F = fit(matches, best_k)
+    # ---- production fit: everything, chosen hypers ----
+    F = fit(matches, k_best, decay=decay_best)
+    profile_all = build_profile(matches)
+    red_self, red_opp, n_red = fit_red_effect(matches, F, profile_all)
+    cfg["red"] = {"self": round(red_self, 4), "opp": round(red_opp, 4), "n": n_red}
     print("production fit on all %d matches:" % len(matches))
     print("  mu  " + "  ".join("%s %.4f" % (c, F["mu"][c])
                                for c in sorted(F["mu"])))
     print("  hfa %.4f   k %d   decay %.2f   teams %d"
           % (F["hfa"], F["k"], F["decay"], len(F["teams"])))
+    print("  w %.2f  window %d  rho %.2f  b_lead %+.2f  b_trail %+.2f  "
+          "red self x%.2f opp x%.2f"
+          % (cfg["w"], cfg["window"], cfg["rho"], cfg["b_lead"],
+             cfg["b_trail"], cfg["red"]["self"], cfg["red"]["opp"]))
 
     brier_block = {
-        "design": "temporal holdout: train on league seasons 2022-23..2024-25 "
-                  "+ WC2018 + WC2022, evaluate on 2025-26 leagues + WC2026; "
-                  "production rates refit on all data with the chosen k",
+        "design": "three disjoint blocks in time: ratings for tuning fit on "
+                  "2022-23..2023-24 leagues + WC2018, every hyper chosen on "
+                  "2024-25 leagues + WC2022, holdout (2025-26 leagues + "
+                  "WC2026) scored exactly once by the finished config; "
+                  "production rates refit on all data",
         "checkpoints": CHECKPOINTS,
-        "model": [round(b_model[t], 4) for t in CHECKPOINTS],
-        "baseline_w0": [round(b_w0[t], 4) for t in CHECKPOINTS],
-        "constant": [round(b_const[t], 4) for t in CHECKPOINTS],
+        "model": [round(v3["brier"][t], 4) for t in CHECKPOINTS],
+        "baseline_v2": [round(v2["brier"][t], 4) for t in CHECKPOINTS],
+        "baseline_w0": [round(w0["brier"][t], 4) for t in CHECKPOINTS],
+        "constant": [round(constant["brier"][t], 4) for t in CHECKPOINTS],
         "constant_probs": [round(p, 4) for p in const],
+        "logloss": [round(v3["logloss"][t], 4) for t in CHECKPOINTS],
+        "logloss_baseline_v2": [round(v2["logloss"][t], 4) for t in CHECKPOINTS],
+        "mean_brier": {"model": round(v3["mean_brier"], 5),
+                       "baseline_v2": round(v2["mean_brier"], 5),
+                       "baseline_w0": round(w0["mean_brier"], 5),
+                       "constant": round(constant["mean_brier"], 5)},
+        "mean_logloss": {"model": round(v3["mean_logloss"], 5),
+                         "baseline_v2": round(v2["mean_logloss"], 5)},
+        "ece": {"model": round(v3["ece"], 4), "baseline_v2": round(v2["ece"], 4)},
+        "reliability": {"model": v3["reliability"], "baseline_v2": v2["reliability"]},
         "n_eval": len(held),
+        "tuning_trace": trace,
         "per_competition": {
-            c: {"model": [round(b_model_pc[c][t], 4) for t in CHECKPOINTS],
-                "baseline_w0": [round(b_w0_pc[c][t], 4) for t in CHECKPOINTS],
-                "constant": [round(b_const_pc[c][t], 4) for t in CHECKPOINTS],
-                "n": comp_n[c]}
-            for c in sorted(comp_n)},
+            c: {"model": [round(v3["per_competition"][c][t], 4) for t in CHECKPOINTS],
+                "baseline_v2": [round(v2["per_competition"][c][t], 4) for t in CHECKPOINTS],
+                "baseline_w0": [round(w0["per_competition"][c][t], 4) for t in CHECKPOINTS],
+                "constant": [round(constant["per_competition"][c][t], 4) for t in CHECKPOINTS],
+                "n": v3["n"][c]}
+            for c in sorted(v3["n"])},
     }
-    generated_from = corpus_summary(matches)
-    write_params(Path(args.out), F, brier_block, generated_from)
+    write_params(Path(args.out), F, cfg, profile_all, brier_block,
+                 corpus_summary(matches))
     if not args.no_dashboards:
-        write_dashboard_params(roots, F)
+        write_dashboard_params(roots, F, cfg, profile_all)
 
 
 def run_fallback(args, matches):
+    """No corpora: fit the 8 argentina files so the demo still prices."""
     F = fit(matches, k=1)
-    b_model, _, _ = evaluate(matches, F, w=W)
-    b_w0, _, _ = evaluate(matches, F, w=0.0)
+    profile = build_profile(matches)
+    cfg = {"w": model.DEFAULT_W, "window": 15, "profile": True, "rho": 0.0,
+           "b_lead": 0.0, "b_trail": 0.0,
+           "red": {"self": 1.0, "opp": 1.0, "n": 0}}
+    res = evaluate(matches, F, cfg, profile)
+    w0 = evaluate(matches, F, dict(cfg, w=0.0), profile)
 
     print("fitted %d teams from %d matches, mu_WC = %.4f xG per team-match"
           % (len(F["teams"]), len(matches), F["mu"]["WC"]))
-    print_brier_table("mean in-sample Brier (smoke test only)", CHECKPOINTS,
-                      [("model w=%.2f" % W, b_model), ("w=0", b_w0)],
-                      len(matches))
+    print_table("mean in-sample Brier (smoke test only)",
+                [("model", res["brier"]), ("w=0", w0["brier"])], len(matches))
 
     brier_block = {
         "design": "in-sample on the 8 argentina matches (fallback mode; "
                   "no holdout possible)",
         "checkpoints": CHECKPOINTS,
-        "model": [round(b_model[t], 4) for t in CHECKPOINTS],
-        "baseline_w0": [round(b_w0[t], 4) for t in CHECKPOINTS],
+        "model": [round(res["brier"][t], 4) for t in CHECKPOINTS],
+        "baseline_w0": [round(w0["brier"][t], 4) for t in CHECKPOINTS],
+        "logloss": [round(res["logloss"][t], 4) for t in CHECKPOINTS],
         "n_eval": len(matches),
     }
-    write_params(Path(args.out), F, brier_block,
+    write_params(Path(args.out), F, cfg, profile, brier_block,
                  ["fallback: assets/data/argentina (8 matches)"])
 
 

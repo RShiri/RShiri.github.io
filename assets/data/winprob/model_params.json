@@ -1,563 +1,665 @@
 {
- "version": 2,
+ "version": 3,
  "mu": {
-  "EPL": 1.4184,
-  "LaLiga": 1.2871,
-  "WC": 1.3674
+  "EPL": 1.4129,
+  "LaLiga": 1.3037,
+  "WC": 1.3757
  },
  "hfa": 1.1295,
- "k": 1,
- "w": 0.35,
- "decay": 0.8,
+ "k": 2,
+ "decay": 0.5,
+ "w": 0.05,
+ "window": 15,
+ "rho": 0.05,
+ "b_lead": -0.05,
+ "b_trail": 0.25,
+ "red": {
+  "self": 1.0,
+  "opp": 1.0,
+  "n": 0
+ },
+ "profile": [
+  0.99461,
+  0.987818,
+  0.979395,
+  0.971051,
+  0.96186,
+  0.953856,
+  0.944046,
+  0.935608,
+  0.927484,
+  0.918714,
+  0.909428,
+  0.901185,
+  0.891799,
+  0.881686,
+  0.872878,
+  0.864437,
+  0.855023,
+  0.846099,
+  0.837298,
+  0.828205,
+  0.818979,
+  0.809535,
+  0.800764,
+  0.790642,
+  0.781412,
+  0.772298,
+  0.763178,
+  0.753154,
+  0.744132,
+  0.734761,
+  0.725292,
+  0.714628,
+  0.704332,
+  0.694682,
+  0.68452,
+  0.674147,
+  0.663635,
+  0.652693,
+  0.642854,
+  0.634145,
+  0.624782,
+  0.614597,
+  0.604787,
+  0.594198,
+  0.584721,
+  0.569583,
+  0.553368,
+  0.537381,
+  0.523196,
+  0.509422,
+  0.495035,
+  0.483188,
+  0.471828,
+  0.459317,
+  0.448496,
+  0.436741,
+  0.425173,
+  0.414699,
+  0.40425,
+  0.393662,
+  0.382447,
+  0.370571,
+  0.360093,
+  0.349249,
+  0.338544,
+  0.327496,
+  0.317037,
+  0.306237,
+  0.295198,
+  0.284614,
+  0.274508,
+  0.265162,
+  0.253698,
+  0.244667,
+  0.234622,
+  0.223123,
+  0.213902,
+  0.203211,
+  0.192896,
+  0.182752,
+  0.173443,
+  0.16351,
+  0.153158,
+  0.142457,
+  0.133233,
+  0.123133,
+  0.112752,
+  0.102462,
+  0.091241,
+  0.080364,
+  0.0
+ ],
  "teams": {
   "EPL/AFC Bournemouth": {
-   "att": 1.4762,
-   "def": 1.4105,
+   "att": 1.5494,
+   "def": 1.3746,
    "matches": 152
   },
   "EPL/Arsenal": {
-   "att": 1.7627,
-   "def": 0.895,
+   "att": 1.7428,
+   "def": 0.8852,
    "matches": 152
   },
   "EPL/Aston Villa": {
-   "att": 1.4542,
-   "def": 1.3725,
+   "att": 1.4472,
+   "def": 1.368,
    "matches": 152
   },
   "EPL/Brentford": {
-   "att": 1.5129,
-   "def": 1.4184,
+   "att": 1.5342,
+   "def": 1.4412,
    "matches": 152
   },
   "EPL/Brighton & Hove Albion": {
-   "att": 1.5752,
-   "def": 1.3446,
+   "att": 1.516,
+   "def": 1.3503,
    "matches": 152
   },
   "EPL/Burnley": {
-   "att": 0.9516,
-   "def": 1.8745,
+   "att": 0.9316,
+   "def": 1.8883,
    "matches": 76
   },
   "EPL/Chelsea": {
-   "att": 1.6795,
-   "def": 1.3415,
+   "att": 1.7113,
+   "def": 1.3479,
    "matches": 152
   },
   "EPL/Crystal Palace": {
-   "att": 1.3724,
-   "def": 1.3731,
+   "att": 1.4437,
+   "def": 1.4053,
    "matches": 152
   },
   "EPL/Everton": {
-   "att": 1.2166,
-   "def": 1.4365,
+   "att": 1.2047,
+   "def": 1.4214,
    "matches": 152
   },
   "EPL/Fulham": {
-   "att": 1.2319,
-   "def": 1.4509,
+   "att": 1.2377,
+   "def": 1.4038,
    "matches": 152
   },
   "EPL/Ipswich Town": {
-   "att": 0.991,
-   "def": 1.9726,
+   "att": 1.0184,
+   "def": 1.9358,
    "matches": 38
   },
   "EPL/Leeds United": {
-   "att": 1.3512,
-   "def": 1.4516,
+   "att": 1.4219,
+   "def": 1.3922,
    "matches": 76
   },
   "EPL/Leicester City": {
-   "att": 1.0118,
-   "def": 1.7282,
+   "att": 0.9869,
+   "def": 1.7905,
    "matches": 76
   },
   "EPL/Liverpool": {
-   "att": 1.9378,
-   "def": 1.1882,
+   "att": 1.8478,
+   "def": 1.1961,
    "matches": 152
   },
   "EPL/Luton Town": {
-   "att": 1.1693,
-   "def": 2.07,
+   "att": 1.2032,
+   "def": 1.9779,
    "matches": 38
   },
   "EPL/Manchester City": {
-   "att": 1.9234,
-   "def": 1.0849,
+   "att": 1.8846,
+   "def": 1.1445,
    "matches": 152
   },
   "EPL/Manchester United": {
-   "att": 1.5512,
-   "def": 1.3937,
+   "att": 1.5727,
+   "def": 1.3613,
    "matches": 152
   },
   "EPL/Newcastle United": {
-   "att": 1.6794,
-   "def": 1.2942,
+   "att": 1.5973,
+   "def": 1.3285,
    "matches": 152
   },
   "EPL/Nottingham Forest": {
-   "att": 1.1709,
-   "def": 1.4288,
+   "att": 1.1901,
+   "def": 1.4268,
    "matches": 152
   },
   "EPL/Sheffield United": {
-   "att": 1.0477,
-   "def": 1.9527,
+   "att": 1.0986,
+   "def": 1.877,
    "matches": 38
   },
   "EPL/Southampton": {
-   "att": 0.9268,
-   "def": 1.9289,
+   "att": 0.9549,
+   "def": 2.0395,
    "matches": 76
   },
   "EPL/Sunderland": {
-   "att": 1.0357,
-   "def": 1.3829,
+   "att": 1.045,
+   "def": 1.3835,
    "matches": 38
   },
   "EPL/Tottenham Hotspur": {
-   "att": 1.3896,
-   "def": 1.4599,
+   "att": 1.3088,
+   "def": 1.4332,
    "matches": 152
   },
   "EPL/West Ham United": {
-   "att": 1.2329,
-   "def": 1.6021,
+   "att": 1.2253,
+   "def": 1.6066,
    "matches": 152
   },
   "EPL/Wolverhampton Wanderers": {
-   "att": 1.034,
-   "def": 1.5695,
+   "att": 1.0316,
+   "def": 1.5667,
    "matches": 152
   },
   "LaLiga/Almeria": {
-   "att": 1.1934,
-   "def": 1.6112,
+   "att": 1.2247,
+   "def": 1.5832,
    "matches": 76
   },
   "LaLiga/Athletic Club": {
-   "att": 1.3571,
-   "def": 1.0234,
+   "att": 1.3427,
+   "def": 1.0647,
    "matches": 152
   },
   "LaLiga/Atletico Madrid": {
-   "att": 1.5793,
-   "def": 1.0894,
+   "att": 1.5752,
+   "def": 1.1418,
    "matches": 152
   },
   "LaLiga/Barcelona": {
-   "att": 2.1387,
-   "def": 1.0475,
+   "att": 2.1963,
+   "def": 1.099,
    "matches": 152
   },
   "LaLiga/Cadiz": {
-   "att": 0.9501,
-   "def": 1.4087,
+   "att": 0.9793,
+   "def": 1.3748,
    "matches": 76
   },
   "LaLiga/Celta Vigo": {
-   "att": 1.277,
-   "def": 1.255,
+   "att": 1.306,
+   "def": 1.2692,
    "matches": 152
   },
   "LaLiga/Deportivo Alaves": {
-   "att": 1.1783,
-   "def": 1.2396,
+   "att": 1.1904,
+   "def": 1.2461,
    "matches": 114
   },
   "LaLiga/Elche": {
-   "att": 1.0458,
-   "def": 1.6752,
+   "att": 1.0955,
+   "def": 1.6354,
    "matches": 76
   },
   "LaLiga/Espanyol": {
-   "att": 1.1091,
-   "def": 1.396,
+   "att": 1.1281,
+   "def": 1.3962,
    "matches": 114
   },
   "LaLiga/Getafe": {
-   "att": 0.9491,
-   "def": 1.188,
+   "att": 0.9032,
+   "def": 1.1662,
    "matches": 152
   },
   "LaLiga/Girona": {
-   "att": 1.3186,
-   "def": 1.417,
+   "att": 1.2691,
+   "def": 1.4377,
    "matches": 152
   },
   "LaLiga/Granada": {
-   "att": 1.0704,
-   "def": 1.6268,
+   "att": 1.1036,
+   "def": 1.5822,
    "matches": 38
   },
   "LaLiga/Las Palmas": {
-   "att": 0.9372,
-   "def": 1.5947,
+   "att": 0.9613,
+   "def": 1.607,
    "matches": 76
   },
   "LaLiga/Leganes": {
-   "att": 0.9509,
-   "def": 1.5655,
+   "att": 0.9745,
+   "def": 1.5489,
    "matches": 38
   },
   "LaLiga/Levante": {
-   "att": 1.3878,
-   "def": 1.5642,
+   "att": 1.3861,
+   "def": 1.5581,
    "matches": 38
   },
   "LaLiga/Mallorca": {
-   "att": 1.0382,
-   "def": 1.287,
+   "att": 1.0836,
+   "def": 1.3623,
    "matches": 152
   },
   "LaLiga/Osasuna": {
-   "att": 1.1176,
-   "def": 1.2772,
+   "att": 1.1435,
+   "def": 1.2849,
    "matches": 152
   },
   "LaLiga/Rayo Vallecano": {
-   "att": 1.2297,
-   "def": 1.2568,
+   "att": 1.3067,
+   "def": 1.2745,
    "matches": 152
   },
   "LaLiga/Real Betis": {
-   "att": 1.3365,
-   "def": 1.2277,
+   "att": 1.3751,
+   "def": 1.2291,
    "matches": 152
   },
   "LaLiga/Real Madrid": {
-   "att": 1.9395,
-   "def": 1.0417,
+   "att": 1.9412,
+   "def": 1.0762,
    "matches": 152
   },
   "LaLiga/Real Oviedo": {
-   "att": 0.9286,
-   "def": 1.575,
+   "att": 0.9384,
+   "def": 1.5687,
    "matches": 38
   },
   "LaLiga/Real Sociedad": {
-   "att": 1.2975,
-   "def": 1.1932,
+   "att": 1.3225,
+   "def": 1.2854,
    "matches": 152
   },
   "LaLiga/Real Valladolid": {
-   "att": 0.9045,
-   "def": 1.6863,
+   "att": 0.9122,
+   "def": 1.692,
    "matches": 76
   },
   "LaLiga/Sevilla": {
-   "att": 1.0814,
-   "def": 1.3659,
+   "att": 1.0505,
+   "def": 1.3688,
    "matches": 152
   },
   "LaLiga/Valencia": {
-   "att": 1.1707,
-   "def": 1.2581,
+   "att": 1.1921,
+   "def": 1.2797,
    "matches": 152
   },
   "LaLiga/Villarreal": {
-   "att": 1.5745,
-   "def": 1.2759,
+   "att": 1.5846,
+   "def": 1.2495,
    "matches": 152
   },
   "WC/Algeria": {
-   "att": 1.1883,
-   "def": 1.2447,
+   "att": 1.2209,
+   "def": 1.2679,
    "matches": 4
   },
   "WC/Argentina": {
-   "att": 1.7298,
-   "def": 0.7284,
+   "att": 1.7077,
+   "def": 0.7275,
    "matches": 19
   },
   "WC/Australia": {
-   "att": 0.7076,
-   "def": 1.357,
+   "att": 0.7773,
+   "def": 1.3385,
    "matches": 11
   },
   "WC/Austria": {
-   "att": 1.1891,
-   "def": 1.7675,
+   "att": 1.2216,
+   "def": 1.7036,
    "matches": 4
   },
   "WC/Belgium": {
-   "att": 1.8103,
-   "def": 1.3799,
+   "att": 1.7867,
+   "def": 1.3347,
    "matches": 16
   },
   "WC/Bosnia and Herzegovina": {
-   "att": 0.8415,
-   "def": 1.3993,
+   "att": 0.9319,
+   "def": 1.3967,
    "matches": 4
   },
   "WC/Brazil": {
-   "att": 2.3363,
-   "def": 0.6818,
+   "att": 2.2,
+   "def": 0.7998,
    "matches": 15
   },
   "WC/Cameroon": {
-   "att": 1.2109,
-   "def": 1.8897,
+   "att": 1.2771,
+   "def": 1.6893,
    "matches": 3
   },
   "WC/Canada": {
-   "att": 1.7974,
-   "def": 1.0246,
+   "att": 1.7852,
+   "def": 1.0219,
    "matches": 8
   },
   "WC/Cape Verde": {
-   "att": 0.7785,
-   "def": 1.5025,
+   "att": 0.8794,
+   "def": 1.4827,
    "matches": 4
   },
   "WC/Colombia": {
-   "att": 1.4019,
-   "def": 0.9695,
+   "att": 1.5031,
+   "def": 0.912,
    "matches": 9
   },
   "WC/Costa Rica": {
-   "att": 0.8393,
-   "def": 2.3734,
+   "att": 1.0028,
+   "def": 2.1022,
    "matches": 6
   },
   "WC/Croatia": {
-   "att": 1.1605,
-   "def": 1.4931,
+   "att": 1.1586,
+   "def": 1.5904,
    "matches": 18
   },
   "WC/Curacao": {
-   "att": 0.7106,
-   "def": 2.6783,
+   "att": 0.8453,
+   "def": 2.4195,
    "matches": 3
   },
   "WC/Czechia": {
-   "att": 0.9998,
-   "def": 1.8953,
+   "att": 1.0767,
+   "def": 1.7931,
    "matches": 3
   },
   "WC/DR Congo": {
-   "att": 1.1429,
-   "def": 1.2059,
+   "att": 1.1831,
+   "def": 1.2356,
    "matches": 4
   },
   "WC/Denmark": {
-   "att": 0.9846,
-   "def": 1.3308,
+   "att": 1.117,
+   "def": 1.3526,
    "matches": 7
   },
   "WC/Ecuador": {
-   "att": 1.4742,
-   "def": 1.1075,
+   "att": 1.5003,
+   "def": 1.1748,
    "matches": 7
   },
   "WC/Egypt": {
-   "att": 1.2487,
-   "def": 1.7987,
+   "att": 1.3042,
+   "def": 1.7401,
    "matches": 8
   },
   "WC/England": {
-   "att": 1.8494,
-   "def": 1.1892,
+   "att": 1.9035,
+   "def": 1.2473,
    "matches": 20
   },
   "WC/France": {
-   "att": 1.9026,
-   "def": 1.1664,
+   "att": 1.9596,
+   "def": 1.2393,
    "matches": 22
   },
   "WC/Germany": {
-   "att": 2.3718,
-   "def": 1.1989,
+   "att": 2.2095,
+   "def": 1.2019,
    "matches": 10
   },
   "WC/Ghana": {
-   "att": 0.9623,
-   "def": 1.6083,
+   "att": 0.9748,
+   "def": 1.5247,
    "matches": 7
   },
   "WC/Haiti": {
-   "att": 0.9296,
-   "def": 2.0411,
+   "att": 1.0205,
+   "def": 1.9097,
    "matches": 3
   },
   "WC/Iceland": {
-   "att": 1.5881,
-   "def": 1.5837,
+   "att": 1.465,
+   "def": 1.4632,
    "matches": 3
   },
   "WC/Iran": {
-   "att": 1.3395,
-   "def": 1.3343,
+   "att": 1.3953,
+   "def": 1.3533,
    "matches": 9
   },
   "WC/Iraq": {
-   "att": 0.7616,
-   "def": 2.7308,
+   "att": 0.8861,
+   "def": 2.4615,
    "matches": 3
   },
   "WC/Ivory Coast": {
-   "att": 1.5079,
-   "def": 1.5227,
+   "att": 1.4872,
+   "def": 1.4996,
    "matches": 4
   },
   "WC/Japan": {
-   "att": 1.1709,
-   "def": 1.3424,
+   "att": 1.1561,
+   "def": 1.264,
    "matches": 12
   },
   "WC/Jordan": {
-   "att": 0.8111,
-   "def": 1.9333,
+   "att": 0.9257,
+   "def": 1.8235,
    "matches": 3
   },
   "WC/Mexico": {
-   "att": 1.4386,
-   "def": 1.2076,
+   "att": 1.4646,
+   "def": 1.0893,
    "matches": 12
   },
   "WC/Morocco": {
-   "att": 1.0753,
-   "def": 1.2187,
+   "att": 1.1688,
+   "def": 1.2242,
    "matches": 16
   },
   "WC/Netherlands": {
-   "att": 1.1859,
-   "def": 1.102,
+   "att": 1.2409,
+   "def": 1.1202,
    "matches": 9
   },
   "WC/New Zealand": {
-   "att": 1.1568,
-   "def": 2.4108,
+   "att": 1.2023,
+   "def": 2.2055,
    "matches": 3
   },
   "WC/Nigeria": {
-   "att": 1.3711,
-   "def": 1.4458,
+   "att": 1.375,
+   "def": 1.406,
    "matches": 3
   },
   "WC/Norway": {
-   "att": 1.9376,
-   "def": 1.5291,
+   "att": 1.8684,
+   "def": 1.5109,
    "matches": 6
   },
   "WC/Panama": {
-   "att": 0.9146,
-   "def": 1.7066,
+   "att": 1.0063,
+   "def": 1.576,
    "matches": 6
   },
   "WC/Paraguay": {
-   "att": 0.6271,
-   "def": 1.6207,
+   "att": 0.7352,
+   "def": 1.5869,
    "matches": 5
   },
   "WC/Peru": {
-   "att": 1.0796,
-   "def": 1.3502,
+   "att": 1.2541,
+   "def": 1.3663,
    "matches": 3
   },
   "WC/Poland": {
-   "att": 1.2421,
-   "def": 1.5601,
+   "att": 1.3,
+   "def": 1.5416,
    "matches": 7
   },
   "WC/Portugal": {
-   "att": 1.5805,
-   "def": 1.2329,
+   "att": 1.5757,
+   "def": 1.2724,
    "matches": 14
   },
   "WC/Qatar": {
-   "att": 0.6765,
-   "def": 2.1236,
+   "att": 0.8128,
+   "def": 2.1024,
    "matches": 6
   },
   "WC/Russia": {
-   "att": 0.9715,
-   "def": 1.3432,
+   "att": 1.1727,
+   "def": 1.3603,
    "matches": 5
   },
   "WC/Saudi Arabia": {
-   "att": 0.924,
-   "def": 1.8721,
+   "att": 0.9303,
+   "def": 1.8004,
    "matches": 9
   },
   "WC/Scotland": {
-   "att": 1.1006,
-   "def": 1.8473,
+   "att": 1.1573,
+   "def": 1.7547,
    "matches": 3
   },
   "WC/Senegal": {
-   "att": 1.7246,
-   "def": 1.1781,
+   "att": 1.8289,
+   "def": 1.2944,
    "matches": 11
   },
   "WC/Serbia": {
-   "att": 1.1694,
-   "def": 1.998,
+   "att": 1.2392,
+   "def": 1.8315,
    "matches": 6
   },
   "WC/South Africa": {
-   "att": 0.8071,
-   "def": 1.5041,
+   "att": 0.9032,
+   "def": 1.4841,
    "matches": 4
   },
   "WC/South Korea": {
-   "att": 1.173,
-   "def": 1.4802,
+   "att": 1.2559,
+   "def": 1.3264,
    "matches": 10
   },
   "WC/Spain": {
-   "att": 1.7029,
-   "def": 0.6035,
+   "att": 1.6978,
+   "def": 0.6101,
    "matches": 16
   },
   "WC/Sweden": {
-   "att": 1.388,
-   "def": 1.3834,
+   "att": 1.3028,
+   "def": 1.5109,
    "matches": 9
   },
   "WC/Switzerland": {
-   "att": 1.5491,
-   "def": 1.1608,
+   "att": 1.5579,
+   "def": 1.085,
    "matches": 14
   },
   "WC/Tunisia": {
-   "att": 0.8794,
-   "def": 1.609,
+   "att": 0.8842,
+   "def": 1.5676,
    "matches": 9
   },
   "WC/Turkiye": {
-   "att": 2.1428,
-   "def": 1.1953,
+   "att": 1.9911,
+   "def": 1.2331,
    "matches": 3
   },
   "WC/USA": {
-   "att": 1.3326,
-   "def": 1.2648,
+   "att": 1.3563,
+   "def": 1.2909,
    "matches": 9
   },
   "WC/Uruguay": {
-   "att": 1.3169,
-   "def": 0.859,
+   "att": 1.3157,
+   "def": 0.9565,
    "matches": 11
   },
   "WC/Uzbekistan": {
-   "att": 0.7568,
-   "def": 2.3083,
+   "att": 0.8823,
+   "def": 2.1235,
    "matches": 3
   },
   "WC/Wales": {
-   "att": 1.096,
-   "def": 1.6372,
+   "att": 1.2074,
+   "def": 1.536,
    "matches": 3
   }
  },
  "brier": {
-  "design": "temporal holdout: train on league seasons 2022-23..2024-25 + WC2018 + WC2022, evaluate on 2025-26 leagues + WC2026; production rates refit on all data with the chosen k",
+  "design": "three disjoint blocks in time: ratings for tuning fit on 2022-23..2023-24 leagues + WC2018, every hyper chosen on 2024-25 leagues + WC2022, holdout (2025-26 leagues + WC2026) scored exactly once by the finished config; production rates refit on all data",
   "checkpoints": [
    0,
    15,
@@ -568,6 +670,15 @@
    90
   ],
   "model": [
+   0.6057,
+   0.5804,
+   0.5538,
+   0.5059,
+   0.4394,
+   0.3503,
+   0.0
+  ],
+  "baseline_v2": [
    0.6176,
    0.6014,
    0.5812,
@@ -599,10 +710,197 @@
    0.2417,
    0.3073
   ],
+  "logloss": [
+   1.0129,
+   0.9762,
+   0.9356,
+   0.8585,
+   0.7468,
+   0.5994,
+   0.0
+  ],
+  "logloss_baseline_v2": [
+   1.0288,
+   1.0165,
+   0.9871,
+   0.9003,
+   0.7848,
+   0.633,
+   0.0
+  ],
+  "mean_brier": {
+   "model": 0.5059,
+   "baseline_v2": 0.52424,
+   "baseline_w0": 0.51214,
+   "constant": 0.64491
+  },
+  "mean_logloss": {
+   "model": 0.8549,
+   "baseline_v2": 0.89175
+  },
+  "ece": {
+   "model": 0.0052,
+   "baseline_v2": 0.0548
+  },
+  "reliability": {
+   "model": [
+    {
+     "pred": 0.0383,
+     "actual": 0.0348,
+     "n": 2097
+    },
+    {
+     "pred": 0.158,
+     "actual": 0.1583,
+     "n": 1889
+    },
+    {
+     "pred": 0.2506,
+     "actual": 0.2542,
+     "n": 3336
+    },
+    {
+     "pred": 0.3437,
+     "actual": 0.3385,
+     "n": 1814
+    },
+    {
+     "pred": 0.4473,
+     "actual": 0.4439,
+     "n": 1007
+    },
+    {
+     "pred": 0.5518,
+     "actual": 0.5416,
+     "n": 722
+    },
+    {
+     "pred": 0.6468,
+     "actual": 0.6657,
+     "n": 706
+    },
+    {
+     "pred": 0.748,
+     "actual": 0.7378,
+     "n": 576
+    },
+    {
+     "pred": 0.8411,
+     "actual": 0.8658,
+     "n": 313
+    },
+    {
+     "pred": 0.9636,
+     "actual": 0.964,
+     "n": 500
+    }
+   ],
+   "baseline_v2": [
+    {
+     "pred": 0.033,
+     "actual": 0.0742,
+     "n": 3219
+    },
+    {
+     "pred": 0.1489,
+     "actual": 0.2101,
+     "n": 2166
+    },
+    {
+     "pred": 0.2484,
+     "actual": 0.2807,
+     "n": 1924
+    },
+    {
+     "pred": 0.3484,
+     "actual": 0.366,
+     "n": 1601
+    },
+    {
+     "pred": 0.445,
+     "actual": 0.3758,
+     "n": 958
+    },
+    {
+     "pred": 0.5489,
+     "actual": 0.4711,
+     "n": 484
+    },
+    {
+     "pred": 0.652,
+     "actual": 0.5457,
+     "n": 449
+    },
+    {
+     "pred": 0.7498,
+     "actual": 0.6418,
+     "n": 603
+    },
+    {
+     "pred": 0.8515,
+     "actual": 0.725,
+     "n": 720
+    },
+    {
+     "pred": 0.9635,
+     "actual": 0.9067,
+     "n": 836
+    }
+   ]
+  },
   "n_eval": 864,
+  "tuning_trace": [
+   {
+    "stage": "clock",
+    "val_brier": 0.50491,
+    "chosen": {
+     "profile": true
+    }
+   },
+   {
+    "stage": "momentum",
+    "val_brier": 0.50462,
+    "chosen": {
+     "w": 0.05,
+     "window": 15
+    }
+   },
+   {
+    "stage": "score state",
+    "val_brier": 0.50148,
+    "chosen": {
+     "b_lead": -0.05,
+     "b_trail": 0.25
+    }
+   },
+   {
+    "stage": "draw (rho)",
+    "val_brier": 0.50137,
+    "chosen": {
+     "rho": 0.05
+    }
+   },
+   {
+    "stage": "ratings",
+    "val_brier": 0.5008,
+    "chosen": {
+     "k": 2,
+     "decay": 0.5
+    }
+   }
+  ],
   "per_competition": {
    "EPL": {
     "model": [
+     0.6163,
+     0.5894,
+     0.5646,
+     0.5038,
+     0.4267,
+     0.3474,
+     0.0
+    ],
+    "baseline_v2": [
      0.6147,
      0.6038,
      0.5907,
@@ -633,6 +931,15 @@
    },
    "LaLiga": {
     "model": [
+     0.5907,
+     0.5717,
+     0.5472,
+     0.5147,
+     0.4496,
+     0.3481,
+     0.0
+    ],
+    "baseline_v2": [
      0.6167,
      0.6048,
      0.578,
@@ -663,6 +970,15 @@
    },
    "WC": {
     "model": [
+     0.6215,
+     0.5788,
+     0.5382,
+     0.4814,
+     0.4488,
+     0.369,
+     0.0
+    ],
+    "baseline_v2": [
      0.6317,
      0.5804,
      0.558,

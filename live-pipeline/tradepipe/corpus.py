@@ -129,6 +129,46 @@ def wc_has_extra_time(raw):
     return wc_is_knockout(raw) and knockout_played_extra_time(raw)
 
 
+def red_cards(raw):
+    """[(side, raw_minute)] for red cards whose MINUTE is actually recorded.
+
+    Third hard-won rule, and a negative result worth keeping: these corpora
+    record THAT a player was sent off (a lineup row with rc = 1) but never
+    WHEN. The obvious inference — a dismissed player's clock stops, so his
+    `mins` is his dismissal minute — is simply false here: the scraper
+    leaves `mins` at the full match length for sent-off players too (Darwin
+    Nunez, dismissed on 57' at Anfield in 2022-23, still reads mins = 95).
+    Inferring a minute from these rows puts ~98% of the cards at the final
+    whistle, where they can change nothing, and the handful that land
+    earlier are wrong rather than merely late.
+
+    So this reads a minute only from an explicit cards/incidents array —
+    the shape a live feed supplies, and the shape the pipeline's own
+    fixtures use — and returns nothing when only the lineup flags exist. A
+    card placed at the wrong minute is worse than no card at all.
+    Use red_card_counts() for the totals, which ARE reliable."""
+    out = []
+    for card in raw.get("cards") or []:
+        if (card.get("type") or "").lower() == "red" and card.get("min") is not None:
+            out.append((card["team"], card["min"]))
+    return sorted(out, key=lambda r: r[1])
+
+
+def red_card_counts(raw):
+    """(home, away) red cards shown, from the lineup rows.
+
+    The fact of a dismissal is reliable even though its minute is not (see
+    red_cards), so this is what corpus-level statistics should count."""
+    counts = {"home": 0, "away": 0}
+    for side in ("home", "away"):
+        lineup = (raw.get("lineups") or {}).get(side) or {}
+        for group in ("starters", "bench"):
+            for player in lineup.get(group) or []:
+                if player.get("rc"):
+                    counts[side] += 1
+    return counts["home"], counts["away"]
+
+
 def normalize(raw, competition, edition=None):
     """Raw MATCH_DETAIL dict -> the normalized match dict the model uses.
 
@@ -160,6 +200,8 @@ def normalize(raw, competition, edition=None):
         "away": raw["away"]["name"],
         "shots": raw.get("shots") or [],
         "goals": raw.get("goals") or [],
+        "reds": red_cards(raw),
+        "red_counts": red_card_counts(raw),
         "has_extra_time": has_et,
         "is_neutral": is_neutral,
         "xg": xg,

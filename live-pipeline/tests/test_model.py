@@ -90,3 +90,115 @@ def test_lam_remaining_time_behaviour():
     # floor: a dead pre-match rate with zero momentum still leaves a pulse
     lam = model.lam_remaining(45, 0.0, 0.0, floor=0.05)
     assert abs(lam - 0.05 * 45 / 90) < 1e-12
+
+
+# ---------------------------------------------------------------- v3 pieces
+
+def test_remaining_fraction_linear_and_profile():
+    # no profile -> the straight line the model used before v3
+    assert model.remaining_fraction(0) == 1.0
+    assert model.remaining_fraction(45) == 0.5
+    assert model.remaining_fraction(90) == 0.0
+    assert model.remaining_fraction(95) == 0.0
+    # a profile is used verbatim at integer minutes and interpolated between
+    profile = [1.0 - t / 90.0 for t in range(91)]
+    assert abs(model.remaining_fraction(30, profile) - 2 / 3) < 1e-12
+    assert abs(model.remaining_fraction(30.5, profile)
+               - (profile[30] + profile[31]) / 2) < 1e-12
+    # past the end there is nothing left regardless of the profile
+    assert model.remaining_fraction(90, profile) == 0.0
+
+
+def test_profile_shifts_value_from_early_to_late_minutes():
+    """The fitted profile says football scores late. A model using it must
+    hold MORE remaining goals at half time than the linear clock does."""
+    late = [max(0.0, 1.0 - (t / 90.0) ** 2) for t in range(91)]   # back-loaded
+    linear = model.lam_remaining(45, 1.4, 0.0)
+    shaped = model.lam_remaining(45, 1.4, 0.0, profile=late)
+    assert shaped > linear
+
+
+def test_score_state_factors_direction_and_symmetry():
+    # level -> untouched
+    assert model.score_state_factors(1, 1, -0.05, 0.25) == (1.0, 1.0)
+    # home leads: home damped, away lifted
+    fh, fa = model.score_state_factors(2, 1, -0.05, 0.25)
+    assert fh < 1.0 < fa
+    # away leading is the mirror image
+    ah, aa = model.score_state_factors(1, 2, -0.05, 0.25)
+    assert (ah, aa) == (fa, fh)
+    # no coefficients -> no effect
+    assert model.score_state_factors(3, 0, 0.0, 0.0) == (1.0, 1.0)
+
+
+def test_red_card_factors_compound_and_default_neutral():
+    assert model.red_card_factors(0, 0) == (1.0, 1.0)
+    fh, fa = model.red_card_factors(1, 0, red_self=0.7, red_opp=1.2)
+    assert abs(fh - 0.7) < 1e-12 and abs(fa - 1.2) < 1e-12
+    # two dismissals for the same side compound
+    fh2, fa2 = model.red_card_factors(2, 0, red_self=0.7, red_opp=1.2)
+    assert abs(fh2 - 0.49) < 1e-12 and abs(fa2 - 1.44) < 1e-12
+    # one each cancels out
+    fh3, fa3 = model.red_card_factors(1, 1, red_self=0.7, red_opp=1.2)
+    assert abs(fh3 - fa3) < 1e-12
+
+
+def test_dixon_coles_moves_only_the_low_score_cells():
+    lam_h, lam_a, rho = 1.1, 0.9, 0.05
+    # the four corrected cells
+    assert model.dc_tau(0, 0, lam_h, lam_a, rho) != 1.0
+    assert model.dc_tau(1, 1, lam_h, lam_a, rho) != 1.0
+    # everything else is untouched
+    for i, j in [(2, 0), (0, 2), (3, 4), (1, 2)]:
+        assert model.dc_tau(i, j, lam_h, lam_a, rho) == 1.0
+    # rho = 0 is the identity everywhere
+    assert model.dc_tau(0, 0, lam_h, lam_a, 0.0) == 1.0
+
+
+def test_rho_moves_the_draw_in_the_sign_of_rho_and_still_normalizes():
+    """rho > 0 damps the low-score draws (the direction the holdout fit
+    chose); rho < 0 is the classic Dixon-Coles lift. Either way the triple
+    must still be a probability distribution."""
+    plain = model.win_probs(1.2, 1.1, 0, 0, rho=0.0)
+    damped = model.win_probs(1.2, 1.1, 0, 0, rho=0.05)
+    lifted = model.win_probs(1.2, 1.1, 0, 0, rho=-0.05)
+    assert damped[1] < plain[1] < lifted[1]
+    for triple in (plain, damped, lifted):
+        assert abs(sum(triple) - 1.0) < 1e-12
+    # the correction only touches the low-score corner: with a big lead
+    # already on the board it changes nothing
+    assert (model.win_probs(1.2, 1.1, 4, 0, rho=0.05)
+            == model.win_probs(1.2, 1.1, 4, 0, rho=0.0))
+
+
+def test_from_params_defaults_to_neutral_on_a_v2_file():
+    """A v2 params dict has none of the v3 keys; loading it must reproduce
+    the plain model rather than crash or invent adjustments."""
+    v2 = {"w": 0.35}
+    m = model.InPlayModel.from_params(1.4, 1.1, v2)
+    assert m.w == 0.35 and m.profile is None and m.rho == 0.0
+    assert m.b_lead == 0.0 and m.b_trail == 0.0
+    assert (m.red_self, m.red_opp) == (1.0, 1.0)
+    plain = model.InPlayModel(1.4, 1.1, w=0.35)
+    assert m.probs(30, 1, 0, 0.3, 0.2) == plain.probs(30, 1, 0, 0.3, 0.2)
+
+
+def test_horizon_overrides_the_profile_for_clocks_past_90():
+    """Extra time runs off the 90-minute market clock, so the caller hands
+    the model an explicit remaining-share instead of the fitted profile."""
+    profile = [1.0 - t / 90.0 for t in range(91)]
+    m = model.InPlayModel(1.4, 1.1, w=0.0, profile=profile)
+    # at t = 105 the profile is exhausted, so without a horizon nothing is left
+    assert m.probs(105, 1, 1, 0.0, 0.0)["pD"] == 1.0
+    # with 15 minutes still to play the draw is no longer certain
+    live = m.probs(105, 1, 1, 0.0, 0.0, horizon=15.0 / 90.0)
+    assert live["pD"] < 1.0 and live["pH"] > 0.0
+
+
+def test_red_card_swings_the_price_when_multipliers_are_supplied():
+    params = {"w": 0.0, "red": {"self": 0.6, "opp": 1.3}}
+    m = model.InPlayModel.from_params(1.4, 1.2, params)
+    even = m.probs(40, 0, 0, 0.0, 0.0)
+    home_down = m.probs(40, 0, 0, 0.0, 0.0, red_h=1)
+    assert home_down["pH"] < even["pH"]
+    assert home_down["pA"] > even["pA"]

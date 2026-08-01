@@ -41,6 +41,8 @@
     // calibrated win-probability parameters (all editions share the one table,
     // so it loads root-relative like ratings.js — no edition base prefix)
     document.write('<scr'+'ipt src="winprob_params.js?v='+_mv+'"></scr'+'ipt>');
+    // the model itself, shipped alongside its parameters by calibrate.py
+    document.write('<scr'+'ipt src="winprob_model.js?v='+_mv+'"></scr'+'ipt>');
     document.write('<scr'+'ipt src="'+base+'data.js?v='+_mv+'"></scr'+'ipt>');
     document.write('<scr'+'ipt src="match.js?v='+_mv+'"></scr'+'ipt>');
   })();</script>

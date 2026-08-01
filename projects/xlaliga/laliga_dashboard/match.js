@@ -319,41 +319,30 @@
     function shotT(s) { return fold((s.min || 0) + (s.sec || 0) / 60); }
     var goals = (D.goals || []).slice().sort(function (a, b) { return a.min - b.min; });
 
-    /* ---- the calibrated model ---- */
-    var mu = P.mu, hfa = P.hfa, w = P.w, G = P.maxGoals, lamFloor = P.lamFloor;
-    function tp(name) { return P.teams[name] || { att: mu, def: mu }; }  // promoted/unseen → league average
-    var th = tp(D.home.name), ta = tp(D.away.name);
-    // League venue: home-field advantage multiplies the home rate, divides the away rate.
-    var lamHpre = th.att * ta.def / mu * hfa;
-    var lamApre = ta.att * th.def / mu / hfa;
-    function pois(k, lam) { var f = 1; for (var i = 2; i <= k; i++) f *= i; return Math.exp(-lam) * Math.pow(lam, k) / f; }
+    /* ---- the calibrated model ----
+       The maths lives in winprob_model.js, the single browser port of
+       tradepipe/model.py that calibrate.py ships to every dashboard
+       alongside winprob_params.js. This file owns only the event stream. */
+    var WP = window.WinProb;
+    if (!WP) return;
+    var model = WP.forMatch(P, D.home.name, D.away.name);
+    var lamHpre = model.lamHPre, lamApre = model.lamAPre;
+    var win = P.window || 15;
     function scoreAt(t) {
       var h = 0, a = 0;
       goals.forEach(function (g) { if (fold(g.min) <= t + 1e-9) { if (g.team === "home") h++; else a++; } });
       return [h, a];
     }
-    function recXg(side, t) {       // xG in the last 15' window (t-15, t]
+    function recXg(side, t) {       // xG in the momentum window (t - win, t]
       var c = 0;
-      shots.forEach(function (s) { var m = shotT(s); if (s.team === side && m > t - 15 - 1e-9 && m <= t + 1e-9) c += s.xg || 0; });
+      shots.forEach(function (s) { var m = shotT(s); if (s.team === side && m > t - win - 1e-9 && m <= t + 1e-9) c += s.xg || 0; });
       return c;
     }
-    function lamRem(lamPre, rec15, t) {   // expected remaining goals for one side
-      var frac = (maxMin - t) / maxMin;
-      return Math.max(frac * ((1 - w) * lamPre + w * maxMin * (rec15 / 15)), lamFloor * frac);
-    }
-    // truncated double-Poisson grid over remaining goals (renormalised), offset by the score
-    function probs(t) {
-      var sc = scoreAt(t), cH = sc[0], cA = sc[1];
-      var lH = lamRem(lamHpre, recXg("home", t), t), lA = lamRem(lamApre, recXg("away", t), t);
-      var ph = [], pa = [], k;
-      for (k = 0; k <= G; k++) { ph.push(pois(k, lH)); pa.push(pois(k, lA)); }
-      var tot = 0, pW = 0, pD = 0, pL = 0;
-      for (var i = 0; i <= G; i++) for (var j = 0; j <= G; j++) {
-        var p = ph[i] * pa[j]; tot += p;
-        var d = (cH + i) - (cA + j);
-        if (d > 0) pW += p; else if (d === 0) pD += p; else pL += p;
-      }
-      return [pW / tot * 100, pD / tot * 100, pL / tot * 100];
+    function probs(t) {             // [P(home), P(draw), P(away)] as percentages
+      var sc = scoreAt(t);
+      var pr = model.probsAt(t, { scoreH: sc[0], scoreA: sc[1],
+                                  xgH: recXg("home", t), xgA: recXg("away", t) });
+      return [pr[0] * 100, pr[1] * 100, pr[2] * 100];
     }
     // exposed for numeric cross-checks / debugging (read-only)
     window.WINPROB_DEBUG = { probs: probs, lamHpre: lamHpre, lamApre: lamApre };

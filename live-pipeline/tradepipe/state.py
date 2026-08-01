@@ -2,8 +2,9 @@
 
 MatchState is fed FixtureMetadataUpdate / LivescoreUpdate / KeepAlive
 messages via apply() and keeps: current minute, score, cumulative xG,
-the full incident list, and a per-minute xG ledger so the in-play model
-can ask "how much xG did each side create in the last 15 minutes?".
+red cards per side, the full incident list, and a per-minute xG ledger so
+the in-play model can ask "how much xG did each side create in the last N
+minutes?".
 
 It also tracks MsgSeq: seq_gap(message) says whether a message is NOT
 the next expected one (call it BEFORE apply). A gapped consumer rebuilds
@@ -24,6 +25,7 @@ class MatchState:
         self.xg_a = 0.0
         self.incidents = []                  # every incident seen, in order
         self.xg_by_min = {"home": {}, "away": {}}   # minute -> xG created then
+        self.reds = {"home": 0, "away": 0}   # dismissals seen, per side
         self.last_seq = 0                    # MsgSeq of the last applied message
 
     # ---------------------------------------------------------- constructors
@@ -98,18 +100,35 @@ class MatchState:
                 self.xg_a = stat.get("Away", self.xg_a)
         for inc in incidents or []:
             self.incidents.append(inc)
-            ledger = self.xg_by_min.get(inc.get("Team"))
+            team = inc.get("Team")
+            if inc.get("Type") == "RedCard":
+                if team in self.reds:
+                    self.reds[team] += 1
+                continue                     # a dismissal carries no xG
+            ledger = self.xg_by_min.get(team)
             if ledger is not None:
                 minute = inc.get("Min", 0)
                 ledger[minute] = ledger.get(minute, 0.0) + inc.get("Xg", 0.0)
 
     # ------------------------------------------------------------- questions
 
-    def xg_recent15(self, team):
-        """xG the side ("home"/"away") created in minutes (t-15, t]."""
+    def xg_recent(self, team, window=15):
+        """xG the side ("home"/"away") created in minutes (t-window, t]."""
         t = self.minute
         ledger = self.xg_by_min[team]
-        return sum(xg for minute, xg in ledger.items() if t - 15 < minute <= t)
+        return sum(xg for minute, xg in ledger.items() if t - window < minute <= t)
+
+    def xg_recent15(self, team):
+        """Back-compatible alias for the fixed 15-minute window."""
+        return self.xg_recent(team, 15)
+
+    @property
+    def reds_h(self):
+        return self.reds["home"]
+
+    @property
+    def reds_a(self):
+        return self.reds["away"]
 
     def score(self):
         return self.score_h, self.score_a

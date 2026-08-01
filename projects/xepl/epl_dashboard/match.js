@@ -314,46 +314,34 @@
     var goals = (D.goals || []).slice().sort(function (a, b) { return a.min - b.min; });
     function eff(m) { return m > 90 ? 90 : m; }        // stoppage time folds into 90'
 
-    /* ---- model ---- */
-    var mu = P.mu, hfa = P.hfa, w = P.w, MG = P.maxGoals, lamFloor = P.lamFloor;
-    // unseen team name (e.g. newly promoted) ≈ league-average strengths
-    function T(name) { return (P.teams && P.teams[name]) || { att: mu, def: mu }; }
-    var th = T(D.home.name), ta = T(D.away.name);
-    var lamHPre = th.att * ta.def / mu * hfa;          // home side always at its own venue
-    var lamAPre = ta.att * th.def / mu / hfa;
+    /* ---- model ----
+       The maths lives in winprob_model.js, the single browser port of
+       tradepipe/model.py that calibrate.py ships to every dashboard
+       alongside winprob_params.js. This file owns only the event stream:
+       what the score is at minute t, and how much xG each side made in the
+       momentum window. */
+    var WP = window.WinProb;
+    if (!WP) return;
+    var model = WP.forMatch(P, D.home.name, D.away.name);
+    var lamHPre = model.lamHPre, lamAPre = model.lamAPre;
+    var win = P.window || 15;
     function scoreAt(t) {
       var h = 0, a = 0;
       goals.forEach(function (g) { if (eff(g.min) <= t) { if (g.team === "home") h++; else a++; } });
       return [h, a];
     }
-    function pace15(side, t) {                          // live xG per minute over (t-15, t]
+    function recentXg(side, t) {                        // xG over (t - window, t]
       var s = 0;
       shots.forEach(function (sh) {
         var m = eff(sh.min);
-        if (sh.team === side && m > t - 15 && m <= t) s += sh.xg;
+        if (sh.team === side && m > t - win && m <= t) s += sh.xg;
       });
-      return s / 15;
-    }
-    function lamRem(pre, side, t) {                     // expected goals left for one side
-      var rem = (90 - t) / 90;
-      var lam = rem * ((1 - w) * pre + w * 90 * pace15(side, t));
-      return Math.max(lam, lamFloor * rem);
-    }
-    function pois(lam) {                                // Poisson pmf table 0..maxGoals
-      var a = [Math.exp(-lam)];
-      for (var k = 1; k <= MG; k++) a.push(a[k - 1] * lam / k);
-      return a;
+      return s;
     }
     function probsAt(t) {                               // [P(home win), P(draw), P(away win)]
-      var sc = scoreAt(t), cH = sc[0], cA = sc[1];
-      var ph = pois(lamRem(lamHPre, "home", t)), pa = pois(lamRem(lamAPre, "away", t));
-      var pH = 0, pD = 0, pA = 0, tot = 0;
-      for (var i = 0; i <= MG; i++) for (var j = 0; j <= MG; j++) {
-        var p = ph[i] * pa[j]; tot += p;
-        var d = cH + i - cA - j;
-        if (d > 0) pH += p; else if (d < 0) pA += p; else pD += p;
-      }
-      return [pH / tot, pD / tot, pA / tot];            // renormalise the truncated grid
+      var sc = scoreAt(t);
+      return model.probsAt(t, { scoreH: sc[0], scoreA: sc[1],
+                                xgH: recentXg("home", t), xgA: recentXg("away", t) });
     }
     window.WINPROB_AT = probsAt;                        // console/test hook
 

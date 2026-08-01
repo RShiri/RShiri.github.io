@@ -191,7 +191,7 @@ class MatchProducer:
     def _publish_settlement(self, t):
         h, a = self.score_at(90)
         winner = "1" if h > a else ("X" if h == a else "2")
-        markets = [{"Name": "1X2 (90 min)",
+        markets = [{"Name": "1X2 (90 min)", "Status": "Closed",
                     "Bets": [{"Name": name, "Settlement": 1 if name == winner else 0}
                              for name in ("1", "X", "2")]}]
         self._publish(settlement(self.fixture_id, markets,
@@ -276,8 +276,16 @@ class MatchProducer:
                    if s["team"] == side and s["min"] <= t)
 
     def _incidents_at(self, t):
-        """This raw minute's shots (goals are shots with goal=true) as wire
-        dicts - a 90+4' shot appears at minute 94 on the feed."""
+        """This raw minute's incidents as wire dicts - a 90+4' shot appears
+        at minute 94 on the feed.
+
+        Shots (goals are shots with goal=true) plus any red card the match
+        file records. Most scraped matches carry no `cards` array at all -
+        the corpora record that a player was sent off but not when (see
+        corpus.red_cards) - so this is usually shots only; the branch
+        exists because a real feed does supply dismissals, and everything
+        downstream (MatchState.reds, the model's red-card multipliers, the
+        consumer's market suspension) is already wired for them."""
         out = []
         for s in self.match["shots"]:
             if s["min"] == t:
@@ -288,5 +296,14 @@ class MatchProducer:
                     "Player": s.get("player", ""),
                     "Xg": s.get("xg", 0.0),
                     "OnTarget": bool(s.get("onTarget")),
+                })
+        for c in self.match.get("cards") or []:
+            if c.get("min") == t and (c.get("type") or "").lower() == "red":
+                out.append({
+                    "Min": c["min"],
+                    "Team": c["team"],
+                    "Type": "RedCard",
+                    "Player": c.get("player", ""),
+                    "Xg": 0.0,
                 })
         return out
