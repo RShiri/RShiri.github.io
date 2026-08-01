@@ -32,5 +32,24 @@ files, so its card on the portfolio page still links to the live deployment.
 sibling clones and `/workspace` clones), so a fresh clone of this one repo can
 refit the model end-to-end: `python3 live-pipeline/tradepipe/calibrate.py`.
 
+## These copies have moved ahead of their source repos
+
+The vendored dashboards are no longer byte-identical to the snapshots above. Two
+deliberate changes were made here, and the source repos still have the old code:
+
+- **`winprob_params.js`** regenerated as **v3** (the retuned win-probability model —
+  see `live-pipeline/README.md` for the holdout numbers).
+- **`winprob_model.js`** added, and each dashboard's `match.js` now delegates its
+  win-probability maths to it. The three dashboards had drifted into three separate
+  implementations of the same model; there is now one, generated from
+  `live-pipeline/web/winprob_model.js` and verified against the Python model to 5e-16.
+  `match.html` gained the matching `<script>` tag.
+
+`calibrate.py` writes both files into every dashboard it can find — the corpus root it
+read from **and** these vendored copies — so a refit keeps them in step. To push the
+improvements back upstream, copy each `*_dashboard/` change into the corresponding
+source repo.
+
 To refresh a snapshot: re-clone the source repo, re-copy over the directory with
-the same exclusions, and update the commit column above.
+the same exclusions, re-apply the two changes above (or just re-run `calibrate.py`
+and re-patch `match.js`/`match.html`), and update the commit column.
