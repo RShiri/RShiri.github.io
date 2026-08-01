@@ -1,0 +1,12 @@
+# F1Visualized pipeline dependencies
+# ------------------------------------------------------------------
+fastf1>=3.8          # dynamic F1 timing/lap/race-control data extraction
+pandas>=2.0          # data processing / tidy transforms
+requests>=2.28       # dashboard data fetch (f1db over HTTPS)
+PyYAML>=6.0          # parse f1db source YAML
+numpy>=1.24          # numeric interpolation for smooth animation
+matplotlib>=3.7      # FuncAnimation video generation
+
+# ffmpeg fallback: CI installs a system ffmpeg, but this bundled binary means
+# the MP4 export also works locally without any system-level install.
+imageio-ffmpeg>=0.4

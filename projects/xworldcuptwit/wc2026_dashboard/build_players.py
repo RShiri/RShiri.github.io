@@ -1,0 +1,439 @@
+#!/usr/bin/env python3
+"""Aggregate per-player statistics across every played match into players.js.
+
+Combines both data sources the pipeline scrapes: WhoScored player stat streams
+(passes, shots, tackles, ratings, …) and the event feed (goals, assists, cards,
+minutes). Writes window.WC_PLAYERS for the dashboard's Players tab, and exposes
+aggregate()/per_match_rows() for the database exporter.
+"""
+import json
+import glob
+import os
+import re
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(HERE)
+sys.path.insert(0, HERE)
+
+from build_match_details import (norm, _match_extras, _player_rating, is_match_file,
+                                 _assist_playerid)
+from xg_model import (ascii_name, SHOT_TYPES, shot_xg, is_shootout,
+                      player_xa_from_events)
+
+MATCH_DIR = os.path.join(ROOT, "wc2026", "matches")
+OUT = os.path.join(HERE, "players.js")
+
+EDITION = 2026
+
+
+def set_edition(year):
+    """Point this builder at one edition (2026 = today's paths, unchanged)."""
+    global EDITION, MATCH_DIR, OUT
+    from editions import edition as _edition
+    cfg = _edition(year)
+    EDITION = int(year)
+    MATCH_DIR = cfg["match_dir"]
+    OUT = (os.path.join(HERE, "players.js") if EDITION == 2026
+           else os.path.join(cfg["out_dir"], "players.js"))
+    return cfg
+
+# WhoScored per-minute stat dicts are incremental → sum the values.
+SUM_STATS = {
+    "shotsTotal": "shots", "shotsOnTarget": "sot", "passesTotal": "passes",
+    "passesAccurate": "passAcc", "passesKey": "keyPasses", "touches": "touches",
+    "tacklesTotal": "tackles", "interceptions": "interceptions", "aerialsWon": "aerials",
+    "dribblesWon": "dribbles", "foulsCommited": "fouls", "clearances": "clearances",
+    "dispossessed": "dispossessed", "totalSaves": "saves",
+    # extended set (players-table ⚙ Columns extras)
+    "dribblesAttempted": "drbAtt", "dribbledPast": "drbPast",
+    "aerialsTotal": "aerTot", "tackleSuccessful": "tklWon",
+    "errors": "errors", "offsidesCaught": "offsides",
+    "cornersTotal": "corners", "shotsOnPost": "post", "claimsHigh": "claims",
+}
+
+
+def _sum_stat(stats, key):
+    d = stats.get(key) or {}
+    try:
+        return sum(float(v) for v in d.values())
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def _new_player(pid, name, team, pos):
+    rec = dict(pid=pid, name=name, team=team, pos=pos, _posCounts={},
+               mp=0, starts=0, mins=0, g=0, a=0, yc=0, rc=0,
+               rating_sum=0.0, rating_n=0, rating_best=0.0, xg=0.0,
+               progPasses=0, xa=0.0, xgaOn=0.0, gConcOn=0, blocks=0, clrBox=0,
+               recoveries=0, wg=0.0, wa=0.0)
+    for v in SUM_STATS.values():
+        rec[v] = 0.0
+    return rec
+
+
+def _player_shot_xg(match_data):
+    """playerId -> summed shot xG for the match."""
+    out = {}
+    for ev in match_data.get("events", []):
+        t = ev.get("type", {})
+        if not isinstance(t, dict) or t.get("displayName") not in SHOT_TYPES:
+            continue
+        if is_shootout(ev):
+            continue  # exclude penalty-shootout kicks from player xG
+        pid = ev.get("playerId")
+        if pid is None:
+            continue
+        xg, _ = shot_xg(ev, match_data)
+        out[pid] = out.get(pid, 0.0) + xg
+    return out
+
+
+def _player_creation(match_data):
+    """playerId -> (progressive-pass count, summed expected assists xA).
+
+    Progressive pass = a SUCCESSFUL pass that advances the ball >=14 WhoScored x-units
+    toward the opponent goal — the same `prog` rule the dashboard pass-explorer uses.
+    The >=14 cutoff (was 15) is calibrated to FotMob's published progressive-pass
+    counts: a ~14-15m forward pass is progressive by any standard, and the old 15
+    clipped exactly those borderline balls (e.g. Cubarsi 47 -> 51, matching FotMob).
+    xA (expected assists) credits the player whose KEY pass set up each shot with that
+    shot's xG: WhoScored key passes are by definition the pass that leads to a shot, so
+    we credit the next shot by the same team that lands within a few events of the key
+    pass. Own goals and penalty-shootout kicks are excluded."""
+    events = match_data.get("events", [])
+    prog, xa, pending = {}, {}, {}  # pending: teamId -> (passerPid, event_index)
+    for i, ev in enumerate(events):
+        if is_shootout(ev):
+            continue
+        t = ev.get("type", {})
+        tname = t.get("displayName") if isinstance(t, dict) else ""
+        tid = ev.get("teamId")
+        if tname == "Pass":
+            ok = ev.get("outcomeType", {}).get("displayName") == "Successful"
+            pid = ev.get("playerId")
+            if ok and pid is not None and (ev.get("endX", ev.get("x", 0)) - ev.get("x", 0)) >= 14:
+                prog[pid] = prog.get(pid, 0) + 1
+            if ok and pid is not None:
+                quals = {q.get("type", {}).get("displayName", "") for q in ev.get("qualifiers", [])}
+                if "KeyPass" in quals or "IntentionalGoalAssist" in quals:
+                    pending[tid] = (pid, i)
+        elif tname in SHOT_TYPES and not ev.get("isOwnGoal"):
+            kp = pending.get(tid)
+            if kp and (i - kp[1]) <= 4 and kp[0] != ev.get("playerId"):
+                xg, _ = shot_xg(ev, match_data)
+                xa[kp[0]] = xa.get(kp[0], 0.0) + xg
+            pending.pop(tid, None)
+    return prog, xa
+
+
+def _in_own_box(x, y):
+    """True if a WhoScored coord is inside the player's OWN penalty area (defending
+    goal at x=0): x within the 18-yard box (~17% of pitch length) and the box width."""
+    return x is not None and y is not None and x <= 17.0 and 21.1 <= y <= 78.9
+
+
+def _player_blocks_clears(match_data):
+    """playerId -> (shots blocked, clearances inside own box).
+
+    Individual shot-denial: WhoScored logs an outfielder blocking a shot as a `Save`
+    event carrying an `OutfielderBlock` qualifier (credited to the blocker, not the
+    keeper); box clearances are `Clearance` events located in the player's own area."""
+    blocks, clr = {}, {}
+    for ev in match_data.get("events", []):
+        if is_shootout(ev):
+            continue
+        pid = ev.get("playerId")
+        if pid is None:
+            continue
+        t = ev.get("type", {})
+        tn = t.get("displayName") if isinstance(t, dict) else ""
+        quals = {q.get("type", {}).get("displayName", "") for q in ev.get("qualifiers", [])}
+        if tn == "Save" and "OutfielderBlock" in quals:
+            blocks[pid] = blocks.get(pid, 0) + 1
+        elif tn == "Clearance" and _in_own_box(ev.get("x"), ev.get("y")):
+            clr[pid] = clr.get(pid, 0) + 1
+    return blocks, clr
+
+
+# Stage weights for the "every round counts more" aggregates (wg/wa): a final goal is
+# worth 2x a group-stage one. Stage is derived from the SLOT-CODED match id — played KO
+# games keep their slot filenames (stub-overwrite convention), and wc_metadata.stage
+# lies on overwritten KO stubs, so the id is the reliable signal.
+_STAGE_W = {"GS": 1.0, "R32": 1.15, "R16": 1.3, "QF": 1.5, "SF": 1.75, "TP": 1.5, "F": 2.0}
+_SLOT_TOKEN = re.compile(r"^(?:[12][A-L]|3[A-L]{4,6})$")       # R32 sides: 1A / 2K / 3ABCDF
+_SLOT_GLUED = re.compile(r"^(?:[12][A-L]|3[A-L]{4,6}){2}$")    # R16 sides: 2A2B / 1E3ABCDF
+
+
+def _stage_weight(mid):
+    if "Winner_SF" in mid: return _STAGE_W["F"]
+    if "Loser_SF" in mid: return _STAGE_W["TP"]
+    if "Winner_QF" in mid: return _STAGE_W["SF"]
+    if "Winner_EF" in mid: return _STAGE_W["QF"]
+    m = re.match(r"^\d{4}_\d{2}_\d{2}_(.+)_vs_(.+)$", mid)
+    if m:
+        a, b = m.group(1), m.group(2)
+        if _SLOT_TOKEN.match(a) and _SLOT_TOKEN.match(b):
+            return _STAGE_W["R32"]
+        if _SLOT_GLUED.match(a) and _SLOT_GLUED.match(b):
+            return _STAGE_W["R16"]
+    return _STAGE_W["GS"]
+
+
+def _goal_state_w(margin_before, minute):
+    """Game-state weight for one goal: what did it change?
+
+    margin_before = scoring team's lead BEFORE the goal. Go-ahead goals and
+    equalisers matter most (more so late), cutting a big deficit matters if there
+    is still time for the comeback, and padding an already-decided score — or a
+    consolation when the game is gone — matters least."""
+    if margin_before >= 2:                       # padding a decided game
+        return 0.5 if minute >= 80 else 0.7
+    if margin_before <= -2:                      # chasing from 2+ down
+        return 0.7 if minute >= 80 else 1.1      # late = consolation, early = comeback spark
+    if margin_before == 1:                       # doubling the lead
+        return 1.0
+    w = 1.25 if margin_before == 0 else 1.2      # go-ahead goal / equaliser
+    if minute >= 75:
+        w *= 1.15                                # late decider or late equaliser
+    return w
+
+
+def _weighted_goal_contribs(match_data, stage_w):
+    """playerId -> weighted goals / weighted assists for one match.
+
+    Walks the goal events in match order with a running score, so every goal
+    carries stage weight x game-state weight (_goal_state_w). The assist inherits
+    its goal's full weight. Own goals move the score but credit nobody; shootout
+    kicks are excluded."""
+    events = match_data.get("events", [])
+    home_tid = match_data.get("home", {}).get("teamId")
+    away_tid = match_data.get("away", {}).get("teamId")
+    by_team_eid = {}
+    for e in events:
+        by_team_eid.setdefault(e.get("teamId"), {})[e.get("eventId")] = e
+    goal_evs = [e for e in events
+                if e.get("type", {}).get("displayName") == "Goal" and not is_shootout(e)]
+    goal_evs.sort(key=lambda e: (e.get("expandedMinute") if e.get("expandedMinute") is not None
+                                 else (e.get("minute") or 0), e.get("second") or 0))
+    score = {home_tid: 0, away_tid: 0}
+    wg, wa = {}, {}
+    for e in goal_evs:
+        quals = {q.get("type", {}).get("displayName", "") for q in e.get("qualifiers", [])}
+        own = bool(e.get("isOwnGoal")) or "OwnGoal" in quals
+        tid = e.get("teamId")
+        scoring = (away_tid if tid == home_tid else home_tid) if own else tid
+        other = away_tid if scoring == home_tid else home_tid
+        margin_before = score.get(scoring, 0) - score.get(other, 0)
+        score[scoring] = score.get(scoring, 0) + 1
+        if own:
+            continue                             # nobody gets credit for an own goal
+        w = stage_w * _goal_state_w(margin_before, e.get("minute") or 0)
+        pid = e.get("playerId")
+        if pid is not None:
+            wg[pid] = wg.get(pid, 0.0) + w
+        aid = _assist_playerid(e, pid, by_team_eid)
+        if aid is not None:
+            wa[aid] = wa.get(aid, 0.0) + w
+    return wg, wa
+
+
+def _player_recoveries(match_data):
+    """playerId -> loose-ball recoveries (`BallRecovery` events)."""
+    rec = {}
+    for ev in match_data.get("events", []):
+        t = ev.get("type", {})
+        tn = t.get("displayName") if isinstance(t, dict) else ""
+        pid = ev.get("playerId")
+        if tn == "BallRecovery" and pid is not None and not is_shootout(ev):
+            rec[pid] = rec.get(pid, 0) + 1
+    return rec
+
+
+def _defense_shotlist(match_data):
+    """[(teamId, minute, xg, is_goal, is_own)] for every shot (shootout excluded).
+
+    Used to attribute on-pitch defensive context: for a player on team T, the xG his
+    side FACED is the summed xg of the OPPONENT's shots while he was on the pitch, and
+    goals conceded are the opponent's goals (plus own goals by T) in that window. Own
+    goals carry the conceding team's id and aren't chances, so xg=0 for them."""
+    out = []
+    for ev in match_data.get("events", []):
+        t = ev.get("type", {})
+        tn = t.get("displayName") if isinstance(t, dict) else ""
+        if tn not in SHOT_TYPES or is_shootout(ev):
+            continue
+        is_own = bool(ev.get("isOwnGoal"))
+        xg = 0.0 if is_own else shot_xg(ev, match_data)[0]
+        out.append((ev.get("teamId"), ev.get("minute", 0), xg, tn == "Goal", is_own))
+    return out
+
+
+def _iter_played():
+    for f in sorted(glob.glob(os.path.join(MATCH_DIR, "*.json"))):
+        if not is_match_file(f):
+            continue  # skip scraper cache files
+        d = json.load(open(f, encoding="utf-8"))
+        if d["home"].get("score") is None or d["away"].get("score") is None:
+            continue
+        if not any((p.get("stats") or {}).get("ratings")
+                   for p in d["home"].get("players", []) + d["away"].get("players", [])):
+            continue  # no per-player stats (FotMob-only games)
+        yield os.path.basename(f)[:-5], d
+
+
+def aggregate():
+    players = {}
+    for mid, d in _iter_played():
+        ex = _match_extras(d)
+        shot_xg_map = _player_shot_xg(d)
+        prog_map, _ = _player_creation(d)
+        xa_map = player_xa_from_events(d)  # pass-level xA model (xg_core)
+        blk_map, clrbox_map = _player_blocks_clears(d)
+        recov_map = _player_recoveries(d)
+        wgoal_map, wassist_map = _weighted_goal_contribs(d, _stage_weight(mid))
+        shotlist = _defense_shotlist(d)
+        team_ids = {s: d[s].get("teamId") for s in ("home", "away")}
+        for side in ("home", "away"):
+            team = norm(d[side].get("name", ""))
+            our_id = team_ids[side]
+            opp_id = team_ids["away" if side == "home" else "home"]
+            for p in d[side].get("players", []):
+                pid = p.get("playerId")
+                stats = p.get("stats") or {}
+                started = bool(p.get("isFirstEleven"))
+                on_m = ex["on_min"].get(pid)
+                came_on = on_m is not None
+                if not (started or came_on):
+                    continue  # unused bench
+                rec = players.get(pid)
+                if rec is None:
+                    rec = players[pid] = _new_player(pid, ascii_name(p.get("name", "")), team, p.get("position", ""))
+                # Position history: count every REAL position played (lineup slot says
+                # "Sub" for bench appearances — that's not a position). The modal one
+                # becomes `pos`; the full list ships as `posList` for the Best XI.
+                _pm = (p.get("position") or "").strip()
+                if _pm and _pm != "Sub":
+                    rec["_posCounts"][_pm] = rec["_posCounts"].get(_pm, 0) + 1
+                # on-pitch window: [start, end] in minutes
+                start = 0 if started else on_m
+                end = ex["off_min"].get(pid) if ex["off_min"].get(pid) is not None else ex["end_min"]
+                rec["mp"] += 1
+                if started:
+                    rec["starts"] += 1
+                rec["mins"] += max(0, end - start)
+                # defensive context: opponent xG faced + goals conceded while on the pitch
+                for (tid, mn, xg, is_goal, is_own) in shotlist:
+                    if mn < start or mn > end:
+                        continue
+                    if is_own:
+                        if tid == our_id:
+                            rec["gConcOn"] += 1     # our own goal = conceded
+                    elif tid == opp_id:
+                        rec["xgaOn"] += xg
+                        if is_goal:
+                            rec["gConcOn"] += 1
+                rec["g"] += ex["goals"].get(pid, 0)
+                rec["a"] += ex["assists"].get(pid, 0)
+                rec["wg"] += wgoal_map.get(pid, 0.0)
+                rec["wa"] += wassist_map.get(pid, 0.0)
+                rec["yc"] += ex["yellow"].get(pid, 0)
+                rec["rc"] += ex["red"].get(pid, 0)
+                rec["xg"] += shot_xg_map.get(pid, 0.0)
+                rec["progPasses"] += prog_map.get(pid, 0)
+                rec["xa"] += xa_map.get(pid, 0.0)
+                rec["blocks"] += blk_map.get(pid, 0)
+                rec["clrBox"] += clrbox_map.get(pid, 0)
+                rec["recoveries"] += recov_map.get(pid, 0)
+                rt = _player_rating(p)
+                if rt is not None:
+                    rec["rating_sum"] += rt
+                    rec["rating_n"] += 1
+                    rec["rating_best"] = max(rec["rating_best"], rt)
+                for src, dst in SUM_STATS.items():
+                    rec[dst] += _sum_stat(stats, src)
+
+    out = []
+    for rec in players.values():
+        r = dict(rec)
+        pc = r.pop("_posCounts", None) or {}
+        if pc:
+            ordered = sorted(pc.items(), key=lambda kv: (-kv[1], kv[0]))
+            r["pos"] = ordered[0][0]                 # most-played real position
+            r["posList"] = [k for k, _ in ordered]   # every position played, most-used first
+        else:
+            r["posList"] = [r["pos"]] if r.get("pos") else []
+        r["ga"] = r["g"] + r["a"]
+        r["rating"] = round(r["rating_sum"] / r["rating_n"], 2) if r["rating_n"] else None
+        r["rating_best"] = round(r["rating_best"], 2) if r["rating_best"] else None
+        r["pass_pct"] = round(100 * r["passAcc"] / r["passes"]) if r["passes"] else None
+        r["xg"] = round(r["xg"], 2)
+        r["xg_diff"] = round(r["g"] - r["xg"], 2)
+        r["xa"] = round(r["xa"], 2)
+        # on-pitch defence: xG faced, per-90, and goals prevented (faced − conceded)
+        r["wg"] = round(r["wg"], 2)   # stage- & game-state-weighted goals/assists
+        r["wa"] = round(r["wa"], 2)
+        r["xga"] = round(r["xgaOn"], 2)
+        r["xga90"] = round(r["xgaOn"] / r["mins"] * 90, 2) if r["mins"] else None
+        r["gPrev"] = round(r["xgaOn"] - r["gConcOn"], 2)
+        for v in list(SUM_STATS.values()) + ["mins", "progPasses", "gConcOn", "blocks",
+                                             "clrBox", "recoveries"]:
+            r[v] = int(round(r[v]))
+        # success rates from the extended counts (None when never attempted)
+        r["drb_pct"] = round(100 * r["dribbles"] / r["drbAtt"]) if r["drbAtt"] else None
+        r["tkl_pct"] = round(100 * r["tklWon"] / r["tackles"]) if r["tackles"] else None
+        r["aer_pct"] = round(100 * r["aerials"] / r["aerTot"]) if r["aerTot"] else None
+        r.pop("rating_sum", None)
+        r.pop("rating_n", None)
+        r.pop("xgaOn", None)
+        out.append(r)
+    out.sort(key=lambda r: (-r["ga"], -r["g"], -(r["rating"] or 0)))
+    return out
+
+
+def per_match_rows():
+    """Yield one flat dict per player per match (for the database export)."""
+    for mid, d in _iter_played():
+        ex = _match_extras(d)
+        shot_xg_map = _player_shot_xg(d)
+        date = d.get("wc_metadata", {}).get("date", "") or mid[:10].replace("_", "-")
+        for side in ("home", "away"):
+            team = norm(d[side].get("name", ""))
+            opp = norm(d["away" if side == "home" else "home"].get("name", ""))
+            for p in d[side].get("players", []):
+                pid = p.get("playerId")
+                stats = p.get("stats") or {}
+                started = bool(p.get("isFirstEleven"))
+                on_m = ex["on_min"].get(pid)
+                if not (started or on_m is not None):
+                    continue
+                mins = (ex["off_min"].get(pid) if ex["off_min"].get(pid) is not None else ex["end_min"]) \
+                    if started else max(0, ex["end_min"] - on_m)
+                row = dict(match_id=mid, date=date, team=team, opponent=opp,
+                           player_id=pid, player=ascii_name(p.get("name", "")),
+                           position=p.get("position", ""), started=int(started), minutes=int(mins),
+                           goals=ex["goals"].get(pid, 0), assists=ex["assists"].get(pid, 0),
+                           yellow=ex["yellow"].get(pid, 0), red=ex["red"].get(pid, 0),
+                           rating=_player_rating(p), xg=round(shot_xg_map.get(pid, 0.0), 2))
+                for src, dst in SUM_STATS.items():
+                    row[dst] = int(round(_sum_stat(stats, src)))
+                yield row
+
+
+def main(edition=2026):
+    set_edition(edition)
+    data = aggregate()
+    os.makedirs(os.path.dirname(OUT), exist_ok=True)
+    with open(OUT, "w", encoding="utf-8") as fh:
+        fh.write("window.WC_PLAYERS = ")
+        json.dump(data, fh, ensure_ascii=False, separators=(",", ":"))
+        fh.write(";\n")
+        if EDITION != 2026:
+            fh.write(f"window.WC_PLAYERS_EDITION = {EDITION};\n")
+    print(f"Wrote {OUT} — {len(data)} players")
+
+
+if __name__ == "__main__":
+    import argparse
+    from editions import add_edition_arg
+    main(add_edition_arg(argparse.ArgumentParser()).parse_args().edition)

@@ -1,0 +1,105 @@
+name: Regenerate dashboard data
+
+# Self-healing safeguard for the live dashboard.
+#
+# The scrape/deploy runs on the owner's PC, which regenerates the dashboard data
+# files (data.js / players.js / shots.js / matches_detail/ / database/) with its
+# LOCAL copy of the builder scripts. When that checkout lags the committed source,
+# every auto-deploy silently drops newer fields (progressive passes, xA, on-pitch
+# xG, the multi-source xG averaging, corrected assists, fotXg, ...). This workflow
+# re-runs the builders from the COMMITTED source on every deploy and commits the
+# corrected data back, so a stale scrape machine can no longer regress the site.
+#
+# The builders resolve their paths relative to their own location, so no
+# working-directory setup is needed. lightgbm is installed so the xg_core
+# scorers run the SAME full LR+GBM blend as the owner's PC — without it they
+# silently fall back to the calibrated LR-only path and the site's xG/xA
+# drifts a few hundredths from the PNGs. Pushes made with GITHUB_TOKEN do not
+# trigger new workflow runs, so this cannot loop.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'wc2026/matches/**'
+      - 'wc2026_dashboard/build_*.py'
+      - 'wc2026_dashboard/xg_model.py'
+      - 'xg_core/**'
+      - '.github/workflows/regen-dashboard-data.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: regen-dashboard-data
+  cancel-in-progress: false
+
+jobs:
+  regen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install scorer dependencies (full LR+GBM blend, not the LR fallback)
+        run: pip install --quiet lightgbm numpy
+
+      - name: Regenerate dashboard data from committed builders
+        run: |
+          set -euo pipefail
+          python wc2026_dashboard/build_match_details.py
+          python wc2026_dashboard/build_data.py
+          python wc2026_dashboard/build_players.py
+          python wc2026_dashboard/build_shots.py
+          python wc2026_dashboard/build_database.py
+          python wc2026_dashboard/build_player_lab.py
+
+      - name: Commit corrected data (skip pure-timestamp no-ops)
+        run: |
+          set -euo pipefail
+          git add -- \
+            wc2026_dashboard/data.js \
+            wc2026_dashboard/players.js \
+            wc2026_dashboard/shots.js \
+            wc2026_dashboard/matches_detail \
+            wc2026_dashboard/database \
+            wc2026_dashboard/player_lab \
+            wc2026_dashboard/share
+
+          # Decide whether regeneration changed anything beyond the wall-clock build
+          # stamp. data.js and database/manifest.js embed a "generated" timestamp that
+          # differs on every run; every other regenerated file is deterministic, so any
+          # diff there is a real data change. For the two stamped files, a diff counts
+          # only when a line NOT containing "generated" changed.
+          real=0
+          for f in $(git diff --cached --name-only); do
+            case "$f" in
+              wc2026_dashboard/data.js|wc2026_dashboard/database/manifest.js)
+                if git diff --cached -U0 -- "$f" \
+                     | grep -E '^[+-]' | grep -Ev '^(\+\+\+|---)' \
+                     | grep -qv '"generated"'; then
+                  real=1
+                  echo "Real change in $f"
+                fi
+                ;;
+              *)
+                real=1
+                echo "Real change in $f"
+                ;;
+            esac
+          done
+
+          if [ "$real" -eq 0 ]; then
+            echo "No data change beyond the build timestamp — skipping commit."
+            git reset -q
+            exit 0
+          fi
+
+          git config user.name "WC2026 Data Bot"
+          git config user.email "wc2026bot@users.noreply.github.com"
+          git commit -m "CI: regenerate dashboard data from committed builders"
+          git push

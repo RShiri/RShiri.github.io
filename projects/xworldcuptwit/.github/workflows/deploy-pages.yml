@@ -1,0 +1,75 @@
+name: Deploy to GitHub Pages
+
+# Robust replacement for the legacy "deploy from a branch" Pages deploy.
+#
+# Two failure modes this handles:
+#   1. SUPERSESSION — our flow usually produces two pushes to main back-to-back
+#      (the content/source change, then the regen-dashboard-data CI push). Pages
+#      allows only one live deployment, so the first would be reported as a hard
+#      FAILURE (and emailed) when the second replaces it. concurrency.cancel-in-
+#      progress cancels the superseded run instead — cancelled runs send no
+#      failure email.
+#   2. TRANSIENT BACKEND FLAKE — the Pages sync service intermittently returns
+#      "Deployment failed, try again later" during syncing_files. actions/
+#      deploy-pages does NOT retry that, so we retry it ourselves up to 3 times
+#      with backoff; only if all three fail does the job (and the email) fire.
+#
+# ACTIVATION (already done): Settings -> Pages -> Source -> "GitHub Actions".
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time; a newer push CANCELS the older in-flight run
+# (cancelled != failed, so no "job failed" email on supersession).
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: https://rshiri.github.io/XWORLDCUPTWIT/
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      # Publish the whole repo root: index.html redirects to wc2026_dashboard/,
+      # Infographic links point at WorldCup2026/. .nojekyll serves as-is.
+      - name: Disable Jekyll processing
+        run: touch .nojekyll
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      # Retry the deploy against the flaky Pages sync backend. Each attempt
+      # after the first only runs if every prior attempt failed; the artifact
+      # uploaded above is reused, so each attempt just re-requests a deployment.
+      - name: Deploy to GitHub Pages (attempt 1)
+        id: deploy1
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+
+      - name: Backoff before attempt 2
+        if: steps.deploy1.outcome == 'failure'
+        run: sleep 30
+      - name: Deploy to GitHub Pages (attempt 2)
+        id: deploy2
+        if: steps.deploy1.outcome == 'failure'
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+
+      - name: Backoff before attempt 3
+        if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
+        run: sleep 60
+      - name: Deploy to GitHub Pages (attempt 3)
+        id: deploy3
+        if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
+        uses: actions/deploy-pages@v4

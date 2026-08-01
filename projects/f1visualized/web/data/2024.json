@@ -1,0 +1,9789 @@
+{
+ "season": 2024,
+ "updated": "2026-07-04T22:26:49.611485+00:00",
+ "source": "f1db + fastf1",
+ "races": [
+  {
+   "round": 1,
+   "name": "Bahrain Grand Prix",
+   "country": "Bahrain",
+   "locality": "Sakhir",
+   "circuit": "Sakhir",
+   "date": "2024-03-02",
+   "status": "completed",
+   "winner": {
+    "code": "VER",
+    "name": "Max Verstappen",
+    "nat": "NL",
+    "team": "Red Bull Racing"
+   },
+   "podium": [
+    {
+     "pos": 1,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing"
+    },
+    {
+     "pos": 2,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing"
+    },
+    {
+     "pos": 3,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari"
+    }
+   ],
+   "fastest_lap": null,
+   "results": [
+    {
+     "pos": 1,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing",
+     "grid": 1,
+     "points": 26,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 1,
+     "stops": 2,
+     "pit_est": [
+      3.198,
+      2.343
+     ]
+    },
+    {
+     "pos": 2,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing",
+     "grid": 5,
+     "points": 18,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 5,
+     "stops": 2,
+     "pit_est": [
+      2.65,
+      2.697
+     ]
+    },
+    {
+     "pos": 3,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari",
+     "grid": 4,
+     "points": 15,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 4,
+     "stops": 2,
+     "pit_est": [
+      2.608,
+      2.0
+     ]
+    },
+    {
+     "pos": 4,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari",
+     "grid": 2,
+     "points": 12,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 2,
+     "stops": 2,
+     "pit_est": [
+      2.203,
+      2.27
+     ]
+    },
+    {
+     "pos": 5,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 3,
+     "points": 10,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 3,
+     "stops": 2,
+     "pit_est": [
+      2.912,
+      3.0
+     ]
+    },
+    {
+     "pos": 6,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren",
+     "grid": 7,
+     "points": 8,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 7,
+     "stops": 2,
+     "pit_est": [
+      2.339,
+      2.839
+     ]
+    },
+    {
+     "pos": 7,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 9,
+     "points": 6,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 9,
+     "stops": 2,
+     "pit_est": [
+      3.221,
+      2.228
+     ]
+    },
+    {
+     "pos": 8,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren",
+     "grid": 8,
+     "points": 4,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 8,
+     "stops": 2,
+     "pit_est": [
+      3.584,
+      2.986
+     ]
+    },
+    {
+     "pos": 9,
+     "code": "ALO",
+     "name": "Fernando Alonso",
+     "nat": "ES",
+     "team": "Aston Martin",
+     "grid": 6,
+     "points": 2,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 6,
+     "stops": 2,
+     "pit_est": [
+      2.92,
+      3.243
+     ]
+    },
+    {
+     "pos": 10,
+     "code": "STR",
+     "name": "Lance Stroll",
+     "nat": "CA",
+     "team": "Aston Martin",
+     "grid": 12,
+     "points": 1,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 12,
+     "stops": 2,
+     "pit_est": [
+      2.552,
+      2.679
+     ]
+    },
+    {
+     "pos": 11,
+     "code": "ZHO",
+     "name": "Guanyu Zhou",
+     "nat": "CN",
+     "team": "Kick Sauber",
+     "grid": 17,
+     "points": 0,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 17,
+     "stops": 2,
+     "pit_est": [
+      3.342,
+      3.228
+     ]
+    },
+    {
+     "pos": 12,
+     "code": "MAG",
+     "name": "Kevin Magnussen",
+     "nat": "DK",
+     "team": "Haas",
+     "grid": 15,
+     "points": 0,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 15,
+     "stops": 2,
+     "pit_est": [
+      4.085,
+      2.58
+     ]
+    },
+    {
+     "pos": 13,
+     "code": "RIC",
+     "name": "Daniel Ricciardo",
+     "nat": "AU",
+     "team": "RB",
+     "grid": 14,
+     "points": 0,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 14,
+     "stops": 2,
+     "pit_est": [
+      3.122,
+      2.99
+     ]
+    },
+    {
+     "pos": 14,
+     "code": "TSU",
+     "name": "Yuki Tsunoda",
+     "nat": "JP",
+     "team": "RB",
+     "grid": 11,
+     "points": 0,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 11,
+     "stops": 2,
+     "pit_est": [
+      2.858,
+      2.458
+     ]
+    },
+    {
+     "pos": 15,
+     "code": "ALB",
+     "name": "Alexander Albon",
+     "nat": "TH",
+     "team": "Williams",
+     "grid": 13,
+     "points": 0,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 13,
+     "stops": 2,
+     "pit_est": [
+      2.815,
+      2.744
+     ]
+    },
+    {
+     "pos": 16,
+     "code": "HUL",
+     "name": "Nico Hülkenberg",
+     "nat": "DE",
+     "team": "Haas",
+     "grid": 10,
+     "points": 0,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 10,
+     "stops": 3,
+     "pit_est": [
+      14.738,
+      2.902,
+      2.521
+     ]
+    },
+    {
+     "pos": 17,
+     "code": "OCO",
+     "name": "Esteban Ocon",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 19,
+     "points": 0,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 19,
+     "stops": 2,
+     "pit_est": [
+      3.011,
+      3.279
+     ]
+    },
+    {
+     "pos": 18,
+     "code": "GAS",
+     "name": "Pierre Gasly",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 20,
+     "points": 0,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 20,
+     "stops": 3,
+     "pit_est": [
+      8.114,
+      4.596,
+      3.374
+     ]
+    },
+    {
+     "pos": 19,
+     "code": "BOT",
+     "name": "Valtteri Bottas",
+     "nat": "FI",
+     "team": "Kick Sauber",
+     "grid": 16,
+     "points": 0,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 16,
+     "stops": 2,
+     "pit_est": [
+      4.554,
+      52.907
+     ]
+    },
+    {
+     "pos": 20,
+     "code": "SAR",
+     "name": "Logan Sargeant",
+     "nat": "US",
+     "team": "Williams",
+     "grid": 18,
+     "points": 0,
+     "laps": 55,
+     "status": "Finished",
+     "qpos": 18,
+     "stops": 3,
+     "pit_est": [
+      13.863,
+      3.204,
+      3.48
+     ]
+    }
+   ],
+   "dotd": "SAI"
+  },
+  {
+   "round": 2,
+   "name": "Saudi Arabian Grand Prix",
+   "country": "Saudi Arabia",
+   "locality": "Jeddah",
+   "circuit": "Jeddah",
+   "date": "2024-03-09",
+   "status": "completed",
+   "winner": {
+    "code": "VER",
+    "name": "Max Verstappen",
+    "nat": "NL",
+    "team": "Red Bull Racing"
+   },
+   "podium": [
+    {
+     "pos": 1,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing"
+    },
+    {
+     "pos": 2,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing"
+    },
+    {
+     "pos": 3,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari"
+    }
+   ],
+   "fastest_lap": null,
+   "results": [
+    {
+     "pos": 1,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing",
+     "grid": 1,
+     "points": 25,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 1,
+     "stops": 1,
+     "pit_est": [
+      2.437
+     ]
+    },
+    {
+     "pos": 2,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing",
+     "grid": 3,
+     "points": 18,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 3,
+     "stops": 1,
+     "pit_est": [
+      4.026
+     ]
+    },
+    {
+     "pos": 3,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari",
+     "grid": 2,
+     "points": 16,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 2,
+     "stops": 1,
+     "pit_est": [
+      5.249
+     ]
+    },
+    {
+     "pos": 4,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren",
+     "grid": 5,
+     "points": 12,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 5,
+     "stops": 1,
+     "pit_est": [
+      3.257
+     ]
+    },
+    {
+     "pos": 5,
+     "code": "ALO",
+     "name": "Fernando Alonso",
+     "nat": "ES",
+     "team": "Aston Martin",
+     "grid": 4,
+     "points": 10,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 4,
+     "stops": 1,
+     "pit_est": [
+      3.959
+     ]
+    },
+    {
+     "pos": 6,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 7,
+     "points": 8,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 7,
+     "stops": 1,
+     "pit_est": [
+      2.843
+     ]
+    },
+    {
+     "pos": 7,
+     "code": "BEA",
+     "name": "Oliver Bearman",
+     "nat": "GB",
+     "team": "Ferrari",
+     "grid": 11,
+     "points": 6,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 11,
+     "stops": 1,
+     "pit_est": [
+      4.287
+     ]
+    },
+    {
+     "pos": 8,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren",
+     "grid": 6,
+     "points": 4,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 6,
+     "stops": 1,
+     "pit_est": [
+      4.041
+     ]
+    },
+    {
+     "pos": 9,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 8,
+     "points": 2,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 8,
+     "stops": 1,
+     "pit_est": [
+      2.0
+     ]
+    },
+    {
+     "pos": 10,
+     "code": "HUL",
+     "name": "Nico Hülkenberg",
+     "nat": "DE",
+     "team": "Haas",
+     "grid": 15,
+     "points": 1,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 15,
+     "stops": 1,
+     "pit_est": [
+      2.865
+     ]
+    },
+    {
+     "pos": 11,
+     "code": "ALB",
+     "name": "Alexander Albon",
+     "nat": "TH",
+     "team": "Williams",
+     "grid": 12,
+     "points": 0,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 12,
+     "stops": 1,
+     "pit_est": [
+      3.553
+     ]
+    },
+    {
+     "pos": 12,
+     "code": "MAG",
+     "name": "Kevin Magnussen",
+     "nat": "DK",
+     "team": "Haas",
+     "grid": 13,
+     "points": 0,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 13,
+     "stops": 1,
+     "pit_est": [
+      3.29
+     ]
+    },
+    {
+     "pos": 13,
+     "code": "OCO",
+     "name": "Esteban Ocon",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 17,
+     "points": 0,
+     "laps": 49,
+     "status": "Finished",
+     "qpos": 17,
+     "stops": 1,
+     "pit_est": [
+      4.332
+     ]
+    },
+    {
+     "pos": 14,
+     "code": "SAR",
+     "name": "Logan Sargeant",
+     "nat": "US",
+     "team": "Williams",
+     "grid": 19,
+     "points": 0,
+     "laps": 49,
+     "status": "Finished",
+     "qpos": 19,
+     "stops": 1,
+     "pit_est": [
+      5.475
+     ]
+    },
+    {
+     "pos": 15,
+     "code": "TSU",
+     "name": "Yuki Tsunoda",
+     "nat": "JP",
+     "team": "RB",
+     "grid": 9,
+     "points": 0,
+     "laps": 49,
+     "status": "Finished",
+     "qpos": 9,
+     "stops": 1,
+     "pit_est": [
+      3.524
+     ]
+    },
+    {
+     "pos": 16,
+     "code": "RIC",
+     "name": "Daniel Ricciardo",
+     "nat": "AU",
+     "team": "RB",
+     "grid": 14,
+     "points": 0,
+     "laps": 49,
+     "status": "Finished",
+     "qpos": 14,
+     "stops": 1,
+     "pit_est": [
+      45.194
+     ]
+    },
+    {
+     "pos": 17,
+     "code": "BOT",
+     "name": "Valtteri Bottas",
+     "nat": "FI",
+     "team": "Kick Sauber",
+     "grid": 16,
+     "points": 0,
+     "laps": 49,
+     "status": "Finished",
+     "qpos": 16,
+     "stops": 2,
+     "pit_est": [
+      4.625,
+      5.111
+     ]
+    },
+    {
+     "pos": 18,
+     "code": "ZHO",
+     "name": "Guanyu Zhou",
+     "nat": "CN",
+     "team": "Kick Sauber",
+     "grid": 20,
+     "points": 0,
+     "laps": 49,
+     "status": "Finished",
+     "qpos": null,
+     "stops": 1,
+     "pit_est": [
+      28.211
+     ]
+    },
+    {
+     "pos": null,
+     "code": "STR",
+     "name": "Lance Stroll",
+     "nat": "CA",
+     "team": "Aston Martin",
+     "grid": 10,
+     "points": 0,
+     "laps": 5,
+     "status": "Accident",
+     "qpos": 10,
+     "stops": 0,
+     "pit_est": null
+    },
+    {
+     "pos": null,
+     "code": "GAS",
+     "name": "Pierre Gasly",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 18,
+     "points": 0,
+     "laps": 1,
+     "status": "Gearbox",
+     "qpos": 18,
+     "stops": 0,
+     "pit_est": null
+    }
+   ],
+   "dotd": "BEA"
+  },
+  {
+   "round": 3,
+   "name": "Australian Grand Prix",
+   "country": "Australia",
+   "locality": "Melbourne",
+   "circuit": "Melbourne",
+   "date": "2024-03-24",
+   "status": "completed",
+   "winner": {
+    "code": "SAI",
+    "name": "Carlos Sainz Jr.",
+    "nat": "ES",
+    "team": "Ferrari"
+   },
+   "podium": [
+    {
+     "pos": 1,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari"
+    },
+    {
+     "pos": 2,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari"
+    },
+    {
+     "pos": 3,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren"
+    }
+   ],
+   "fastest_lap": null,
+   "results": [
+    {
+     "pos": 1,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari",
+     "grid": 2,
+     "points": 25,
+     "laps": 58,
+     "status": "Finished",
+     "qpos": 2,
+     "stops": 2,
+     "pit_est": [
+      2.377,
+      2.518
+     ]
+    },
+    {
+     "pos": 2,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari",
+     "grid": 4,
+     "points": 19,
+     "laps": 58,
+     "status": "Finished",
+     "qpos": 5,
+     "stops": 2,
+     "pit_est": [
+      2.187,
+      2.086
+     ]
+    },
+    {
+     "pos": 3,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren",
+     "grid": 3,
+     "points": 15,
+     "laps": 58,
+     "status": "Finished",
+     "qpos": 4,
+     "stops": 2,
+     "pit_est": [
+      2.554,
+      2.431
+     ]
+    },
+    {
+     "pos": 4,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren",
+     "grid": 5,
+     "points": 12,
+     "laps": 58,
+     "status": "Finished",
+     "qpos": 6,
+     "stops": 2,
+     "pit_est": [
+      2.351,
+      3.311
+     ]
+    },
+    {
+     "pos": 5,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing",
+     "grid": 6,
+     "points": 10,
+     "laps": 58,
+     "status": "Finished",
+     "qpos": 3,
+     "stops": 2,
+     "pit_est": [
+      2.89,
+      2.0
+     ]
+    },
+    {
+     "pos": 6,
+     "code": "STR",
+     "name": "Lance Stroll",
+     "nat": "CA",
+     "team": "Aston Martin",
+     "grid": 9,
+     "points": 8,
+     "laps": 58,
+     "status": "Finished",
+     "qpos": 9,
+     "stops": 2,
+     "pit_est": [
+      2.679,
+      2.755
+     ]
+    },
+    {
+     "pos": 7,
+     "code": "TSU",
+     "name": "Yuki Tsunoda",
+     "nat": "JP",
+     "team": "RB",
+     "grid": 8,
+     "points": 6,
+     "laps": 58,
+     "status": "Finished",
+     "qpos": 8,
+     "stops": 2,
+     "pit_est": [
+      3.301,
+      2.313
+     ]
+    },
+    {
+     "pos": 8,
+     "code": "ALO",
+     "name": "Fernando Alonso",
+     "nat": "ES",
+     "team": "Aston Martin",
+     "grid": 10,
+     "points": 4,
+     "laps": 58,
+     "status": "Finished",
+     "qpos": 10,
+     "stops": 2,
+     "pit_est": [
+      2.938,
+      2.773
+     ]
+    },
+    {
+     "pos": 9,
+     "code": "HUL",
+     "name": "Nico Hülkenberg",
+     "nat": "DE",
+     "team": "Haas",
+     "grid": 16,
+     "points": 2,
+     "laps": 58,
+     "status": "Finished",
+     "qpos": 16,
+     "stops": 2,
+     "pit_est": [
+      3.098,
+      2.923
+     ]
+    },
+    {
+     "pos": 10,
+     "code": "MAG",
+     "name": "Kevin Magnussen",
+     "nat": "DK",
+     "team": "Haas",
+     "grid": 14,
+     "points": 1,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 14,
+     "stops": 2,
+     "pit_est": [
+      3.079,
+      2.929
+     ]
+    },
+    {
+     "pos": 11,
+     "code": "ALB",
+     "name": "Alexander Albon",
+     "nat": "TH",
+     "team": "Williams",
+     "grid": 12,
+     "points": 0,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 12,
+     "stops": 2,
+     "pit_est": [
+      2.533,
+      2.523
+     ]
+    },
+    {
+     "pos": 12,
+     "code": "RIC",
+     "name": "Daniel Ricciardo",
+     "nat": "AU",
+     "team": "RB",
+     "grid": 18,
+     "points": 0,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 18,
+     "stops": 2,
+     "pit_est": [
+      3.043,
+      2.529
+     ]
+    },
+    {
+     "pos": 13,
+     "code": "GAS",
+     "name": "Pierre Gasly",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 17,
+     "points": 0,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 17,
+     "stops": 2,
+     "pit_est": [
+      5.094,
+      2.46
+     ]
+    },
+    {
+     "pos": 14,
+     "code": "BOT",
+     "name": "Valtteri Bottas",
+     "nat": "FI",
+     "team": "Kick Sauber",
+     "grid": 13,
+     "points": 0,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 13,
+     "stops": 2,
+     "pit_est": [
+      31.747,
+      3.716
+     ]
+    },
+    {
+     "pos": 15,
+     "code": "ZHO",
+     "name": "Guanyu Zhou",
+     "nat": "CN",
+     "team": "Kick Sauber",
+     "grid": null,
+     "points": 0,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 19,
+     "stops": 2,
+     "pit_est": [
+      3.81,
+      21.644
+     ]
+    },
+    {
+     "pos": 16,
+     "code": "OCO",
+     "name": "Esteban Ocon",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 15,
+     "points": 0,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 15,
+     "stops": 3,
+     "pit_est": [
+      3.065,
+      15.404,
+      2.785
+     ]
+    },
+    {
+     "pos": 17,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 7,
+     "points": 0,
+     "laps": 56,
+     "status": "Accident",
+     "qpos": 7,
+     "stops": 2,
+     "pit_est": [
+      2.824,
+      2.742
+     ]
+    },
+    {
+     "pos": null,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 11,
+     "points": 0,
+     "laps": 15,
+     "status": "Power unit",
+     "qpos": 11,
+     "stops": 1,
+     "pit_est": [
+      2.374
+     ]
+    },
+    {
+     "pos": null,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing",
+     "grid": 1,
+     "points": 0,
+     "laps": 3,
+     "status": "Brakes",
+     "qpos": 1,
+     "stops": 0,
+     "pit_est": null
+    }
+   ],
+   "dotd": "SAI"
+  },
+  {
+   "round": 4,
+   "name": "Japanese Grand Prix",
+   "country": "Japan",
+   "locality": "Suzuka",
+   "circuit": "Suzuka",
+   "date": "2024-04-07",
+   "status": "completed",
+   "winner": {
+    "code": "VER",
+    "name": "Max Verstappen",
+    "nat": "NL",
+    "team": "Red Bull Racing"
+   },
+   "podium": [
+    {
+     "pos": 1,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing"
+    },
+    {
+     "pos": 2,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing"
+    },
+    {
+     "pos": 3,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari"
+    }
+   ],
+   "fastest_lap": null,
+   "results": [
+    {
+     "pos": 1,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing",
+     "grid": 1,
+     "points": 26,
+     "laps": 53,
+     "status": "Finished",
+     "qpos": 1,
+     "stops": 3,
+     "pit_est": [
+      1554.755,
+      2.329,
+      2.386
+     ]
+    },
+    {
+     "pos": 2,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing",
+     "grid": 2,
+     "points": 18,
+     "laps": 53,
+     "status": "Finished",
+     "qpos": 2,
+     "stops": 3,
+     "pit_est": [
+      1556.813,
+      2.142,
+      2.108
+     ]
+    },
+    {
+     "pos": 3,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari",
+     "grid": 4,
+     "points": 15,
+     "laps": 53,
+     "status": "Finished",
+     "qpos": 4,
+     "stops": 3,
+     "pit_est": [
+      1559.249,
+      2.288,
+      2.743
+     ]
+    },
+    {
+     "pos": 4,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari",
+     "grid": 8,
+     "points": 12,
+     "laps": 53,
+     "status": "Finished",
+     "qpos": 8,
+     "stops": 2,
+     "pit_est": [
+      1562.485,
+      2.437
+     ]
+    },
+    {
+     "pos": 5,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren",
+     "grid": 3,
+     "points": 10,
+     "laps": 53,
+     "status": "Finished",
+     "qpos": 3,
+     "stops": 3,
+     "pit_est": [
+      1559.268,
+      2.201,
+      2.384
+     ]
+    },
+    {
+     "pos": 6,
+     "code": "ALO",
+     "name": "Fernando Alonso",
+     "nat": "ES",
+     "team": "Aston Martin",
+     "grid": 5,
+     "points": 8,
+     "laps": 53,
+     "status": "Finished",
+     "qpos": 5,
+     "stops": 3,
+     "pit_est": [
+      1560.076,
+      2.15,
+      2.309
+     ]
+    },
+    {
+     "pos": 7,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 9,
+     "points": 6,
+     "laps": 53,
+     "status": "Finished",
+     "qpos": 9,
+     "stops": 3,
+     "pit_est": [
+      1560.39,
+      2.729,
+      2.143
+     ]
+    },
+    {
+     "pos": 8,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren",
+     "grid": 6,
+     "points": 4,
+     "laps": 53,
+     "status": "Finished",
+     "qpos": 6,
+     "stops": 3,
+     "pit_est": [
+      1559.356,
+      2.572,
+      2.0
+     ]
+    },
+    {
+     "pos": 9,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 7,
+     "points": 2,
+     "laps": 53,
+     "status": "Finished",
+     "qpos": 7,
+     "stops": 3,
+     "pit_est": [
+      1559.848,
+      2.485,
+      3.108
+     ]
+    },
+    {
+     "pos": 10,
+     "code": "TSU",
+     "name": "Yuki Tsunoda",
+     "nat": "JP",
+     "team": "RB",
+     "grid": 10,
+     "points": 1,
+     "laps": 52,
+     "status": "Finished",
+     "qpos": 10,
+     "stops": 3,
+     "pit_est": [
+      1563.705,
+      2.51,
+      2.638
+     ]
+    },
+    {
+     "pos": 11,
+     "code": "HUL",
+     "name": "Nico Hülkenberg",
+     "nat": "DE",
+     "team": "Haas",
+     "grid": 12,
+     "points": 0,
+     "laps": 52,
+     "status": "Finished",
+     "qpos": 12,
+     "stops": 3,
+     "pit_est": [
+      1560.038,
+      2.774,
+      3.145
+     ]
+    },
+    {
+     "pos": 12,
+     "code": "STR",
+     "name": "Lance Stroll",
+     "nat": "CA",
+     "team": "Aston Martin",
+     "grid": 16,
+     "points": 0,
+     "laps": 52,
+     "status": "Finished",
+     "qpos": 16,
+     "stops": 4,
+     "pit_est": [
+      1565.063,
+      2.51,
+      2.39,
+      2.063
+     ]
+    },
+    {
+     "pos": 13,
+     "code": "MAG",
+     "name": "Kevin Magnussen",
+     "nat": "DK",
+     "team": "Haas",
+     "grid": 18,
+     "points": 0,
+     "laps": 52,
+     "status": "Finished",
+     "qpos": 18,
+     "stops": 2,
+     "pit_est": [
+      1563.782,
+      5.35
+     ]
+    },
+    {
+     "pos": 14,
+     "code": "BOT",
+     "name": "Valtteri Bottas",
+     "nat": "FI",
+     "team": "Kick Sauber",
+     "grid": 13,
+     "points": 0,
+     "laps": 52,
+     "status": "Finished",
+     "qpos": 13,
+     "stops": 3,
+     "pit_est": [
+      1561.694,
+      3.976,
+      5.098
+     ]
+    },
+    {
+     "pos": 15,
+     "code": "OCO",
+     "name": "Esteban Ocon",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 15,
+     "points": 0,
+     "laps": 52,
+     "status": "Finished",
+     "qpos": 15,
+     "stops": 3,
+     "pit_est": [
+      1565.247,
+      2.546,
+      3.333
+     ]
+    },
+    {
+     "pos": 16,
+     "code": "GAS",
+     "name": "Pierre Gasly",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 17,
+     "points": 0,
+     "laps": 52,
+     "status": "Finished",
+     "qpos": 17,
+     "stops": 3,
+     "pit_est": [
+      1565.945,
+      2.996,
+      2.254
+     ]
+    },
+    {
+     "pos": 17,
+     "code": "SAR",
+     "name": "Logan Sargeant",
+     "nat": "US",
+     "team": "Williams",
+     "grid": 19,
+     "points": 0,
+     "laps": 52,
+     "status": "Finished",
+     "qpos": 19,
+     "stops": 4,
+     "pit_est": [
+      1564.419,
+      4.682,
+      3.372,
+      2.439
+     ]
+    },
+    {
+     "pos": null,
+     "code": "ZHO",
+     "name": "Guanyu Zhou",
+     "nat": "CN",
+     "team": "Kick Sauber",
+     "grid": 20,
+     "points": 0,
+     "laps": 12,
+     "status": "Gearbox",
+     "qpos": 20,
+     "stops": 3,
+     "pit_est": [
+      1562.064,
+      3.062,
+      5.805
+     ]
+    },
+    {
+     "pos": null,
+     "code": "RIC",
+     "name": "Daniel Ricciardo",
+     "nat": "AU",
+     "team": "RB",
+     "grid": 11,
+     "points": 0,
+     "laps": 0,
+     "status": "Collision",
+     "qpos": 11,
+     "stops": 0,
+     "pit_est": null
+    },
+    {
+     "pos": null,
+     "code": "ALB",
+     "name": "Alexander Albon",
+     "nat": "TH",
+     "team": "Williams",
+     "grid": 14,
+     "points": 0,
+     "laps": 0,
+     "status": "Collision",
+     "qpos": 14,
+     "stops": 0,
+     "pit_est": null
+    }
+   ],
+   "dotd": "LEC"
+  },
+  {
+   "round": 5,
+   "name": "Chinese Grand Prix",
+   "country": "China",
+   "locality": "Shanghai",
+   "circuit": "Shanghai",
+   "date": "2024-04-21",
+   "status": "completed",
+   "winner": {
+    "code": "VER",
+    "name": "Max Verstappen",
+    "nat": "NL",
+    "team": "Red Bull Racing"
+   },
+   "podium": [
+    {
+     "pos": 1,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing"
+    },
+    {
+     "pos": 2,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren"
+    },
+    {
+     "pos": 3,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing"
+    }
+   ],
+   "fastest_lap": null,
+   "results": [
+    {
+     "pos": 1,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing",
+     "grid": 1,
+     "points": 25,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 1,
+     "stops": 2,
+     "pit_est": [
+      2.429,
+      2.243
+     ]
+    },
+    {
+     "pos": 2,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren",
+     "grid": 4,
+     "points": 18,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 4,
+     "stops": 1,
+     "pit_est": [
+      2.134
+     ]
+    },
+    {
+     "pos": 3,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing",
+     "grid": 2,
+     "points": 15,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 2,
+     "stops": 2,
+     "pit_est": [
+      2.0,
+      2.344
+     ]
+    },
+    {
+     "pos": 4,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari",
+     "grid": 6,
+     "points": 12,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 6,
+     "stops": 1,
+     "pit_est": [
+      2.333
+     ]
+    },
+    {
+     "pos": 5,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari",
+     "grid": 7,
+     "points": 10,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 7,
+     "stops": 1,
+     "pit_est": [
+      2.602
+     ]
+    },
+    {
+     "pos": 6,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 8,
+     "points": 8,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 8,
+     "stops": 2,
+     "pit_est": [
+      2.388,
+      2.68
+     ]
+    },
+    {
+     "pos": 7,
+     "code": "ALO",
+     "name": "Fernando Alonso",
+     "nat": "ES",
+     "team": "Aston Martin",
+     "grid": 3,
+     "points": 7,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 3,
+     "stops": 3,
+     "pit_est": [
+      3.022,
+      2.66,
+      3.152
+     ]
+    },
+    {
+     "pos": 8,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren",
+     "grid": 5,
+     "points": 4,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 5,
+     "stops": 2,
+     "pit_est": [
+      2.646,
+      2.235
+     ]
+    },
+    {
+     "pos": 9,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 18,
+     "points": 2,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 18,
+     "stops": 2,
+     "pit_est": [
+      2.491,
+      2.635
+     ]
+    },
+    {
+     "pos": 10,
+     "code": "HUL",
+     "name": "Nico Hülkenberg",
+     "nat": "DE",
+     "team": "Haas",
+     "grid": 9,
+     "points": 1,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 9,
+     "stops": 2,
+     "pit_est": [
+      2.977,
+      3.309
+     ]
+    },
+    {
+     "pos": 11,
+     "code": "OCO",
+     "name": "Esteban Ocon",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 13,
+     "points": 0,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 13,
+     "stops": 2,
+     "pit_est": [
+      3.129,
+      3.181
+     ]
+    },
+    {
+     "pos": 12,
+     "code": "ALB",
+     "name": "Alexander Albon",
+     "nat": "TH",
+     "team": "Williams",
+     "grid": 14,
+     "points": 0,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 14,
+     "stops": 2,
+     "pit_est": [
+      3.246,
+      3.573
+     ]
+    },
+    {
+     "pos": 13,
+     "code": "GAS",
+     "name": "Pierre Gasly",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 15,
+     "points": 0,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 15,
+     "stops": 3,
+     "pit_est": [
+      19.685,
+      3.96,
+      2.809
+     ]
+    },
+    {
+     "pos": 14,
+     "code": "ZHO",
+     "name": "Guanyu Zhou",
+     "nat": "CN",
+     "team": "Kick Sauber",
+     "grid": 16,
+     "points": 0,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 16,
+     "stops": 3,
+     "pit_est": [
+      3.335,
+      5.583,
+      3.225
+     ]
+    },
+    {
+     "pos": 15,
+     "code": "STR",
+     "name": "Lance Stroll",
+     "nat": "CA",
+     "team": "Aston Martin",
+     "grid": 11,
+     "points": 0,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 11,
+     "stops": 4,
+     "pit_est": [
+      3.796,
+      2.884,
+      73.247,
+      14.75
+     ]
+    },
+    {
+     "pos": 16,
+     "code": "MAG",
+     "name": "Kevin Magnussen",
+     "nat": "DK",
+     "team": "Haas",
+     "grid": 17,
+     "points": 0,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 17,
+     "stops": 2,
+     "pit_est": [
+      2.947,
+      5.7
+     ]
+    },
+    {
+     "pos": 17,
+     "code": "SAR",
+     "name": "Logan Sargeant",
+     "nat": "US",
+     "team": "Williams",
+     "grid": null,
+     "points": 0,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 20,
+     "stops": 2,
+     "pit_est": [
+      3.202,
+      2.657
+     ]
+    },
+    {
+     "pos": null,
+     "code": "RIC",
+     "name": "Daniel Ricciardo",
+     "nat": "AU",
+     "team": "RB",
+     "grid": 12,
+     "points": 0,
+     "laps": 33,
+     "status": "Collision damage",
+     "qpos": 12,
+     "stops": 1,
+     "pit_est": [
+      2.571
+     ]
+    },
+    {
+     "pos": null,
+     "code": "TSU",
+     "name": "Yuki Tsunoda",
+     "nat": "JP",
+     "team": "RB",
+     "grid": 19,
+     "points": 0,
+     "laps": 26,
+     "status": "Collision",
+     "qpos": 19,
+     "stops": 2,
+     "pit_est": [
+      3.133,
+      2.36
+     ]
+    },
+    {
+     "pos": null,
+     "code": "BOT",
+     "name": "Valtteri Bottas",
+     "nat": "FI",
+     "team": "Kick Sauber",
+     "grid": 10,
+     "points": 0,
+     "laps": 19,
+     "status": "Engine",
+     "qpos": 10,
+     "stops": 1,
+     "pit_est": [
+      2.922
+     ]
+    }
+   ],
+   "dotd": "NOR"
+  },
+  {
+   "round": 6,
+   "name": "Miami Grand Prix",
+   "country": "United States",
+   "locality": "Miami",
+   "circuit": "Miami",
+   "date": "2024-05-05",
+   "status": "completed",
+   "winner": {
+    "code": "NOR",
+    "name": "Lando Norris",
+    "nat": "GB",
+    "team": "McLaren"
+   },
+   "podium": [
+    {
+     "pos": 1,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren"
+    },
+    {
+     "pos": 2,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing"
+    },
+    {
+     "pos": 3,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari"
+    }
+   ],
+   "fastest_lap": null,
+   "results": [
+    {
+     "pos": 1,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren",
+     "grid": 5,
+     "points": 25,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 5,
+     "stops": 1,
+     "pit_est": [
+      2.346
+     ]
+    },
+    {
+     "pos": 2,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing",
+     "grid": 1,
+     "points": 18,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 1,
+     "stops": 1,
+     "pit_est": [
+      2.492
+     ]
+    },
+    {
+     "pos": 3,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari",
+     "grid": 2,
+     "points": 15,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 2,
+     "stops": 1,
+     "pit_est": [
+      2.13
+     ]
+    },
+    {
+     "pos": 4,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing",
+     "grid": 4,
+     "points": 12,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 4,
+     "stops": 2,
+     "pit_est": [
+      2.0,
+      2.701
+     ]
+    },
+    {
+     "pos": 5,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari",
+     "grid": 3,
+     "points": 10,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 3,
+     "stops": 1,
+     "pit_est": [
+      3.11
+     ]
+    },
+    {
+     "pos": 6,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 8,
+     "points": 8,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 8,
+     "stops": 1,
+     "pit_est": [
+      2.412
+     ]
+    },
+    {
+     "pos": 7,
+     "code": "TSU",
+     "name": "Yuki Tsunoda",
+     "nat": "JP",
+     "team": "RB",
+     "grid": 10,
+     "points": 6,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 10,
+     "stops": 1,
+     "pit_est": [
+      2.458
+     ]
+    },
+    {
+     "pos": 8,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 7,
+     "points": 4,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 7,
+     "stops": 1,
+     "pit_est": [
+      3.105
+     ]
+    },
+    {
+     "pos": 9,
+     "code": "ALO",
+     "name": "Fernando Alonso",
+     "nat": "ES",
+     "team": "Aston Martin",
+     "grid": 15,
+     "points": 2,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 15,
+     "stops": 1,
+     "pit_est": [
+      2.679
+     ]
+    },
+    {
+     "pos": 10,
+     "code": "OCO",
+     "name": "Esteban Ocon",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 13,
+     "points": 1,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 13,
+     "stops": 1,
+     "pit_est": [
+      2.968
+     ]
+    },
+    {
+     "pos": 11,
+     "code": "HUL",
+     "name": "Nico Hülkenberg",
+     "nat": "DE",
+     "team": "Haas",
+     "grid": 9,
+     "points": 0,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 9,
+     "stops": 2,
+     "pit_est": [
+      3.36,
+      2.792
+     ]
+    },
+    {
+     "pos": 12,
+     "code": "GAS",
+     "name": "Pierre Gasly",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 12,
+     "points": 0,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 12,
+     "stops": 1,
+     "pit_est": [
+      2.771
+     ]
+    },
+    {
+     "pos": 13,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren",
+     "grid": 6,
+     "points": 0,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 6,
+     "stops": 2,
+     "pit_est": [
+      2.521,
+      10.714
+     ]
+    },
+    {
+     "pos": 14,
+     "code": "ZHO",
+     "name": "Guanyu Zhou",
+     "nat": "CN",
+     "team": "Kick Sauber",
+     "grid": 19,
+     "points": 0,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 20,
+     "stops": 1,
+     "pit_est": [
+      3.322
+     ]
+    },
+    {
+     "pos": 15,
+     "code": "RIC",
+     "name": "Daniel Ricciardo",
+     "nat": "AU",
+     "team": "RB",
+     "grid": 20,
+     "points": 0,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 18,
+     "stops": 1,
+     "pit_est": [
+      2.845
+     ]
+    },
+    {
+     "pos": 16,
+     "code": "BOT",
+     "name": "Valtteri Bottas",
+     "nat": "FI",
+     "team": "Kick Sauber",
+     "grid": 16,
+     "points": 0,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 16,
+     "stops": 2,
+     "pit_est": [
+      4.035,
+      3.07
+     ]
+    },
+    {
+     "pos": 17,
+     "code": "STR",
+     "name": "Lance Stroll",
+     "nat": "CA",
+     "team": "Aston Martin",
+     "grid": 11,
+     "points": 0,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 11,
+     "stops": 2,
+     "pit_est": [
+      3.343,
+      2.936
+     ]
+    },
+    {
+     "pos": 18,
+     "code": "ALB",
+     "name": "Alexander Albon",
+     "nat": "TH",
+     "team": "Williams",
+     "grid": 14,
+     "points": 0,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 14,
+     "stops": 2,
+     "pit_est": [
+      3.133,
+      2.872
+     ]
+    },
+    {
+     "pos": 19,
+     "code": "MAG",
+     "name": "Kevin Magnussen",
+     "nat": "DK",
+     "team": "Haas",
+     "grid": 18,
+     "points": 0,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 19,
+     "stops": 3,
+     "pit_est": [
+      3.57,
+      10.032,
+      11.037
+     ]
+    },
+    {
+     "pos": null,
+     "code": "SAR",
+     "name": "Logan Sargeant",
+     "nat": "US",
+     "team": "Williams",
+     "grid": 17,
+     "points": 0,
+     "laps": 27,
+     "status": "Collision",
+     "qpos": 17,
+     "stops": 1,
+     "pit_est": [
+      2.916
+     ]
+    }
+   ],
+   "dotd": "NOR"
+  },
+  {
+   "round": 7,
+   "name": "Emilia Romagna Grand Prix",
+   "country": "Italy",
+   "locality": "Imola",
+   "circuit": "Imola",
+   "date": "2024-05-19",
+   "status": "completed",
+   "winner": {
+    "code": "VER",
+    "name": "Max Verstappen",
+    "nat": "NL",
+    "team": "Red Bull Racing"
+   },
+   "podium": [
+    {
+     "pos": 1,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing"
+    },
+    {
+     "pos": 2,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren"
+    },
+    {
+     "pos": 3,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari"
+    }
+   ],
+   "fastest_lap": null,
+   "results": [
+    {
+     "pos": 1,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing",
+     "grid": 1,
+     "points": 25,
+     "laps": 63,
+     "status": "Finished",
+     "qpos": 1,
+     "stops": 1,
+     "pit_est": [
+      2.869
+     ]
+    },
+    {
+     "pos": 2,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren",
+     "grid": 2,
+     "points": 18,
+     "laps": 63,
+     "status": "Finished",
+     "qpos": 3,
+     "stops": 1,
+     "pit_est": [
+      2.409
+     ]
+    },
+    {
+     "pos": 3,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari",
+     "grid": 3,
+     "points": 15,
+     "laps": 63,
+     "status": "Finished",
+     "qpos": 4,
+     "stops": 1,
+     "pit_est": [
+      2.602
+     ]
+    },
+    {
+     "pos": 4,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren",
+     "grid": 5,
+     "points": 12,
+     "laps": 63,
+     "status": "Finished",
+     "qpos": 2,
+     "stops": 1,
+     "pit_est": [
+      2.223
+     ]
+    },
+    {
+     "pos": 5,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari",
+     "grid": 4,
+     "points": 10,
+     "laps": 63,
+     "status": "Finished",
+     "qpos": 5,
+     "stops": 1,
+     "pit_est": [
+      2.961
+     ]
+    },
+    {
+     "pos": 6,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 8,
+     "points": 8,
+     "laps": 63,
+     "status": "Finished",
+     "qpos": 8,
+     "stops": 1,
+     "pit_est": [
+      2.0
+     ]
+    },
+    {
+     "pos": 7,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 6,
+     "points": 7,
+     "laps": 63,
+     "status": "Finished",
+     "qpos": 6,
+     "stops": 2,
+     "pit_est": [
+      2.117,
+      2.058
+     ]
+    },
+    {
+     "pos": 8,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing",
+     "grid": 11,
+     "points": 4,
+     "laps": 63,
+     "status": "Finished",
+     "qpos": 11,
+     "stops": 1,
+     "pit_est": [
+      2.122
+     ]
+    },
+    {
+     "pos": 9,
+     "code": "STR",
+     "name": "Lance Stroll",
+     "nat": "CA",
+     "team": "Aston Martin",
+     "grid": 13,
+     "points": 2,
+     "laps": 63,
+     "status": "Finished",
+     "qpos": 13,
+     "stops": 1,
+     "pit_est": [
+      2.424
+     ]
+    },
+    {
+     "pos": 10,
+     "code": "TSU",
+     "name": "Yuki Tsunoda",
+     "nat": "JP",
+     "team": "RB",
+     "grid": 7,
+     "points": 1,
+     "laps": 62,
+     "status": "Finished",
+     "qpos": 7,
+     "stops": 1,
+     "pit_est": [
+      2.081
+     ]
+    },
+    {
+     "pos": 11,
+     "code": "HUL",
+     "name": "Nico Hülkenberg",
+     "nat": "DE",
+     "team": "Haas",
+     "grid": 10,
+     "points": 0,
+     "laps": 62,
+     "status": "Finished",
+     "qpos": 10,
+     "stops": 1,
+     "pit_est": [
+      2.202
+     ]
+    },
+    {
+     "pos": 12,
+     "code": "MAG",
+     "name": "Kevin Magnussen",
+     "nat": "DK",
+     "team": "Haas",
+     "grid": 18,
+     "points": 0,
+     "laps": 62,
+     "status": "Finished",
+     "qpos": 18,
+     "stops": 1,
+     "pit_est": [
+      3.755
+     ]
+    },
+    {
+     "pos": 13,
+     "code": "RIC",
+     "name": "Daniel Ricciardo",
+     "nat": "AU",
+     "team": "RB",
+     "grid": 9,
+     "points": 0,
+     "laps": 62,
+     "status": "Finished",
+     "qpos": 9,
+     "stops": 1,
+     "pit_est": [
+      2.521
+     ]
+    },
+    {
+     "pos": 14,
+     "code": "OCO",
+     "name": "Esteban Ocon",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 12,
+     "points": 0,
+     "laps": 62,
+     "status": "Finished",
+     "qpos": 12,
+     "stops": 1,
+     "pit_est": [
+      3.112
+     ]
+    },
+    {
+     "pos": 15,
+     "code": "ZHO",
+     "name": "Guanyu Zhou",
+     "nat": "CN",
+     "team": "Kick Sauber",
+     "grid": 17,
+     "points": 0,
+     "laps": 62,
+     "status": "Finished",
+     "qpos": 17,
+     "stops": 1,
+     "pit_est": [
+      2.697
+     ]
+    },
+    {
+     "pos": 16,
+     "code": "GAS",
+     "name": "Pierre Gasly",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 15,
+     "points": 0,
+     "laps": 62,
+     "status": "Finished",
+     "qpos": 15,
+     "stops": 2,
+     "pit_est": [
+      2.534,
+      3.107
+     ]
+    },
+    {
+     "pos": 17,
+     "code": "SAR",
+     "name": "Logan Sargeant",
+     "nat": "US",
+     "team": "Williams",
+     "grid": 19,
+     "points": 0,
+     "laps": 62,
+     "status": "Finished",
+     "qpos": null,
+     "stops": 1,
+     "pit_est": [
+      3.538
+     ]
+    },
+    {
+     "pos": 18,
+     "code": "BOT",
+     "name": "Valtteri Bottas",
+     "nat": "FI",
+     "team": "Kick Sauber",
+     "grid": 16,
+     "points": 0,
+     "laps": 62,
+     "status": "Finished",
+     "qpos": 16,
+     "stops": 1,
+     "pit_est": [
+      2.693
+     ]
+    },
+    {
+     "pos": 19,
+     "code": "ALO",
+     "name": "Fernando Alonso",
+     "nat": "ES",
+     "team": "Aston Martin",
+     "grid": null,
+     "points": 0,
+     "laps": 62,
+     "status": "Finished",
+     "qpos": 19,
+     "stops": 3,
+     "pit_est": [
+      3.821,
+      2.936,
+      2.384
+     ]
+    },
+    {
+     "pos": null,
+     "code": "ALB",
+     "name": "Alexander Albon",
+     "nat": "TH",
+     "team": "Williams",
+     "grid": 14,
+     "points": 0,
+     "laps": 51,
+     "status": "Withdrew",
+     "qpos": 14,
+     "stops": 4,
+     "pit_est": [
+      2.503,
+      5.632,
+      10.866,
+      3.584
+     ]
+    }
+   ],
+   "dotd": "NOR"
+  },
+  {
+   "round": 8,
+   "name": "Monaco Grand Prix",
+   "country": "Monaco",
+   "locality": "Monaco",
+   "circuit": "Monaco",
+   "date": "2024-05-26",
+   "status": "completed",
+   "winner": {
+    "code": "LEC",
+    "name": "Charles Leclerc",
+    "nat": "MC",
+    "team": "Ferrari"
+   },
+   "podium": [
+    {
+     "pos": 1,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari"
+    },
+    {
+     "pos": 2,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren"
+    },
+    {
+     "pos": 3,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari"
+    }
+   ],
+   "fastest_lap": null,
+   "results": [
+    {
+     "pos": 1,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari",
+     "grid": 1,
+     "points": 25,
+     "laps": 78,
+     "status": "Finished",
+     "qpos": 1,
+     "stops": 1,
+     "pit_est": [
+      2336.213
+     ]
+    },
+    {
+     "pos": 2,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren",
+     "grid": 2,
+     "points": 18,
+     "laps": 78,
+     "status": "Finished",
+     "qpos": 2,
+     "stops": 1,
+     "pit_est": [
+      2335.832
+     ]
+    },
+    {
+     "pos": 3,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari",
+     "grid": 3,
+     "points": 15,
+     "laps": 78,
+     "status": "Finished",
+     "qpos": 3,
+     "stops": 1,
+     "pit_est": [
+      2305.259
+     ]
+    },
+    {
+     "pos": 4,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren",
+     "grid": 4,
+     "points": 12,
+     "laps": 78,
+     "status": "Finished",
+     "qpos": 4,
+     "stops": 1,
+     "pit_est": [
+      2343.725
+     ]
+    },
+    {
+     "pos": 5,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 5,
+     "points": 10,
+     "laps": 78,
+     "status": "Finished",
+     "qpos": 5,
+     "stops": 1,
+     "pit_est": [
+      2347.55
+     ]
+    },
+    {
+     "pos": 6,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing",
+     "grid": 6,
+     "points": 8,
+     "laps": 78,
+     "status": "Finished",
+     "qpos": 6,
+     "stops": 2,
+     "pit_est": [
+      2350.857,
+      2.0
+     ]
+    },
+    {
+     "pos": 7,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 7,
+     "points": 7,
+     "laps": 78,
+     "status": "Finished",
+     "qpos": 7,
+     "stops": 2,
+     "pit_est": [
+      2353.556,
+      2.419
+     ]
+    },
+    {
+     "pos": 8,
+     "code": "TSU",
+     "name": "Yuki Tsunoda",
+     "nat": "JP",
+     "team": "RB",
+     "grid": 8,
+     "points": 4,
+     "laps": 77,
+     "status": "Finished",
+     "qpos": 8,
+     "stops": 1,
+     "pit_est": [
+      2355.751
+     ]
+    },
+    {
+     "pos": 9,
+     "code": "ALB",
+     "name": "Alexander Albon",
+     "nat": "TH",
+     "team": "Williams",
+     "grid": 9,
+     "points": 2,
+     "laps": 77,
+     "status": "Finished",
+     "qpos": 9,
+     "stops": 1,
+     "pit_est": [
+      2359.577
+     ]
+    },
+    {
+     "pos": 10,
+     "code": "GAS",
+     "name": "Pierre Gasly",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 10,
+     "points": 1,
+     "laps": 77,
+     "status": "Finished",
+     "qpos": 10,
+     "stops": 1,
+     "pit_est": [
+      2360.08
+     ]
+    },
+    {
+     "pos": 11,
+     "code": "ALO",
+     "name": "Fernando Alonso",
+     "nat": "ES",
+     "team": "Aston Martin",
+     "grid": 14,
+     "points": 0,
+     "laps": 76,
+     "status": "Finished",
+     "qpos": 14,
+     "stops": 1,
+     "pit_est": [
+      2367.654
+     ]
+    },
+    {
+     "pos": 12,
+     "code": "RIC",
+     "name": "Daniel Ricciardo",
+     "nat": "AU",
+     "team": "RB",
+     "grid": 12,
+     "points": 0,
+     "laps": 76,
+     "status": "Finished",
+     "qpos": 12,
+     "stops": 1,
+     "pit_est": [
+      2364.01
+     ]
+    },
+    {
+     "pos": 13,
+     "code": "BOT",
+     "name": "Valtteri Bottas",
+     "nat": "FI",
+     "team": "Kick Sauber",
+     "grid": 17,
+     "points": 0,
+     "laps": 76,
+     "status": "Finished",
+     "qpos": 17,
+     "stops": 2,
+     "pit_est": [
+      2372.24,
+      2.426
+     ]
+    },
+    {
+     "pos": 14,
+     "code": "STR",
+     "name": "Lance Stroll",
+     "nat": "CA",
+     "team": "Aston Martin",
+     "grid": 13,
+     "points": 0,
+     "laps": 76,
+     "status": "Finished",
+     "qpos": 13,
+     "stops": 3,
+     "pit_est": [
+      2361.775,
+      2.319,
+      6.398
+     ]
+    },
+    {
+     "pos": 15,
+     "code": "SAR",
+     "name": "Logan Sargeant",
+     "nat": "US",
+     "team": "Williams",
+     "grid": 15,
+     "points": 0,
+     "laps": 76,
+     "status": "Finished",
+     "qpos": 15,
+     "stops": 2,
+     "pit_est": [
+      2369.787,
+      2.571
+     ]
+    },
+    {
+     "pos": 16,
+     "code": "ZHO",
+     "name": "Guanyu Zhou",
+     "nat": "CN",
+     "team": "Kick Sauber",
+     "grid": 18,
+     "points": 0,
+     "laps": 76,
+     "status": "Finished",
+     "qpos": 18,
+     "stops": 2,
+     "pit_est": [
+      2364.601,
+      2.554
+     ]
+    },
+    {
+     "pos": null,
+     "code": "OCO",
+     "name": "Esteban Ocon",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 11,
+     "points": 0,
+     "laps": 0,
+     "status": "Collision damage",
+     "qpos": 11,
+     "stops": 0,
+     "pit_est": null
+    },
+    {
+     "pos": null,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing",
+     "grid": 16,
+     "points": 0,
+     "laps": 0,
+     "status": "Collision",
+     "qpos": 16,
+     "stops": 0,
+     "pit_est": null
+    },
+    {
+     "pos": null,
+     "code": "HUL",
+     "name": "Nico Hülkenberg",
+     "nat": "DE",
+     "team": "Haas",
+     "grid": 19,
+     "points": 0,
+     "laps": 0,
+     "status": "Collision",
+     "qpos": null,
+     "stops": 0,
+     "pit_est": null
+    },
+    {
+     "pos": null,
+     "code": "MAG",
+     "name": "Kevin Magnussen",
+     "nat": "DK",
+     "team": "Haas",
+     "grid": 20,
+     "points": 0,
+     "laps": 0,
+     "status": "Collision",
+     "qpos": null,
+     "stops": 0,
+     "pit_est": null
+    }
+   ],
+   "dotd": "LEC"
+  },
+  {
+   "round": 9,
+   "name": "Canadian Grand Prix",
+   "country": "Canada",
+   "locality": "Montréal",
+   "circuit": "Montréal",
+   "date": "2024-06-09",
+   "status": "completed",
+   "winner": {
+    "code": "VER",
+    "name": "Max Verstappen",
+    "nat": "NL",
+    "team": "Red Bull Racing"
+   },
+   "podium": [
+    {
+     "pos": 1,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing"
+    },
+    {
+     "pos": 2,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren"
+    },
+    {
+     "pos": 3,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes"
+    }
+   ],
+   "fastest_lap": null,
+   "results": [
+    {
+     "pos": 1,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing",
+     "grid": 2,
+     "points": 25,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 2,
+     "stops": 2,
+     "pit_est": [
+      2.883,
+      2.823
+     ]
+    },
+    {
+     "pos": 2,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren",
+     "grid": 3,
+     "points": 18,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 3,
+     "stops": 2,
+     "pit_est": [
+      2.0,
+      2.56
+     ]
+    },
+    {
+     "pos": 3,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 1,
+     "points": 15,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 1,
+     "stops": 3,
+     "pit_est": [
+      2.621,
+      4.008,
+      6.734
+     ]
+    },
+    {
+     "pos": 4,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 7,
+     "points": 13,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 7,
+     "stops": 3,
+     "pit_est": [
+      2.339,
+      2.803,
+      7.394
+     ]
+    },
+    {
+     "pos": 5,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren",
+     "grid": 4,
+     "points": 10,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 4,
+     "stops": 2,
+     "pit_est": [
+      2.554,
+      2.053
+     ]
+    },
+    {
+     "pos": 6,
+     "code": "ALO",
+     "name": "Fernando Alonso",
+     "nat": "ES",
+     "team": "Aston Martin",
+     "grid": 6,
+     "points": 8,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 6,
+     "stops": 2,
+     "pit_est": [
+      4.365,
+      2.923
+     ]
+    },
+    {
+     "pos": 7,
+     "code": "STR",
+     "name": "Lance Stroll",
+     "nat": "CA",
+     "team": "Aston Martin",
+     "grid": 9,
+     "points": 6,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 9,
+     "stops": 2,
+     "pit_est": [
+      2.861,
+      3.602
+     ]
+    },
+    {
+     "pos": 8,
+     "code": "RIC",
+     "name": "Daniel Ricciardo",
+     "nat": "AU",
+     "team": "RB",
+     "grid": 5,
+     "points": 4,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 5,
+     "stops": 2,
+     "pit_est": [
+      8.875,
+      2.437
+     ]
+    },
+    {
+     "pos": 9,
+     "code": "GAS",
+     "name": "Pierre Gasly",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 15,
+     "points": 2,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 15,
+     "stops": 2,
+     "pit_est": [
+      3.488,
+      2.985
+     ]
+    },
+    {
+     "pos": 10,
+     "code": "OCO",
+     "name": "Esteban Ocon",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 18,
+     "points": 1,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 18,
+     "stops": 1,
+     "pit_est": [
+      3.072
+     ]
+    },
+    {
+     "pos": 11,
+     "code": "HUL",
+     "name": "Nico Hülkenberg",
+     "nat": "DE",
+     "team": "Haas",
+     "grid": 17,
+     "points": 0,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 19,
+     "stops": 3,
+     "pit_est": [
+      2.81,
+      3.245,
+      3.328
+     ]
+    },
+    {
+     "pos": 12,
+     "code": "MAG",
+     "name": "Kevin Magnussen",
+     "nat": "DK",
+     "team": "Haas",
+     "grid": 14,
+     "points": 0,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 14,
+     "stops": 4,
+     "pit_est": [
+      9.049,
+      5.371,
+      3.41,
+      5.422
+     ]
+    },
+    {
+     "pos": 13,
+     "code": "BOT",
+     "name": "Valtteri Bottas",
+     "nat": "FI",
+     "team": "Kick Sauber",
+     "grid": null,
+     "points": 0,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 17,
+     "stops": 1,
+     "pit_est": [
+      3.506
+     ]
+    },
+    {
+     "pos": 14,
+     "code": "TSU",
+     "name": "Yuki Tsunoda",
+     "nat": "JP",
+     "team": "RB",
+     "grid": 8,
+     "points": 0,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 8,
+     "stops": 1,
+     "pit_est": [
+      4.146
+     ]
+    },
+    {
+     "pos": 15,
+     "code": "ZHO",
+     "name": "Guanyu Zhou",
+     "nat": "CN",
+     "team": "Kick Sauber",
+     "grid": null,
+     "points": 0,
+     "laps": 69,
+     "status": "Finished",
+     "qpos": 20,
+     "stops": 3,
+     "pit_est": [
+      4.175,
+      44.141,
+      6.952
+     ]
+    },
+    {
+     "pos": null,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari",
+     "grid": 12,
+     "points": 0,
+     "laps": 52,
+     "status": "Collision damage",
+     "qpos": 12,
+     "stops": 2,
+     "pit_est": [
+      6.203,
+      2.702
+     ]
+    },
+    {
+     "pos": null,
+     "code": "ALB",
+     "name": "Alexander Albon",
+     "nat": "TH",
+     "team": "Williams",
+     "grid": 10,
+     "points": 0,
+     "laps": 52,
+     "status": "Collision",
+     "qpos": 10,
+     "stops": 2,
+     "pit_est": [
+      3.33,
+      3.381
+     ]
+    },
+    {
+     "pos": null,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing",
+     "grid": 16,
+     "points": 0,
+     "laps": 51,
+     "status": "Accident damage",
+     "qpos": 16,
+     "stops": 2,
+     "pit_est": [
+      12.339,
+      3.0
+     ]
+    },
+    {
+     "pos": null,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari",
+     "grid": 11,
+     "points": 0,
+     "laps": 40,
+     "status": "Engine",
+     "qpos": 11,
+     "stops": 3,
+     "pit_est": [
+      2.608,
+      25.763,
+      3.206
+     ]
+    },
+    {
+     "pos": null,
+     "code": "SAR",
+     "name": "Logan Sargeant",
+     "nat": "US",
+     "team": "Williams",
+     "grid": 13,
+     "points": 0,
+     "laps": 23,
+     "status": "Accident",
+     "qpos": 13,
+     "stops": 0,
+     "pit_est": null
+    }
+   ],
+   "dotd": "NOR"
+  },
+  {
+   "round": 10,
+   "name": "Spanish Grand Prix",
+   "country": "Spain",
+   "locality": "Barcelona",
+   "circuit": "Barcelona",
+   "date": "2024-06-23",
+   "status": "completed",
+   "winner": {
+    "code": "VER",
+    "name": "Max Verstappen",
+    "nat": "NL",
+    "team": "Red Bull Racing"
+   },
+   "podium": [
+    {
+     "pos": 1,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing"
+    },
+    {
+     "pos": 2,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren"
+    },
+    {
+     "pos": 3,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes"
+    }
+   ],
+   "fastest_lap": null,
+   "results": [
+    {
+     "pos": 1,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing",
+     "grid": 2,
+     "points": 25,
+     "laps": 66,
+     "status": "Finished",
+     "qpos": 2,
+     "stops": 2,
+     "pit_est": [
+      2.08,
+      2.876
+     ]
+    },
+    {
+     "pos": 2,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren",
+     "grid": 1,
+     "points": 19,
+     "laps": 66,
+     "status": "Finished",
+     "qpos": 1,
+     "stops": 2,
+     "pit_est": [
+      2.154,
+      3.167
+     ]
+    },
+    {
+     "pos": 3,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 3,
+     "points": 15,
+     "laps": 66,
+     "status": "Finished",
+     "qpos": 3,
+     "stops": 2,
+     "pit_est": [
+      2.376,
+      2.139
+     ]
+    },
+    {
+     "pos": 4,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 4,
+     "points": 12,
+     "laps": 66,
+     "status": "Finished",
+     "qpos": 4,
+     "stops": 2,
+     "pit_est": [
+      5.559,
+      3.236
+     ]
+    },
+    {
+     "pos": 5,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari",
+     "grid": 5,
+     "points": 10,
+     "laps": 66,
+     "status": "Finished",
+     "qpos": 5,
+     "stops": 2,
+     "pit_est": [
+      2.796,
+      2.16
+     ]
+    },
+    {
+     "pos": 6,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari",
+     "grid": 6,
+     "points": 8,
+     "laps": 66,
+     "status": "Finished",
+     "qpos": 6,
+     "stops": 2,
+     "pit_est": [
+      2.73,
+      2.785
+     ]
+    },
+    {
+     "pos": 7,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren",
+     "grid": 9,
+     "points": 6,
+     "laps": 66,
+     "status": "Finished",
+     "qpos": 10,
+     "stops": 2,
+     "pit_est": [
+      2.76,
+      2.956
+     ]
+    },
+    {
+     "pos": 8,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing",
+     "grid": 11,
+     "points": 4,
+     "laps": 66,
+     "status": "Finished",
+     "qpos": 8,
+     "stops": 3,
+     "pit_est": [
+      2.717,
+      2.0,
+      2.008
+     ]
+    },
+    {
+     "pos": 9,
+     "code": "GAS",
+     "name": "Pierre Gasly",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 7,
+     "points": 2,
+     "laps": 66,
+     "status": "Finished",
+     "qpos": 7,
+     "stops": 2,
+     "pit_est": [
+      6.633,
+      2.223
+     ]
+    },
+    {
+     "pos": 10,
+     "code": "OCO",
+     "name": "Esteban Ocon",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 8,
+     "points": 1,
+     "laps": 66,
+     "status": "Finished",
+     "qpos": 9,
+     "stops": 2,
+     "pit_est": [
+      2.37,
+      2.457
+     ]
+    },
+    {
+     "pos": 11,
+     "code": "HUL",
+     "name": "Nico Hülkenberg",
+     "nat": "DE",
+     "team": "Haas",
+     "grid": 13,
+     "points": 0,
+     "laps": 66,
+     "status": "Finished",
+     "qpos": 13,
+     "stops": 2,
+     "pit_est": [
+      3.258,
+      3.054
+     ]
+    },
+    {
+     "pos": 12,
+     "code": "ALO",
+     "name": "Fernando Alonso",
+     "nat": "ES",
+     "team": "Aston Martin",
+     "grid": 10,
+     "points": 0,
+     "laps": 65,
+     "status": "Finished",
+     "qpos": 11,
+     "stops": 2,
+     "pit_est": [
+      2.493,
+      3.107
+     ]
+    },
+    {
+     "pos": 13,
+     "code": "ZHO",
+     "name": "Guanyu Zhou",
+     "nat": "CN",
+     "team": "Kick Sauber",
+     "grid": 15,
+     "points": 0,
+     "laps": 65,
+     "status": "Finished",
+     "qpos": 15,
+     "stops": 2,
+     "pit_est": [
+      3.059,
+      4.789
+     ]
+    },
+    {
+     "pos": 14,
+     "code": "STR",
+     "name": "Lance Stroll",
+     "nat": "CA",
+     "team": "Aston Martin",
+     "grid": 14,
+     "points": 0,
+     "laps": 65,
+     "status": "Finished",
+     "qpos": 14,
+     "stops": 2,
+     "pit_est": [
+      2.416,
+      3.917
+     ]
+    },
+    {
+     "pos": 15,
+     "code": "RIC",
+     "name": "Daniel Ricciardo",
+     "nat": "AU",
+     "team": "RB",
+     "grid": 18,
+     "points": 0,
+     "laps": 65,
+     "status": "Finished",
+     "qpos": 18,
+     "stops": 2,
+     "pit_est": [
+      2.9,
+      2.644
+     ]
+    },
+    {
+     "pos": 16,
+     "code": "BOT",
+     "name": "Valtteri Bottas",
+     "nat": "FI",
+     "team": "Kick Sauber",
+     "grid": 12,
+     "points": 0,
+     "laps": 65,
+     "status": "Finished",
+     "qpos": 12,
+     "stops": 2,
+     "pit_est": [
+      3.28,
+      3.499
+     ]
+    },
+    {
+     "pos": 17,
+     "code": "MAG",
+     "name": "Kevin Magnussen",
+     "nat": "DK",
+     "team": "Haas",
+     "grid": 16,
+     "points": 0,
+     "laps": 65,
+     "status": "Finished",
+     "qpos": 16,
+     "stops": 2,
+     "pit_est": [
+      3.896,
+      9.503
+     ]
+    },
+    {
+     "pos": 18,
+     "code": "ALB",
+     "name": "Alexander Albon",
+     "nat": "TH",
+     "team": "Williams",
+     "grid": null,
+     "points": 0,
+     "laps": 65,
+     "status": "Finished",
+     "qpos": 19,
+     "stops": 2,
+     "pit_est": [
+      3.784,
+      2.428
+     ]
+    },
+    {
+     "pos": 19,
+     "code": "TSU",
+     "name": "Yuki Tsunoda",
+     "nat": "JP",
+     "team": "RB",
+     "grid": 17,
+     "points": 0,
+     "laps": 65,
+     "status": "Finished",
+     "qpos": 17,
+     "stops": 3,
+     "pit_est": [
+      2.6,
+      2.62,
+      3.1
+     ]
+    },
+    {
+     "pos": 20,
+     "code": "SAR",
+     "name": "Logan Sargeant",
+     "nat": "US",
+     "team": "Williams",
+     "grid": 19,
+     "points": 0,
+     "laps": 64,
+     "status": "Finished",
+     "qpos": 20,
+     "stops": 2,
+     "pit_est": [
+      2.937,
+      3.042
+     ]
+    }
+   ],
+   "dotd": "NOR"
+  },
+  {
+   "round": 11,
+   "name": "Austrian Grand Prix",
+   "country": "Austria",
+   "locality": "Spielberg",
+   "circuit": "Spielberg",
+   "date": "2024-06-30",
+   "status": "completed",
+   "winner": {
+    "code": "RUS",
+    "name": "George Russell",
+    "nat": "GB",
+    "team": "Mercedes"
+   },
+   "podium": [
+    {
+     "pos": 1,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes"
+    },
+    {
+     "pos": 2,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren"
+    },
+    {
+     "pos": 3,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari"
+    }
+   ],
+   "fastest_lap": null,
+   "results": [
+    {
+     "pos": 1,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 3,
+     "points": 25,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 3,
+     "stops": 2,
+     "pit_est": [
+      2.898,
+      2.454
+     ]
+    },
+    {
+     "pos": 2,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren",
+     "grid": 7,
+     "points": 18,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 7,
+     "stops": 2,
+     "pit_est": [
+      2.203,
+      2.0
+     ]
+    },
+    {
+     "pos": 3,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari",
+     "grid": 4,
+     "points": 15,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 4,
+     "stops": 2,
+     "pit_est": [
+      2.451,
+      2.508
+     ]
+    },
+    {
+     "pos": 4,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 5,
+     "points": 12,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 5,
+     "stops": 2,
+     "pit_est": [
+      2.788,
+      8.506
+     ]
+    },
+    {
+     "pos": 5,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing",
+     "grid": 1,
+     "points": 10,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 1,
+     "stops": 3,
+     "pit_est": [
+      3.124,
+      7.066,
+      3.954
+     ]
+    },
+    {
+     "pos": 6,
+     "code": "HUL",
+     "name": "Nico Hülkenberg",
+     "nat": "DE",
+     "team": "Haas",
+     "grid": 9,
+     "points": 8,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 9,
+     "stops": 2,
+     "pit_est": [
+      3.58,
+      3.039
+     ]
+    },
+    {
+     "pos": 7,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing",
+     "grid": 8,
+     "points": 6,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 8,
+     "stops": 2,
+     "pit_est": [
+      2.516,
+      8.725
+     ]
+    },
+    {
+     "pos": 8,
+     "code": "MAG",
+     "name": "Kevin Magnussen",
+     "nat": "DK",
+     "team": "Haas",
+     "grid": 12,
+     "points": 4,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 12,
+     "stops": 2,
+     "pit_est": [
+      2.743,
+      3.057
+     ]
+    },
+    {
+     "pos": 9,
+     "code": "RIC",
+     "name": "Daniel Ricciardo",
+     "nat": "AU",
+     "team": "RB",
+     "grid": 11,
+     "points": 2,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 11,
+     "stops": 2,
+     "pit_est": [
+      2.727,
+      2.318
+     ]
+    },
+    {
+     "pos": 10,
+     "code": "GAS",
+     "name": "Pierre Gasly",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 13,
+     "points": 1,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 13,
+     "stops": 2,
+     "pit_est": [
+      2.656,
+      3.268
+     ]
+    },
+    {
+     "pos": 11,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari",
+     "grid": 6,
+     "points": 0,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 6,
+     "stops": 4,
+     "pit_est": [
+      13.142,
+      2.91,
+      3.468,
+      2.128
+     ]
+    },
+    {
+     "pos": 12,
+     "code": "OCO",
+     "name": "Esteban Ocon",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 10,
+     "points": 0,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 10,
+     "stops": 2,
+     "pit_est": [
+      3.516,
+      2.456
+     ]
+    },
+    {
+     "pos": 13,
+     "code": "STR",
+     "name": "Lance Stroll",
+     "nat": "CA",
+     "team": "Aston Martin",
+     "grid": 17,
+     "points": 0,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 17,
+     "stops": 2,
+     "pit_est": [
+      2.624,
+      2.527
+     ]
+    },
+    {
+     "pos": 14,
+     "code": "TSU",
+     "name": "Yuki Tsunoda",
+     "nat": "JP",
+     "team": "RB",
+     "grid": 14,
+     "points": 0,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 14,
+     "stops": 2,
+     "pit_est": [
+      2.475,
+      4.669
+     ]
+    },
+    {
+     "pos": 15,
+     "code": "ALB",
+     "name": "Alexander Albon",
+     "nat": "TH",
+     "team": "Williams",
+     "grid": 16,
+     "points": 0,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 16,
+     "stops": 2,
+     "pit_est": [
+      3.103,
+      2.917
+     ]
+    },
+    {
+     "pos": 16,
+     "code": "BOT",
+     "name": "Valtteri Bottas",
+     "nat": "FI",
+     "team": "Kick Sauber",
+     "grid": 18,
+     "points": 0,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 18,
+     "stops": 2,
+     "pit_est": [
+      3.143,
+      3.216
+     ]
+    },
+    {
+     "pos": 17,
+     "code": "ZHO",
+     "name": "Guanyu Zhou",
+     "nat": "CN",
+     "team": "Kick Sauber",
+     "grid": null,
+     "points": 0,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 20,
+     "stops": 2,
+     "pit_est": [
+      4.423,
+      2.819
+     ]
+    },
+    {
+     "pos": 18,
+     "code": "ALO",
+     "name": "Fernando Alonso",
+     "nat": "ES",
+     "team": "Aston Martin",
+     "grid": 15,
+     "points": 0,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 15,
+     "stops": 3,
+     "pit_est": [
+      2.708,
+      15.172,
+      3.712
+     ]
+    },
+    {
+     "pos": 19,
+     "code": "SAR",
+     "name": "Logan Sargeant",
+     "nat": "US",
+     "team": "Williams",
+     "grid": 19,
+     "points": 0,
+     "laps": 69,
+     "status": "Finished",
+     "qpos": 19,
+     "stops": 3,
+     "pit_est": [
+      12.947,
+      3.727,
+      3.318
+     ]
+    },
+    {
+     "pos": 20,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren",
+     "grid": 2,
+     "points": 0,
+     "laps": 64,
+     "status": "Collision damage",
+     "qpos": 2,
+     "stops": 2,
+     "pit_est": [
+      2.842,
+      2.636
+     ]
+    }
+   ],
+   "dotd": "NOR"
+  },
+  {
+   "round": 12,
+   "name": "British Grand Prix",
+   "country": "United Kingdom",
+   "locality": "Silverstone",
+   "circuit": "Silverstone",
+   "date": "2024-07-07",
+   "status": "completed",
+   "winner": {
+    "code": "HAM",
+    "name": "Lewis Hamilton",
+    "nat": "GB",
+    "team": "Mercedes"
+   },
+   "podium": [
+    {
+     "pos": 1,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes"
+    },
+    {
+     "pos": 2,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing"
+    },
+    {
+     "pos": 3,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren"
+    }
+   ],
+   "fastest_lap": null,
+   "results": [
+    {
+     "pos": 1,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 2,
+     "points": 25,
+     "laps": 52,
+     "status": "Finished",
+     "qpos": 2,
+     "stops": 2,
+     "pit_est": [
+      2.653,
+      3.762
+     ]
+    },
+    {
+     "pos": 2,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing",
+     "grid": 4,
+     "points": 18,
+     "laps": 52,
+     "status": "Finished",
+     "qpos": 4,
+     "stops": 2,
+     "pit_est": [
+      2.089,
+      2.8
+     ]
+    },
+    {
+     "pos": 3,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren",
+     "grid": 3,
+     "points": 15,
+     "laps": 52,
+     "status": "Finished",
+     "qpos": 3,
+     "stops": 2,
+     "pit_est": [
+      2.385,
+      4.111
+     ]
+    },
+    {
+     "pos": 4,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren",
+     "grid": 5,
+     "points": 12,
+     "laps": 52,
+     "status": "Finished",
+     "qpos": 5,
+     "stops": 2,
+     "pit_est": [
+      3.265,
+      2.924
+     ]
+    },
+    {
+     "pos": 5,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari",
+     "grid": 7,
+     "points": 11,
+     "laps": 52,
+     "status": "Finished",
+     "qpos": 7,
+     "stops": 3,
+     "pit_est": [
+      2.923,
+      2.821,
+      2.43
+     ]
+    },
+    {
+     "pos": 6,
+     "code": "HUL",
+     "name": "Nico Hülkenberg",
+     "nat": "DE",
+     "team": "Haas",
+     "grid": 6,
+     "points": 8,
+     "laps": 52,
+     "status": "Finished",
+     "qpos": 6,
+     "stops": 2,
+     "pit_est": [
+      3.136,
+      3.989
+     ]
+    },
+    {
+     "pos": 7,
+     "code": "STR",
+     "name": "Lance Stroll",
+     "nat": "CA",
+     "team": "Aston Martin",
+     "grid": 8,
+     "points": 6,
+     "laps": 52,
+     "status": "Finished",
+     "qpos": 8,
+     "stops": 2,
+     "pit_est": [
+      2.747,
+      3.193
+     ]
+    },
+    {
+     "pos": 8,
+     "code": "ALO",
+     "name": "Fernando Alonso",
+     "nat": "ES",
+     "team": "Aston Martin",
+     "grid": 10,
+     "points": 4,
+     "laps": 52,
+     "status": "Finished",
+     "qpos": 10,
+     "stops": 2,
+     "pit_est": [
+      3.065,
+      3.41
+     ]
+    },
+    {
+     "pos": 9,
+     "code": "ALB",
+     "name": "Alexander Albon",
+     "nat": "TH",
+     "team": "Williams",
+     "grid": 9,
+     "points": 2,
+     "laps": 52,
+     "status": "Finished",
+     "qpos": 9,
+     "stops": 2,
+     "pit_est": [
+      8.466,
+      3.134
+     ]
+    },
+    {
+     "pos": 10,
+     "code": "TSU",
+     "name": "Yuki Tsunoda",
+     "nat": "JP",
+     "team": "RB",
+     "grid": 13,
+     "points": 1,
+     "laps": 52,
+     "status": "Finished",
+     "qpos": 13,
+     "stops": 2,
+     "pit_est": [
+      3.724,
+      3.382
+     ]
+    },
+    {
+     "pos": 11,
+     "code": "SAR",
+     "name": "Logan Sargeant",
+     "nat": "US",
+     "team": "Williams",
+     "grid": 12,
+     "points": 0,
+     "laps": 52,
+     "status": "Finished",
+     "qpos": 12,
+     "stops": 2,
+     "pit_est": [
+      6.525,
+      3.168
+     ]
+    },
+    {
+     "pos": 12,
+     "code": "MAG",
+     "name": "Kevin Magnussen",
+     "nat": "DK",
+     "team": "Haas",
+     "grid": 17,
+     "points": 0,
+     "laps": 52,
+     "status": "Finished",
+     "qpos": 17,
+     "stops": 2,
+     "pit_est": [
+      4.032,
+      3.608
+     ]
+    },
+    {
+     "pos": 13,
+     "code": "RIC",
+     "name": "Daniel Ricciardo",
+     "nat": "AU",
+     "team": "RB",
+     "grid": 15,
+     "points": 0,
+     "laps": 51,
+     "status": "Finished",
+     "qpos": 15,
+     "stops": 2,
+     "pit_est": [
+      2.599,
+      3.597
+     ]
+    },
+    {
+     "pos": 14,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari",
+     "grid": 11,
+     "points": 0,
+     "laps": 51,
+     "status": "Finished",
+     "qpos": 11,
+     "stops": 3,
+     "pit_est": [
+      2.205,
+      2.957,
+      2.89
+     ]
+    },
+    {
+     "pos": 15,
+     "code": "BOT",
+     "name": "Valtteri Bottas",
+     "nat": "FI",
+     "team": "Kick Sauber",
+     "grid": 16,
+     "points": 0,
+     "laps": 51,
+     "status": "Finished",
+     "qpos": 16,
+     "stops": 2,
+     "pit_est": [
+      4.352,
+      5.251
+     ]
+    },
+    {
+     "pos": 16,
+     "code": "OCO",
+     "name": "Esteban Ocon",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 18,
+     "points": 0,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 18,
+     "stops": 4,
+     "pit_est": [
+      2.219,
+      2.0,
+      3.013,
+      2.81
+     ]
+    },
+    {
+     "pos": 17,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing",
+     "grid": null,
+     "points": 0,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 19,
+     "stops": 4,
+     "pit_est": [
+      2.115,
+      6.037,
+      3.024,
+      2.595
+     ]
+    },
+    {
+     "pos": 18,
+     "code": "ZHO",
+     "name": "Guanyu Zhou",
+     "nat": "CN",
+     "team": "Kick Sauber",
+     "grid": 14,
+     "points": 0,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 14,
+     "stops": 4,
+     "pit_est": [
+      2.902,
+      3.562,
+      2.849,
+      6.807
+     ]
+    },
+    {
+     "pos": null,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 1,
+     "points": 0,
+     "laps": 33,
+     "status": "Water leak",
+     "qpos": 1,
+     "stops": 1,
+     "pit_est": [
+      5.769
+     ]
+    },
+    {
+     "pos": null,
+     "code": "GAS",
+     "name": "Pierre Gasly",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 19,
+     "points": 0,
+     "laps": null,
+     "status": "Gearbox",
+     "qpos": 20,
+     "stops": 0,
+     "pit_est": null
+    }
+   ],
+   "dotd": "HAM"
+  },
+  {
+   "round": 13,
+   "name": "Hungarian Grand Prix",
+   "country": "Hungary",
+   "locality": "Budapest",
+   "circuit": "Budapest",
+   "date": "2024-07-21",
+   "status": "completed",
+   "winner": {
+    "code": "PIA",
+    "name": "Oscar Piastri",
+    "nat": "AU",
+    "team": "McLaren"
+   },
+   "podium": [
+    {
+     "pos": 1,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren"
+    },
+    {
+     "pos": 2,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren"
+    },
+    {
+     "pos": 3,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes"
+    }
+   ],
+   "fastest_lap": null,
+   "results": [
+    {
+     "pos": 1,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren",
+     "grid": 2,
+     "points": 25,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 2,
+     "stops": 2,
+     "pit_est": [
+      2.585,
+      2.767
+     ]
+    },
+    {
+     "pos": 2,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren",
+     "grid": 1,
+     "points": 18,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 1,
+     "stops": 2,
+     "pit_est": [
+      2.805,
+      2.193
+     ]
+    },
+    {
+     "pos": 3,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 5,
+     "points": 15,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 5,
+     "stops": 2,
+     "pit_est": [
+      2.25,
+      2.854
+     ]
+    },
+    {
+     "pos": 4,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari",
+     "grid": 6,
+     "points": 12,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 6,
+     "stops": 2,
+     "pit_est": [
+      2.838,
+      2.667
+     ]
+    },
+    {
+     "pos": 5,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing",
+     "grid": 3,
+     "points": 10,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 3,
+     "stops": 2,
+     "pit_est": [
+      3.045,
+      2.288
+     ]
+    },
+    {
+     "pos": 6,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari",
+     "grid": 4,
+     "points": 8,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 4,
+     "stops": 2,
+     "pit_est": [
+      2.599,
+      2.383
+     ]
+    },
+    {
+     "pos": 7,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing",
+     "grid": 16,
+     "points": 6,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 16,
+     "stops": 2,
+     "pit_est": [
+      2.339,
+      2.0
+     ]
+    },
+    {
+     "pos": 8,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 17,
+     "points": 5,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 17,
+     "stops": 2,
+     "pit_est": [
+      2.313,
+      2.272
+     ]
+    },
+    {
+     "pos": 9,
+     "code": "TSU",
+     "name": "Yuki Tsunoda",
+     "nat": "JP",
+     "team": "RB",
+     "grid": 10,
+     "points": 2,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 10,
+     "stops": 1,
+     "pit_est": [
+      2.411
+     ]
+    },
+    {
+     "pos": 10,
+     "code": "STR",
+     "name": "Lance Stroll",
+     "nat": "CA",
+     "team": "Aston Martin",
+     "grid": 8,
+     "points": 1,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 8,
+     "stops": 2,
+     "pit_est": [
+      4.181,
+      3.22
+     ]
+    },
+    {
+     "pos": 11,
+     "code": "ALO",
+     "name": "Fernando Alonso",
+     "nat": "ES",
+     "team": "Aston Martin",
+     "grid": 7,
+     "points": 0,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 7,
+     "stops": 2,
+     "pit_est": [
+      3.486,
+      2.744
+     ]
+    },
+    {
+     "pos": 12,
+     "code": "RIC",
+     "name": "Daniel Ricciardo",
+     "nat": "AU",
+     "team": "RB",
+     "grid": 9,
+     "points": 0,
+     "laps": 69,
+     "status": "Finished",
+     "qpos": 9,
+     "stops": 2,
+     "pit_est": [
+      2.028,
+      2.322
+     ]
+    },
+    {
+     "pos": 13,
+     "code": "HUL",
+     "name": "Nico Hülkenberg",
+     "nat": "DE",
+     "team": "Haas",
+     "grid": 11,
+     "points": 0,
+     "laps": 69,
+     "status": "Finished",
+     "qpos": 11,
+     "stops": 2,
+     "pit_est": [
+      3.231,
+      3.416
+     ]
+    },
+    {
+     "pos": 14,
+     "code": "ALB",
+     "name": "Alexander Albon",
+     "nat": "TH",
+     "team": "Williams",
+     "grid": 13,
+     "points": 0,
+     "laps": 69,
+     "status": "Finished",
+     "qpos": 13,
+     "stops": 2,
+     "pit_est": [
+      3.035,
+      4.354
+     ]
+    },
+    {
+     "pos": 15,
+     "code": "MAG",
+     "name": "Kevin Magnussen",
+     "nat": "DK",
+     "team": "Haas",
+     "grid": 15,
+     "points": 0,
+     "laps": 69,
+     "status": "Finished",
+     "qpos": 15,
+     "stops": 2,
+     "pit_est": [
+      2.815,
+      3.475
+     ]
+    },
+    {
+     "pos": 16,
+     "code": "BOT",
+     "name": "Valtteri Bottas",
+     "nat": "FI",
+     "team": "Kick Sauber",
+     "grid": 12,
+     "points": 0,
+     "laps": 69,
+     "status": "Finished",
+     "qpos": 12,
+     "stops": 2,
+     "pit_est": [
+      3.09,
+      2.925
+     ]
+    },
+    {
+     "pos": 17,
+     "code": "SAR",
+     "name": "Logan Sargeant",
+     "nat": "US",
+     "team": "Williams",
+     "grid": 14,
+     "points": 0,
+     "laps": 69,
+     "status": "Finished",
+     "qpos": 14,
+     "stops": 3,
+     "pit_est": [
+      2.701,
+      2.342,
+      2.852
+     ]
+    },
+    {
+     "pos": 18,
+     "code": "OCO",
+     "name": "Esteban Ocon",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 19,
+     "points": 0,
+     "laps": 69,
+     "status": "Finished",
+     "qpos": 19,
+     "stops": 3,
+     "pit_est": [
+      2.773,
+      2.388,
+      2.274
+     ]
+    },
+    {
+     "pos": 19,
+     "code": "ZHO",
+     "name": "Guanyu Zhou",
+     "nat": "CN",
+     "team": "Kick Sauber",
+     "grid": 18,
+     "points": 0,
+     "laps": 69,
+     "status": "Finished",
+     "qpos": 18,
+     "stops": 2,
+     "pit_est": [
+      2.937,
+      3.127
+     ]
+    },
+    {
+     "pos": null,
+     "code": "GAS",
+     "name": "Pierre Gasly",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": null,
+     "points": 0,
+     "laps": 33,
+     "status": "Hydraulics",
+     "qpos": 20,
+     "stops": 1,
+     "pit_est": [
+      2.349
+     ]
+    }
+   ],
+   "dotd": "PIA"
+  },
+  {
+   "round": 14,
+   "name": "Belgian Grand Prix",
+   "country": "Belgium",
+   "locality": "Spa-Francorchamps",
+   "circuit": "Spa-Francorchamps",
+   "date": "2024-07-28",
+   "status": "completed",
+   "winner": {
+    "code": "HAM",
+    "name": "Lewis Hamilton",
+    "nat": "GB",
+    "team": "Mercedes"
+   },
+   "podium": [
+    {
+     "pos": 1,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes"
+    },
+    {
+     "pos": 2,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren"
+    },
+    {
+     "pos": 3,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari"
+    }
+   ],
+   "fastest_lap": null,
+   "results": [
+    {
+     "pos": 1,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 3,
+     "points": 25,
+     "laps": 44,
+     "status": "Finished",
+     "qpos": 4,
+     "stops": 2,
+     "pit_est": [
+      2.86,
+      2.376
+     ]
+    },
+    {
+     "pos": 2,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren",
+     "grid": 5,
+     "points": 18,
+     "laps": 44,
+     "status": "Finished",
+     "qpos": 6,
+     "stops": 2,
+     "pit_est": [
+      2.295,
+      3.797
+     ]
+    },
+    {
+     "pos": 3,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari",
+     "grid": 1,
+     "points": 15,
+     "laps": 44,
+     "status": "Finished",
+     "qpos": 2,
+     "stops": 2,
+     "pit_est": [
+      2.614,
+      3.002
+     ]
+    },
+    {
+     "pos": 4,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing",
+     "grid": 11,
+     "points": 12,
+     "laps": 44,
+     "status": "Finished",
+     "qpos": 1,
+     "stops": 2,
+     "pit_est": [
+      2.886,
+      2.615
+     ]
+    },
+    {
+     "pos": 5,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren",
+     "grid": 4,
+     "points": 10,
+     "laps": 44,
+     "status": "Finished",
+     "qpos": 5,
+     "stops": 2,
+     "pit_est": [
+      2.354,
+      2.282
+     ]
+    },
+    {
+     "pos": 6,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari",
+     "grid": 7,
+     "points": 8,
+     "laps": 44,
+     "status": "Finished",
+     "qpos": 8,
+     "stops": 2,
+     "pit_est": [
+      2.752,
+      2.761
+     ]
+    },
+    {
+     "pos": 7,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing",
+     "grid": 2,
+     "points": 7,
+     "laps": 44,
+     "status": "Finished",
+     "qpos": 3,
+     "stops": 3,
+     "pit_est": [
+      2.364,
+      2.32,
+      2.304
+     ]
+    },
+    {
+     "pos": 8,
+     "code": "ALO",
+     "name": "Fernando Alonso",
+     "nat": "ES",
+     "team": "Aston Martin",
+     "grid": 8,
+     "points": 4,
+     "laps": 44,
+     "status": "Finished",
+     "qpos": 9,
+     "stops": 1,
+     "pit_est": [
+      2.747
+     ]
+    },
+    {
+     "pos": 9,
+     "code": "OCO",
+     "name": "Esteban Ocon",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 9,
+     "points": 2,
+     "laps": 44,
+     "status": "Finished",
+     "qpos": 10,
+     "stops": 2,
+     "pit_est": [
+      3.038,
+      3.218
+     ]
+    },
+    {
+     "pos": 10,
+     "code": "RIC",
+     "name": "Daniel Ricciardo",
+     "nat": "AU",
+     "team": "RB",
+     "grid": 13,
+     "points": 1,
+     "laps": 44,
+     "status": "Finished",
+     "qpos": 13,
+     "stops": 2,
+     "pit_est": [
+      2.315,
+      2.0
+     ]
+    },
+    {
+     "pos": 11,
+     "code": "STR",
+     "name": "Lance Stroll",
+     "nat": "CA",
+     "team": "Aston Martin",
+     "grid": 15,
+     "points": 0,
+     "laps": 44,
+     "status": "Finished",
+     "qpos": 15,
+     "stops": 1,
+     "pit_est": [
+      2.682
+     ]
+    },
+    {
+     "pos": 12,
+     "code": "ALB",
+     "name": "Alexander Albon",
+     "nat": "TH",
+     "team": "Williams",
+     "grid": 10,
+     "points": 0,
+     "laps": 44,
+     "status": "Finished",
+     "qpos": 11,
+     "stops": 2,
+     "pit_est": [
+      3.278,
+      2.818
+     ]
+    },
+    {
+     "pos": 13,
+     "code": "GAS",
+     "name": "Pierre Gasly",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 12,
+     "points": 0,
+     "laps": 44,
+     "status": "Finished",
+     "qpos": 12,
+     "stops": 2,
+     "pit_est": [
+      2.572,
+      2.516
+     ]
+    },
+    {
+     "pos": 14,
+     "code": "MAG",
+     "name": "Kevin Magnussen",
+     "nat": "DK",
+     "team": "Haas",
+     "grid": 17,
+     "points": 0,
+     "laps": 44,
+     "status": "Finished",
+     "qpos": 17,
+     "stops": 1,
+     "pit_est": [
+      3.291
+     ]
+    },
+    {
+     "pos": 15,
+     "code": "BOT",
+     "name": "Valtteri Bottas",
+     "nat": "FI",
+     "team": "Kick Sauber",
+     "grid": 14,
+     "points": 0,
+     "laps": 44,
+     "status": "Finished",
+     "qpos": 14,
+     "stops": 2,
+     "pit_est": [
+      2.819,
+      2.621
+     ]
+    },
+    {
+     "pos": 16,
+     "code": "TSU",
+     "name": "Yuki Tsunoda",
+     "nat": "JP",
+     "team": "RB",
+     "grid": 20,
+     "points": 0,
+     "laps": 44,
+     "status": "Finished",
+     "qpos": 18,
+     "stops": 1,
+     "pit_est": [
+      3.124
+     ]
+    },
+    {
+     "pos": 17,
+     "code": "SAR",
+     "name": "Logan Sargeant",
+     "nat": "US",
+     "team": "Williams",
+     "grid": 18,
+     "points": 0,
+     "laps": 44,
+     "status": "Finished",
+     "qpos": 19,
+     "stops": 2,
+     "pit_est": [
+      3.01,
+      3.364
+     ]
+    },
+    {
+     "pos": 18,
+     "code": "HUL",
+     "name": "Nico Hülkenberg",
+     "nat": "DE",
+     "team": "Haas",
+     "grid": 16,
+     "points": 0,
+     "laps": 44,
+     "status": "Finished",
+     "qpos": 16,
+     "stops": 2,
+     "pit_est": [
+      3.234,
+      2.94
+     ]
+    },
+    {
+     "pos": null,
+     "code": "ZHO",
+     "name": "Guanyu Zhou",
+     "nat": "CN",
+     "team": "Kick Sauber",
+     "grid": 19,
+     "points": 0,
+     "laps": 5,
+     "status": "Hydraulics",
+     "qpos": 20,
+     "stops": 0,
+     "pit_est": null
+    },
+    {
+     "pos": null,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 6,
+     "points": 0,
+     "laps": 44,
+     "status": "Car underweight",
+     "qpos": 7,
+     "stops": 1,
+     "pit_est": [
+      2.358
+     ]
+    }
+   ],
+   "dotd": "HAM"
+  },
+  {
+   "round": 15,
+   "name": "Dutch Grand Prix",
+   "country": "Netherlands",
+   "locality": "Zandvoort",
+   "circuit": "Zandvoort",
+   "date": "2024-08-25",
+   "status": "completed",
+   "winner": {
+    "code": "NOR",
+    "name": "Lando Norris",
+    "nat": "GB",
+    "team": "McLaren"
+   },
+   "podium": [
+    {
+     "pos": 1,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren"
+    },
+    {
+     "pos": 2,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing"
+    },
+    {
+     "pos": 3,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari"
+    }
+   ],
+   "fastest_lap": null,
+   "results": [
+    {
+     "pos": 1,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren",
+     "grid": 1,
+     "points": 26,
+     "laps": 72,
+     "status": "Finished",
+     "qpos": 1,
+     "stops": 1,
+     "pit_est": [
+      2.751
+     ]
+    },
+    {
+     "pos": 2,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing",
+     "grid": 2,
+     "points": 18,
+     "laps": 72,
+     "status": "Finished",
+     "qpos": 2,
+     "stops": 1,
+     "pit_est": [
+      2.0
+     ]
+    },
+    {
+     "pos": 3,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari",
+     "grid": 6,
+     "points": 15,
+     "laps": 72,
+     "status": "Finished",
+     "qpos": 6,
+     "stops": 1,
+     "pit_est": [
+      2.056
+     ]
+    },
+    {
+     "pos": 4,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren",
+     "grid": 3,
+     "points": 12,
+     "laps": 72,
+     "status": "Finished",
+     "qpos": 3,
+     "stops": 1,
+     "pit_est": [
+      2.184
+     ]
+    },
+    {
+     "pos": 5,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari",
+     "grid": 10,
+     "points": 10,
+     "laps": 72,
+     "status": "Finished",
+     "qpos": 10,
+     "stops": 1,
+     "pit_est": [
+      2.055
+     ]
+    },
+    {
+     "pos": 6,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing",
+     "grid": 5,
+     "points": 8,
+     "laps": 72,
+     "status": "Finished",
+     "qpos": 5,
+     "stops": 1,
+     "pit_est": [
+      4.149
+     ]
+    },
+    {
+     "pos": 7,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 4,
+     "points": 6,
+     "laps": 72,
+     "status": "Finished",
+     "qpos": 4,
+     "stops": 2,
+     "pit_est": [
+      3.061,
+      2.374
+     ]
+    },
+    {
+     "pos": 8,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 14,
+     "points": 4,
+     "laps": 72,
+     "status": "Finished",
+     "qpos": 11,
+     "stops": 2,
+     "pit_est": [
+      2.383,
+      2.241
+     ]
+    },
+    {
+     "pos": 9,
+     "code": "GAS",
+     "name": "Pierre Gasly",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 9,
+     "points": 2,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 9,
+     "stops": 1,
+     "pit_est": [
+      3.861
+     ]
+    },
+    {
+     "pos": 10,
+     "code": "ALO",
+     "name": "Fernando Alonso",
+     "nat": "ES",
+     "team": "Aston Martin",
+     "grid": 7,
+     "points": 1,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 7,
+     "stops": 1,
+     "pit_est": [
+      2.563
+     ]
+    },
+    {
+     "pos": 11,
+     "code": "HUL",
+     "name": "Nico Hülkenberg",
+     "nat": "DE",
+     "team": "Haas",
+     "grid": 12,
+     "points": 0,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 13,
+     "stops": 1,
+     "pit_est": [
+      2.834
+     ]
+    },
+    {
+     "pos": 12,
+     "code": "RIC",
+     "name": "Daniel Ricciardo",
+     "nat": "AU",
+     "team": "RB",
+     "grid": 13,
+     "points": 0,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 15,
+     "stops": 1,
+     "pit_est": [
+      2.157
+     ]
+    },
+    {
+     "pos": 13,
+     "code": "STR",
+     "name": "Lance Stroll",
+     "nat": "CA",
+     "team": "Aston Martin",
+     "grid": 8,
+     "points": 0,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 8,
+     "stops": 1,
+     "pit_est": [
+      2.6
+     ]
+    },
+    {
+     "pos": 14,
+     "code": "ALB",
+     "name": "Alexander Albon",
+     "nat": "TH",
+     "team": "Williams",
+     "grid": 19,
+     "points": 0,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": null,
+     "stops": 2,
+     "pit_est": [
+      2.473,
+      2.231
+     ]
+    },
+    {
+     "pos": 15,
+     "code": "OCO",
+     "name": "Esteban Ocon",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 15,
+     "points": 0,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 16,
+     "stops": 1,
+     "pit_est": [
+      2.23
+     ]
+    },
+    {
+     "pos": 16,
+     "code": "SAR",
+     "name": "Logan Sargeant",
+     "nat": "US",
+     "team": "Williams",
+     "grid": 18,
+     "points": 0,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": null,
+     "stops": 1,
+     "pit_est": [
+      3.245
+     ]
+    },
+    {
+     "pos": 17,
+     "code": "TSU",
+     "name": "Yuki Tsunoda",
+     "nat": "JP",
+     "team": "RB",
+     "grid": 11,
+     "points": 0,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 12,
+     "stops": 2,
+     "pit_est": [
+      2.464,
+      2.095
+     ]
+    },
+    {
+     "pos": 18,
+     "code": "MAG",
+     "name": "Kevin Magnussen",
+     "nat": "DK",
+     "team": "Haas",
+     "grid": null,
+     "points": 0,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 14,
+     "stops": 1,
+     "pit_est": [
+      2.618
+     ]
+    },
+    {
+     "pos": 19,
+     "code": "BOT",
+     "name": "Valtteri Bottas",
+     "nat": "FI",
+     "team": "Kick Sauber",
+     "grid": 16,
+     "points": 0,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 17,
+     "stops": 2,
+     "pit_est": [
+      2.31,
+      2.488
+     ]
+    },
+    {
+     "pos": 20,
+     "code": "ZHO",
+     "name": "Guanyu Zhou",
+     "nat": "CN",
+     "team": "Kick Sauber",
+     "grid": 17,
+     "points": 0,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 18,
+     "stops": 2,
+     "pit_est": [
+      2.429,
+      3.259
+     ]
+    }
+   ],
+   "dotd": "NOR"
+  },
+  {
+   "round": 16,
+   "name": "Italian Grand Prix",
+   "country": "Italy",
+   "locality": "Monza",
+   "circuit": "Monza",
+   "date": "2024-09-01",
+   "status": "completed",
+   "winner": {
+    "code": "LEC",
+    "name": "Charles Leclerc",
+    "nat": "MC",
+    "team": "Ferrari"
+   },
+   "podium": [
+    {
+     "pos": 1,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari"
+    },
+    {
+     "pos": 2,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren"
+    },
+    {
+     "pos": 3,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren"
+    }
+   ],
+   "fastest_lap": null,
+   "results": [
+    {
+     "pos": 1,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari",
+     "grid": 4,
+     "points": 25,
+     "laps": 53,
+     "status": "Finished",
+     "qpos": 4,
+     "stops": 1,
+     "pit_est": [
+      2.758
+     ]
+    },
+    {
+     "pos": 2,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren",
+     "grid": 2,
+     "points": 18,
+     "laps": 53,
+     "status": "Finished",
+     "qpos": 2,
+     "stops": 2,
+     "pit_est": [
+      2.0,
+      2.877
+     ]
+    },
+    {
+     "pos": 3,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren",
+     "grid": 1,
+     "points": 16,
+     "laps": 53,
+     "status": "Finished",
+     "qpos": 1,
+     "stops": 2,
+     "pit_est": [
+      2.376,
+      3.077
+     ]
+    },
+    {
+     "pos": 4,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari",
+     "grid": 5,
+     "points": 12,
+     "laps": 53,
+     "status": "Finished",
+     "qpos": 5,
+     "stops": 1,
+     "pit_est": [
+      2.52
+     ]
+    },
+    {
+     "pos": 5,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 6,
+     "points": 10,
+     "laps": 53,
+     "status": "Finished",
+     "qpos": 6,
+     "stops": 2,
+     "pit_est": [
+      2.676,
+      2.362
+     ]
+    },
+    {
+     "pos": 6,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing",
+     "grid": 7,
+     "points": 8,
+     "laps": 53,
+     "status": "Finished",
+     "qpos": 7,
+     "stops": 2,
+     "pit_est": [
+      6.405,
+      2.357
+     ]
+    },
+    {
+     "pos": 7,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 3,
+     "points": 6,
+     "laps": 53,
+     "status": "Finished",
+     "qpos": 3,
+     "stops": 2,
+     "pit_est": [
+      10.903,
+      4.504
+     ]
+    },
+    {
+     "pos": 8,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing",
+     "grid": 8,
+     "points": 4,
+     "laps": 53,
+     "status": "Finished",
+     "qpos": 8,
+     "stops": 2,
+     "pit_est": [
+      2.935,
+      2.237
+     ]
+    },
+    {
+     "pos": 9,
+     "code": "ALB",
+     "name": "Alexander Albon",
+     "nat": "TH",
+     "team": "Williams",
+     "grid": 9,
+     "points": 2,
+     "laps": 53,
+     "status": "Finished",
+     "qpos": 9,
+     "stops": 1,
+     "pit_est": [
+      3.008
+     ]
+    },
+    {
+     "pos": 10,
+     "code": "MAG",
+     "name": "Kevin Magnussen",
+     "nat": "DK",
+     "team": "Haas",
+     "grid": 13,
+     "points": 1,
+     "laps": 53,
+     "status": "Finished",
+     "qpos": 13,
+     "stops": 1,
+     "pit_est": [
+      3.879
+     ]
+    },
+    {
+     "pos": 11,
+     "code": "ALO",
+     "name": "Fernando Alonso",
+     "nat": "ES",
+     "team": "Aston Martin",
+     "grid": 11,
+     "points": 0,
+     "laps": 53,
+     "status": "Finished",
+     "qpos": 11,
+     "stops": 2,
+     "pit_est": [
+      3.073,
+      2.708
+     ]
+    },
+    {
+     "pos": 12,
+     "code": "COL",
+     "name": "Franco Colapinto",
+     "nat": "AR",
+     "team": "Williams",
+     "grid": 18,
+     "points": 0,
+     "laps": 53,
+     "status": "Finished",
+     "qpos": 18,
+     "stops": 1,
+     "pit_est": [
+      3.354
+     ]
+    },
+    {
+     "pos": 13,
+     "code": "RIC",
+     "name": "Daniel Ricciardo",
+     "nat": "AU",
+     "team": "RB",
+     "grid": 12,
+     "points": 0,
+     "laps": 53,
+     "status": "Finished",
+     "qpos": 12,
+     "stops": 1,
+     "pit_est": [
+      8.524
+     ]
+    },
+    {
+     "pos": 14,
+     "code": "OCO",
+     "name": "Esteban Ocon",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 15,
+     "points": 0,
+     "laps": 52,
+     "status": "Finished",
+     "qpos": 15,
+     "stops": 1,
+     "pit_est": [
+      2.353
+     ]
+    },
+    {
+     "pos": 15,
+     "code": "GAS",
+     "name": "Pierre Gasly",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 14,
+     "points": 0,
+     "laps": 52,
+     "status": "Finished",
+     "qpos": 14,
+     "stops": 2,
+     "pit_est": [
+      2.542,
+      2.41
+     ]
+    },
+    {
+     "pos": 16,
+     "code": "BOT",
+     "name": "Valtteri Bottas",
+     "nat": "FI",
+     "team": "Kick Sauber",
+     "grid": 19,
+     "points": 0,
+     "laps": 52,
+     "status": "Finished",
+     "qpos": 19,
+     "stops": 1,
+     "pit_est": [
+      2.617
+     ]
+    },
+    {
+     "pos": 17,
+     "code": "HUL",
+     "name": "Nico Hülkenberg",
+     "nat": "DE",
+     "team": "Haas",
+     "grid": 10,
+     "points": 0,
+     "laps": 52,
+     "status": "Finished",
+     "qpos": 10,
+     "stops": 2,
+     "pit_est": [
+      17.082,
+      14.783
+     ]
+    },
+    {
+     "pos": 18,
+     "code": "ZHO",
+     "name": "Guanyu Zhou",
+     "nat": "CN",
+     "team": "Kick Sauber",
+     "grid": 20,
+     "points": 0,
+     "laps": 52,
+     "status": "Finished",
+     "qpos": 20,
+     "stops": 1,
+     "pit_est": [
+      5.345
+     ]
+    },
+    {
+     "pos": 19,
+     "code": "STR",
+     "name": "Lance Stroll",
+     "nat": "CA",
+     "team": "Aston Martin",
+     "grid": 17,
+     "points": 0,
+     "laps": 52,
+     "status": "Finished",
+     "qpos": 17,
+     "stops": 3,
+     "pit_est": [
+      3.187,
+      2.416,
+      3.476
+     ]
+    },
+    {
+     "pos": null,
+     "code": "TSU",
+     "name": "Yuki Tsunoda",
+     "nat": "JP",
+     "team": "RB",
+     "grid": 16,
+     "points": 0,
+     "laps": 7,
+     "status": "Overheating",
+     "qpos": 16,
+     "stops": 0,
+     "pit_est": null
+    }
+   ],
+   "dotd": "LEC"
+  },
+  {
+   "round": 17,
+   "name": "Azerbaijan Grand Prix",
+   "country": "Azerbaijan",
+   "locality": "Baku",
+   "circuit": "Baku",
+   "date": "2024-09-15",
+   "status": "completed",
+   "winner": {
+    "code": "PIA",
+    "name": "Oscar Piastri",
+    "nat": "AU",
+    "team": "McLaren"
+   },
+   "podium": [
+    {
+     "pos": 1,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren"
+    },
+    {
+     "pos": 2,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari"
+    },
+    {
+     "pos": 3,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes"
+    }
+   ],
+   "fastest_lap": null,
+   "results": [
+    {
+     "pos": 1,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren",
+     "grid": 2,
+     "points": 25,
+     "laps": 51,
+     "status": "Finished",
+     "qpos": 2,
+     "stops": 1,
+     "pit_est": [
+      2.469
+     ]
+    },
+    {
+     "pos": 2,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari",
+     "grid": 1,
+     "points": 18,
+     "laps": 51,
+     "status": "Finished",
+     "qpos": 1,
+     "stops": 1,
+     "pit_est": [
+      2.959
+     ]
+    },
+    {
+     "pos": 3,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 5,
+     "points": 15,
+     "laps": 51,
+     "status": "Finished",
+     "qpos": 5,
+     "stops": 1,
+     "pit_est": [
+      2.242
+     ]
+    },
+    {
+     "pos": 4,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren",
+     "grid": 15,
+     "points": 13,
+     "laps": 51,
+     "status": "Finished",
+     "qpos": 16,
+     "stops": 1,
+     "pit_est": [
+      2.0
+     ]
+    },
+    {
+     "pos": 5,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing",
+     "grid": 6,
+     "points": 10,
+     "laps": 51,
+     "status": "Finished",
+     "qpos": 6,
+     "stops": 2,
+     "pit_est": [
+      3.433,
+      3.013
+     ]
+    },
+    {
+     "pos": 6,
+     "code": "ALO",
+     "name": "Fernando Alonso",
+     "nat": "ES",
+     "team": "Aston Martin",
+     "grid": 7,
+     "points": 8,
+     "laps": 51,
+     "status": "Finished",
+     "qpos": 8,
+     "stops": 1,
+     "pit_est": [
+      2.361
+     ]
+    },
+    {
+     "pos": 7,
+     "code": "ALB",
+     "name": "Alexander Albon",
+     "nat": "TH",
+     "team": "Williams",
+     "grid": 9,
+     "points": 6,
+     "laps": 51,
+     "status": "Finished",
+     "qpos": 10,
+     "stops": 1,
+     "pit_est": [
+      2.575
+     ]
+    },
+    {
+     "pos": 8,
+     "code": "COL",
+     "name": "Franco Colapinto",
+     "nat": "AR",
+     "team": "Williams",
+     "grid": 8,
+     "points": 4,
+     "laps": 51,
+     "status": "Finished",
+     "qpos": 9,
+     "stops": 1,
+     "pit_est": [
+      2.884
+     ]
+    },
+    {
+     "pos": 9,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": null,
+     "points": 2,
+     "laps": 51,
+     "status": "Finished",
+     "qpos": 7,
+     "stops": 1,
+     "pit_est": [
+      3.577
+     ]
+    },
+    {
+     "pos": 10,
+     "code": "BEA",
+     "name": "Oliver Bearman",
+     "nat": "GB",
+     "team": "Haas",
+     "grid": 10,
+     "points": 1,
+     "laps": 51,
+     "status": "Finished",
+     "qpos": 11,
+     "stops": 1,
+     "pit_est": [
+      3.564
+     ]
+    },
+    {
+     "pos": 11,
+     "code": "HUL",
+     "name": "Nico Hülkenberg",
+     "nat": "DE",
+     "team": "Haas",
+     "grid": 12,
+     "points": 0,
+     "laps": 51,
+     "status": "Finished",
+     "qpos": 13,
+     "stops": 1,
+     "pit_est": [
+      3.905
+     ]
+    },
+    {
+     "pos": 12,
+     "code": "GAS",
+     "name": "Pierre Gasly",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 18,
+     "points": 0,
+     "laps": 51,
+     "status": "Finished",
+     "qpos": null,
+     "stops": 1,
+     "pit_est": [
+      2.545
+     ]
+    },
+    {
+     "pos": 13,
+     "code": "RIC",
+     "name": "Daniel Ricciardo",
+     "nat": "AU",
+     "team": "RB",
+     "grid": 14,
+     "points": 0,
+     "laps": 51,
+     "status": "Finished",
+     "qpos": 15,
+     "stops": 1,
+     "pit_est": [
+      4.272
+     ]
+    },
+    {
+     "pos": 14,
+     "code": "ZHO",
+     "name": "Guanyu Zhou",
+     "nat": "CN",
+     "team": "Kick Sauber",
+     "grid": 17,
+     "points": 0,
+     "laps": 51,
+     "status": "Finished",
+     "qpos": 18,
+     "stops": 1,
+     "pit_est": [
+      2.808
+     ]
+    },
+    {
+     "pos": 15,
+     "code": "OCO",
+     "name": "Esteban Ocon",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": null,
+     "points": 0,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 19,
+     "stops": 1,
+     "pit_est": [
+      2.922
+     ]
+    },
+    {
+     "pos": 16,
+     "code": "BOT",
+     "name": "Valtteri Bottas",
+     "nat": "FI",
+     "team": "Kick Sauber",
+     "grid": 16,
+     "points": 0,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 17,
+     "stops": 1,
+     "pit_est": [
+      2.333
+     ]
+    },
+    {
+     "pos": 17,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing",
+     "grid": 4,
+     "points": 0,
+     "laps": 49,
+     "status": "Collision",
+     "qpos": 4,
+     "stops": 1,
+     "pit_est": [
+      2.918
+     ]
+    },
+    {
+     "pos": 18,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari",
+     "grid": 3,
+     "points": 0,
+     "laps": 49,
+     "status": "Collision",
+     "qpos": 3,
+     "stops": 1,
+     "pit_est": [
+      3.771
+     ]
+    },
+    {
+     "pos": 19,
+     "code": "STR",
+     "name": "Lance Stroll",
+     "nat": "CA",
+     "team": "Aston Martin",
+     "grid": 13,
+     "points": 0,
+     "laps": 45,
+     "status": "Brakes",
+     "qpos": 14,
+     "stops": 2,
+     "pit_est": [
+      3.411,
+      2.502
+     ]
+    },
+    {
+     "pos": null,
+     "code": "TSU",
+     "name": "Yuki Tsunoda",
+     "nat": "JP",
+     "team": "RB",
+     "grid": 11,
+     "points": 0,
+     "laps": 14,
+     "status": "Collision damage",
+     "qpos": 12,
+     "stops": 1,
+     "pit_est": [
+      3.21
+     ]
+    }
+   ],
+   "dotd": "PIA"
+  },
+  {
+   "round": 18,
+   "name": "Singapore Grand Prix",
+   "country": "Singapore",
+   "locality": "Marina Bay",
+   "circuit": "Marina Bay",
+   "date": "2024-09-22",
+   "status": "completed",
+   "winner": {
+    "code": "NOR",
+    "name": "Lando Norris",
+    "nat": "GB",
+    "team": "McLaren"
+   },
+   "podium": [
+    {
+     "pos": 1,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren"
+    },
+    {
+     "pos": 2,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing"
+    },
+    {
+     "pos": 3,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren"
+    }
+   ],
+   "fastest_lap": null,
+   "results": [
+    {
+     "pos": 1,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren",
+     "grid": 1,
+     "points": 25,
+     "laps": 62,
+     "status": "Finished",
+     "qpos": 1,
+     "stops": 1,
+     "pit_est": [
+      2.352
+     ]
+    },
+    {
+     "pos": 2,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing",
+     "grid": 2,
+     "points": 18,
+     "laps": 62,
+     "status": "Finished",
+     "qpos": 2,
+     "stops": 1,
+     "pit_est": [
+      2.916
+     ]
+    },
+    {
+     "pos": 3,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren",
+     "grid": 5,
+     "points": 15,
+     "laps": 62,
+     "status": "Finished",
+     "qpos": 5,
+     "stops": 1,
+     "pit_est": [
+      2.413
+     ]
+    },
+    {
+     "pos": 4,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 4,
+     "points": 12,
+     "laps": 62,
+     "status": "Finished",
+     "qpos": 4,
+     "stops": 1,
+     "pit_est": [
+      2.0
+     ]
+    },
+    {
+     "pos": 5,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari",
+     "grid": 9,
+     "points": 10,
+     "laps": 62,
+     "status": "Finished",
+     "qpos": 9,
+     "stops": 1,
+     "pit_est": [
+      2.303
+     ]
+    },
+    {
+     "pos": 6,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 3,
+     "points": 8,
+     "laps": 62,
+     "status": "Finished",
+     "qpos": 3,
+     "stops": 1,
+     "pit_est": [
+      2.533
+     ]
+    },
+    {
+     "pos": 7,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari",
+     "grid": 10,
+     "points": 6,
+     "laps": 62,
+     "status": "Finished",
+     "qpos": 10,
+     "stops": 1,
+     "pit_est": [
+      2.646
+     ]
+    },
+    {
+     "pos": 8,
+     "code": "ALO",
+     "name": "Fernando Alonso",
+     "nat": "ES",
+     "team": "Aston Martin",
+     "grid": 7,
+     "points": 4,
+     "laps": 61,
+     "status": "Finished",
+     "qpos": 7,
+     "stops": 1,
+     "pit_est": [
+      2.512
+     ]
+    },
+    {
+     "pos": 9,
+     "code": "HUL",
+     "name": "Nico Hülkenberg",
+     "nat": "DE",
+     "team": "Haas",
+     "grid": 6,
+     "points": 2,
+     "laps": 61,
+     "status": "Finished",
+     "qpos": 6,
+     "stops": 1,
+     "pit_est": [
+      3.069
+     ]
+    },
+    {
+     "pos": 10,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing",
+     "grid": 13,
+     "points": 1,
+     "laps": 61,
+     "status": "Finished",
+     "qpos": 13,
+     "stops": 1,
+     "pit_est": [
+      2.251
+     ]
+    },
+    {
+     "pos": 11,
+     "code": "COL",
+     "name": "Franco Colapinto",
+     "nat": "AR",
+     "team": "Williams",
+     "grid": 12,
+     "points": 0,
+     "laps": 61,
+     "status": "Finished",
+     "qpos": 12,
+     "stops": 1,
+     "pit_est": [
+      3.033
+     ]
+    },
+    {
+     "pos": 12,
+     "code": "TSU",
+     "name": "Yuki Tsunoda",
+     "nat": "JP",
+     "team": "RB",
+     "grid": 8,
+     "points": 0,
+     "laps": 61,
+     "status": "Finished",
+     "qpos": 8,
+     "stops": 1,
+     "pit_est": [
+      2.923
+     ]
+    },
+    {
+     "pos": 13,
+     "code": "OCO",
+     "name": "Esteban Ocon",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 15,
+     "points": 0,
+     "laps": 61,
+     "status": "Finished",
+     "qpos": 15,
+     "stops": 1,
+     "pit_est": [
+      2.862
+     ]
+    },
+    {
+     "pos": 14,
+     "code": "STR",
+     "name": "Lance Stroll",
+     "nat": "CA",
+     "team": "Aston Martin",
+     "grid": 17,
+     "points": 0,
+     "laps": 61,
+     "status": "Finished",
+     "qpos": 17,
+     "stops": 1,
+     "pit_est": [
+      3.077
+     ]
+    },
+    {
+     "pos": 15,
+     "code": "ZHO",
+     "name": "Guanyu Zhou",
+     "nat": "CN",
+     "team": "Kick Sauber",
+     "grid": 20,
+     "points": 0,
+     "laps": 61,
+     "status": "Finished",
+     "qpos": 20,
+     "stops": 1,
+     "pit_est": [
+      2.621
+     ]
+    },
+    {
+     "pos": 16,
+     "code": "BOT",
+     "name": "Valtteri Bottas",
+     "nat": "FI",
+     "team": "Kick Sauber",
+     "grid": 19,
+     "points": 0,
+     "laps": 61,
+     "status": "Finished",
+     "qpos": 19,
+     "stops": 1,
+     "pit_est": [
+      3.684
+     ]
+    },
+    {
+     "pos": 17,
+     "code": "GAS",
+     "name": "Pierre Gasly",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 18,
+     "points": 0,
+     "laps": 61,
+     "status": "Finished",
+     "qpos": 18,
+     "stops": 1,
+     "pit_est": [
+      4.77
+     ]
+    },
+    {
+     "pos": 18,
+     "code": "RIC",
+     "name": "Daniel Ricciardo",
+     "nat": "AU",
+     "team": "RB",
+     "grid": 16,
+     "points": 0,
+     "laps": 61,
+     "status": "Finished",
+     "qpos": 16,
+     "stops": 3,
+     "pit_est": [
+      3.577,
+      2.327,
+      2.914
+     ]
+    },
+    {
+     "pos": 19,
+     "code": "MAG",
+     "name": "Kevin Magnussen",
+     "nat": "DK",
+     "team": "Haas",
+     "grid": 14,
+     "points": 0,
+     "laps": 57,
+     "status": "Puncture",
+     "qpos": 14,
+     "stops": 2,
+     "pit_est": [
+      2.968,
+      4.552
+     ]
+    },
+    {
+     "pos": null,
+     "code": "ALB",
+     "name": "Alexander Albon",
+     "nat": "TH",
+     "team": "Williams",
+     "grid": 11,
+     "points": 0,
+     "laps": 15,
+     "status": "Overheating",
+     "qpos": 11,
+     "stops": 1,
+     "pit_est": [
+      2.387
+     ]
+    }
+   ],
+   "dotd": "RIC"
+  },
+  {
+   "round": 19,
+   "name": "United States Grand Prix",
+   "country": "United States",
+   "locality": "Austin",
+   "circuit": "Austin",
+   "date": "2024-10-20",
+   "status": "completed",
+   "winner": {
+    "code": "LEC",
+    "name": "Charles Leclerc",
+    "nat": "MC",
+    "team": "Ferrari"
+   },
+   "podium": [
+    {
+     "pos": 1,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari"
+    },
+    {
+     "pos": 2,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari"
+    },
+    {
+     "pos": 3,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing"
+    }
+   ],
+   "fastest_lap": null,
+   "results": [
+    {
+     "pos": 1,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari",
+     "grid": 4,
+     "points": 25,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 4,
+     "stops": 1,
+     "pit_est": [
+      2.237
+     ]
+    },
+    {
+     "pos": 2,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari",
+     "grid": 3,
+     "points": 18,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 3,
+     "stops": 1,
+     "pit_est": [
+      2.383
+     ]
+    },
+    {
+     "pos": 3,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing",
+     "grid": 2,
+     "points": 15,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 2,
+     "stops": 1,
+     "pit_est": [
+      2.648
+     ]
+    },
+    {
+     "pos": 4,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren",
+     "grid": 1,
+     "points": 12,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 1,
+     "stops": 1,
+     "pit_est": [
+      2.151
+     ]
+    },
+    {
+     "pos": 5,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren",
+     "grid": 5,
+     "points": 10,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 5,
+     "stops": 1,
+     "pit_est": [
+      2.527
+     ]
+    },
+    {
+     "pos": 6,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": null,
+     "points": 8,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 6,
+     "stops": 1,
+     "pit_est": [
+      7.747
+     ]
+    },
+    {
+     "pos": 7,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing",
+     "grid": 9,
+     "points": 6,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 10,
+     "stops": 1,
+     "pit_est": [
+      2.0
+     ]
+    },
+    {
+     "pos": 8,
+     "code": "HUL",
+     "name": "Nico Hülkenberg",
+     "nat": "DE",
+     "team": "Haas",
+     "grid": 11,
+     "points": 4,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 12,
+     "stops": 1,
+     "pit_est": [
+      2.92
+     ]
+    },
+    {
+     "pos": 9,
+     "code": "LAW",
+     "name": "Liam Lawson",
+     "nat": "NZ",
+     "team": "RB",
+     "grid": 19,
+     "points": 2,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 15,
+     "stops": 1,
+     "pit_est": [
+      2.259
+     ]
+    },
+    {
+     "pos": 10,
+     "code": "COL",
+     "name": "Franco Colapinto",
+     "nat": "AR",
+     "team": "Williams",
+     "grid": 15,
+     "points": 1,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 17,
+     "stops": 1,
+     "pit_est": [
+      2.391
+     ]
+    },
+    {
+     "pos": 11,
+     "code": "MAG",
+     "name": "Kevin Magnussen",
+     "nat": "DK",
+     "team": "Haas",
+     "grid": 8,
+     "points": 0,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 9,
+     "stops": 2,
+     "pit_est": [
+      2.386,
+      2.507
+     ]
+    },
+    {
+     "pos": 12,
+     "code": "GAS",
+     "name": "Pierre Gasly",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 6,
+     "points": 0,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 7,
+     "stops": 1,
+     "pit_est": [
+      6.648
+     ]
+    },
+    {
+     "pos": 13,
+     "code": "ALO",
+     "name": "Fernando Alonso",
+     "nat": "ES",
+     "team": "Aston Martin",
+     "grid": 7,
+     "points": 0,
+     "laps": 55,
+     "status": "Finished",
+     "qpos": 8,
+     "stops": 1,
+     "pit_est": [
+      2.667
+     ]
+    },
+    {
+     "pos": 14,
+     "code": "TSU",
+     "name": "Yuki Tsunoda",
+     "nat": "JP",
+     "team": "RB",
+     "grid": 10,
+     "points": 0,
+     "laps": 55,
+     "status": "Finished",
+     "qpos": 11,
+     "stops": 1,
+     "pit_est": [
+      2.613
+     ]
+    },
+    {
+     "pos": 15,
+     "code": "STR",
+     "name": "Lance Stroll",
+     "nat": "CA",
+     "team": "Aston Martin",
+     "grid": 13,
+     "points": 0,
+     "laps": 55,
+     "status": "Finished",
+     "qpos": 14,
+     "stops": 1,
+     "pit_est": [
+      4.819
+     ]
+    },
+    {
+     "pos": 16,
+     "code": "ALB",
+     "name": "Alexander Albon",
+     "nat": "TH",
+     "team": "Williams",
+     "grid": 14,
+     "points": 0,
+     "laps": 55,
+     "status": "Finished",
+     "qpos": 16,
+     "stops": 2,
+     "pit_est": [
+      13.403,
+      2.811
+     ]
+    },
+    {
+     "pos": 17,
+     "code": "BOT",
+     "name": "Valtteri Bottas",
+     "nat": "FI",
+     "team": "Kick Sauber",
+     "grid": 16,
+     "points": 0,
+     "laps": 55,
+     "status": "Finished",
+     "qpos": 18,
+     "stops": 1,
+     "pit_est": [
+      2.859
+     ]
+    },
+    {
+     "pos": 18,
+     "code": "OCO",
+     "name": "Esteban Ocon",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 12,
+     "points": 0,
+     "laps": 55,
+     "status": "Finished",
+     "qpos": 13,
+     "stops": 2,
+     "pit_est": [
+      2.576,
+      4.595
+     ]
+    },
+    {
+     "pos": 19,
+     "code": "ZHO",
+     "name": "Guanyu Zhou",
+     "nat": "CN",
+     "team": "Kick Sauber",
+     "grid": 18,
+     "points": 0,
+     "laps": 55,
+     "status": "Finished",
+     "qpos": 20,
+     "stops": 2,
+     "pit_est": [
+      2.853,
+      3.31
+     ]
+    },
+    {
+     "pos": null,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 17,
+     "points": 0,
+     "laps": 1,
+     "status": "Spun off",
+     "qpos": 19,
+     "stops": 0,
+     "pit_est": null
+    }
+   ],
+   "dotd": "LEC"
+  },
+  {
+   "round": 20,
+   "name": "Mexico City Grand Prix",
+   "country": "Mexico",
+   "locality": "Mexico City",
+   "circuit": "Mexico City",
+   "date": "2024-10-27",
+   "status": "completed",
+   "winner": {
+    "code": "SAI",
+    "name": "Carlos Sainz Jr.",
+    "nat": "ES",
+    "team": "Ferrari"
+   },
+   "podium": [
+    {
+     "pos": 1,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari"
+    },
+    {
+     "pos": 2,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren"
+    },
+    {
+     "pos": 3,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari"
+    }
+   ],
+   "fastest_lap": null,
+   "results": [
+    {
+     "pos": 1,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari",
+     "grid": 1,
+     "points": 25,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 1,
+     "stops": 1,
+     "pit_est": [
+      2.424
+     ]
+    },
+    {
+     "pos": 2,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren",
+     "grid": 3,
+     "points": 18,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 3,
+     "stops": 1,
+     "pit_est": [
+      2.286
+     ]
+    },
+    {
+     "pos": 3,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari",
+     "grid": 4,
+     "points": 16,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 4,
+     "stops": 2,
+     "pit_est": [
+      3.035,
+      2.865
+     ]
+    },
+    {
+     "pos": 4,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 6,
+     "points": 12,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 6,
+     "stops": 1,
+     "pit_est": [
+      2.713
+     ]
+    },
+    {
+     "pos": 5,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 5,
+     "points": 10,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 5,
+     "stops": 1,
+     "pit_est": [
+      2.637
+     ]
+    },
+    {
+     "pos": 6,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing",
+     "grid": 2,
+     "points": 8,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 2,
+     "stops": 1,
+     "pit_est": [
+      23.905
+     ]
+    },
+    {
+     "pos": 7,
+     "code": "MAG",
+     "name": "Kevin Magnussen",
+     "nat": "DK",
+     "team": "Haas",
+     "grid": 7,
+     "points": 6,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 7,
+     "stops": 1,
+     "pit_est": [
+      3.507
+     ]
+    },
+    {
+     "pos": 8,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren",
+     "grid": 17,
+     "points": 4,
+     "laps": 71,
+     "status": "Finished",
+     "qpos": 17,
+     "stops": 1,
+     "pit_est": [
+      2.0
+     ]
+    },
+    {
+     "pos": 9,
+     "code": "HUL",
+     "name": "Nico Hülkenberg",
+     "nat": "DE",
+     "team": "Haas",
+     "grid": 10,
+     "points": 2,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 10,
+     "stops": 1,
+     "pit_est": [
+      3.252
+     ]
+    },
+    {
+     "pos": 10,
+     "code": "GAS",
+     "name": "Pierre Gasly",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 8,
+     "points": 1,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 8,
+     "stops": 1,
+     "pit_est": [
+      3.379
+     ]
+    },
+    {
+     "pos": 11,
+     "code": "STR",
+     "name": "Lance Stroll",
+     "nat": "CA",
+     "team": "Aston Martin",
+     "grid": 14,
+     "points": 0,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 14,
+     "stops": 1,
+     "pit_est": [
+      2.767
+     ]
+    },
+    {
+     "pos": 12,
+     "code": "COL",
+     "name": "Franco Colapinto",
+     "nat": "AR",
+     "team": "Williams",
+     "grid": 16,
+     "points": 0,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 16,
+     "stops": 1,
+     "pit_est": [
+      4.07
+     ]
+    },
+    {
+     "pos": 13,
+     "code": "OCO",
+     "name": "Esteban Ocon",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": null,
+     "points": 0,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 19,
+     "stops": 1,
+     "pit_est": [
+      3.42
+     ]
+    },
+    {
+     "pos": 14,
+     "code": "BOT",
+     "name": "Valtteri Bottas",
+     "nat": "FI",
+     "team": "Kick Sauber",
+     "grid": 15,
+     "points": 0,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 15,
+     "stops": 1,
+     "pit_est": [
+      2.68
+     ]
+    },
+    {
+     "pos": 15,
+     "code": "ZHO",
+     "name": "Guanyu Zhou",
+     "nat": "CN",
+     "team": "Kick Sauber",
+     "grid": 19,
+     "points": 0,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 20,
+     "stops": 1,
+     "pit_est": [
+      3.11
+     ]
+    },
+    {
+     "pos": 16,
+     "code": "LAW",
+     "name": "Liam Lawson",
+     "nat": "NZ",
+     "team": "RB",
+     "grid": 12,
+     "points": 0,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 12,
+     "stops": 2,
+     "pit_est": [
+      2.761,
+      10.474
+     ]
+    },
+    {
+     "pos": 17,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing",
+     "grid": 18,
+     "points": 0,
+     "laps": 70,
+     "status": "Finished",
+     "qpos": 18,
+     "stops": 3,
+     "pit_est": [
+      7.905,
+      2.349,
+      2.095
+     ]
+    },
+    {
+     "pos": null,
+     "code": "ALO",
+     "name": "Fernando Alonso",
+     "nat": "ES",
+     "team": "Aston Martin",
+     "grid": 13,
+     "points": 0,
+     "laps": 15,
+     "status": "Brakes",
+     "qpos": 13,
+     "stops": 0,
+     "pit_est": null
+    },
+    {
+     "pos": null,
+     "code": "ALB",
+     "name": "Alexander Albon",
+     "nat": "TH",
+     "team": "Williams",
+     "grid": 9,
+     "points": 0,
+     "laps": 0,
+     "status": "Collision",
+     "qpos": 9,
+     "stops": 0,
+     "pit_est": null
+    },
+    {
+     "pos": null,
+     "code": "TSU",
+     "name": "Yuki Tsunoda",
+     "nat": "JP",
+     "team": "RB",
+     "grid": 11,
+     "points": 0,
+     "laps": 0,
+     "status": "Collision",
+     "qpos": 11,
+     "stops": 0,
+     "pit_est": null
+    }
+   ],
+   "dotd": "SAI"
+  },
+  {
+   "round": 21,
+   "name": "São Paulo Grand Prix",
+   "country": "Brazil",
+   "locality": "São Paulo",
+   "circuit": "São Paulo",
+   "date": "2024-11-03",
+   "status": "completed",
+   "winner": {
+    "code": "VER",
+    "name": "Max Verstappen",
+    "nat": "NL",
+    "team": "Red Bull Racing"
+   },
+   "podium": [
+    {
+     "pos": 1,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing"
+    },
+    {
+     "pos": 2,
+     "code": "OCO",
+     "name": "Esteban Ocon",
+     "nat": "FR",
+     "team": "Alpine"
+    },
+    {
+     "pos": 3,
+     "code": "GAS",
+     "name": "Pierre Gasly",
+     "nat": "FR",
+     "team": "Alpine"
+    }
+   ],
+   "fastest_lap": null,
+   "results": [
+    {
+     "pos": 1,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing",
+     "grid": 17,
+     "points": 26,
+     "laps": 69,
+     "status": "Finished",
+     "qpos": 12,
+     "stops": 1,
+     "pit_est": [
+      1386.73
+     ]
+    },
+    {
+     "pos": 2,
+     "code": "OCO",
+     "name": "Esteban Ocon",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 4,
+     "points": 18,
+     "laps": 69,
+     "status": "Finished",
+     "qpos": 4,
+     "stops": 1,
+     "pit_est": [
+      1386.122
+     ]
+    },
+    {
+     "pos": 3,
+     "code": "GAS",
+     "name": "Pierre Gasly",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 13,
+     "points": 15,
+     "laps": 69,
+     "status": "Finished",
+     "qpos": 15,
+     "stops": 1,
+     "pit_est": [
+      1385.013
+     ]
+    },
+    {
+     "pos": 4,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 2,
+     "points": 12,
+     "laps": 69,
+     "status": "Finished",
+     "qpos": 2,
+     "stops": 2,
+     "pit_est": [
+      3.125,
+      1393.265
+     ]
+    },
+    {
+     "pos": 5,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari",
+     "grid": 6,
+     "points": 10,
+     "laps": 69,
+     "status": "Finished",
+     "qpos": 6,
+     "stops": 2,
+     "pit_est": [
+      2.0,
+      1397.687
+     ]
+    },
+    {
+     "pos": 6,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren",
+     "grid": 1,
+     "points": 8,
+     "laps": 69,
+     "status": "Finished",
+     "qpos": 1,
+     "stops": 2,
+     "pit_est": [
+      2.191,
+      1392.79
+     ]
+    },
+    {
+     "pos": 7,
+     "code": "TSU",
+     "name": "Yuki Tsunoda",
+     "nat": "JP",
+     "team": "RB",
+     "grid": 3,
+     "points": 6,
+     "laps": 69,
+     "status": "Finished",
+     "qpos": 3,
+     "stops": 2,
+     "pit_est": [
+      2.858,
+      1396.457
+     ]
+    },
+    {
+     "pos": 8,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren",
+     "grid": 8,
+     "points": 4,
+     "laps": 69,
+     "status": "Finished",
+     "qpos": 8,
+     "stops": 2,
+     "pit_est": [
+      3.477,
+      1397.697
+     ]
+    },
+    {
+     "pos": 9,
+     "code": "LAW",
+     "name": "Liam Lawson",
+     "nat": "NZ",
+     "team": "RB",
+     "grid": 5,
+     "points": 2,
+     "laps": 69,
+     "status": "Finished",
+     "qpos": 5,
+     "stops": 2,
+     "pit_est": [
+      5.594,
+      1400.149
+     ]
+    },
+    {
+     "pos": 10,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 14,
+     "points": 1,
+     "laps": 69,
+     "status": "Finished",
+     "qpos": 16,
+     "stops": 2,
+     "pit_est": [
+      2.632,
+      1403.13
+     ]
+    },
+    {
+     "pos": 11,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing",
+     "grid": 12,
+     "points": 0,
+     "laps": 69,
+     "status": "Finished",
+     "qpos": 13,
+     "stops": 2,
+     "pit_est": [
+      4.119,
+      1402.642
+     ]
+    },
+    {
+     "pos": 12,
+     "code": "BEA",
+     "name": "Oliver Bearman",
+     "nat": "GB",
+     "team": "Haas",
+     "grid": 15,
+     "points": 0,
+     "laps": 69,
+     "status": "Finished",
+     "qpos": 17,
+     "stops": 2,
+     "pit_est": [
+      13.182,
+      1402.164
+     ]
+    },
+    {
+     "pos": 13,
+     "code": "BOT",
+     "name": "Valtteri Bottas",
+     "nat": "FI",
+     "team": "Kick Sauber",
+     "grid": 11,
+     "points": 0,
+     "laps": 69,
+     "status": "Finished",
+     "qpos": 11,
+     "stops": 1,
+     "pit_est": [
+      1399.521
+     ]
+    },
+    {
+     "pos": 14,
+     "code": "ALO",
+     "name": "Fernando Alonso",
+     "nat": "ES",
+     "team": "Aston Martin",
+     "grid": 9,
+     "points": 0,
+     "laps": 69,
+     "status": "Finished",
+     "qpos": 9,
+     "stops": 2,
+     "pit_est": [
+      2.534,
+      1400.299
+     ]
+    },
+    {
+     "pos": 15,
+     "code": "ZHO",
+     "name": "Guanyu Zhou",
+     "nat": "CN",
+     "team": "Kick Sauber",
+     "grid": 19,
+     "points": 0,
+     "laps": 69,
+     "status": "Finished",
+     "qpos": 20,
+     "stops": 4,
+     "pit_est": [
+      2.675,
+      4.494,
+      1260.581,
+      45.969
+     ]
+    },
+    {
+     "pos": null,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari",
+     "grid": null,
+     "points": 0,
+     "laps": 38,
+     "status": "Accident",
+     "qpos": 14,
+     "stops": 2,
+     "pit_est": [
+      3.347,
+      1402.086
+     ]
+    },
+    {
+     "pos": null,
+     "code": "COL",
+     "name": "Franco Colapinto",
+     "nat": "AR",
+     "team": "Williams",
+     "grid": 16,
+     "points": 0,
+     "laps": 30,
+     "status": "Accident",
+     "qpos": 18,
+     "stops": 2,
+     "pit_est": [
+      2.714,
+      2.666
+     ]
+    },
+    {
+     "pos": null,
+     "code": "ALB",
+     "name": "Alexander Albon",
+     "nat": "TH",
+     "team": "Williams",
+     "grid": 7,
+     "points": 0,
+     "laps": 0,
+     "status": "Car damaged in qualifying",
+     "qpos": 7,
+     "stops": 0,
+     "pit_est": null
+    },
+    {
+     "pos": null,
+     "code": "STR",
+     "name": "Lance Stroll",
+     "nat": "CA",
+     "team": "Aston Martin",
+     "grid": 10,
+     "points": 0,
+     "laps": 0,
+     "status": "Accident",
+     "qpos": 10,
+     "stops": 0,
+     "pit_est": null
+    },
+    {
+     "pos": null,
+     "code": "HUL",
+     "name": "Nico Hülkenberg",
+     "nat": "DE",
+     "team": "Haas",
+     "grid": 18,
+     "points": 0,
+     "laps": null,
+     "status": "Received outside assistance",
+     "qpos": 19,
+     "stops": 3,
+     "pit_est": [
+      2.796,
+      36.411,
+      6.017
+     ]
+    }
+   ],
+   "dotd": "VER"
+  },
+  {
+   "round": 22,
+   "name": "Las Vegas Grand Prix",
+   "country": "United States",
+   "locality": "Las Vegas",
+   "circuit": "Las Vegas",
+   "date": "2024-11-24",
+   "status": "completed",
+   "winner": {
+    "code": "RUS",
+    "name": "George Russell",
+    "nat": "GB",
+    "team": "Mercedes"
+   },
+   "podium": [
+    {
+     "pos": 1,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes"
+    },
+    {
+     "pos": 2,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes"
+    },
+    {
+     "pos": 3,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari"
+    }
+   ],
+   "fastest_lap": null,
+   "results": [
+    {
+     "pos": 1,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 1,
+     "points": 25,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 1,
+     "stops": 2,
+     "pit_est": [
+      7.282,
+      7.185
+     ]
+    },
+    {
+     "pos": 2,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 10,
+     "points": 18,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 10,
+     "stops": 2,
+     "pit_est": [
+      7.277,
+      7.565
+     ]
+    },
+    {
+     "pos": 3,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari",
+     "grid": 2,
+     "points": 15,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 2,
+     "stops": 2,
+     "pit_est": [
+      7.258,
+      7.089
+     ]
+    },
+    {
+     "pos": 4,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari",
+     "grid": 4,
+     "points": 12,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 4,
+     "stops": 2,
+     "pit_est": [
+      7.539,
+      7.795
+     ]
+    },
+    {
+     "pos": 5,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing",
+     "grid": 5,
+     "points": 10,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 5,
+     "stops": 2,
+     "pit_est": [
+      6.907,
+      8.464
+     ]
+    },
+    {
+     "pos": 6,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren",
+     "grid": 6,
+     "points": 9,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 6,
+     "stops": 3,
+     "pit_est": [
+      7.404,
+      6.878,
+      7.269
+     ]
+    },
+    {
+     "pos": 7,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren",
+     "grid": 8,
+     "points": 6,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 8,
+     "stops": 2,
+     "pit_est": [
+      13.942,
+      7.292
+     ]
+    },
+    {
+     "pos": 8,
+     "code": "HUL",
+     "name": "Nico Hülkenberg",
+     "nat": "DE",
+     "team": "Haas",
+     "grid": 9,
+     "points": 4,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 9,
+     "stops": 2,
+     "pit_est": [
+      7.721,
+      7.912
+     ]
+    },
+    {
+     "pos": 9,
+     "code": "TSU",
+     "name": "Yuki Tsunoda",
+     "nat": "JP",
+     "team": "RB",
+     "grid": 7,
+     "points": 2,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 7,
+     "stops": 2,
+     "pit_est": [
+      7.378,
+      7.418
+     ]
+    },
+    {
+     "pos": 10,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing",
+     "grid": 15,
+     "points": 1,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 16,
+     "stops": 2,
+     "pit_est": [
+      7.504,
+      7.244
+     ]
+    },
+    {
+     "pos": 11,
+     "code": "ALO",
+     "name": "Fernando Alonso",
+     "nat": "ES",
+     "team": "Aston Martin",
+     "grid": 16,
+     "points": 0,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 17,
+     "stops": 2,
+     "pit_est": [
+      7.617,
+      7.617
+     ]
+    },
+    {
+     "pos": 12,
+     "code": "MAG",
+     "name": "Kevin Magnussen",
+     "nat": "DK",
+     "team": "Haas",
+     "grid": 12,
+     "points": 0,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 12,
+     "stops": 1,
+     "pit_est": [
+      8.173
+     ]
+    },
+    {
+     "pos": 13,
+     "code": "ZHO",
+     "name": "Guanyu Zhou",
+     "nat": "CN",
+     "team": "Kick Sauber",
+     "grid": 13,
+     "points": 0,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 13,
+     "stops": 2,
+     "pit_est": [
+      9.17,
+      7.971
+     ]
+    },
+    {
+     "pos": 14,
+     "code": "COL",
+     "name": "Franco Colapinto",
+     "nat": "AR",
+     "team": "Williams",
+     "grid": null,
+     "points": 0,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 14,
+     "stops": 2,
+     "pit_est": [
+      7.38,
+      7.431
+     ]
+    },
+    {
+     "pos": 15,
+     "code": "STR",
+     "name": "Lance Stroll",
+     "nat": "CA",
+     "team": "Aston Martin",
+     "grid": 18,
+     "points": 0,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 20,
+     "stops": 2,
+     "pit_est": [
+      21.073,
+      7.798
+     ]
+    },
+    {
+     "pos": 16,
+     "code": "LAW",
+     "name": "Liam Lawson",
+     "nat": "NZ",
+     "team": "RB",
+     "grid": 14,
+     "points": 0,
+     "laps": 50,
+     "status": "Finished",
+     "qpos": 15,
+     "stops": 2,
+     "pit_est": [
+      7.259,
+      6.852
+     ]
+    },
+    {
+     "pos": 17,
+     "code": "OCO",
+     "name": "Esteban Ocon",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 11,
+     "points": 0,
+     "laps": 49,
+     "status": "Finished",
+     "qpos": 11,
+     "stops": 3,
+     "pit_est": [
+      2.0,
+      7.352,
+      8.068
+     ]
+    },
+    {
+     "pos": 18,
+     "code": "BOT",
+     "name": "Valtteri Bottas",
+     "nat": "FI",
+     "team": "Kick Sauber",
+     "grid": 19,
+     "points": 0,
+     "laps": 49,
+     "status": "Finished",
+     "qpos": 19,
+     "stops": 2,
+     "pit_est": [
+      7.833,
+      9.031
+     ]
+    },
+    {
+     "pos": null,
+     "code": "ALB",
+     "name": "Alexander Albon",
+     "nat": "TH",
+     "team": "Williams",
+     "grid": 17,
+     "points": 0,
+     "laps": 25,
+     "status": "Turbo",
+     "qpos": 18,
+     "stops": 1,
+     "pit_est": [
+      8.222
+     ]
+    },
+    {
+     "pos": null,
+     "code": "GAS",
+     "name": "Pierre Gasly",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 3,
+     "points": 0,
+     "laps": 15,
+     "status": "Engine",
+     "qpos": 3,
+     "stops": 1,
+     "pit_est": [
+      8.389
+     ]
+    }
+   ],
+   "dotd": "HAM"
+  },
+  {
+   "round": 23,
+   "name": "Qatar Grand Prix",
+   "country": "Qatar",
+   "locality": "Lusail",
+   "circuit": "Lusail",
+   "date": "2024-12-01",
+   "status": "completed",
+   "winner": {
+    "code": "VER",
+    "name": "Max Verstappen",
+    "nat": "NL",
+    "team": "Red Bull Racing"
+   },
+   "podium": [
+    {
+     "pos": 1,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing"
+    },
+    {
+     "pos": 2,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari"
+    },
+    {
+     "pos": 3,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren"
+    }
+   ],
+   "fastest_lap": null,
+   "results": [
+    {
+     "pos": 1,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing",
+     "grid": 2,
+     "points": 25,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 1,
+     "stops": 3,
+     "pit_est": [
+      7.607,
+      3.188,
+      2.007
+     ]
+    },
+    {
+     "pos": 2,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari",
+     "grid": 5,
+     "points": 18,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 5,
+     "stops": 3,
+     "pit_est": [
+      7.764,
+      4.979,
+      8.287
+     ]
+    },
+    {
+     "pos": 3,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren",
+     "grid": 4,
+     "points": 15,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 4,
+     "stops": 3,
+     "pit_est": [
+      7.122,
+      2.171,
+      8.63
+     ]
+    },
+    {
+     "pos": 4,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 1,
+     "points": 12,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 2,
+     "stops": 4,
+     "pit_est": [
+      11.613,
+      7.174,
+      2.067,
+      13.341
+     ]
+    },
+    {
+     "pos": 5,
+     "code": "GAS",
+     "name": "Pierre Gasly",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 11,
+     "points": 10,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 11,
+     "stops": 3,
+     "pit_est": [
+      8.096,
+      2.021,
+      9.792
+     ]
+    },
+    {
+     "pos": 6,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari",
+     "grid": 7,
+     "points": 8,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 7,
+     "stops": 3,
+     "pit_est": [
+      15.447,
+      2.08,
+      13.66
+     ]
+    },
+    {
+     "pos": 7,
+     "code": "ALO",
+     "name": "Fernando Alonso",
+     "nat": "ES",
+     "team": "Aston Martin",
+     "grid": 8,
+     "points": 6,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 8,
+     "stops": 3,
+     "pit_est": [
+      7.932,
+      7.896,
+      12.115
+     ]
+    },
+    {
+     "pos": 8,
+     "code": "ZHO",
+     "name": "Guanyu Zhou",
+     "nat": "CN",
+     "team": "Kick Sauber",
+     "grid": 12,
+     "points": 4,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 12,
+     "stops": 3,
+     "pit_est": [
+      8.389,
+      2.532,
+      14.122
+     ]
+    },
+    {
+     "pos": 9,
+     "code": "MAG",
+     "name": "Kevin Magnussen",
+     "nat": "DK",
+     "team": "Haas",
+     "grid": 10,
+     "points": 2,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 10,
+     "stops": 3,
+     "pit_est": [
+      7.847,
+      2.0,
+      12.667
+     ]
+    },
+    {
+     "pos": 10,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren",
+     "grid": 3,
+     "points": 2,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 3,
+     "stops": 4,
+     "pit_est": [
+      7.328,
+      4.896,
+      8.05,
+      15.373
+     ]
+    },
+    {
+     "pos": 11,
+     "code": "BOT",
+     "name": "Valtteri Bottas",
+     "nat": "FI",
+     "team": "Kick Sauber",
+     "grid": 13,
+     "points": 0,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 13,
+     "stops": 3,
+     "pit_est": [
+      8.338,
+      8.272,
+      7.444
+     ]
+    },
+    {
+     "pos": 12,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 6,
+     "points": 0,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 6,
+     "stops": 4,
+     "pit_est": [
+      17.219,
+      2.716,
+      6.119,
+      2.009
+     ]
+    },
+    {
+     "pos": 13,
+     "code": "TSU",
+     "name": "Yuki Tsunoda",
+     "nat": "JP",
+     "team": "RB",
+     "grid": 14,
+     "points": 0,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 14,
+     "stops": 4,
+     "pit_est": [
+      8.328,
+      2.018,
+      15.153,
+      8.575
+     ]
+    },
+    {
+     "pos": 14,
+     "code": "LAW",
+     "name": "Liam Lawson",
+     "nat": "NZ",
+     "team": "RB",
+     "grid": 17,
+     "points": 0,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 17,
+     "stops": 4,
+     "pit_est": [
+      24.353,
+      2.041,
+      6.094,
+      13.959
+     ]
+    },
+    {
+     "pos": 15,
+     "code": "ALB",
+     "name": "Alexander Albon",
+     "nat": "TH",
+     "team": "Williams",
+     "grid": 16,
+     "points": 0,
+     "laps": 56,
+     "status": "Finished",
+     "qpos": 16,
+     "stops": 4,
+     "pit_est": [
+      8.483,
+      2.014,
+      15.852,
+      18.991
+     ]
+    },
+    {
+     "pos": null,
+     "code": "HUL",
+     "name": "Nico Hülkenberg",
+     "nat": "DE",
+     "team": "Haas",
+     "grid": 18,
+     "points": 0,
+     "laps": 39,
+     "status": "Spun off",
+     "qpos": 18,
+     "stops": 4,
+     "pit_est": [
+      12.261,
+      7.647,
+      3.114,
+      16.996
+     ]
+    },
+    {
+     "pos": null,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing",
+     "grid": 9,
+     "points": 0,
+     "laps": 38,
+     "status": "Clutch",
+     "qpos": 9,
+     "stops": 3,
+     "pit_est": [
+      7.392,
+      2.009,
+      8.763
+     ]
+    },
+    {
+     "pos": null,
+     "code": "STR",
+     "name": "Lance Stroll",
+     "nat": "CA",
+     "team": "Aston Martin",
+     "grid": 15,
+     "points": 0,
+     "laps": 8,
+     "status": "Collision damage",
+     "qpos": 15,
+     "stops": 2,
+     "pit_est": [
+      9.087,
+      20.978
+     ]
+    },
+    {
+     "pos": null,
+     "code": "COL",
+     "name": "Franco Colapinto",
+     "nat": "AR",
+     "team": "Williams",
+     "grid": 19,
+     "points": 0,
+     "laps": 0,
+     "status": "Collision",
+     "qpos": 19,
+     "stops": 0,
+     "pit_est": null
+    },
+    {
+     "pos": null,
+     "code": "OCO",
+     "name": "Esteban Ocon",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 20,
+     "points": 0,
+     "laps": 0,
+     "status": "Collision",
+     "qpos": 20,
+     "stops": 0,
+     "pit_est": null
+    }
+   ],
+   "dotd": "ZHO"
+  },
+  {
+   "round": 24,
+   "name": "Abu Dhabi Grand Prix",
+   "country": "United Arab Emirates",
+   "locality": "Yas Island",
+   "circuit": "Yas Island",
+   "date": "2024-12-08",
+   "status": "completed",
+   "winner": {
+    "code": "NOR",
+    "name": "Lando Norris",
+    "nat": "GB",
+    "team": "McLaren"
+   },
+   "podium": [
+    {
+     "pos": 1,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren"
+    },
+    {
+     "pos": 2,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari"
+    },
+    {
+     "pos": 3,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari"
+    }
+   ],
+   "fastest_lap": null,
+   "results": [
+    {
+     "pos": 1,
+     "code": "NOR",
+     "name": "Lando Norris",
+     "nat": "GB",
+     "team": "McLaren",
+     "grid": 1,
+     "points": 25,
+     "laps": 58,
+     "status": "Finished",
+     "qpos": 1,
+     "stops": 1,
+     "pit_est": [
+      2.0
+     ]
+    },
+    {
+     "pos": 2,
+     "code": "SAI",
+     "name": "Carlos Sainz Jr.",
+     "nat": "ES",
+     "team": "Ferrari",
+     "grid": 3,
+     "points": 18,
+     "laps": 58,
+     "status": "Finished",
+     "qpos": 3,
+     "stops": 1,
+     "pit_est": [
+      2.004
+     ]
+    },
+    {
+     "pos": 3,
+     "code": "LEC",
+     "name": "Charles Leclerc",
+     "nat": "MC",
+     "team": "Ferrari",
+     "grid": 19,
+     "points": 15,
+     "laps": 58,
+     "status": "Finished",
+     "qpos": 14,
+     "stops": 1,
+     "pit_est": [
+      2.593
+     ]
+    },
+    {
+     "pos": 4,
+     "code": "HAM",
+     "name": "Lewis Hamilton",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 16,
+     "points": 12,
+     "laps": 58,
+     "status": "Finished",
+     "qpos": 18,
+     "stops": 1,
+     "pit_est": [
+      2.418
+     ]
+    },
+    {
+     "pos": 5,
+     "code": "RUS",
+     "name": "George Russell",
+     "nat": "GB",
+     "team": "Mercedes",
+     "grid": 6,
+     "points": 10,
+     "laps": 58,
+     "status": "Finished",
+     "qpos": 7,
+     "stops": 1,
+     "pit_est": [
+      2.38
+     ]
+    },
+    {
+     "pos": 6,
+     "code": "VER",
+     "name": "Max Verstappen",
+     "nat": "NL",
+     "team": "Red Bull Racing",
+     "grid": 4,
+     "points": 8,
+     "laps": 58,
+     "status": "Finished",
+     "qpos": 5,
+     "stops": 1,
+     "pit_est": [
+      13.376
+     ]
+    },
+    {
+     "pos": 7,
+     "code": "GAS",
+     "name": "Pierre Gasly",
+     "nat": "FR",
+     "team": "Alpine",
+     "grid": 5,
+     "points": 6,
+     "laps": 58,
+     "status": "Finished",
+     "qpos": 6,
+     "stops": 1,
+     "pit_est": [
+      2.783
+     ]
+    },
+    {
+     "pos": 8,
+     "code": "HUL",
+     "name": "Nico Hülkenberg",
+     "nat": "DE",
+     "team": "Haas",
+     "grid": 7,
+     "points": 4,
+     "laps": 58,
+     "status": "Finished",
+     "qpos": 4,
+     "stops": 1,
+     "pit_est": [
+      2.254
+     ]
+    },
+    {
+     "pos": 9,
+     "code": "ALO",
+     "name": "Fernando Alonso",
+     "nat": "ES",
+     "team": "Aston Martin",
+     "grid": 8,
+     "points": 2,
+     "laps": 58,
+     "status": "Finished",
+     "qpos": 8,
+     "stops": 2,
+     "pit_est": [
+      4.05,
+      3.161
+     ]
+    },
+    {
+     "pos": 10,
+     "code": "PIA",
+     "name": "Oscar Piastri",
+     "nat": "AU",
+     "team": "McLaren",
+     "grid": 2,
+     "points": 1,
+     "laps": 58,
+     "status": "Finished",
+     "qpos": 2,
+     "stops": 2,
+     "pit_est": [
+      4.306,
+      13.498
+     ]
+    },
+    {
+     "pos": 11,
+     "code": "ALB",
+     "name": "Alexander Albon",
+     "nat": "TH",
+     "team": "Williams",
+     "grid": 18,
+     "points": 0,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 16,
+     "stops": 1,
+     "pit_est": [
+      2.789
+     ]
+    },
+    {
+     "pos": 12,
+     "code": "TSU",
+     "name": "Yuki Tsunoda",
+     "nat": "JP",
+     "team": "RB",
+     "grid": 11,
+     "points": 0,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 11,
+     "stops": 1,
+     "pit_est": [
+      2.593
+     ]
+    },
+    {
+     "pos": 13,
+     "code": "ZHO",
+     "name": "Guanyu Zhou",
+     "nat": "CN",
+     "team": "Kick Sauber",
+     "grid": 15,
+     "points": 0,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 17,
+     "stops": 2,
+     "pit_est": [
+      3.748,
+      9.489
+     ]
+    },
+    {
+     "pos": 14,
+     "code": "STR",
+     "name": "Lance Stroll",
+     "nat": "CA",
+     "team": "Aston Martin",
+     "grid": 13,
+     "points": 0,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 13,
+     "stops": 2,
+     "pit_est": [
+      3.99,
+      2.777
+     ]
+    },
+    {
+     "pos": 15,
+     "code": "DOO",
+     "name": "Jack Doohan",
+     "nat": "AU",
+     "team": "Alpine",
+     "grid": 17,
+     "points": 0,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 20,
+     "stops": 1,
+     "pit_est": [
+      2.804
+     ]
+    },
+    {
+     "pos": 16,
+     "code": "MAG",
+     "name": "Kevin Magnussen",
+     "nat": "DK",
+     "team": "Haas",
+     "grid": 14,
+     "points": 0,
+     "laps": 57,
+     "status": "Finished",
+     "qpos": 15,
+     "stops": 4,
+     "pit_est": [
+      7.087,
+      2.402,
+      3.539,
+      2.814
+     ]
+    },
+    {
+     "pos": 17,
+     "code": "LAW",
+     "name": "Liam Lawson",
+     "nat": "NZ",
+     "team": "RB",
+     "grid": 12,
+     "points": 0,
+     "laps": 55,
+     "status": "Brakes",
+     "qpos": 12,
+     "stops": 3,
+     "pit_est": [
+      4.139,
+      3.289,
+      13.041
+     ]
+    },
+    {
+     "pos": null,
+     "code": "BOT",
+     "name": "Valtteri Bottas",
+     "nat": "FI",
+     "team": "Kick Sauber",
+     "grid": 9,
+     "points": 0,
+     "laps": 30,
+     "status": "Collision damage",
+     "qpos": 9,
+     "stops": 1,
+     "pit_est": [
+      21.868
+     ]
+    },
+    {
+     "pos": null,
+     "code": "COL",
+     "name": "Franco Colapinto",
+     "nat": "AR",
+     "team": "Williams",
+     "grid": 20,
+     "points": 0,
+     "laps": 26,
+     "status": "Engine",
+     "qpos": 19,
+     "stops": 1,
+     "pit_est": [
+      5.665
+     ]
+    },
+    {
+     "pos": null,
+     "code": "PER",
+     "name": "Sergio Pérez",
+     "nat": "MX",
+     "team": "Red Bull Racing",
+     "grid": 10,
+     "points": 0,
+     "laps": 0,
+     "status": "Collision",
+     "qpos": 10,
+     "stops": 0,
+     "pit_est": null
+    }
+   ],
+   "dotd": "LEC"
+  }
+ ],
+ "drivers": [
+  {
+   "pos": 1,
+   "code": "VER",
+   "name": "Max Verstappen",
+   "nat": "NL",
+   "team": "Red Bull Racing",
+   "points": 437,
+   "wins": 9
+  },
+  {
+   "pos": 2,
+   "code": "NOR",
+   "name": "Lando Norris",
+   "nat": "GB",
+   "team": "McLaren",
+   "points": 374,
+   "wins": 4
+  },
+  {
+   "pos": 3,
+   "code": "LEC",
+   "name": "Charles Leclerc",
+   "nat": "MC",
+   "team": "Ferrari",
+   "points": 356,
+   "wins": 3
+  },
+  {
+   "pos": 4,
+   "code": "PIA",
+   "name": "Oscar Piastri",
+   "nat": "AU",
+   "team": "McLaren",
+   "points": 292,
+   "wins": 2
+  },
+  {
+   "pos": 5,
+   "code": "SAI",
+   "name": "Carlos Sainz Jr.",
+   "nat": "ES",
+   "team": "Ferrari",
+   "points": 290,
+   "wins": 2
+  },
+  {
+   "pos": 6,
+   "code": "RUS",
+   "name": "George Russell",
+   "nat": "GB",
+   "team": "Mercedes",
+   "points": 245,
+   "wins": 2
+  },
+  {
+   "pos": 7,
+   "code": "HAM",
+   "name": "Lewis Hamilton",
+   "nat": "GB",
+   "team": "Mercedes",
+   "points": 223,
+   "wins": 2
+  },
+  {
+   "pos": 8,
+   "code": "PER",
+   "name": "Sergio Pérez",
+   "nat": "MX",
+   "team": "Red Bull Racing",
+   "points": 152,
+   "wins": 0
+  },
+  {
+   "pos": 9,
+   "code": "ALO",
+   "name": "Fernando Alonso",
+   "nat": "ES",
+   "team": "Aston Martin",
+   "points": 70,
+   "wins": 0
+  },
+  {
+   "pos": 10,
+   "code": "GAS",
+   "name": "Pierre Gasly",
+   "nat": "FR",
+   "team": "Alpine",
+   "points": 42,
+   "wins": 0
+  },
+  {
+   "pos": 11,
+   "code": "HUL",
+   "name": "Nico Hülkenberg",
+   "nat": "DE",
+   "team": "Haas",
+   "points": 41,
+   "wins": 0
+  },
+  {
+   "pos": 12,
+   "code": "TSU",
+   "name": "Yuki Tsunoda",
+   "nat": "JP",
+   "team": "RB",
+   "points": 30,
+   "wins": 0
+  },
+  {
+   "pos": 13,
+   "code": "STR",
+   "name": "Lance Stroll",
+   "nat": "CA",
+   "team": "Aston Martin",
+   "points": 24,
+   "wins": 0
+  },
+  {
+   "pos": 14,
+   "code": "OCO",
+   "name": "Esteban Ocon",
+   "nat": "FR",
+   "team": "Alpine",
+   "points": 23,
+   "wins": 0
+  },
+  {
+   "pos": 15,
+   "code": "MAG",
+   "name": "Kevin Magnussen",
+   "nat": "DK",
+   "team": "Haas",
+   "points": 16,
+   "wins": 0
+  },
+  {
+   "pos": 16,
+   "code": "ALB",
+   "name": "Alexander Albon",
+   "nat": "TH",
+   "team": "Williams",
+   "points": 12,
+   "wins": 0
+  },
+  {
+   "pos": 17,
+   "code": "RIC",
+   "name": "Daniel Ricciardo",
+   "nat": "AU",
+   "team": "RB",
+   "points": 12,
+   "wins": 0
+  },
+  {
+   "pos": 18,
+   "code": "BEA",
+   "name": "Oliver Bearman",
+   "nat": "GB",
+   "team": "Haas",
+   "points": 7,
+   "wins": 0
+  },
+  {
+   "pos": 19,
+   "code": "COL",
+   "name": "Franco Colapinto",
+   "nat": "AR",
+   "team": "Williams",
+   "points": 5,
+   "wins": 0
+  },
+  {
+   "pos": 20,
+   "code": "ZHO",
+   "name": "Guanyu Zhou",
+   "nat": "CN",
+   "team": "Kick Sauber",
+   "points": 4,
+   "wins": 0
+  },
+  {
+   "pos": 21,
+   "code": "LAW",
+   "name": "Liam Lawson",
+   "nat": "NZ",
+   "team": "RB",
+   "points": 4,
+   "wins": 0
+  },
+  {
+   "pos": 22,
+   "code": "BOT",
+   "name": "Valtteri Bottas",
+   "nat": "FI",
+   "team": "Kick Sauber",
+   "points": 0,
+   "wins": 0
+  },
+  {
+   "pos": 23,
+   "code": "SAR",
+   "name": "Logan Sargeant",
+   "nat": "US",
+   "team": "Williams",
+   "points": 0,
+   "wins": 0
+  },
+  {
+   "pos": 24,
+   "code": "DOO",
+   "name": "Jack Doohan",
+   "nat": "AU",
+   "team": "Alpine",
+   "points": 0,
+   "wins": 0
+  }
+ ],
+ "constructors": [
+  {
+   "pos": 1,
+   "team": "McLaren",
+   "points": 666,
+   "wins": 6
+  },
+  {
+   "pos": 2,
+   "team": "Ferrari",
+   "points": 652,
+   "wins": 5
+  },
+  {
+   "pos": 3,
+   "team": "Red Bull Racing",
+   "points": 589,
+   "wins": 9
+  },
+  {
+   "pos": 4,
+   "team": "Mercedes",
+   "points": 468,
+   "wins": 4
+  },
+  {
+   "pos": 5,
+   "team": "Aston Martin",
+   "points": 94,
+   "wins": 0
+  },
+  {
+   "pos": 6,
+   "team": "Alpine",
+   "points": 65,
+   "wins": 0
+  },
+  {
+   "pos": 7,
+   "team": "Haas",
+   "points": 58,
+   "wins": 0
+  },
+  {
+   "pos": 8,
+   "team": "RB",
+   "points": 46,
+   "wins": 0
+  },
+  {
+   "pos": 9,
+   "team": "Williams",
+   "points": 17,
+   "wins": 0
+  },
+  {
+   "pos": 10,
+   "team": "Kick Sauber",
+   "points": 4,
+   "wins": 0
+  }
+ ],
+ "stats": [
+  {
+   "code": "VER",
+   "name": "Max Verstappen",
+   "nat": "NL",
+   "team": "Red Bull Racing",
+   "starts": 24,
+   "wins": 9,
+   "podiums": 14,
+   "poles": 10,
+   "pts_fin": 23,
+   "dnf": 1,
+   "points": 437,
+   "avg_grid": 3.5,
+   "avg_finish": 3.0,
+   "gained": 16,
+   "avg_stops": 1.7,
+   "stop_s": 2.88,
+   "dotd": 1,
+   "laps": 1389,
+   "laps_led": null
+  },
+  {
+   "code": "NOR",
+   "name": "Lando Norris",
+   "nat": "GB",
+   "team": "McLaren",
+   "starts": 24,
+   "wins": 4,
+   "podiums": 13,
+   "poles": 8,
+   "pts_fin": 23,
+   "dnf": 1,
+   "points": 374,
+   "avg_grid": 3.4,
+   "avg_finish": 4.3,
+   "gained": -22,
+   "avg_stops": 1.7,
+   "stop_s": 2.55,
+   "dotd": 7,
+   "laps": 1437,
+   "laps_led": null
+  },
+  {
+   "code": "LEC",
+   "name": "Charles Leclerc",
+   "nat": "MC",
+   "team": "Ferrari",
+   "starts": 24,
+   "wins": 3,
+   "podiums": 13,
+   "poles": 2,
+   "pts_fin": 21,
+   "dnf": 1,
+   "points": 356,
+   "avg_grid": 5.4,
+   "avg_finish": 3.9,
+   "gained": 29,
+   "avg_stops": 1.8,
+   "stop_s": 2.82,
+   "dotd": 5,
+   "laps": 1413,
+   "laps_led": null
+  },
+  {
+   "code": "PIA",
+   "name": "Oscar Piastri",
+   "nat": "AU",
+   "team": "McLaren",
+   "starts": 24,
+   "wins": 2,
+   "podiums": 8,
+   "poles": 0,
+   "pts_fin": 23,
+   "dnf": 0,
+   "points": 292,
+   "avg_grid": 5.4,
+   "avg_finish": 5.1,
+   "gained": 7,
+   "avg_stops": 1.8,
+   "stop_s": 2.76,
+   "dotd": 2,
+   "laps": 1444,
+   "laps_led": null
+  },
+  {
+   "code": "SAI",
+   "name": "Carlos Sainz Jr.",
+   "nat": "ES",
+   "team": "Ferrari",
+   "starts": 23,
+   "wins": 2,
+   "podiums": 9,
+   "poles": 1,
+   "pts_fin": 20,
+   "dnf": 3,
+   "points": 290,
+   "avg_grid": 5.0,
+   "avg_finish": 4.7,
+   "gained": 0,
+   "avg_stops": 1.7,
+   "stop_s": 2.72,
+   "dotd": 3,
+   "laps": 1343,
+   "laps_led": null
+  },
+  {
+   "code": "RUS",
+   "name": "George Russell",
+   "nat": "GB",
+   "team": "Mercedes",
+   "starts": 24,
+   "wins": 2,
+   "podiums": 4,
+   "poles": 3,
+   "pts_fin": 21,
+   "dnf": 3,
+   "points": 245,
+   "avg_grid": 5.0,
+   "avg_finish": 5.6,
+   "gained": -9,
+   "avg_stops": 1.8,
+   "stop_s": 2.91,
+   "dotd": 0,
+   "laps": 1423,
+   "laps_led": null
+  },
+  {
+   "code": "HAM",
+   "name": "Lewis Hamilton",
+   "nat": "GB",
+   "team": "Mercedes",
+   "starts": 24,
+   "wins": 2,
+   "podiums": 5,
+   "poles": 0,
+   "pts_fin": 21,
+   "dnf": 2,
+   "points": 223,
+   "avg_grid": 8.4,
+   "avg_finish": 5.9,
+   "gained": 45,
+   "avg_stops": 1.8,
+   "stop_s": 2.64,
+   "dotd": 3,
+   "laps": 1346,
+   "laps_led": null
+  },
+  {
+   "code": "PER",
+   "name": "Sergio Pérez",
+   "nat": "MX",
+   "team": "Red Bull Racing",
+   "starts": 24,
+   "wins": 0,
+   "podiums": 4,
+   "poles": 0,
+   "pts_fin": 16,
+   "dnf": 5,
+   "points": 152,
+   "avg_grid": 8.9,
+   "avg_finish": 7.9,
+   "gained": 13,
+   "avg_stops": 1.9,
+   "stop_s": 2.6,
+   "dotd": 0,
+   "laps": 1264,
+   "laps_led": null
+  },
+  {
+   "code": "ALO",
+   "name": "Fernando Alonso",
+   "nat": "ES",
+   "team": "Aston Martin",
+   "starts": 24,
+   "wins": 0,
+   "podiums": 0,
+   "poles": 0,
+   "pts_fin": 14,
+   "dnf": 1,
+   "points": 70,
+   "avg_grid": 9.0,
+   "avg_finish": 9.8,
+   "gained": -14,
+   "avg_stops": 1.8,
+   "stop_s": 3.06,
+   "dotd": 0,
+   "laps": 1380,
+   "laps_led": null
+  },
+  {
+   "code": "GAS",
+   "name": "Pierre Gasly",
+   "nat": "FR",
+   "team": "Alpine",
+   "starts": 24,
+   "wins": 0,
+   "podiums": 1,
+   "poles": 0,
+   "pts_fin": 9,
+   "dnf": 4,
+   "points": 42,
+   "avg_grid": 12.8,
+   "avg_finish": 11.4,
+   "gained": 26,
+   "avg_stops": 1.5,
+   "stop_s": 3.27,
+   "dotd": 0,
+   "laps": 1262,
+   "laps_led": null
+  },
+  {
+   "code": "HUL",
+   "name": "Nico Hülkenberg",
+   "nat": "DE",
+   "team": "Haas",
+   "starts": 24,
+   "wins": 0,
+   "podiums": 0,
+   "poles": 0,
+   "pts_fin": 10,
+   "dnf": 3,
+   "points": 41,
+   "avg_grid": 11.9,
+   "avg_finish": 10.7,
+   "gained": 6,
+   "avg_stops": 1.8,
+   "stop_s": 3.23,
+   "dotd": 0,
+   "laps": 1271,
+   "laps_led": null
+  },
+  {
+   "code": "TSU",
+   "name": "Yuki Tsunoda",
+   "nat": "JP",
+   "team": "RB",
+   "starts": 24,
+   "wins": 0,
+   "podiums": 0,
+   "poles": 0,
+   "pts_fin": 9,
+   "dnf": 4,
+   "points": 30,
+   "avg_grid": 11.1,
+   "avg_finish": 11.8,
+   "gained": -28,
+   "avg_stops": 1.5,
+   "stop_s": 2.92,
+   "dotd": 0,
+   "laps": 1249,
+   "laps_led": null
+  },
+  {
+   "code": "STR",
+   "name": "Lance Stroll",
+   "nat": "CA",
+   "team": "Aston Martin",
+   "starts": 24,
+   "wins": 0,
+   "podiums": 0,
+   "poles": 0,
+   "pts_fin": 6,
+   "dnf": 4,
+   "points": 24,
+   "avg_grid": 12.7,
+   "avg_finish": 12.6,
+   "gained": 4,
+   "avg_stops": 1.8,
+   "stop_s": 3.01,
+   "dotd": 0,
+   "laps": 1264,
+   "laps_led": null
+  },
+  {
+   "code": "OCO",
+   "name": "Esteban Ocon",
+   "nat": "FR",
+   "team": "Alpine",
+   "starts": 23,
+   "wins": 0,
+   "podiums": 1,
+   "poles": 0,
+   "pts_fin": 5,
+   "dnf": 2,
+   "points": 23,
+   "avg_grid": 13.8,
+   "avg_finish": 13.2,
+   "gained": 8,
+   "avg_stops": 1.7,
+   "stop_s": 3.01,
+   "dotd": 0,
+   "laps": 1236,
+   "laps_led": null
+  },
+  {
+   "code": "MAG",
+   "name": "Kevin Magnussen",
+   "nat": "DK",
+   "team": "Haas",
+   "starts": 22,
+   "wins": 0,
+   "podiums": 0,
+   "poles": 0,
+   "pts_fin": 5,
+   "dnf": 2,
+   "points": 16,
+   "avg_grid": 14.4,
+   "avg_finish": 13.0,
+   "gained": 26,
+   "avg_stops": 1.9,
+   "stop_s": 3.57,
+   "dotd": 0,
+   "laps": 1233,
+   "laps_led": null
+  },
+  {
+   "code": "ALB",
+   "name": "Alexander Albon",
+   "nat": "TH",
+   "team": "Williams",
+   "starts": 24,
+   "wins": 0,
+   "podiums": 0,
+   "poles": 0,
+   "pts_fin": 4,
+   "dnf": 7,
+   "points": 12,
+   "avg_grid": 12.6,
+   "avg_finish": 12.7,
+   "gained": 9,
+   "avg_stops": 1.6,
+   "stop_s": 3.13,
+   "dotd": 0,
+   "laps": 1139,
+   "laps_led": null
+  },
+  {
+   "code": "RIC",
+   "name": "Daniel Ricciardo",
+   "nat": "AU",
+   "team": "RB",
+   "starts": 18,
+   "wins": 0,
+   "podiums": 0,
+   "poles": 0,
+   "pts_fin": 3,
+   "dnf": 2,
+   "points": 12,
+   "avg_grid": 13.1,
+   "avg_finish": 12.8,
+   "gained": 9,
+   "avg_stops": 1.5,
+   "stop_s": 2.73,
+   "dotd": 1,
+   "laps": 996,
+   "laps_led": null
+  },
+  {
+   "code": "BEA",
+   "name": "Oliver Bearman",
+   "nat": "GB",
+   "team": "Haas",
+   "starts": 3,
+   "wins": 0,
+   "podiums": 0,
+   "poles": 0,
+   "pts_fin": 2,
+   "dnf": 0,
+   "points": 7,
+   "avg_grid": 12.0,
+   "avg_finish": 9.7,
+   "gained": 7,
+   "avg_stops": 1.3,
+   "stop_s": 8.73,
+   "dotd": 1,
+   "laps": 170,
+   "laps_led": null
+  },
+  {
+   "code": "COL",
+   "name": "Franco Colapinto",
+   "nat": "AR",
+   "team": "Williams",
+   "starts": 9,
+   "wins": 0,
+   "podiums": 0,
+   "poles": 0,
+   "pts_fin": 2,
+   "dnf": 3,
+   "points": 5,
+   "avg_grid": 15.5,
+   "avg_finish": 11.2,
+   "gained": 16,
+   "avg_stops": 1.1,
+   "stop_s": 3.19,
+   "dotd": 0,
+   "laps": 397,
+   "laps_led": null
+  },
+  {
+   "code": "LAW",
+   "name": "Liam Lawson",
+   "nat": "NZ",
+   "team": "RB",
+   "starts": 6,
+   "wins": 0,
+   "podiums": 0,
+   "poles": 0,
+   "pts_fin": 2,
+   "dnf": 1,
+   "points": 4,
+   "avg_grid": 13.2,
+   "avg_finish": 13.5,
+   "gained": -2,
+   "avg_stops": 2.3,
+   "stop_s": 6.47,
+   "dotd": 0,
+   "laps": 357,
+   "laps_led": null
+  },
+  {
+   "code": "ZHO",
+   "name": "Guanyu Zhou",
+   "nat": "CN",
+   "team": "Kick Sauber",
+   "starts": 24,
+   "wins": 0,
+   "podiums": 0,
+   "poles": 0,
+   "pts_fin": 1,
+   "dnf": 2,
+   "points": 4,
+   "avg_grid": 17.3,
+   "avg_finish": 15.2,
+   "gained": 36,
+   "avg_stops": 2.0,
+   "stop_s": 3.56,
+   "dotd": 1,
+   "laps": 1345,
+   "laps_led": null
+  },
+  {
+   "code": "DOO",
+   "name": "Jack Doohan",
+   "nat": "AU",
+   "team": "Alpine",
+   "starts": 1,
+   "wins": 0,
+   "podiums": 0,
+   "poles": 0,
+   "pts_fin": 0,
+   "dnf": 0,
+   "points": 0,
+   "avg_grid": 17.0,
+   "avg_finish": 15.0,
+   "gained": 2,
+   "avg_stops": 1.0,
+   "stop_s": 2.8,
+   "dotd": 0,
+   "laps": 57,
+   "laps_led": null
+  },
+  {
+   "code": "BOT",
+   "name": "Valtteri Bottas",
+   "nat": "FI",
+   "team": "Kick Sauber",
+   "starts": 24,
+   "wins": 0,
+   "podiums": 0,
+   "poles": 0,
+   "pts_fin": 0,
+   "dnf": 2,
+   "points": 0,
+   "avg_grid": 14.9,
+   "avg_finish": 15.5,
+   "gained": -6,
+   "avg_stops": 1.7,
+   "stop_s": 3.7,
+   "dotd": 0,
+   "laps": 1360,
+   "laps_led": null
+  },
+  {
+   "code": "SAR",
+   "name": "Logan Sargeant",
+   "nat": "US",
+   "team": "Williams",
+   "starts": 14,
+   "wins": 0,
+   "podiums": 0,
+   "poles": 0,
+   "pts_fin": 0,
+   "dnf": 2,
+   "points": 0,
+   "avg_grid": 16.9,
+   "avg_finish": 16.7,
+   "gained": 7,
+   "avg_stops": 1.9,
+   "stop_s": 3.25,
+   "dotd": 0,
+   "laps": 769,
+   "laps_led": null
+  }
+ ]
+}

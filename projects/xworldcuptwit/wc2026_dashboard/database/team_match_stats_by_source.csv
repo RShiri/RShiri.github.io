@@ -1,0 +1,125 @@
+match_id,date,team,opponent,side,source,goals,conceded,possession,shots,sot,passes,pass_acc,big_chances,big_missed,saves,fouls,duels_won,xg,corners
+2026_06_17_Portugal_vs_DR_Congo,2026-06-17,Portugal,DR Congo,home,fotmob,1,1,75,7,1,783,92,0,0,1,9,45,0.65,5
+2026_06_17_Portugal_vs_DR_Congo,2026-06-17,DR Congo,Portugal,away,fotmob,1,1,25,8,2,249,78,1,0,0,10,55,0.87,4
+2026_06_17_Portugal_vs_DR_Congo,2026-06-17,Portugal,DR Congo,home,whoscored,1,1,75,7,3,827,91,0,0,3,9,43,,
+2026_06_17_Portugal_vs_DR_Congo,2026-06-17,DR Congo,Portugal,away,whoscored,1,1,25,8,5,279,77,1,0,2,10,57,,
+2026_06_25_Scotland_vs_Brazil,2026-06-24,Scotland,Brazil,home,fotmob,0,3,46,14,5,500,90,1,1,5,10,37,1.04,7
+2026_06_25_Scotland_vs_Brazil,2026-06-24,Brazil,Scotland,away,fotmob,3,0,54,21,9,605,93,6,3,5,11,63,4.33,6
+2026_06_25_Scotland_vs_Brazil,2026-06-24,Scotland,Brazil,home,whoscored,0,3,46,14,8,546,88,1,1,11,10,33,,
+2026_06_25_Scotland_vs_Brazil,2026-06-24,Brazil,Scotland,away,whoscored,3,0,54,21,14,632,92,6,3,8,11,67,,
+2026_06_30_1F_vs_2C,2026-06-30,Netherlands,Morocco,home,fotmob,1,1,30,6,2,373,79,1,0,5,18,51,0.23,5
+2026_06_30_1F_vs_2C,2026-06-30,Morocco,Netherlands,away,fotmob,1,1,70,11,5,878,91,5,4,1,15,49,1.4,8
+2026_06_30_1F_vs_2C,2026-06-30,Netherlands,Morocco,home,whoscored,1,1,31,6,5,413,77,1,0,7,18,48,,
+2026_06_30_1F_vs_2C,2026-06-30,Morocco,Netherlands,away,whoscored,1,1,69,11,7,916,90,4,3,5,15,52,,
+2026_06_30_2E_vs_2I,2026-06-30,Ivory Coast,Norway,home,fotmob,1,2,47,14,5,401,85,3,2,1,6,54,1.36,14
+2026_06_30_2E_vs_2I,2026-06-30,Norway,Ivory Coast,away,fotmob,2,1,53,9,4,473,88,4,3,4,7,46,2.02,3
+2026_06_30_2E_vs_2I,2026-06-30,Ivory Coast,Norway,home,whoscored,1,2,47,14,5,450,81,3,2,5,6,55,,
+2026_06_30_2E_vs_2I,2026-06-30,Norway,Ivory Coast,away,whoscored,2,1,53,9,7,511,87,4,3,4,7,45,,
+2026_07_01_1A_vs_3CEFHI,2026-07-01,Mexico,Ecuador,home,fotmob,2,0,43,15,3,312,79,2,2,1,9,56,1.0,3
+2026_07_01_1A_vs_3CEFHI,2026-07-01,Ecuador,Mexico,away,fotmob,0,2,57,7,1,399,84,1,1,1,12,44,0.73,8
+2026_07_01_1A_vs_3CEFHI,2026-07-01,Mexico,Ecuador,home,whoscored,2,0,43,15,6,338,79,2,2,2,10,54,,
+2026_07_01_1A_vs_3CEFHI,2026-07-01,Ecuador,Mexico,away,whoscored,0,2,57,7,2,446,80,1,1,4,13,46,,
+2026_07_01_1G_vs_3AEHIJ,2026-07-01,Belgium,Senegal,home,fotmob,3,2,52,19,5,701,86,3,0,3,22,53,1.74,4
+2026_07_01_1G_vs_3AEHIJ,2026-07-01,Senegal,Belgium,away,fotmob,2,3,48,19,5,639,84,6,4,3,12,47,3.58,2
+2026_07_01_1G_vs_3AEHIJ,2026-07-01,Belgium,Senegal,home,whoscored,3,2,52,19,10,750,84,3,0,5,22,61,,
+2026_07_01_1G_vs_3AEHIJ,2026-07-01,Senegal,Belgium,away,whoscored,2,3,48,19,8,688,82,6,4,8,12,39,,
+2026_07_01_1I_vs_3CDFGH,2026-06-30,France,Sweden,home,fotmob,3,0,61,25,12,551,88,6,4,3,14,53,3.17,9
+2026_07_01_1I_vs_3CDFGH,2026-06-30,Sweden,France,away,fotmob,0,3,39,8,3,351,79,0,0,9,10,47,0.66,1
+2026_07_01_1I_vs_3CDFGH,2026-06-30,France,Sweden,home,whoscored,3,0,60,25,16,584,86,6,4,5,14,58,,
+2026_07_01_1I_vs_3CDFGH,2026-06-30,Sweden,France,away,whoscored,0,3,40,8,4,386,77,0,0,13,10,42,,
+2026_07_01_1L_vs_3EHIJK,2026-07-01,England,DR Congo,home,fotmob,2,1,60,16,7,517,91,7,6,1,10,49,2.04,5
+2026_07_01_1L_vs_3EHIJK,2026-07-01,DR Congo,England,away,fotmob,1,2,40,7,2,365,82,1,1,5,12,51,0.8,3
+2026_07_01_1L_vs_3EHIJK,2026-07-01,England,DR Congo,home,whoscored,2,1,59,16,10,580,86,7,6,3,10,56,,
+2026_07_01_1L_vs_3EHIJK,2026-07-01,DR Congo,England,away,whoscored,1,2,41,7,4,406,80,1,1,9,12,44,,
+2026_07_02_1D_vs_3BEFIJ,2026-07-02,USA,Bosnia and Herzegovina,home,fotmob,2,0,48,8,2,415,84,1,0,3,7,58,0.92,4
+2026_07_02_1D_vs_3BEFIJ,2026-07-02,Bosnia and Herzegovina,USA,away,fotmob,0,2,52,10,3,446,82,0,0,0,13,42,0.25,3
+2026_07_02_1D_vs_3BEFIJ,2026-07-02,USA,Bosnia and Herzegovina,home,whoscored,2,0,49,8,4,454,82,1,0,6,7,55,,
+2026_07_02_1D_vs_3BEFIJ,2026-07-02,Bosnia and Herzegovina,USA,away,whoscored,0,2,51,10,6,482,80,0,0,2,13,45,,
+2026_07_02_1H_vs_2J,2026-07-02,Spain,Austria,home,fotmob,3,0,64,23,10,629,91,4,1,0,8,64,2.84,9
+2026_07_02_1H_vs_2J,2026-07-02,Austria,Spain,away,fotmob,0,3,36,5,0,346,82,1,1,6,15,36,0.32,0
+2026_07_02_1H_vs_2J,2026-07-02,Spain,Austria,home,whoscored,3,0,65,23,17,670,89,4,1,1,8,68,,
+2026_07_02_1H_vs_2J,2026-07-02,Austria,Spain,away,whoscored,0,3,35,5,1,367,79,1,1,14,15,32,,
+2026_07_03_1B_vs_3EFGIJ,2026-07-03,Switzerland,Algeria,home,fotmob,2,0,45,11,5,437,81,2,1,2,10,53,2.52,4
+2026_07_03_1B_vs_3EFGIJ,2026-07-03,Algeria,Switzerland,away,fotmob,0,2,55,8,2,561,85,1,1,2,12,47,0.74,2
+2026_07_03_1B_vs_3EFGIJ,2026-07-03,Switzerland,Algeria,home,whoscored,2,0,45,11,7,478,79,2,1,5,10,56,,
+2026_07_03_1B_vs_3EFGIJ,2026-07-03,Algeria,Switzerland,away,whoscored,0,2,55,8,5,587,84,1,1,6,12,44,,
+2026_07_03_2D_vs_2G,2026-07-03,Australia,Egypt,home,fotmob,1,1,42,16,1,507,80,0,0,3,12,51,0.87,4
+2026_07_03_2D_vs_2G,2026-07-03,Egypt,Australia,away,fotmob,1,1,58,14,4,723,85,3,2,1,14,49,1.36,7
+2026_07_03_2D_vs_2G,2026-07-03,Australia,Egypt,home,whoscored,1,1,42,16,10,564,78,0,0,9,12,54,,
+2026_07_03_2D_vs_2G,2026-07-03,Egypt,Australia,away,whoscored,1,1,58,15,11,772,84,3,2,9,14,46,,
+2026_07_03_2K_vs_2L,2026-07-02,Portugal,Croatia,home,fotmob,2,1,60,15,3,584,91,5,4,5,6,56,2.18,9
+2026_07_03_2K_vs_2L,2026-07-02,Croatia,Portugal,away,fotmob,1,2,40,13,6,368,85,4,3,2,12,44,1.34,5
+2026_07_03_2K_vs_2L,2026-07-02,Portugal,Croatia,home,whoscored,2,1,60,15,7,615,89,5,4,8,6,56,,
+2026_07_03_2K_vs_2L,2026-07-02,Croatia,Portugal,away,whoscored,1,2,40,13,8,410,81,4,3,6,12,44,,
+2026_07_04_1J_vs_2H,2026-07-03,Argentina,Cape Verde,home,fotmob,3,2,64,22,10,850,92,3,2,3,13,51,2.26,8
+2026_07_04_1J_vs_2H,2026-07-03,Cape Verde,Argentina,away,fotmob,2,3,36,16,5,476,86,0,0,8,12,49,0.47,8
+2026_07_04_1J_vs_2H,2026-07-03,Argentina,Cape Verde,home,whoscored,3,2,63,22,17,886,91,3,2,9,13,55,,
+2026_07_04_1J_vs_2H,2026-07-03,Cape Verde,Argentina,away,whoscored,2,3,37,17,12,517,84,0,0,15,12,45,,
+2026_07_04_1K_vs_3DEIJL,2026-07-04,Colombia,Ghana,home,fotmob,1,0,61,20,8,586,91,5,4,0,14,49,2.04,3
+2026_07_04_1K_vs_3DEIJL,2026-07-04,Ghana,Colombia,away,fotmob,0,1,39,8,0,376,83,0,0,7,10,51,0.27,2
+2026_07_04_1K_vs_3DEIJL,2026-07-04,Colombia,Ghana,home,whoscored,1,0,60,20,12,621,89,5,4,5,14,55,,
+2026_07_04_1K_vs_3DEIJL,2026-07-04,Ghana,Colombia,away,whoscored,0,1,40,8,5,409,81,0,0,11,10,45,,
+2026_07_04_2A2B_vs_1F2C,2026-07-04,Canada,Morocco,home,fotmob,0,3,45,10,3,358,76,1,1,1,24,47,0.86,11
+2026_07_04_2A2B_vs_1F2C,2026-07-04,Morocco,Canada,away,fotmob,3,0,55,5,4,472,82,3,1,3,14,53,0.78,1
+2026_07_04_2A2B_vs_1F2C,2026-07-04,Canada,Morocco,home,whoscored,0,3,45,10,6,413,71,1,1,1,24,48,,
+2026_07_04_2A2B_vs_1F2C,2026-07-04,Morocco,Canada,away,whoscored,3,0,55,5,4,506,83,3,1,6,14,52,,
+2026_07_05_1E3ABCDF_vs_1I3CDFGH,2026-07-04,Paraguay,France,home,fotmob,0,1,24,5,0,183,54,0,0,4,13,47,0.13,2
+2026_07_05_1E3ABCDF_vs_1I3CDFGH,2026-07-04,France,Paraguay,away,fotmob,1,0,76,15,5,569,90,2,1,0,11,53,1.45,12
+2026_07_05_1E3ABCDF_vs_1I3CDFGH,2026-07-04,Paraguay,France,home,whoscored,0,1,25,5,1,209,51,0,0,8,13,46,,
+2026_07_05_1E3ABCDF_vs_1I3CDFGH,2026-07-04,France,Paraguay,away,whoscored,1,0,75,15,9,614,87,2,1,2,11,54,,
+2026_07_06_1A3CEFHI_vs_1L3EHIJK,2026-07-06,Mexico,England,home,fotmob,2,3,67,20,5,453,92,2,0,2,14,43,1.88,12
+2026_07_06_1A3CEFHI_vs_1L3EHIJK,2026-07-06,England,Mexico,away,fotmob,3,2,33,6,5,244,80,3,0,3,7,57,1.61,2
+2026_07_06_1A3CEFHI_vs_1L3EHIJK,2026-07-06,Mexico,England,home,whoscored,2,3,67,20,12,535,86,2,0,2,14,44,,
+2026_07_06_1A3CEFHI_vs_1L3EHIJK,2026-07-06,England,Mexico,away,whoscored,3,2,33,6,5,265,78,3,0,10,7,56,,
+2026_07_06_1C2F_vs_2E2I,2026-07-05,Brazil,Norway,home,fotmob,1,2,34,14,4,330,85,5,4,3,7,51,2.75,5
+2026_07_06_1C2F_vs_2E2I,2026-07-05,Norway,Brazil,away,fotmob,2,1,66,9,5,679,91,3,2,4,6,49,0.84,5
+2026_07_06_1C2F_vs_2E2I,2026-07-05,Brazil,Norway,home,whoscored,1,2,34,14,8,364,82,4,3,4,7,41,,
+2026_07_06_1C2F_vs_2E2I,2026-07-05,Norway,Brazil,away,whoscored,2,1,66,9,6,709,89,3,2,7,6,59,,
+2026_07_06_2K2L_vs_1H2J,2026-07-06,Portugal,Spain,home,fotmob,0,1,44,10,2,426,84,1,1,5,9,56,0.6,3
+2026_07_06_2K2L_vs_1H2J,2026-07-06,Spain,Portugal,away,fotmob,1,0,56,15,6,531,88,3,2,2,13,44,1.77,7
+2026_07_06_2K2L_vs_1H2J,2026-07-06,Portugal,Spain,home,whoscored,0,1,45,10,5,465,82,1,1,8,9,54,,
+2026_07_06_2K2L_vs_1H2J,2026-07-06,Spain,Portugal,away,whoscored,1,0,55,15,9,573,86,3,2,5,13,46,,
+2026_07_07_1B3EFGIJ_vs_1K3DEIJL,2026-07-07,Switzerland,Colombia,home,fotmob,0,0,53,7,2,626,87,0,0,3,22,46,0.35,3
+2026_07_07_1B3EFGIJ_vs_1K3DEIJL,2026-07-07,Colombia,Switzerland,away,fotmob,0,0,47,15,3,548,83,2,2,2,21,54,1.03,7
+2026_07_07_1B3EFGIJ_vs_1K3DEIJL,2026-07-07,Switzerland,Colombia,home,whoscored,0,0,53,7,3,666,85,0,0,7,22,45,,
+2026_07_07_1B3EFGIJ_vs_1K3DEIJL,2026-07-07,Colombia,Switzerland,away,whoscored,0,0,47,15,7,586,81,2,2,3,21,55,,
+2026_07_07_1D3BEFIJ_vs_1G3AEHIJ,2026-07-07,USA,Belgium,home,fotmob,1,4,56,7,2,527,87,0,0,3,11,47,0.67,3
+2026_07_07_1D3BEFIJ_vs_1G3AEHIJ,2026-07-07,Belgium,USA,away,fotmob,4,1,44,15,7,410,81,4,2,1,9,53,2.15,5
+2026_07_07_1D3BEFIJ_vs_1G3AEHIJ,2026-07-07,USA,Belgium,home,whoscored,1,4,56,7,2,570,86,0,0,7,11,48,,
+2026_07_07_1D3BEFIJ_vs_1G3AEHIJ,2026-07-07,Belgium,USA,away,whoscored,4,1,44,15,11,443,78,4,2,1,9,52,,
+2026_07_07_1J2H_vs_2D2G,2026-07-07,Argentina,Egypt,home,fotmob,3,2,64,19,7,602,90,6,4,0,13,53,2.8,6
+2026_07_07_1J2H_vs_2D2G,2026-07-07,Egypt,Argentina,away,fotmob,2,3,36,5,2,349,83,2,0,4,11,47,0.98,1
+2026_07_07_1J2H_vs_2D2G,2026-07-07,Argentina,Egypt,home,whoscored,3,2,63,19,11,648,88,6,4,0,13,58,,
+2026_07_07_1J2H_vs_2D2G,2026-07-07,Egypt,Argentina,away,whoscored,2,3,37,5,2,385,82,2,0,8,11,42,,
+2026_07_09_Winner_EF_1_vs_Winner_EF_2,2026-07-09,France,Morocco,home,fotmob,2,0,48,22,8,485,89,5,5,1,10,54,3.05,5
+2026_07_09_Winner_EF_1_vs_Winner_EF_2,2026-07-09,Morocco,France,away,fotmob,0,2,52,5,1,524,86,0,0,6,13,46,0.14,5
+2026_07_09_Winner_EF_1_vs_Winner_EF_2,2026-07-09,France,Morocco,home,whoscored,2,0,48,22,13,517,88,5,5,2,10,62,,
+2026_07_09_Winner_EF_1_vs_Winner_EF_2,2026-07-09,Morocco,France,away,whoscored,0,2,52,5,2,558,85,0,0,12,13,38,,
+2026_07_10_Winner_EF_3_vs_Winner_EF_4,2026-07-10,Spain,Belgium,home,fotmob,2,1,68,17,8,664,90,2,0,1,13,51,1.96,5
+2026_07_10_Winner_EF_3_vs_Winner_EF_4,2026-07-10,Belgium,Spain,away,fotmob,1,2,32,5,2,312,78,1,0,6,18,49,0.34,1
+2026_07_10_Winner_EF_3_vs_Winner_EF_4,2026-07-10,Spain,Belgium,home,whoscored,2,1,68,17,13,713,88,2,0,3,13,44,,
+2026_07_10_Winner_EF_3_vs_Winner_EF_4,2026-07-10,Belgium,Spain,away,whoscored,1,2,32,5,4,342,76,1,0,11,18,56,,
+2026_07_12_Winner_EF_5_vs_Winner_EF_6,2026-07-11,Norway,England,home,fotmob,1,2,48,13,4,576,85,1,1,6,10,47,0.77,7
+2026_07_12_Winner_EF_5_vs_Winner_EF_6,2026-07-11,England,Norway,away,fotmob,2,1,52,14,8,626,91,3,1,3,8,53,0.96,4
+2026_07_12_Winner_EF_5_vs_Winner_EF_6,2026-07-11,Norway,England,home,whoscored,1,2,47,13,7,613,83,1,1,8,10,42,,
+2026_07_12_Winner_EF_5_vs_Winner_EF_6,2026-07-11,England,Norway,away,whoscored,2,1,53,14,11,682,89,3,1,7,8,58,,
+2026_07_12_Winner_EF_7_vs_Winner_EF_8,2026-07-12,Argentina,Switzerland,home,fotmob,3,1,59,22,7,691,89,4,2,4,14,58,1.94,8
+2026_07_12_Winner_EF_7_vs_Winner_EF_8,2026-07-12,Switzerland,Argentina,away,fotmob,1,3,41,11,5,474,84,1,0,4,18,42,0.47,2
+2026_07_12_Winner_EF_7_vs_Winner_EF_8,2026-07-12,Argentina,Switzerland,home,whoscored,3,1,59,22,14,734,87,4,2,7,14,62,,
+2026_07_12_Winner_EF_7_vs_Winner_EF_8,2026-07-12,Switzerland,Argentina,away,whoscored,1,3,41,11,8,512,81,1,0,11,18,38,,
+2026_07_14_Winner_QF_1_vs_Winner_QF_2,2026-07-14,France,Spain,home,fotmob,0,2,49,10,3,472,84,0,0,0,11,46,0.31,7
+2026_07_14_Winner_QF_1_vs_Winner_QF_2,2026-07-14,Spain,France,away,fotmob,2,0,51,10,2,502,85,3,1,3,12,54,1.63,1
+2026_07_14_Winner_QF_1_vs_Winner_QF_2,2026-07-14,France,Spain,home,whoscored,0,2,49,10,5,517,82,0,0,3,11,45,,
+2026_07_14_Winner_QF_1_vs_Winner_QF_2,2026-07-14,Spain,France,away,whoscored,2,0,51,10,5,530,85,3,1,5,12,55,,
+2026_07_15_Winner_QF_3_vs_Winner_QF_4,2026-07-15,England,Argentina,home,fotmob,1,2,36,5,2,325,84,1,0,3,11,48,0.53,1
+2026_07_15_Winner_QF_3_vs_Winner_QF_4,2026-07-15,Argentina,England,away,fotmob,2,1,64,15,5,590,91,3,2,1,15,52,1.84,6
+2026_07_15_Winner_QF_3_vs_Winner_QF_4,2026-07-15,England,Argentina,home,whoscored,1,2,36,5,4,359,81,1,0,8,11,47,,
+2026_07_15_Winner_QF_3_vs_Winner_QF_4,2026-07-15,Argentina,England,away,whoscored,2,1,64,15,8,632,89,3,2,3,15,53,,
+2026_07_19_Loser_SF_1_vs_Loser_SF_2,2026-07-18,France,England,home,fotmob,4,6,46,19,9,444,91,6,2,4,14,38,2.8,3
+2026_07_19_Loser_SF_1_vs_Loser_SF_2,2026-07-18,England,France,away,fotmob,6,4,54,19,11,517,91,8,5,5,8,62,2.89,4
+2026_07_19_Loser_SF_1_vs_Loser_SF_2,2026-07-18,France,England,home,whoscored,4,6,46,19,13,458,90,6,2,11,14,41,,
+2026_07_19_Loser_SF_1_vs_Loser_SF_2,2026-07-18,England,France,away,whoscored,6,4,54,19,17,539,89,7,4,9,8,59,,
+2026_07_19_Winner_SF_1_vs_Winner_SF_2,2026-07-19,Spain,Argentina,home,fotmob,1,0,65,20,12,841,90,4,3,0,19,52,1.94,9
+2026_07_19_Winner_SF_1_vs_Winner_SF_2,2026-07-19,Argentina,Spain,away,fotmob,0,1,35,2,0,458,77,0,0,11,25,48,0.22,4
+2026_07_19_Winner_SF_1_vs_Winner_SF_2,2026-07-19,Spain,Argentina,home,whoscored,1,0,65,20,15,894,88,4,3,1,19,49,,
+2026_07_19_Winner_SF_1_vs_Winner_SF_2,2026-07-19,Argentina,Spain,away,whoscored,0,1,35,2,1,484,76,0,0,14,24,51,,

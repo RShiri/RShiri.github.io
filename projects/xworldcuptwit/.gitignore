@@ -1,0 +1,40 @@
+# Rendered infographic PNGs (should remain local only)
+wc2026/output/
+
+# Internal scraper cookie caches
+wc2026/matches/match_*_cache.json
+
+# Private configuration/credential environment files
+.env
+
+# Python caching
+__pycache__/
+*.py[cod]
+
+# Local virtual environments
+venv/
+.venv/
+env/
+
+# Quarantined junk / temp files (local only)
+useless/
+
+# Log files
+*.log
+
+# La Liga dev copy — lives ONLY on this machine; canonical repo is RShiri/XLALIGA.
+# Ignored so it never shows as untracked noise and can't be swept by `git stash -u`
+# (the raw laliga/matches scrapes exist nowhere else — never clean these).
+laliga/
+laliga_dashboard/
+laliga_png/
+team_logos/laliga/
+
+# Local Claude Code session config
+.claude/
+
+# Historical WC raw scrapes — never committed (repo-size policy in ROADMAP.md);
+# published as zipped Actions artifacts / GitHub Release assets instead. The
+# README documenting the raw file structure is the one tracked exception.
+history/*
+!history/README.md

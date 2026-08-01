@@ -1,0 +1,19 @@
+# fastf1 network cache (re-downloaded on demand)
+.fastf1_cache/
+
+# Generated pipeline outputs — produced by the pipeline / CI, not source.
+# The optional "commit_output" CI step force-adds these when you want them kept.
+latest_race_timelapse.mp4
+latest_race_replay.mp4
+latest_race_combined.mp4
+data/*.csv
+data/*.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+*.egg-info/
+web/media/*.mp4

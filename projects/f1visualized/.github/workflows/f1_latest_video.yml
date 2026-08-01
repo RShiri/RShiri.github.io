@@ -1,0 +1,135 @@
+name: F1 Latest Race Timelapse
+
+# --------------------------------------------------------------------------- #
+# On-demand only. The pipeline is intentionally modular, so scheduled `cron`
+# triggers can be added back here later without touching any Python code —
+# just add a `schedule:` block below.
+# --------------------------------------------------------------------------- #
+on:
+  workflow_dispatch:
+    inputs:
+      year:
+        description: "Season year (blank = latest completed race)"
+        required: false
+        default: ""
+      round:
+        description: "Round number (blank = latest completed race)"
+        required: false
+        default: ""
+      commit_output:
+        description: "Commit the generated video + data back to the repo"
+        type: boolean
+        required: false
+        default: false
+
+# Needed for the optional commit-and-push step.
+permissions:
+  contents: write
+
+concurrency:
+  group: f1-timelapse
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Prefer a Personal Access Token (secret F1VIZ_PAT) for secure
+          # repository updates; fall back to the default GITHUB_TOKEN.
+          token: ${{ secrets.F1VIZ_PAT || secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install ffmpeg (MP4 encoder)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Cache fastf1 downloads
+        uses: actions/cache@v4
+        with:
+          path: .fastf1_cache
+          key: fastf1-cache-${{ github.run_id }}
+          restore-keys: |
+            fastf1-cache-
+
+      # Stage 1 — scrape the most recently completed Grand Prix. Optional
+      # year/round inputs are passed through as CLI args when provided.
+      - name: Scrape latest completed race
+        env:
+          YEAR: ${{ inputs.year }}
+          ROUND: ${{ inputs.round }}
+        run: |
+          ARGS=""
+          if [ -n "$YEAR" ]; then ARGS="$ARGS --year $YEAR"; fi
+          if [ -n "$ROUND" ]; then ARGS="$ARGS --round $ROUND"; fi
+          echo "Running: python scraper.py $ARGS"
+          python scraper.py $ARGS
+
+      # Stage 2 — render both panels with MATCHED timing (--frames-per-lap 6)
+      # so their frame->lap clocks align, then stitch them side by side.
+      - name: Render position-battle race video
+        run: python race_animator.py --frames-per-lap 6   # -> latest_race_replay.mp4
+
+      - name: Render position-by-lap timeline video
+        run: python animator.py --frames-per-lap 6        # -> latest_race_timelapse.mp4
+
+      - name: Combine both into one side-by-side video
+        run: |
+          python - <<'PY'
+          from combine_gp_videos import stack_videos
+          stack_videos("latest_race_replay.mp4", "latest_race_timelapse.mp4")
+          PY
+
+      # Publish the replay for THIS race to web/media/<year>-<round>.mp4 so the
+      # dashboard's Results tab can embed it (committed via the optional step).
+      - name: Publish replay to web/media
+        run: |
+          python - <<'PY'
+          import json, shutil, pathlib
+          meta = json.load(open("data/race_meta.json"))
+          dst = pathlib.Path(f"web/media/{meta['year']}-{meta['round']}.mp4")
+          dst.parent.mkdir(parents=True, exist_ok=True)
+          shutil.copy("latest_race_combined.mp4", dst)
+          print("Published", dst)
+          PY
+
+      # Stage 3 — publish the videos as downloadable workflow artifacts.
+      - name: Upload race videos artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: latest_race_videos
+          path: |
+            latest_race_combined.mp4
+            latest_race_replay.mp4
+            latest_race_timelapse.mp4
+          if-no-files-found: error
+          retention-days: 30
+
+      # Optional — persist the generated video + data back to the repo using
+      # the PAT-authenticated remote from checkout. Off by default.
+      - name: Commit generated output (optional)
+        if: ${{ inputs.commit_output }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f latest_race_combined.mp4 latest_race_replay.mp4 \
+            latest_race_timelapse.mp4 web/media/*.mp4 data/race_data.csv data/race_meta.json
+          if git diff --cached --quiet; then
+            echo "Nothing changed — skipping commit."
+          else
+            git commit -m "chore: update latest race timelapse [skip ci]"
+            git push
+          fi

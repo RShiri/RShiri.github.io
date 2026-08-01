@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>F1 Visualized — 2025 / 2026 Dashboard</title>
+  <meta name="description" content="Formula 1 2025 & 2026 season dashboard — standings, calendar and results.">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">F1</span>
+      <span class="brand-text">VISUALIZED</span>
+    </div>
+    <div class="season-toggle" id="seasonToggle" role="tablist" aria-label="Season">
+      <button type="button" data-season="2022">2022</button>
+      <button type="button" data-season="2023">2023</button>
+      <button type="button" data-season="2024">2024</button>
+      <button type="button" data-season="2025">2025</button>
+      <button type="button" data-season="2026" class="active">2026</button>
+    </div>
+    <div class="updated" id="updated"></div>
+  </header>
+
+  <nav class="tabs" id="tabs" aria-label="Sections">
+    <button type="button" data-tab="overview" class="active">Overview</button>
+    <button type="button" data-tab="standings">Standings</button>
+    <button type="button" data-tab="calendar">Calendar</button>
+    <button type="button" data-tab="results">Results</button>
+    <button type="button" data-tab="stats">Stats</button>
+  </nav>
+
+  <main id="main">
+    <section id="overview" class="tab-panel active">
+      <div class="hero-grid">
+        <div class="card leader-card" id="driverLeader"></div>
+        <div class="card leader-card" id="constructorLeader"></div>
+        <div class="card next-card" id="nextRace"></div>
+        <div class="card last-card" id="lastRace"></div>
+      </div>
+      <div class="overview-lower">
+        <div class="card">
+          <div class="card-title">Top 5 — Drivers</div>
+          <div id="miniDrivers" class="mini-table"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Top 5 — Constructors</div>
+          <div id="miniConstructors" class="mini-table"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="standings" class="tab-panel">
+      <div class="standings-grid">
+        <div>
+          <div class="section-head"><h2>Drivers' Championship</h2></div>
+          <div id="driverStandings" class="standings-table"></div>
+        </div>
+        <div>
+          <div class="section-head"><h2>Constructors' Championship</h2></div>
+          <div id="constructorStandings" class="standings-table"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="calendar" class="tab-panel">
+      <div class="section-head"><h2>Race Calendar</h2><span id="calendarMeta" class="section-meta"></span></div>
+      <div id="calendarGrid" class="calendar-grid"></div>
+    </section>
+
+    <section id="results" class="tab-panel">
+      <div class="section-head">
+        <h2>Race Results</h2>
+        <select id="raceSelect" class="race-select" aria-label="Select a race"></select>
+      </div>
+      <div id="raceDetail"></div>
+    </section>
+
+    <section id="stats" class="tab-panel">
+      <div class="section-head"><h2>Season Stats</h2><span id="statsMeta" class="section-meta"></span></div>
+      <p class="stats-note" id="statsNote"></p>
+      <div id="statsTable"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>F1 Visualized · seasons 2022–2026</span>
+    <span id="footNote"></span>
+  </footer>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>
