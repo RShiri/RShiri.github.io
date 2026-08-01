@@ -173,6 +173,7 @@ Everything below except the rabbit rows needs nothing installed. From the repo r
 | Same, over real RabbitMQ | `python3 live-pipeline/run_demo.py --match 2026_06_17_Argentina_vs_Algeria --speed 600 --broker rabbit` |
 | Refit model params | `python3 live-pipeline/tradepipe/calibrate.py` |
 | Regenerate site timelines | `python3 live-pipeline/tradepipe/build_timelines.py` |
+| Regenerate the page's message feeds | `python3 live-pipeline/tradepipe/dump_feed.py` |
 | Multi-fixture consumer | one `feed.*` binding — see `MultiFixtureConsumer` in `tradepipe/consumer.py` |
 | Tests | `python3 -m pytest live-pipeline/tests -q` |
 | Tests incl. RabbitMQ | `TRADEPIPE_RABBIT_URL=amqp://guest:guest@localhost:5672/%2F python3 -m pytest live-pipeline/tests -q` |
@@ -211,7 +212,9 @@ timeline rebuild is byte-identical to what is committed.
 | `tradepipe/corpus.py` | Loads + normalizes the scraped corpora (EPL, La Liga, WC 2018/2022/2026) |
 | `tradepipe/calibrate.py` | Fits per-competition mu, namespaced att/def rates, hfa; tunes k by holdout Brier; writes `model_params.json` + dashboard `winprob_params.js` files |
 | `tradepipe/build_timelines.py` | Replays every match through the pipeline, writes `assets/data/winprob/*` |
+| `tradepipe/dump_feed.py` | Writes each match's real message envelopes to `assets/data/pipeline/` for the page's live console |
 | `web/winprob_model.js` | The browser port of `model.py` — one file, shipped by `calibrate.py` to every dashboard |
+| `web/feed_replay.js` | Browser-side consumer: `MatchState` + dispatch + gap detection + snapshot recovery, pricing through `winprob_model.js` |
 | `tests/test_model.py` | Model unit tests (clock profile, score state, Dixon-Coles, red cards, horizon) |
 | `tests/test_corpus.py` | Corpus loader tests (synthetic matches_detail fixtures) |
 | `tests/test_broker.py` | Transport tests — AMQP routing semantics, dispatch order, RPC |
@@ -256,6 +259,11 @@ in the "shipped" column is in this repo and tested; the rest is scope, not overs
 - **Explicit message contracts over a real broker.** Typed envelopes, routing keys, a
   topic exchange and an RPC queue, behind a transport abstraction that runs identically
   in-memory (tests) and on RabbitMQ (deployment-shaped).
+- **The feed is visible, not just described.** The page's console replays the producer's
+  actual envelopes through a consumer running in the browser - state rebuilt from the
+  stream, priced by the same model - and a button drops six messages so you can watch the
+  gap get detected and repaired. The recovered prices are identical to the uninterrupted
+  ones, which is exactly the guarantee a Snapshot API is for.
 
 > Built a real-time sports data pipeline mirroring TRADE360 architecture - RabbitMQ
 > producer/consumer with snapshot recovery, TRADE-style message contracts, and an

@@ -89,6 +89,61 @@ section h2 { font-size: clamp(23px, 3.4vw, 30px); margin-bottom: 6px; }
 
 .card { background: var(--bg-soft); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow-sm); }
 
+/* ---- message console (section 04): the live feed replay ---- */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.console-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 14px; }
+.csl-select { font: inherit; font-size: 13.5px; color: var(--ink); background: var(--bg-soft);
+  border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; max-width: 100%; }
+.ctl-btn.csl-danger { border-color: color-mix(in srgb, var(--viz-base) 55%, var(--line)); color: var(--viz-base); }
+.csl-speed { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); }
+.csl-speed input { width: 110px; accent-color: var(--accent); }
+.console-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 14px; }
+.csl-side { display: grid; gap: 14px; align-content: start; }
+.csl-head { display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  padding: 11px 14px; border-bottom: 1px solid var(--line); font-size: 12.5px;
+  font-family: var(--mono); color: var(--muted); }
+.csl-log-card { overflow: hidden; }
+.csl-log { list-style: none; margin: 0; padding: 6px; height: 340px; overflow-y: auto;
+  font-family: var(--mono); font-size: 12px; line-height: 1.45; background: var(--code-bg);
+  color: var(--code-ink); }
+.csl-log li { padding: 3px 8px; border-radius: 6px; display: flex; gap: 8px; align-items: baseline;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.csl-log li .sq { color: #7f8db3; flex: none; }
+.csl-log li .ty { color: #8fd3ff; flex: none; }
+.csl-log li .dt { color: #c6d2ee; overflow: hidden; text-overflow: ellipsis; }
+.csl-log li.is-goal { background: rgba(79,70,229,.22); }
+.csl-log li.is-goal .dt { color: #fff; }
+.csl-log li.is-drop { background: rgba(180,83,9,.26); }
+.csl-log li.is-drop .ty, .csl-log li.is-drop .dt { color: #ffc98a; text-decoration: line-through; }
+.csl-log li.is-rec { background: rgba(6,182,212,.22); }
+.csl-log li.is-rec .dt { color: #9beaf7; }
+.csl-log li.is-dup .dt { color: #8b98b5; }
+.csl-log li.csl-empty { color: #8b98b5; white-space: normal; }
+.csl-panel { padding-bottom: 12px; }
+.csl-badge { font-family: var(--mono); font-size: 11px; padding: 3px 9px; border-radius: 999px;
+  border: 1px solid var(--line); color: var(--muted); }
+.csl-badge[data-s="Open"] { color: #0d9488; border-color: #0d9488; }
+.csl-badge[data-s="Suspended"] { color: var(--viz-base); border-color: var(--viz-base); }
+.csl-badge[data-s="Closed"] { color: var(--muted); }
+.csl-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; margin: 12px 14px; }
+.csl-stats div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.csl-stats dt { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.csl-stats dd { margin: 0; font-size: 15px; color: var(--ink); }
+.csl-warn { color: var(--viz-base); }
+.csl-ok { color: var(--accent-2); }
+.csl-odds { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0 14px; }
+.csl-odds div { border: 1px solid var(--line); border-radius: 10px; padding: 8px; text-align: center;
+  background: var(--bg); }
+.csl-odds span { display: block; font-size: 11px; color: var(--muted); overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap; }
+.csl-odds b { font-size: 16px; color: var(--ink); font-weight: 600; }
+.csl-note { margin: 12px 14px 0; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+@media (max-width: 820px) {
+  .console-grid { grid-template-columns: 1fr; }
+  .csl-log { height: 260px; }
+}
+
 /* ---- architecture diagram ---- */
 .diagram-scroll { overflow-x: auto; border-radius: var(--r); }
 .diagram-scroll svg { display: block; min-width: 860px; width: 100%; height: auto; }
@@ -475,9 +530,76 @@ html[data-theme="dark"] .footer { background: #070b15; }
 </section>
 
 <!-- 5 · MESSAGE SCHEMA -->
+<section id="console">
+  <div class="wrap">
+    <div class="kicker">04 · the feed itself</div>
+    <h2>Stream the real messages</h2>
+    <p class="section-note">The chart above replays a story already computed. This does not: it
+      fetches the <b>actual envelopes the Python producer published</b>, hands them to a consumer
+      running in your browser, and that consumer rebuilds match state and prices the market from
+      nothing but the message stream. Drop a few messages and watch it notice the sequence gap and
+      recover from a snapshot — the part of a real odds feed you never see in a demo.</p>
+
+    <div class="console-bar">
+      <label class="sr-only" for="cslMatch">Match</label>
+      <select id="cslMatch" class="csl-select"></select>
+      <button class="ctl-btn" id="cslPlay" type="button">▶ Play</button>
+      <button class="ctl-btn" id="cslStep" type="button">Step ▸</button>
+      <button class="ctl-btn csl-danger" id="cslDrop" type="button"
+              title="Lose the next 6 messages in transit, forcing a MsgSeq gap">✂ Drop 6 messages</button>
+      <button class="ctl-btn" id="cslReset" type="button">↺ Reset</button>
+      <span class="csl-speed">
+        <label for="cslSpeed">speed</label>
+        <input id="cslSpeed" type="range" min="1" max="60" step="1" value="18"
+               aria-label="Messages per second" />
+        <span class="mono" id="cslSpeedVal">18/s</span>
+      </span>
+    </div>
+
+    <div class="console-grid">
+      <div class="card csl-log-card">
+        <div class="csl-head">
+          <span>feed.<span id="cslFixture" class="mono">—</span></span>
+          <span class="mono" id="cslCursor">0 / 0</span>
+        </div>
+        <ol class="csl-log" id="cslLog" aria-live="off"><li class="csl-empty">Press play to start the feed.</li></ol>
+      </div>
+
+      <div class="csl-side">
+        <div class="card csl-panel">
+          <div class="csl-head"><span>consumer state</span>
+            <span class="csl-badge" id="cslStatus">Open</span></div>
+          <dl class="csl-stats">
+            <div><dt>minute</dt><dd class="mono" id="cslMin">—</dd></div>
+            <div><dt>score</dt><dd class="mono" id="cslScore">—</dd></div>
+            <div><dt>xG</dt><dd class="mono" id="cslXg">—</dd></div>
+            <div><dt>LastMsgSeq</dt><dd class="mono" id="cslSeq">0</dd></div>
+          </dl>
+          <div class="csl-odds">
+            <div><span id="cslN1">1</span><b class="mono" id="cslO1">—</b></div>
+            <div><span>X</span><b class="mono" id="cslOX">—</b></div>
+            <div><span id="cslN2">2</span><b class="mono" id="cslO2">—</b></div>
+          </div>
+        </div>
+        <div class="card csl-panel">
+          <div class="csl-head"><span>transport</span></div>
+          <dl class="csl-stats">
+            <div><dt>received</dt><dd class="mono" id="cslRecv">0</dd></div>
+            <div><dt>lost in transit</dt><dd class="mono csl-warn" id="cslLost">0</dd></div>
+            <div><dt>gaps recovered</dt><dd class="mono csl-ok" id="cslRec">0</dd></div>
+            <div><dt>settled</dt><dd class="mono" id="cslSettled">—</dd></div>
+          </dl>
+          <p class="csl-note" id="cslNote">A snapshot request rebuilds everything the gap swallowed,
+            so the price after recovery is identical to the uninterrupted one.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="schema">
   <div class="wrap">
-    <div class="kicker">04 · on the wire</div>
+    <div class="kicker">05 · on the wire</div>
     <h2>What a message looks like</h2>
     <p class="section-note">Every message is the same envelope: a Header with a type, a per-fixture
       sequence number and timestamps, and a Body of events. These are representative samples.</p>
@@ -1164,9 +1286,216 @@ python3 -m pytest live-pipeline/tests -q</pre>
 
   fetchJson(DATA_BASE + "model_params.json").then(function (p) {
     renderTeamTable(p); renderParamFacts(p); renderBrier(p);
+    if (window.initFeedConsole) window.initFeedConsole(p, fetchJson);
   }).catch(function () {
     renderTeamTable(FALLBACK_PARAMS); renderParamFacts(FALLBACK_PARAMS); renderBrier(FALLBACK_PARAMS);
+    if (window.initFeedConsole) window.initFeedConsole(FALLBACK_PARAMS, fetchJson);
   });
+})();
+</script>
+
+<!-- The browser-side consumer: a port of state.py + consumer.py's dispatch,
+     pricing through the same winprob_model.js the dashboards use. -->
+<script src="web/winprob_model.js"></script>
+<script src="web/feed_replay.js"></script>
+<script>
+/* ------------------------------------------------------------------ *
+ *  Message console (section 04)
+ *  Replays the real envelopes from assets/data/pipeline/<id>.json
+ *  through FeedReplay.Consumer, and renders what the consumer sees.
+ * ------------------------------------------------------------------ */
+(function () {
+  "use strict";
+  var FEED_BASE = "../assets/data/pipeline/";
+  var REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var $ = function (s) { return document.querySelector(s); };
+
+  var ui = {}, params = null, fetchJson = null;
+  var consumer = null, feed = null, timer = 0, dropQueue = 0, playing = false;
+  var cache = {};
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+      return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c];
+    });
+  }
+
+  /* one log line per delivered (or lost) envelope */
+  function describe(r) {
+    var m = r.msg, ev = (m.Body.Events || [])[0] || {};
+    if (r.kind === "dropped") return "lost in transit — the consumer never sees it";
+    if (r.kind === "duplicate") return "already applied — dropped, no snapshot needed";
+    if (r.kind === "covered") return "already covered by the snapshot";
+    if (r.type === 1) return "Fixture " + (ev.Fixture && ev.Fixture.Status);
+    if (r.type === 31) return "heartbeat";
+    if (r.type === 35) return "1X2 settled → '" + (r.settled || "?") + "'";
+    var sb = (ev.Livescore && ev.Livescore.Scoreboard) || {};
+    var txt = sb.Time + "' " + sb.HomeScore + "-" + sb.AwayScore;
+    if (r.priced) {
+      txt += "  ·  " + (100 * r.priced.pH).toFixed(1) + "/" +
+             (100 * r.priced.pD).toFixed(1) + "/" + (100 * r.priced.pA).toFixed(1) + "%";
+      r.priced.halting.forEach(function (e) {
+        txt += e.type === "goal" ? "  ⚽ " + e.player : "  🟥 " + e.player;
+      });
+      if (r.priced.status === "Suspended") txt += "  [market suspended]";
+    }
+    return txt;
+  }
+
+  function log(r) {
+    var li = document.createElement("li");
+    var cls = r.kind === "dropped" ? "is-drop"
+            : r.recovered ? "is-rec"
+            : (r.kind === "duplicate" || r.kind === "covered") ? "is-dup"
+            : (r.priced && r.priced.halting.length) ? "is-goal" : "";
+    if (cls) li.className = cls;
+    li.innerHTML = '<span class="sq">#' + r.seq + '</span>' +
+                   '<span class="ty">' + esc(r.name) + '</span>' +
+                   '<span class="dt">' + esc(describe(r)) + '</span>';
+    ui.log.appendChild(li);
+    if (r.recovered) {
+      var note = document.createElement("li");
+      note.className = "is-rec";
+      note.innerHTML = '<span class="sq">↺</span><span class="ty">SnapshotRequest</span>' +
+        '<span class="dt">gap: expected #' + r.expected + ', got #' + r.seq +
+        ' → rebuilt to LastMsgSeq ' + r.recoveredTo + '</span>';
+      ui.log.appendChild(note);
+    }
+    while (ui.log.children.length > 240) ui.log.removeChild(ui.log.firstChild);
+    ui.log.scrollTop = ui.log.scrollHeight;
+  }
+
+  function paint() {
+    var st = consumer.state, last = consumer.last;
+    ui.cursor.textContent = consumer.cursor + " / " + feed.messages.length;
+    ui.recv.textContent = consumer.received;
+    ui.lost.textContent = consumer.dropped;
+    ui.rec.textContent = consumer.recoveries;
+    ui.settled.textContent = consumer.settlement || "—";
+    ui.status.textContent = consumer.marketStatus;
+    ui.status.setAttribute("data-s", consumer.marketStatus);
+    if (!st) return;
+    ui.min.textContent = st.minute + "'";
+    ui.score.textContent = st.scoreH + "–" + st.scoreA;
+    ui.xg.textContent = (st.xgH || 0).toFixed(2) + "–" + (st.xgA || 0).toFixed(2);
+    ui.seq.textContent = st.lastSeq;
+    if (last) {
+      ui.o1.textContent = last.fairH >= 999 ? "—" : last.fairH.toFixed(2);
+      ui.oX.textContent = last.fairD >= 999 ? "—" : last.fairD.toFixed(2);
+      ui.o2.textContent = last.fairA >= 999 ? "—" : last.fairA.toFixed(2);
+    }
+  }
+
+  function step() {
+    if (!consumer || consumer.cursor >= feed.messages.length) { pause(); return false; }
+    var drop = dropQueue > 0;
+    if (drop) dropQueue--;
+    var r = consumer.step(drop);
+    if (r) {
+      log(r);
+      paint();
+      if (r.recovered) {
+        // The snapshot carries every incident the gap swallowed, so the
+        // price on the far side is identical to the uninterrupted one.
+        ui.note.textContent = "Recovered. The snapshot replaced the " + consumer.dropped +
+          " lost messages, so state and price are exactly what they would have been " +
+          "had nothing been dropped — that is the guarantee the Snapshot API buys you.";
+      }
+    }
+    if (consumer.cursor >= feed.messages.length) { pause(); }
+    return true;
+  }
+
+  function play() {
+    if (!consumer || playing) return;
+    if (consumer.cursor >= feed.messages.length) reset();
+    playing = true;
+    ui.play.textContent = "⏸ Pause";
+    var rate = +ui.speed.value;
+    timer = setInterval(step, Math.max(16, 1000 / rate));
+  }
+  function pause() {
+    playing = false;
+    if (timer) clearInterval(timer);
+    timer = 0;
+    ui.play.textContent = consumer && consumer.cursor >= feed.messages.length ? "↺ Replay" : "▶ Play";
+  }
+  var NOTE_IDLE = "A snapshot request rebuilds everything the gap swallowed, so the price " +
+    "after recovery is identical to the uninterrupted one.";
+  function reset() {
+    pause();
+    dropQueue = 0;
+    consumer.reset();
+    ui.o1.textContent = ui.oX.textContent = ui.o2.textContent = "—";
+    ui.min.textContent = ui.score.textContent = ui.xg.textContent = "—";
+    ui.note.textContent = NOTE_IDLE;
+    paint();
+    ui.log.innerHTML = '<li class="csl-empty">Press play to start the feed.</li>';
+  }
+
+  function loadFeed(id) {
+    var p = cache[id] ? Promise.resolve(cache[id])
+                      : fetchJson(FEED_BASE + id + ".json").then(function (d) { cache[id] = d; return d; });
+    return p.then(function (data) {
+      feed = data;
+      consumer = new window.FeedReplay.Consumer(feed, params);
+      ui.fixture.textContent = feed.fixtureId;
+      ui.n1.textContent = feed.home.name;
+      ui.n2.textContent = feed.away.name;
+      reset();
+    });
+  }
+
+  window.initFeedConsole = function (loadedParams, fetcher) {
+    params = loadedParams;
+    fetchJson = fetcher;
+    if (!window.FeedReplay || !window.WinProb) return;
+    ui = {
+      sel: $("#cslMatch"), play: $("#cslPlay"), step: $("#cslStep"),
+      drop: $("#cslDrop"), reset: $("#cslReset"), speed: $("#cslSpeed"),
+      speedVal: $("#cslSpeedVal"), log: $("#cslLog"), cursor: $("#cslCursor"),
+      fixture: $("#cslFixture"), status: $("#cslStatus"), min: $("#cslMin"),
+      score: $("#cslScore"), xg: $("#cslXg"), seq: $("#cslSeq"),
+      o1: $("#cslO1"), oX: $("#cslOX"), o2: $("#cslO2"),
+      n1: $("#cslN1"), n2: $("#cslN2"), recv: $("#cslRecv"), lost: $("#cslLost"),
+      rec: $("#cslRec"), settled: $("#cslSettled"), note: $("#cslNote")
+    };
+    if (!ui.sel) return;
+
+    fetchJson(FEED_BASE + "index.json").then(function (manifest) {
+      manifest.matches.forEach(function (m) {
+        var o = document.createElement("option");
+        o.value = m.id;
+        o.textContent = m.home.name + " " + m.home.score + "–" + m.away.score + " " +
+                        m.away.name + "  ·  " + m.messages + " msgs";
+        ui.sel.appendChild(o);
+      });
+      ui.sel.addEventListener("change", function () { loadFeed(ui.sel.value); });
+      return loadFeed(manifest.matches[0].id);
+    }).catch(function (e) {
+      if (window.console && console.warn) console.warn("feed console:", e.message || e);
+      var section = document.getElementById("console");
+      if (section) section.hidden = true;      // no feed data: hide rather than show a broken panel
+    });
+
+    ui.play.addEventListener("click", function () { playing ? pause() : play(); });
+    ui.step.addEventListener("click", function () { pause(); step(); });
+    ui.reset.addEventListener("click", reset);
+    ui.drop.addEventListener("click", function () {
+      dropQueue = 6;
+      ui.note.textContent = "Six messages are now being lost in transit. The next LivescoreUpdate " +
+        "will arrive with the wrong MsgSeq, and the consumer will request a snapshot.";
+      if (!playing) play();
+    });
+    ui.speed.addEventListener("input", function () {
+      ui.speedVal.textContent = ui.speed.value + "/s";
+      if (playing) { pause(); play(); }
+    });
+    if (REDUCED) {
+      ui.play.disabled = true;
+      ui.play.title = "Animation disabled by your reduced-motion setting — use Step.";
+    }
+  };
 })();
 </script>
 </body>
