@@ -1,0 +1,101 @@
+name: live-pipeline
+
+on:
+  push:
+    paths:
+      - 'live-pipeline/**'
+      - 'assets/data/winprob/**'
+      - '.github/workflows/ci.yml'
+  pull_request:
+    paths:
+      - 'live-pipeline/**'
+      - 'assets/data/winprob/**'
+      - '.github/workflows/ci.yml'
+  workflow_dispatch:
+
+jobs:
+  tests:
+    name: tests (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.9', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      # The pipeline core is pure stdlib on purpose: pytest is the only
+      # thing this job installs, and that is the point being tested.
+      - run: pip install pytest
+      - name: Unit and end-to-end tests
+        run: python -m pytest live-pipeline/tests -q
+
+  smoke:
+    name: demo + calibrate smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Replay a match end to end (no dependencies at all)
+        run: |
+          python live-pipeline/run_demo.py --list
+          python live-pipeline/run_demo.py \
+            --match 2026_06_17_Argentina_vs_Algeria --speed 100000
+      - name: Late-join snapshot recovery
+        run: |
+          python live-pipeline/run_demo.py \
+            --match 2026_07_04_1J_vs_2H --speed 100000 --late-join 60
+      - name: Calibrate in fallback mode, then rebuild the timelines
+        # The scraped corpora live in projects/ and are far too large to
+        # fetch here, so this exercises the fallback path (the 8 argentina
+        # fixtures) and checks both writers still produce valid output.
+        run: |
+          python live-pipeline/tradepipe/calibrate.py \
+            --no-dashboards --out "$RUNNER_TEMP/params.json"
+          python -c "
+          import json, sys
+          p = json.load(open('$RUNNER_TEMP/params.json'))
+          assert p['version'] == 3, p['version']
+          assert p['teams'], 'no teams fitted'
+          assert p['brier']['checkpoints'][-1] == 90
+          print('fallback params OK:', len(p['teams']), 'teams')
+          "
+      - name: Timelines rebuild reproducibly
+        # build_timelines is deterministic, so a rebuild against the
+        # committed params must not change a single byte.
+        run: |
+          python live-pipeline/tradepipe/build_timelines.py
+          git diff --exit-code --stat assets/data/winprob/ \
+            || (echo "::error::timelines differ from the committed output; re-run build_timelines.py and commit" && exit 1)
+
+  rabbit:
+    name: RabbitMQ integration
+    runs-on: ubuntu-latest
+    services:
+      rabbitmq:
+        image: rabbitmq:3
+        ports:
+          - 5672:5672
+        options: >-
+          --health-cmd "rabbitmq-diagnostics -q ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pika pytest
+      - name: Broker-backed tests against a real RabbitMQ
+        env:
+          TRADEPIPE_RABBIT_URL: amqp://guest:guest@localhost:5672/%2F
+        run: python -m pytest live-pipeline/tests/test_rabbit.py -q
+      - name: Replay a match over RabbitMQ
+        run: |
+          python live-pipeline/run_demo.py \
+            --match 2026_06_17_Argentina_vs_Algeria --speed 100000 --broker rabbit
