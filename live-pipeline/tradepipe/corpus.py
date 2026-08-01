@@ -219,9 +219,11 @@ def default_corpora(epl=None, laliga=None, wc=None, repo_root=None):
 
     Roots default to sibling clones of the scraper repos (../XEPL etc.,
     the same convention build_argentina.py uses), falling back to
-    /workspace/<name> where the CI environment clones them. Corpora whose
-    root is missing are silently skipped — calibrate.py warns if NOTHING
-    is found and falls back to the 8 argentina files."""
+    /workspace/<name> where the CI environment clones them, then to the
+    vendored copies in this repo's projects/ directory — so a fresh clone
+    of the portfolio repo alone can refit the model. Corpora whose root is
+    missing are silently skipped — calibrate.py warns if NOTHING is found
+    and falls back to the 8 argentina files."""
     repo_root = Path(repo_root) if repo_root else Path(__file__).resolve().parent.parent.parent
 
     def resolve(explicit, *candidates):
@@ -232,9 +234,12 @@ def default_corpora(epl=None, laliga=None, wc=None, repo_root=None):
                 return Path(c)
         return None
 
-    epl_root = resolve(epl, repo_root.parent / "XEPL", "/workspace/xepl")
-    laliga_root = resolve(laliga, repo_root.parent / "XLALIGA", "/workspace/xlaliga")
-    wc_root = resolve(wc, repo_root.parent / "XWORLDCUPTWIT", "/workspace/xworldcuptwit")
+    epl_root = resolve(epl, repo_root.parent / "XEPL", "/workspace/xepl",
+                       repo_root / "projects" / "xepl")
+    laliga_root = resolve(laliga, repo_root.parent / "XLALIGA", "/workspace/xlaliga",
+                          repo_root / "projects" / "xlaliga")
+    wc_root = resolve(wc, repo_root.parent / "XWORLDCUPTWIT", "/workspace/xworldcuptwit",
+                      repo_root / "projects" / "xworldcuptwit")
 
     corpora = []
     if epl_root and (epl_root / "epl_dashboard" / "matches_detail").is_dir():

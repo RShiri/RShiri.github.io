@@ -659,7 +659,7 @@
 
     /* ---- match picker: load the Argentina index, build tabs, swap matches ---- */
     var matchTabs = $("#mcMatchTabs"), fullLink = $("#mcFullLink");
-    var DASH = "https://rshiri.github.io/XWORLDCUPTWIT/wc2026_dashboard/match.html?id=";
+    var DASH = "projects/xworldcuptwit/wc2026_dashboard/match.html?id=";
     var loadMatch = function (m) {
       if (replayMeta) replayMeta.textContent = "Loading…";
       if (fullLink && m.id) fullLink.href = DASH + encodeURIComponent(m.id);

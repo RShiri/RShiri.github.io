@@ -74,8 +74,9 @@ competition, team rates namespaced as `EPL/Arsenal` / `WC/Argentina`, recency-we
 (`0.8^seasons_ago`) so current form dominates. `lam_home = att_H * def_A / mu * hfa`,
 with the home-field boost `hfa ≈ 1.13` fit from league matches and dropped to 1.0 on
 neutral World Cup venues. Shrinkage strength k is tuned over {1,2,4,8,16} by holdout
-Brier (k = 1 wins). With no scraper clones present calibrate falls back to the 8
-argentina match JSONs.
+Brier (k = 1 wins). The corpora resolve from sibling clones, `/workspace` clones, or
+the vendored copies in `projects/`, so this repo alone can refit end-to-end; with no
+corpus found at all calibrate falls back to the 8 argentina match JSONs.
 
 **Two clocks, cleanly separated.** The replay runs on the RAW match clock to the real
 final whistle (the file's `maxMin`): a group game with long stoppage ends at 90+7', a

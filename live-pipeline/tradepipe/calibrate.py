@@ -367,8 +367,9 @@ def main():
         matches = list(corpus.iter_matches(corpora))
         run_full(args, matches, roots)
     else:
-        print("WARNING: no scraper clones found (../XEPL, ../XLALIGA, "
-              "../XWORLDCUPTWIT or /workspace equivalents).")
+        print("WARNING: no scraper corpora found (../XEPL, ../XLALIGA, "
+              "../XWORLDCUPTWIT, /workspace equivalents, or the vendored "
+              "projects/ copies).")
         print("WARNING: falling back to the 8 argentina match JSONs -- "
               "params will cover competition 'WC' only and the Brier "
               "numbers are an in-sample smoke test, not a benchmark.")
