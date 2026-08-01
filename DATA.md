@@ -6,8 +6,8 @@ bottom to refresh.
 
 ## TL;DR
 
-- **The full match archive is `projects/*/[dashboard]/matches_detail/` — 3,272 matches, 82,310 shots, ~650 MB across five directories.** That is the database everything else is derived from.
-- **The biggest single one is `projects/xepl/epl_dashboard/matches_detail/` — 1,520 matches, 305 MB.**
+- **The full match archive is `projects/*/[dashboard]/matches_detail/` — 3,272 matches, 82,310 shots, ~170 MB across five directories.** That is the database everything else is derived from.
+- **The biggest single one is `projects/xepl/epl_dashboard/matches_detail/` — 1,520 matches, 78 MB.**
 - **The `.sqlite` files are NOT the archive.** Each holds only the *current* season (380 EPL matches, 380 La Liga, 104 WC2026). Opening `epl.sqlite` looking for four seasons will find one.
 
 ## 1. Match event corpora — the real database
@@ -18,12 +18,12 @@ situation, on-target, blocked), goals, lineups with per-player stats, and
 
 | Corpus | Path | Matches | Size |
 | --- | --- | --- | --- |
-| EPL 2022-23 → 2025-26 | `projects/xepl/epl_dashboard/matches_detail/` | 1,520 | 305 MB |
-| La Liga 2022-23 → 2025-26 | `projects/xlaliga/laliga_dashboard/matches_detail/` | 1,520 | 295 MB |
+| EPL 2022-23 → 2025-26 | `projects/xepl/epl_dashboard/matches_detail/` | 1,520 | 78 MB |
+| La Liga 2022-23 → 2025-26 | `projects/xlaliga/laliga_dashboard/matches_detail/` | 1,520 | 75 MB |
 | World Cup 2026 | `projects/xworldcuptwit/wc2026_dashboard/matches_detail/` | 107 files → 104 | 23 MB |
 | World Cup 2018 | `projects/xworldcuptwit/wc2026_dashboard/editions/2018/matches_detail/` | 64 | 13 MB |
 | World Cup 2022 | `projects/xworldcuptwit/wc2026_dashboard/editions/2022/matches_detail/` | 64 | 14 MB |
-| **total** | | **3,272** (after dedup) | **~650 MB** |
+| **total** | | **3,272** (after dedup) | **~170 MB** |
 
 WC2026 ships 107 files for 104 matches: three knockout fixtures were scraped
 twice, once under a placeholder id (`Winner_QF_3_vs_...`) and once under the
@@ -79,16 +79,54 @@ artifact has not — see "Known issues" below.
 
 ## Size budget
 
-810 MB working tree + 161 MB git history ≈ **971 MB**. GitHub Pages publishes
-the working tree and caps a site at **1 GB**, so there is ~190 MB of headroom —
-roughly one more scraped season of EPL + La Liga. Before the season after that,
-move historical seasons to Release assets or trim `player_lab` (88 MB total,
-fully regenerable).
+**329 MB working tree + 161 MB git history ≈ 490 MB**, against the 1 GB GitHub
+Pages cap. Comfortable — roughly a decade of scraping at the current rate.
+
+It was 971 MB until the pass stream was re-encoded. `passes` is 93% of a match
+file, and it was stored as ~970 objects each repeating fifteen key names and six
+mostly-false booleans. `tools/compact_passes.py` converts that to a columnar
+form (name table + flag bitmask + one row per pass), which is **75% smaller and
+lossless** — 674 MB → 170 MB. `tools/expand_passes.js` restores the exact
+objects in the browser before `match.js` ever sees them, so no dashboard code
+changed; `build_argentina.py` expands the same way in Python.
+
+If you ever need the plain format back: `python3 tools/compact_passes.py --revert`.
+
+⚠️ **The vendored corpus is in the compact format; the source repos are not.**
+Run the source repos' own builders (`build_site.py`, `build_shots.py`,
+`build_player_lab.py`, `regen_from_details.py`) **in the source repos**, where
+the data is still expanded. After re-vendoring, re-run `--apply`.
 
 ## Known issues
 
-- **`xg_core_v3` code has drifted across the three repos while the model artifact has not.** XEPL and XLALIGA each independently added a collision-safe scorer (`match_xg_by_id` / `match_xg_by_event`, keyed by `id(event)`) because *WhoScored `eventId` is not unique within a match* — XLALIGA's own comment records that in ~15% of its matches two shots share one, so a `{eventId: xG}` dict silently mis-assigns them. **XWORLDCUPTWIT still builds exactly that dict** (`wc2026_dashboard/xg_model.py`, `wc2026/renderer.py`), so some World Cup shots may carry another shot's xG. The impact cannot be measured from the published files — it needs the raw blobs, which are local-only. Fix by porting XEPL's `match_xg_by_id` and re-running the WC build.
-- The vendored dashboards have moved ahead of their source repos (v3 win-prob params + shared `winprob_model.js`); see `projects/README.md`.
+### Fixed: the World Cup eventId collision
+
+WhoScored's `eventId` is **not unique within a match**. EPL and La Liga each
+independently hit this and added a collision-safe scorer keyed by `id(event)`;
+the World Cup pipeline still built a `{eventId: xG}` dict, which hands both
+colliding shots whichever xG was written last.
+
+Measured against the raw WC blobs: **8 of 104 WC2026 matches have two real shots
+sharing an eventId (16 shots)**, and correcting it changes **5 shot values** —
+the worst being a 92' Ramy Rabia shot priced at **0.042 when it should be
+0.253**. `match_xg_by_id` is now ported into
+`projects/xworldcuptwit/xg_core_v3/score.py`, and both callers
+(`wc2026_dashboard/xg_model.py`, `wc2026/renderer.py`) look up by identity.
+
+**Still to do — needs your call.** The fix is in the code, but the *published*
+WC `matches_detail` still carries the 5 bad values, because regenerating it is
+entangled with a second problem: rebuilding with the **unmodified** code already
+changes **90.7% of WC shot xG** (2,395 of 2,642). So the committed corpus was not
+produced by the code currently in the repo, and I could not determine which is
+authoritative — whether the data is stale, or the artifact is. Both are plausible
+and the difference is not a rounding artefact (largest −0.163 xG). Regenerating
+would cascade into the win-prob corpus, its params, every timeline and the
+Argentina match centre, so it should not happen on a guess. Decide which is
+canonical, then re-run `wc2026_dashboard/build_match_details.py`.
+
+### Other
+
+- The vendored dashboards have moved ahead of their source repos (v3 win-prob params, shared `winprob_model.js`, the compact pass format, and the xG fix above); see `projects/README.md`.
 
 ## Re-measuring
 

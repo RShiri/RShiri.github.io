@@ -55,8 +55,36 @@ def agmT(o):
 
 
 def load_detail(path):
+    """Read a matches_detail/*.js file, whichever wrapper it uses.
+
+    Source-repo builders emit `window.MATCH_DETAIL = {...};`, while this
+    repo's vendored copies emit `window.MATCH_DETAIL =
+    window.__mdExpand({...});` around a columnar pass stream (see
+    tools/compact_passes.py — it is ~75% smaller and lossless). Slicing
+    first-brace to last-brace handles both, and expand_passes() restores the
+    plain pass objects the rest of this script expects, so the generator
+    works pointed at either the source repo or the vendored corpus."""
     s = open(path, encoding="utf-8").read()
-    return json.loads(s[s.index("{"):].rstrip().rstrip(";"))
+    detail = json.loads(s[s.index("{"):s.rindex("}") + 1])
+    detail["passes"] = expand_passes(detail.get("passes") or [])
+    return detail
+
+
+def expand_passes(block):
+    """Columnar pass stream -> plain per-pass dicts. Already-plain input is
+    returned untouched, so old and new data files both load."""
+    if not isinstance(block, dict) or not block.get("__c"):
+        return block
+    names, flags, out = block["n"], block["f"], []
+    for team, x, y, ex, ey, mn, sec, pi, ri, bits in block["r"]:
+        p = {"team": "home" if team == 0 else "away",
+             "x": x, "y": y, "ex": ex, "ey": ey, "min": mn, "sec": sec,
+             "player": names[pi] if pi >= 0 else None,
+             "recv": names[ri] if ri >= 0 else None}
+        for i, key in enumerate(flags):
+            p[key] = bool(bits & (1 << i))
+        out.append(p)
+    return out
 
 
 def num_map(D):
