@@ -1,5 +1,9 @@
 # Vendored project copies
 
+> Looking for the data? [`../DATA.md`](../DATA.md) maps every dataset in this repo —
+> which directory holds the full match archive, what is in each database, and what
+> lives only on the source repos.
+
 Full working copies of the portfolio's project repositories, vendored here so the
 whole portfolio — sites, scrapers, xG/xA model cores, and databases — sits in one
 repo. Each directory is a snapshot of the source repo's default branch (no `.git`).
