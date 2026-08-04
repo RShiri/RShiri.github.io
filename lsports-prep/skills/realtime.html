@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Real-time systems — LSports Prep</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script>(function(){var t=null;try{t=localStorage.getItem("theme")}catch(e){}
+document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");})();</script>
+<link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="../index.html"><span class="monogram">LS</span><span class="brand-name">LSports Prep</span></a>
+    <span class="nav-spacer"></span>
+    <a class="crumb" href="../index.html">← Dashboard</a>
+    <button class="theme-toggle" id="themeToggle" aria-label="Switch theme">☀️</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="page-head">
+    <span class="kicker">Skill 5 of 7 · <span class="status status--have">Have</span></span>
+    <h1>Real-time <span class="grad">systems</span></h1>
+    <p class="lead">The intellectual core of the job — and your strongest area. You've implemented every concept on this page in <code>live-pipeline</code>. The work now is rehearsing the vocabulary.</p>
+  </div>
+
+  <div class="box box--why">
+    <span class="box-title">Why LSports cares</span>
+    A sportsbook showing a stale score, or missing a settlement message, loses real money in seconds.
+    Correctness under speed — ordering, recovery, duplicates, slow consumers — is what separates a feed
+    company from a CRUD shop, and it's what senior engineers probe in interviews.
+  </div>
+
+  <article class="study">
+    <section>
+      <h2>The five concepts, with your implementation next to each</h2>
+
+      <h3>1. Message ordering (sequence numbers)</h3>
+      <p>Networks and brokers can reorder or drop. The fix is a monotonically increasing
+      <strong>sequence number per stream</strong>: the consumer tracks the last seq applied, so it can
+      detect "I got 47 but expected 46."</p>
+      <div class="box box--have"><span class="box-title">Yours</span>
+      Every message in your pipeline carries <code>MsgSeq</code>; the consumer checks continuity per fixture
+      (see <code>live-pipeline/tradepipe/consumer.py</code>).</div>
+
+      <h3>2. Gap recovery (snapshots)</h3>
+      <p>When a gap is detected (or a client joins late), replaying the entire history is slow or impossible.
+      Instead: request a <strong>snapshot</strong> — the current authoritative state — then resume the live
+      stream from there. The seam is safe because state + subsequent updates ≥ any missed messages.</p>
+      <div class="box box--have"><span class="box-title">Yours</span>
+      <code>live-pipeline/tradepipe/snapshot.py</code> — RPC on <code>snapshot.&lt;fixture&gt;</code> returning
+      full <code>MatchState</code>, mirroring LSports' real Snapshot API for exactly this purpose.</div>
+
+      <h3>3. Idempotency (safe duplicates)</h3>
+      <p>At-least-once delivery (RabbitMQ redelivery, Kafka uncommitted-offset replays) means duplicates
+      <em>will</em> happen. Processing must give the same result applied once or twice. Techniques:
+      ignore seq ≤ last applied; make updates absolute ("score = 2:1") rather than relative ("+1 goal");
+      dedupe by message id.</p>
+      <div class="box box--have"><span class="box-title">Yours</span>
+      Your livescore updates carry absolute state, and seq tracking discards already-applied messages —
+      say both of these out loud in interviews.</div>
+
+      <h3>4. Backpressure (slow consumers)</h3>
+      <p>A producer faster than a consumer will sink the system unless something gives: bound the buffer
+      (queue limits, prefetch), shed load (drop stale ticks — a 3-update-old odds price is worthless anyway),
+      or scale consumers. The unacceptable answer is an unbounded in-memory buffer.</p>
+
+      <h3>5. State reconstruction (late joiners)</h3>
+      <p>New subscriber needs <em>current state</em>, not a lecture on history. Patterns: snapshot + live
+      stream (yours, and LSports'), or a compacted log holding the latest value per key (Kafka).
+      Either way, the invariant is: <strong>state first, then updates with seq &gt; snapshot's seq</strong>.</p>
+    </section>
+
+    <section>
+      <h2>The follow-up questions, answered</h2>
+      <h3>"Message 47 arrives before 46. What do you do?"</h3>
+      <p>Depends on the contract. If updates are absolute and independent (odds prices), apply 47, and when
+      46 arrives late, discard it (seq ≤ last applied). If updates are incremental or 46 might matter,
+      hold 47 briefly in a reorder buffer; if 46 doesn't arrive within the window, treat it as a gap →
+      request snapshot. Never apply 46 after 47 as if nothing happened — that regresses state.</p>
+      <h3>"Your consumer restarts. How does it catch up?"</h3>
+      <p>On startup it doesn't trust its stale memory: subscribe to the live stream, request a snapshot,
+      apply the snapshot, then apply only buffered live messages with seq greater than the snapshot's.
+      (Subscribing <em>before</em> snapshotting closes the race where a message lands between the two.)</p>
+      <h3>"How do you know your feed is healthy when nothing is happening?"</h3>
+      <p>Heartbeats: your pipeline's <code>KeepAlive</code> (MsgType 31) — silence then means
+      <em>connection dead</em>, not <em>match quiet</em>. Monitor end-to-end latency and per-fixture seq
+      gaps, not just process uptime.</p>
+    </section>
+
+    <section>
+      <h2>Rehearsal drill</h2>
+      <ol>
+        <li>Whiteboard your pipeline from memory in under 2 minutes: producer → exchange → consumer → state → markets, snapshot path on the side.</li>
+        <li>For each of the five concepts, say the one-line definition + where it lives in your code.</li>
+        <li>Have a war story ready: a bug you hit (ordering, duplicate, reconnect) and how you fixed it — concrete beats abstract.</li>
+      </ol>
+    </section>
+  </article>
+
+  <div id="quiz" class="quiz"></div>
+
+  <div class="pager">
+    <a class="btn btn--ghost" href="databases.html">← SQL + NoSQL</a>
+    <a class="btn btn--primary" href="betting.html">Next: Betting domain →</a>
+  </div>
+</main>
+
+<footer class="foot"><div class="wrap">Private prep material.</div></footer>
+
+<script>
+window.QUIZ = {
+  id: "realtime",
+  title: "Real-time systems knowledge test",
+  pass: 0.8,
+  questions: [
+    {
+      q: "Your consumer has applied MsgSeq 45 for a fixture. Message 47 arrives next. What is the correct reaction?",
+      choices: [
+        "Apply 47 — newer is better, always",
+        "Detect the gap (46 missing): hold or apply 47 per the update contract, and trigger recovery (snapshot) if 46 doesn't show up",
+        "Crash the consumer to be safe",
+        "Re-request message 46 from the producer's memory"
+      ],
+      answer: 1,
+      explain: "Seq continuity checking exists to detect exactly this. The response is contract-dependent (absolute updates can proceed; incremental ones can't), but the gap must trigger recovery, not be ignored."
+    },
+    {
+      q: "Message 46 finally arrives AFTER you already applied 47 (updates are absolute snapshots of state). You should:",
+      choices: [
+        "Apply it — every message must be applied",
+        "Discard it: seq ≤ last applied means it's stale; applying would regress state",
+        "Apply it and then re-apply 47",
+        "Request a full snapshot"
+      ],
+      answer: 1,
+      explain: "With absolute updates, older seq = older state. Applying 46 after 47 would send the scoreboard backwards. Discard-stale-by-seq is also exactly what makes duplicate delivery harmless."
+    },
+    {
+      q: "Why must feed consumers be idempotent?",
+      choices: [
+        "It makes them faster",
+        "At-least-once delivery (broker redelivery, offset replays) means the same message can arrive twice; processing must not corrupt state on the second pass",
+        "Regulators require it",
+        "It's only needed with Kafka, not RabbitMQ"
+      ],
+      answer: 1,
+      explain: "Both RabbitMQ (redelivery of unacked messages) and Kafka (replay from committed offset) deliver at-least-once by default. Duplicates are a when, not an if — in either broker."
+    },
+    {
+      q: "Which update design is naturally idempotent?",
+      choices: [
+        "\"Add 1 goal to the home team\"",
+        "\"Home score is now 2\"",
+        "\"Toggle possession\"",
+        "\"Increase price by 0.05\""
+      ],
+      answer: 1,
+      explain: "Absolute state ('score = 2') applied twice is still 2. Relative updates (+1, toggle, +0.05) double-apply into corruption — which is why livescore feeds carry absolute values."
+    },
+    {
+      q: "A consumer restarts mid-match. What is the correct catch-up sequence?",
+      choices: [
+        "Resume from live stream only — the next message will fix things",
+        "Subscribe to live (buffering), request snapshot, apply snapshot, then apply buffered messages with seq > snapshot's seq",
+        "Request snapshot, wait 60s, then subscribe",
+        "Replay its own logs from disk"
+      ],
+      answer: 1,
+      explain: "Snapshot gives state; the seq threshold stitches the seam. Subscribing BEFORE snapshotting closes the race where an update lands between snapshot creation and subscription — order matters."
+    },
+    {
+      q: "Your odds consumer falls behind: 10,000 messages buffered, growing. Odds updates are absolute per market. The best load-shedding move is:",
+      choices: [
+        "Grow the buffer — memory is cheap",
+        "Process every message faster by removing validation",
+        "Drop superseded updates: for each market keep only the newest buffered price (conflation)",
+        "Disconnect and reconnect to reset the buffer"
+      ],
+      answer: 2,
+      explain: "A 3-updates-old price is worthless once a newer one exists — conflating to latest-per-key sheds load with zero information loss. Unbounded buffers just move the crash later; dropping validation trades correctness for speed."
+    },
+    {
+      q: "What is a KeepAlive message (your MsgType 31) actually for?",
+      choices: [
+        "Padding to keep bandwidth constant",
+        "Distinguishing 'connection dead' from 'match is quiet' — silence becomes a detectable failure",
+        "Keeping the TCP socket from being garbage collected",
+        "Announcing half-time"
+      ],
+      answer: 1,
+      explain: "Without heartbeats, a quiet stretch and a dead connection look identical to the consumer. A missing KeepAlive within the expected interval is the trigger to reconnect and re-sync."
+    },
+    {
+      q: "Why does a late joiner get a snapshot instead of replaying all messages since kickoff?",
+      choices: [
+        "Replay would give a different final state",
+        "The full history may be long or simply unavailable (RabbitMQ deletes delivered messages); current state is smaller and sufficient",
+        "Snapshots are more accurate than the messages that built them",
+        "Regulation forbids message replay"
+      ],
+      answer: 1,
+      explain: "State + subsequent updates is equivalent to full history but O(state) instead of O(history) — and with a mailbox-style broker, history doesn't even exist anymore. That's why LSports ships a Snapshot API."
+    },
+    {
+      q: "End-to-end feed latency matters most at which moment?",
+      choices: [
+        "During half-time",
+        "At a goal: bookmakers must suspend/reprice markets before bettors exploit odds that don't yet reflect the score",
+        "When the fixture list is published a week early",
+        "Latency never matters if messages are ordered"
+      ],
+      answer: 1,
+      explain: "The seconds after a goal are when stale odds equal free money for bettors ('courtsiding' exploits exactly this window). This is why feed companies compete on latency and why suspension messages are urgent."
+    },
+    {
+      q: "Which metric best tells you the feed pipeline is healthy?",
+      choices: [
+        "The producer process has 0% CPU",
+        "Per-fixture seq gaps, heartbeat freshness, and end-to-end latency (event time → consumer apply time)",
+        "Total messages sent since boot",
+        "Number of open TCP connections"
+      ],
+      answer: 1,
+      explain: "Health means correct + current: no gaps (completeness), fresh heartbeats (liveness), low end-to-end latency (usefulness). A process can be 'up' while silently 30 seconds behind."
+    }
+  ]
+};
+</script>
+<script src="../quiz.js"></script>
+</body>
+</html>

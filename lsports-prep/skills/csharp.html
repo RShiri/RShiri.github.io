@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>C# / .NET — LSports Prep</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script>(function(){var t=null;try{t=localStorage.getItem("theme")}catch(e){}
+document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");})();</script>
+<link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="../index.html"><span class="monogram">LS</span><span class="brand-name">LSports Prep</span></a>
+    <span class="nav-spacer"></span>
+    <a class="crumb" href="../index.html">← Dashboard</a>
+    <button class="theme-toggle" id="themeToggle" aria-label="Switch theme">☀️</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="page-head">
+    <span class="kicker">Skill 1 of 7 · <span class="status status--need">Need</span></span>
+    <h1>C# / <span class="grad">.NET</span></h1>
+    <p class="lead">LSports' core backend language. You don't know it yet — but you know Java, which is 80% of the battle. This page covers the 20% that's different.</p>
+  </div>
+
+  <div class="box box--why">
+    <span class="box-title">Why LSports cares</span>
+    The TRADE360 feed engine — the code that ingests scout data, builds fixture state and pushes market
+    updates to sportsbooks — is written in C#. Their backend job posts ask for C# alongside Kafka and
+    databases. If you join a backend team, this is the language on your screen every day.
+  </div>
+
+  <article class="study">
+    <section>
+      <h2>Coming from Java: what's the same</h2>
+      <p>Almost everything structural. Classes, interfaces, inheritance, generics (<code>List&lt;Shot&gt;</code>),
+      exceptions with try/catch, garbage collection, a virtual machine (the CLR is .NET's JVM), and a package
+      manager (<strong>NuGet</strong> is Maven/pip). Naming style differs: C# uses <code>PascalCase</code> for
+      methods and properties (<code>GetFixture()</code>, not <code>getFixture()</code>).</p>
+    </section>
+
+    <section>
+      <h2>The four things Java didn't teach you</h2>
+
+      <h3>1. Properties — fields with built-in get/set</h3>
+      <p>Java's <code>private int x</code> + <code>getX()</code>/<code>setX()</code> boilerplate collapses into one line:</p>
+      <pre><code>public class Fixture
+{
+    public int FixtureId { get; set; }          // auto-property
+    public string HomeTeam { get; init; }        // settable only at creation
+    public bool IsLive =&gt; Status == "InPlay";    // computed, read-only
+}
+
+var f = new Fixture { FixtureId = 101, HomeTeam = "Barcelona" };
+Console.WriteLine(f.FixtureId);   // reads like a field, runs like a getter</code></pre>
+
+      <h3>2. LINQ — SQL over your collections</h3>
+      <p>The single biggest quality-of-life feature. Instead of loops, you chain queries.
+      Read <code>=&gt;</code> as Java's <code>-&gt;</code> lambda:</p>
+      <pre><code>// total xG of big chances, best first
+var bigChances = shots
+    .Where(s =&gt; s.Xg &gt; 0.3)
+    .OrderByDescending(s =&gt; s.Xg)
+    .ToList();
+
+double totalXg = shots.Sum(s =&gt; s.Xg);
+var byPlayer  = shots.GroupBy(s =&gt; s.Player)
+                     .Select(g =&gt; new { Player = g.Key, Xg = g.Sum(s =&gt; s.Xg) });</code></pre>
+      <p>Java's Streams API (<code>shots.stream().filter(...).collect(...)</code>) was inspired by LINQ —
+      LINQ is just terser and everywhere.</p>
+
+      <h3>3. async / await — non-blocking I/O as plain code</h3>
+      <p>A feed server holds thousands of connections. Blocking a thread per connection doesn't scale;
+      async/await frees the thread while I/O waits. Rule: an async method returns
+      <code>Task</code> / <code>Task&lt;T&gt;</code>, and you <code>await</code> it.</p>
+      <pre><code>public async Task&lt;MatchState&gt; GetSnapshotAsync(int fixtureId)
+{
+    var json = await httpClient.GetStringAsync($"/snapshot/{fixtureId}");
+    return JsonSerializer.Deserialize&lt;MatchState&gt;(json);
+}
+// The thread is NOT blocked during the HTTP call — it serves other requests.</code></pre>
+
+      <h3>4. Records &amp; value types</h3>
+      <p><code>record</code> gives you an immutable data class with value equality in one line —
+      perfect for messages:</p>
+      <pre><code>public record MarketUpdate(int FixtureId, int MsgSeq, string Market, double Price);</code></pre>
+      <p>Also: C# has real value types (<code>struct</code>) — unlike Java where everything non-primitive
+      lives on the heap. You mostly just need to know this exists.</p>
+    </section>
+
+    <section>
+      <h2>JSON — the daily bread of a feed company</h2>
+      <p>Built into the standard library, no Jackson/Gson dependency:</p>
+      <pre><code>using System.Text.Json;
+
+var msg  = JsonSerializer.Deserialize&lt;MarketUpdate&gt;(json);
+var back = JsonSerializer.Serialize(msg);</code></pre>
+    </section>
+
+    <section>
+      <h2>Your 2–4 week plan</h2>
+      <ol>
+        <li><strong>Week 1:</strong> Install the .NET SDK (<code>dotnet new console</code> starts a project).
+        Rewrite small exercises you'd find trivial in Java. Focus on LINQ daily — it must become reflex.</li>
+        <li><strong>Weeks 2–3:</strong> Port your own <code>live-pipeline</code> consumer to C#:
+        connect to RabbitMQ with the <code>RabbitMQ.Client</code> NuGet package, deserialize your
+        TRADE-style messages with <code>System.Text.Json</code>, rebuild <code>MatchState</code>.
+        You already know the logic — you're only learning syntax.</li>
+        <li><strong>Week 4:</strong> Make it async end-to-end and add a couple of xUnit tests
+        (their pytest).</li>
+      </ol>
+      <div class="box box--have">
+        <span class="box-title">Your interview line</span>
+        "I learned C# by porting my TRADE360-style pipeline consumer from Python — RabbitMQ client,
+        JSON message contracts, state rebuild." That beats any course certificate, and it turns a
+        weakness question into a tour of your best project.
+      </div>
+    </section>
+  </article>
+
+  <div id="quiz" class="quiz"></div>
+
+  <div class="pager">
+    <a class="btn btn--ghost" href="../index.html">← Dashboard</a>
+    <a class="btn btn--primary" href="rabbitmq.html">Next: RabbitMQ →</a>
+  </div>
+</main>
+
+<footer class="foot"><div class="wrap">Private prep material.</div></footer>
+
+<script>
+window.QUIZ = {
+  id: "csharp",
+  title: "C# knowledge test",
+  pass: 0.8,
+  questions: [
+    {
+      q: "What does this LINQ expression return?",
+      code: "var r = shots.Where(s => s.Xg > 0.3).Sum(s => s.Xg);",
+      choices: [
+        "A list of shots with xG above 0.3",
+        "The total xG of all shots above 0.3",
+        "The number of shots above 0.3",
+        "A compile error — Sum needs a list, not a Where result"
+      ],
+      answer: 1,
+      explain: "Where filters lazily, then Sum(s => s.Xg) adds up the Xg of the filtered shots into a single double. For the list itself you would end with .ToList(); for the count, .Count()."
+    },
+    {
+      q: "In C#, what is the closest equivalent of Java's getters and setters?",
+      choices: [
+        "Annotations like @Getter from Lombok",
+        "Extension methods",
+        "Properties: public int FixtureId { get; set; }",
+        "C# has no encapsulation — fields are always public"
+      ],
+      answer: 2,
+      explain: "Properties look like fields at the call site (f.FixtureId = 5) but compile to get/set methods, replacing Java's getX()/setX() boilerplate."
+    },
+    {
+      q: "A method is declared as: public async Task<string> FetchAsync(). What does calling it WITHOUT await give you?",
+      choices: [
+        "The string, computed synchronously",
+        "A Task<string> — a handle to the in-flight operation",
+        "null until the operation completes",
+        "A compile error — async methods must always be awaited"
+      ],
+      answer: 1,
+      explain: "Calling an async method starts it and returns a Task<string> immediately. await unwraps the result when it completes. Not awaiting is legal (fire-and-forget) but you lose the result and any exception."
+    },
+    {
+      q: "Why does async/await matter for a feed server like TRADE360 more than for a batch script?",
+      choices: [
+        "It makes CPU-bound math faster",
+        "Threads are freed during I/O waits, so thousands of concurrent connections don't need thousands of blocked threads",
+        "It guarantees messages arrive in order",
+        "It is required by the C# compiler for any network code"
+      ],
+      answer: 1,
+      explain: "async/await is about scalable I/O concurrency: while a socket read is pending, the thread serves other connections. It does not speed up computation or affect message ordering."
+    },
+    {
+      q: "Which line correctly declares an immutable message type with value equality?",
+      choices: [
+        "public class MarketUpdate { public double Price; }",
+        "public record MarketUpdate(int FixtureId, int MsgSeq, double Price);",
+        "public struct MarketUpdate : IEquatable { }",
+        "public sealed MarketUpdate(int FixtureId);"
+      ],
+      answer: 1,
+      explain: "A positional record generates an immutable type with constructor, value-based Equals/GetHashCode and ToString — ideal for message contracts like MarketUpdate."
+    },
+    {
+      q: "What is NuGet?",
+      choices: [
+        ".NET's package manager — the equivalent of pip or Maven",
+        "The C# unit-testing framework",
+        "Microsoft's message broker",
+        "The .NET garbage collector"
+      ],
+      answer: 0,
+      explain: "NuGet is how you pull dependencies like RabbitMQ.Client or Confluent.Kafka into a .NET project — same role as pip (Python) or Maven/Gradle (Java)."
+    },
+    {
+      q: "Coming from Java, which naming convention changes in idiomatic C#?",
+      choices: [
+        "Classes become camelCase",
+        "Methods and properties are PascalCase: GetFixture(), not getFixture()",
+        "Constants must be ALL_CAPS with underscores",
+        "Nothing changes — conventions are identical"
+      ],
+      answer: 1,
+      explain: "C# uses PascalCase for public methods, properties and classes. Local variables stay camelCase. Interviewers notice Java-style method names in C# code."
+    },
+    {
+      q: "Which snippet deserializes a JSON feed message using only the .NET standard library?",
+      choices: [
+        "var m = new Gson().fromJson(json, MarketUpdate.class);",
+        "var m = JsonConvert.DeserializeObject<MarketUpdate>(json);  // Newtonsoft",
+        "var m = JsonSerializer.Deserialize<MarketUpdate>(json);  // System.Text.Json",
+        "var m = JSON.parse(json);"
+      ],
+      answer: 2,
+      explain: "System.Text.Json ships with .NET — no external dependency. Newtonsoft.Json (option 2) works but is a NuGet package; Gson is Java; JSON.parse is JavaScript."
+    },
+    {
+      q: "What does this print?",
+      code: "var players = new[] { \"Yamal\", \"Pedri\", \"Raphinha\" };\nvar r = players.Where(p => p.Length > 5).Count();\nConsole.WriteLine(r);",
+      choices: ["0", "1", "2", "3"],
+      answer: 1,
+      explain: "Only \"Raphinha\" (8 letters) has Length > 5 — \"Yamal\" and \"Pedri\" have exactly 5, and the comparison is strict. Count() on the filtered sequence returns 1."
+    },
+    {
+      q: "Java has Streams (stream().filter().collect()). What is the honest comparison to LINQ?",
+      choices: [
+        "They are unrelated — LINQ only queries SQL databases",
+        "Same idea (declarative queries over collections); LINQ is terser, older than Streams, and used everywhere in C# code",
+        "Streams are lazy, LINQ is always eager",
+        "LINQ requires Entity Framework"
+      ],
+      answer: 1,
+      explain: "LINQ (2007) inspired Java Streams (2014). Both are lazy pipelines over collections. LINQ-to-objects needs no database or framework — Entity Framework merely reuses the same syntax for SQL."
+    },
+    {
+      q: "The interviewer asks: 'You have Java but no C# experience. How fast can you contribute?' Which answer is strongest?",
+      choices: [
+        "\"They're basically the same language, so immediately.\"",
+        "\"I'd need a few months of courses first.\"",
+        "\"I already ported my RabbitMQ pipeline consumer to C# — the object model matched Java, and I picked up LINQ, async/await and properties doing it. Here's the repo.\"",
+        "\"I'd prefer to work in Python.\""
+      ],
+      answer: 2,
+      explain: "Concrete evidence beats claims. A working C# port of your own project shows the exact transfer they're asking about — and redirects the interview to your strongest material."
+    },
+    {
+      q: "What runs C# code, in the way the JVM runs Java?",
+      choices: [
+        "The CLR (Common Language Runtime) in the .NET platform",
+        "The V8 engine",
+        "The C# compiler interprets code at runtime",
+        "Windows only — C# cannot run on Linux"
+      ],
+      answer: 0,
+      explain: "C# compiles to IL that the CLR executes with JIT and garbage collection — directly analogous to Java bytecode on the JVM. Modern .NET is cross-platform; LSports-style backends commonly run on Linux."
+    }
+  ]
+};
+</script>
+<script src="../quiz.js"></script>
+</body>
+</html>

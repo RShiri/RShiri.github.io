@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>RabbitMQ — LSports Prep</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script>(function(){var t=null;try{t=localStorage.getItem("theme")}catch(e){}
+document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");})();</script>
+<link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="../index.html"><span class="monogram">LS</span><span class="brand-name">LSports Prep</span></a>
+    <span class="nav-spacer"></span>
+    <a class="crumb" href="../index.html">← Dashboard</a>
+    <button class="theme-toggle" id="themeToggle" aria-label="Switch theme">☀️</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="page-head">
+    <span class="kicker">Skill 2 of 7 · <span class="status status--have">Have</span></span>
+    <h1>Rabbit<span class="grad">MQ</span></h1>
+    <p class="lead">You already built LSports' delivery pattern in <code>live-pipeline</code>. This page turns what you coded into crisp interview answers.</p>
+  </div>
+
+  <div class="box box--why">
+    <span class="box-title">Why LSports cares</span>
+    RabbitMQ is <em>how TRADE360 reaches customers</em>: sportsbooks consume fixture, livescore and
+    market messages from queues bound to their feed. It's named explicitly in LSports job requirements
+    ("real-time messaging systems such as RabbitMQ and Kafka").
+  </div>
+
+  <article class="study">
+    <section>
+      <h2>The mental model</h2>
+      <p>RabbitMQ is a post office between services. Producers never talk to consumers directly:</p>
+      <ul>
+        <li><strong>Producer</strong> publishes a message to an <strong>exchange</strong> with a <strong>routing key</strong> (an address, like <code>feed.fixture_101</code>).</li>
+        <li>The <strong>exchange</strong> routes copies into every <strong>queue</strong> whose <strong>binding</strong> matches the key.</li>
+        <li><strong>Consumers</strong> read from queues and <strong>acknowledge (ack)</strong> each message once processed.</li>
+      </ul>
+      <p>Exchange types: <strong>direct</strong> (exact key match), <strong>fanout</strong> (everyone gets everything),
+      <strong>topic</strong> (pattern match on dot-separated keys — this is yours), <strong>headers</strong> (rare).</p>
+
+      <h3>Topic routing patterns</h3>
+      <p><code>*</code> matches exactly one word, <code>#</code> matches zero or more:</p>
+      <div class="tbl-scroll"><table>
+        <tr><th>Binding</th><th>Matches</th><th>Doesn't match</th></tr>
+        <tr><td><code>feed.*</code></td><td><code>feed.fixture_101</code></td><td><code>feed.fixture_101.goals</code></td></tr>
+        <tr><td><code>feed.#</code></td><td><code>feed.fixture_101.goals</code>, <code>feed</code></td><td><code>markets.fixture_101</code></td></tr>
+        <tr><td><code>#</code></td><td>everything</td><td>—</td></tr>
+      </table></div>
+    </section>
+
+    <section>
+      <h2>Reliability: the questions they will actually ask</h2>
+      <h3>Consumer crashes mid-message?</h3>
+      <p>If the consumer dies before acking, the broker <strong>requeues the unacked message</strong> and
+      redelivers it to another consumer. That's why processing must be <em>idempotent</em> — the same
+      message may arrive twice. (Auto-ack mode trades this safety for speed: crash = message lost.)</p>
+
+      <h3>Broker restarts?</h3>
+      <p>Three switches must all be on to survive a restart: <strong>durable exchange</strong>,
+      <strong>durable queue</strong>, and <strong>persistent messages</strong> (delivery mode 2).
+      Any one missing → data gone.</p>
+
+      <h3>Consumer slower than producer?</h3>
+      <p>The queue grows — RabbitMQ buffers, which absorbs spikes but not a permanent imbalance.
+      Tools: <strong>prefetch</strong> (<code>basic_qos(prefetch_count=N)</code>) caps unacked messages
+      per consumer so one slow consumer doesn't hoard; add consumers on the same queue for
+      <strong>work-sharing</strong>; set queue length limits / TTLs so the broker doesn't eat all memory.</p>
+
+      <h3>One queue, many consumers vs many queues?</h3>
+      <p>Two consumers on the <em>same</em> queue split the messages (load balancing).
+      Two queues bound with the same pattern each get a <em>full copy</em> (fan-out, one per subscriber) —
+      that's how many sportsbooks each get the whole feed.</p>
+    </section>
+
+    <section>
+      <h2>You built this — point at your own code</h2>
+      <div class="box box--have">
+        <span class="box-title">Already in your portfolio</span>
+        <ul>
+          <li><code>live-pipeline/tradepipe/producer.py</code> — publishes replayed match events to the
+          <strong>topic exchange <code>trade</code></strong> with routing keys
+          <code>feed.&lt;fixture&gt;</code> and <code>markets.&lt;fixture&gt;</code>.</li>
+          <li><code>live-pipeline/tradepipe/consumer.py</code> — binds queues by pattern, rebuilds
+          <code>MatchState</code>, republishes 1X2 market updates.</li>
+          <li><code>live-pipeline/tradepipe/snapshot.py</code> — an <strong>RPC over queues</strong>:
+          request on <code>snapshot.&lt;fixture&gt;</code>, reply on an exclusive callback queue —
+          the same request/response-over-messaging pattern as LSports' Snapshot API.</li>
+        </ul>
+        Rehearse a 90-second walkthrough of this flow out loud. It is your single best interview asset.
+      </div>
+      <pre><code># the shape of your own pipeline
+producer ── publish(key="feed.fixture_101") ──▶ [topic exchange "trade"]
+                                                    │  binding "feed.#"
+                                                    ▼
+                                              [queue: consumer]──▶ MatchState ──▶ 1X2 markets
+                                                    ▲
+late joiner ── RPC "snapshot.fixture_101" ──────────┘  (state, not history)</code></pre>
+    </section>
+  </article>
+
+  <div id="quiz" class="quiz"></div>
+
+  <div class="pager">
+    <a class="btn btn--ghost" href="csharp.html">← C# / .NET</a>
+    <a class="btn btn--primary" href="kafka.html">Next: Kafka →</a>
+  </div>
+</main>
+
+<footer class="foot"><div class="wrap">Private prep material.</div></footer>
+
+<script>
+window.QUIZ = {
+  id: "rabbitmq",
+  title: "RabbitMQ knowledge test",
+  pass: 0.8,
+  questions: [
+    {
+      q: "A message is published to a topic exchange with routing key feed.fixture_101.goals. Which binding matches it?",
+      choices: ["feed.*", "feed.#", "feed.fixture_101", "*.goals"],
+      answer: 1,
+      explain: "# matches zero or more words, so feed.# matches feed.fixture_101.goals. feed.* fails because * matches exactly ONE word and the key has three. *.goals fails for the same reason."
+    },
+    {
+      q: "A consumer crashes after receiving a message but before acking it. What does RabbitMQ do?",
+      choices: [
+        "The message is lost forever",
+        "The message stays invisible until the consumer restarts",
+        "The broker requeues it and redelivers to an available consumer",
+        "The broker rolls back the producer's publish"
+      ],
+      answer: 2,
+      explain: "Unacked messages return to the queue when the consumer's channel dies and get redelivered — which is exactly why consumers must handle duplicates (idempotency)."
+    },
+    {
+      q: "Which combination survives a full broker restart?",
+      choices: [
+        "Durable queue only",
+        "Persistent messages only",
+        "Durable exchange + durable queue + persistent messages",
+        "Nothing survives a restart — RabbitMQ is memory-only"
+      ],
+      answer: 2,
+      explain: "All three are needed: a durable queue definition, a durable exchange, and messages published with delivery mode 2. A persistent message in a non-durable queue still vanishes."
+    },
+    {
+      q: "Two consumers subscribe to the SAME queue. What happens to incoming messages?",
+      choices: [
+        "Both receive every message",
+        "Messages are split between them (round-robin load sharing)",
+        "Only the first consumer gets messages; the second waits",
+        "The broker rejects the second consumer"
+      ],
+      answer: 1,
+      explain: "One queue = one stream of work shared among its consumers. To give each subscriber a FULL copy (like multiple sportsbooks on a feed), each needs its own queue bound to the exchange."
+    },
+    {
+      q: "Your producer emits 5,000 msg/s but the consumer handles 3,000 msg/s, permanently. What happens and what is the right fix?",
+      choices: [
+        "RabbitMQ throttles the producer automatically to 3,000; nothing to do",
+        "The queue grows without bound; scale consumers on the queue and cap queue length/TTL",
+        "Messages are silently dropped at the exchange",
+        "The broker crashes immediately"
+      ],
+      answer: 1,
+      explain: "Queues buffer spikes but a permanent imbalance means unbounded growth until memory/disk alarms kick in (which then block publishers). Fix the imbalance: more consumers, faster processing, and bound the queue."
+    },
+    {
+      q: "What does basic_qos(prefetch_count=10) do?",
+      choices: [
+        "Batches 10 messages into one network frame",
+        "Caps a consumer at 10 unacknowledged messages before the broker stops sending it more",
+        "Keeps only the newest 10 messages in the queue",
+        "Retries failed messages 10 times"
+      ],
+      answer: 1,
+      explain: "Prefetch is per-consumer flow control: with at most 10 in flight unacked, a slow consumer can't hoard work while others idle, and memory per consumer stays bounded."
+    },
+    {
+      q: "In your live-pipeline, why do feed.<fixture> and markets.<fixture> use different routing keys on one exchange, instead of two exchanges?",
+      choices: [
+        "RabbitMQ allows only one exchange per application",
+        "Topic keys let each consumer choose its slice (feed.#, markets.#, or one fixture) with bindings — no new infrastructure per stream",
+        "Different exchanges would break message ordering",
+        "It reduces disk usage"
+      ],
+      answer: 1,
+      explain: "That's the point of topic exchanges: one exchange, many logical streams selected by binding pattern. A dashboard can bind markets.fixture_101 while an archiver binds # — same infrastructure."
+    },
+    {
+      q: "How does the RPC-over-queues pattern (your snapshot.<fixture> queue) deliver the response to the right caller?",
+      choices: [
+        "The broker remembers who asked and routes the reply automatically",
+        "The request carries reply_to (a callback queue) and a correlation_id the responder copies onto the reply",
+        "The responder broadcasts the reply to all consumers",
+        "RPC is impossible over messaging — you must use HTTP"
+      ],
+      answer: 1,
+      explain: "Classic messaging RPC: the client makes an exclusive reply queue, sends its name in reply_to plus a correlation_id; the server publishes the answer there, echoing the id so the client matches response to request."
+    },
+    {
+      q: "Why does a late joiner use your snapshot RPC instead of just replaying the queue history?",
+      choices: [
+        "Queue history replay is slower but would also work",
+        "A RabbitMQ queue is not a log — once consumed and acked, messages are gone, so current state must come from a snapshot",
+        "Replaying is forbidden by the AMQP standard",
+        "Snapshots are smaller than any single message"
+      ],
+      answer: 1,
+      explain: "This is THE RabbitMQ-vs-Kafka distinction: RabbitMQ deletes delivered messages, so there is no history to replay. Your snapshot RPC (like LSports' Snapshot API) exists precisely to hand late joiners the current state."
+    },
+    {
+      q: "When is auto-ack (no manual acknowledgment) acceptable?",
+      choices: [
+        "Always — it's faster and RabbitMQ redelivers anyway",
+        "When losing an occasional message is fine (e.g. a UI ticker) and throughput matters more than delivery guarantees",
+        "Only with durable queues",
+        "Never — auto-ack is deprecated"
+      ],
+      answer: 1,
+      explain: "Auto-ack means 'delivered = done': a crash loses in-flight messages with no redelivery. Fine for disposable display updates; wrong for settlement or anything with money on it."
+    },
+    {
+      q: "A sportsbook customer says: 'we briefly disconnected and our odds screen is stale.' Using your pipeline's design, what's the recovery flow?",
+      choices: [
+        "Restart the producer so it re-sends everything to everyone",
+        "Reconnect, request a snapshot for current state, resume consuming live updates (checking MsgSeq continuity)",
+        "Wait for the next full-feed broadcast at midnight",
+        "Ask RabbitMQ to replay the last hour from the queue"
+      ],
+      answer: 1,
+      explain: "Exactly what your snapshot.py implements: snapshot for state, then live stream, with sequence numbers guarding the seam. Restarting the producer punishes every other customer, and the queue holds no history to replay."
+    }
+  ]
+};
+</script>
+<script src="../quiz.js"></script>
+</body>
+</html>

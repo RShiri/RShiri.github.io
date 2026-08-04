@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Python data engineering — LSports Prep</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script>(function(){var t=null;try{t=localStorage.getItem("theme")}catch(e){}
+document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");})();</script>
+<link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="../index.html"><span class="monogram">LS</span><span class="brand-name">LSports Prep</span></a>
+    <span class="nav-spacer"></span>
+    <a class="crumb" href="../index.html">← Dashboard</a>
+    <button class="theme-toggle" id="themeToggle" aria-label="Switch theme">☀️</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="page-head">
+    <span class="kicker">Skill 7 of 7 · <span class="status status--have">Have</span></span>
+    <h1>Python data <span class="grad">engineering</span></h1>
+    <p class="lead">Your foundation — scraping, ETL, REST, Docker, pytest — is already real and visible in four projects. This page sharpens the answers around what you've built.</p>
+  </div>
+
+  <div class="box box--why">
+    <span class="box-title">Why LSports cares</span>
+    Several LSports roles accept Python alongside C#, their data teams live in it, and every candidate's
+    portfolio gets judged by engineers. Robust pipelines, clean tests and honest READMEs are what make
+    yours credible when they open the repo — and they will open it.
+  </div>
+
+  <article class="study">
+    <section>
+      <h2>ETL that survives contact with reality</h2>
+      <p>The interview question is never "can you write ETL" — it's "what happens when it breaks at 3am."
+      Have opinions on:</p>
+      <ul>
+        <li><strong>Idempotent loads:</strong> re-running a failed job must not duplicate rows. Upsert on a
+        natural key (<code>INSERT ... ON CONFLICT DO UPDATE</code>) or replace-the-partition, never blind append.</li>
+        <li><strong>Retries with backoff:</strong> transient network/API failures get retried with exponential
+        backoff and a cap — then fail loudly, not silently.</li>
+        <li><strong>Dead-letter the bad rows:</strong> one malformed record shouldn't kill the batch; quarantine
+        it to a reject file/table with the error, and alert on the rate.</li>
+        <li><strong>Validate at the boundary:</strong> check schema and sanity (a shot at minute 137? xG of 1.4?)
+        on ingest, before bad data spreads downstream.</li>
+        <li><strong>Checkpointing:</strong> long backfills record progress so a crash resumes, not restarts.</li>
+      </ul>
+      <div class="box box--have"><span class="box-title">Yours</span>
+      Your La Liga pipeline (PostgreSQL upserts, Docker) and World Cup pipeline (MongoDB event + sentiment
+      ingestion) are your evidence. Re-read their code before an interview and pick one failure you handled
+      to tell as a story.</div>
+    </section>
+
+    <section>
+      <h2>Scraping and REST — the professional's checklist</h2>
+      <ul>
+        <li><strong>Prefer the API</strong> when one exists; scrape HTML as a last resort.</li>
+        <li><strong>Be polite:</strong> respect robots.txt and terms, rate-limit yourself, cache responses,
+        identify with a User-Agent. Hammering a site is both rude and a great way to get blocked mid-project.</li>
+        <li><strong>Expect drift:</strong> sites change markup. Isolate selectors in one place, validate outputs,
+        alert when the shape changes instead of loading garbage.</li>
+        <li><strong>REST semantics:</strong> GET is safe/cacheable, POST creates, PUT is an idempotent
+        replace, DELETE removes; 2xx success, <code>429 Too Many Requests</code> = back off (honor
+        <code>Retry-After</code>), 4xx your fault, 5xx theirs → retry with backoff. Pagination and auth
+        (API keys, tokens) are assumed knowledge.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Docker and tests — the credibility layer</h2>
+      <ul>
+        <li><strong>Docker in one line:</strong> an image is a frozen recipe (code + deps + OS libs), a
+        container is one running instance; compose spins up your app + Postgres/RabbitMQ identically on
+        any machine. "Works on my machine" stops being a sentence you say.</li>
+        <li><strong>pytest habits that show:</strong> small pure functions tested directly (your
+        <code>test_model.py</code>), fixtures for shared setup, edge cases named in the test name
+        (<code>test_stoppage_time_winner_not_extra_time</code>-style). Deterministic tests — no sleeps, no network.</li>
+        <li><strong>Pandas performance instinct:</strong> vectorize (<code>df["xg"].sum()</code>), never
+        <code>iterrows()</code> in hot paths; <code>groupby</code>/<code>merge</code> are your JOIN and GROUP BY in memory.</li>
+      </ul>
+      <div class="box box--have"><span class="box-title">Yours</span>
+      <code>live-pipeline/tests/</code> (model, pipeline, corpus) is proof you test real logic — including
+      the honest back-test where the simpler model beats your production blend. Engineers reading that
+      README trust everything else in it more. Keep tests green: run <code>pytest</code> before every push.</div>
+    </section>
+
+    <section>
+      <h2>Keep the portfolio interview-ready</h2>
+      <ul>
+        <li>Every repo README answers in 30 seconds: what it does, how to run it, one screenshot/GIF.</li>
+        <li>Pin the four LSports-relevant repos on your GitHub profile; the pipeline first.</li>
+        <li>Be ready to walk any file of your own code — "what does this function do?" on your own repo
+        is a real interview move, and stumbling on it is fatal.</li>
+      </ul>
+    </section>
+  </article>
+
+  <div id="quiz" class="quiz"></div>
+
+  <div class="pager">
+    <a class="btn btn--ghost" href="betting.html">← Betting domain</a>
+    <a class="btn btn--primary" href="../index.html">Finish: back to dashboard →</a>
+  </div>
+</main>
+
+<footer class="foot"><div class="wrap">Private prep material.</div></footer>
+
+<script>
+window.QUIZ = {
+  id: "python-de",
+  title: "Python data engineering knowledge test",
+  pass: 0.8,
+  questions: [
+    {
+      q: "Your nightly ETL job crashed halfway and you re-run it. What property prevents duplicated data?",
+      choices: [
+        "Atomicity of the Python interpreter",
+        "Idempotent loading — upserts on a natural key or partition replacement, so re-processing is safe",
+        "Running it twice as fast",
+        "Using MongoDB instead of PostgreSQL"
+      ],
+      answer: 1,
+      explain: "Idempotent loads make re-runs harmless: INSERT ... ON CONFLICT DO UPDATE (or replacing the day's partition) means the second run converges to the same state instead of appending duplicates."
+    },
+    {
+      q: "An API returns HTTP 429. The correct client behavior is:",
+      choices: [
+        "Retry immediately in a tight loop until it works",
+        "Back off (honoring Retry-After if present) with exponential delays, then resume",
+        "Switch to scraping the website instead",
+        "Treat it as success with empty data"
+      ],
+      answer: 1,
+      explain: "429 means 'too many requests' — you are being rate-limited. Exponential backoff, respecting Retry-After, is the professional response; hammering harder gets you banned."
+    },
+    {
+      q: "One malformed record appears in a 100,000-row feed file. The robust pipeline design:",
+      choices: [
+        "Crashes the whole batch so someone notices",
+        "Silently skips it",
+        "Quarantines it to a reject store with the error, loads the rest, and alerts if the reject rate spikes",
+        "Fixes the record automatically by guessing values"
+      ],
+      answer: 2,
+      explain: "Dead-lettering keeps the batch flowing AND keeps the failure visible and re-processable. Crashing punishes 99,999 good rows; silent skipping hides data loss; guessing corrupts."
+    },
+    {
+      q: "Which HTTP method is idempotent by contract — safe to blindly retry?",
+      choices: ["POST", "PUT", "Neither — retries are never safe", "Both equally"],
+      answer: 1,
+      explain: "PUT replaces a resource: doing it twice leaves the same state. POST creates: a blind retry can create twice (unless the API supports idempotency keys — worth mentioning)."
+    },
+    {
+      q: "Why does a scraper respect robots.txt and rate-limit itself, beyond ethics?",
+      choices: [
+        "robots.txt encrypts the data otherwise",
+        "Aggressive scraping gets your IP blocked and can be a terms-of-service/legal problem — the pipeline dies with it",
+        "It makes parsing easier",
+        "Search engines pay for compliance"
+      ],
+      answer: 1,
+      explain: "Sustainable access is a dependency of your pipeline. Blocked IPs and legal exposure end projects; caching + throttling + honest User-Agent keep the source alive. Interviewers at data companies genuinely probe this."
+    },
+    {
+      q: "The scraped site changes its HTML and your selectors now return empty strings. The best-designed pipeline...",
+      choices: [
+        "loads the empty values — the schema still matches",
+        "fails validation at the boundary ('0 fixtures parsed — expected >0') and alerts, loading nothing",
+        "retries every hour forever",
+        "switches to a random different website"
+      ],
+      answer: 1,
+      explain: "Sanity checks on outputs (row counts, value ranges) turn silent data corruption into a loud, immediate failure. Loading empty garbage poisons everything downstream."
+    },
+    {
+      q: "What is the difference between a Docker image and a container?",
+      choices: [
+        "They are synonyms",
+        "An image is the frozen template (code + deps + OS layers); a container is a running instance of it",
+        "A container is the file you upload; an image is what runs",
+        "Images run on Linux, containers on Windows"
+      ],
+      answer: 1,
+      explain: "Image : container :: class : object. One image, many containers. docker compose then wires app + Postgres + RabbitMQ containers into a reproducible stack — your La Liga project's setup."
+    },
+    {
+      q: "Which pytest habit most improves a data pipeline's tests?",
+      choices: [
+        "Testing against the live production API so it's realistic",
+        "Deterministic tests on small fixed inputs — pure logic tested directly, no network, no sleeps",
+        "One giant test that runs the whole pipeline end to end, only",
+        "Skipping tests for code that 'obviously works'"
+      ],
+      answer: 1,
+      explain: "Deterministic, isolated tests fail only when the code is wrong — not when the network hiccups. End-to-end tests have value but as a layer on top, not the only layer. Your tests/test_model.py follows exactly this."
+    },
+    {
+      q: "A colleague computes total xG with: total = 0; for i, row in df.iterrows(): total += row['xg']. Your review comment:",
+      choices: [
+        "Looks good — explicit loops are clearest",
+        "Use df['xg'].sum() — vectorized operations are orders of magnitude faster and clearer than iterrows",
+        "Convert the DataFrame to a list of dicts first",
+        "Use a while loop for performance"
+      ],
+      answer: 1,
+      explain: "iterrows() creates a Series per row — brutally slow on large frames. Vectorized column ops (sum, groupby, merge) are the idiomatic and fast path; this exact review comment is a common screen question."
+    },
+    {
+      q: "Why does your README's admission — 'the simpler no-momentum model beats the production blend at most checkpoints' — help you in hiring?",
+      choices: [
+        "It doesn't — never show weaknesses",
+        "Honest negative results signal you measure properly and report what the data says, which is exactly what a data company needs to trust",
+        "It shows the project is unfinished",
+        "Interviewers skip READMEs anyway"
+      ],
+      answer: 1,
+      explain: "Engineers trust portfolios that include real evaluation over ones claiming perfection. Publishing an honest back-test — including where the fancy model loses — is a senior habit that sets your repo apart. Bring it up yourself."
+    }
+  ]
+};
+</script>
+<script src="../quiz.js"></script>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Betting domain — LSports Prep</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script>(function(){var t=null;try{t=localStorage.getItem("theme")}catch(e){}
+document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");})();</script>
+<link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="../index.html"><span class="monogram">LS</span><span class="brand-name">LSports Prep</span></a>
+    <span class="nav-spacer"></span>
+    <a class="crumb" href="../index.html">← Dashboard</a>
+    <button class="theme-toggle" id="themeToggle" aria-label="Switch theme">☀️</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="page-head">
+    <span class="kicker">Skill 6 of 7 · <span class="status status--partial">Partial</span></span>
+    <h1>Betting <span class="grad">domain</span></h1>
+    <p class="lead">You already price 1X2 with an overround and emit Settlement messages. Now add the rest of the vocabulary — it's a few evenings of work and a huge interview signal.</p>
+  </div>
+
+  <div class="box box--why">
+    <span class="box-title">Why LSports cares</span>
+    Everyone at LSports speaks this language daily — the product IS markets, odds and settlement.
+    A candidate who converts odds to probabilities in their head and knows what an Asian handicap push
+    is needs zero onboarding and clearly wants <em>this</em> company, not just <em>a</em> company.
+  </div>
+
+  <article class="study">
+    <section>
+      <h2>Odds ↔ probability — the arithmetic you must do instantly</h2>
+      <p>Decimal odds are the payout per 1 unit staked. <strong>Implied probability = 1 / decimal odds.</strong></p>
+      <div class="tbl-scroll"><table>
+        <tr><th>Decimal odds</th><th>Implied probability</th><th>Meaning</th></tr>
+        <tr><td>1.50</td><td>66.7%</td><td>heavy favourite</td></tr>
+        <tr><td>2.00</td><td>50%</td><td>even money</td></tr>
+        <tr><td>2.50</td><td>40%</td><td>slight underdog</td></tr>
+        <tr><td>4.00</td><td>25%</td><td>outsider</td></tr>
+      </table></div>
+      <p>Reverse: fair odds = 1 / probability. Your model says home win = 62% → fair price 1.61.</p>
+
+      <h3>Overround — the bookmaker's margin</h3>
+      <p>Sum the implied probabilities of all outcomes of a market. A fair book sums to 100%;
+      a real book sums to more — the excess is the <strong>overround</strong> (a.k.a. vig, juice, margin).</p>
+      <pre><code>1X2 priced at:  home 2.10   draw 3.40   away 3.80
+implied:        47.6%     + 29.4%     + 26.3%    = 103.3%
+overround = 3.3%  → whatever happens, the book keeps an edge.
+
+Your pipeline does the reverse: model probs (sum 100%)
+→ scale by 1.05 → BookPrice with a 5% overround.  (tradepipe/consumer.py)</code></pre>
+    </section>
+
+    <section>
+      <h2>The market types beyond 1X2</h2>
+      <h3>Over/Under (totals)</h3>
+      <p>Bet on total goals vs a line, teams irrelevant. <strong>Over 2.5</strong> wins on 3+ goals,
+      loses on 0–2. Half-lines (2.5) can't tie. Whole lines (2.0, 3.0) can land exactly →
+      <strong>push</strong>: stake refunded. Your Poisson score grid prices this directly:
+      P(over 2.5) = sum of grid cells where home+away ≥ 3.</p>
+
+      <h3>Asian handicap</h3>
+      <p>A virtual head start eliminates (or reduces) the draw. Barcelona −1.5 means Barcelona must win
+      by 2+. Lines:</p>
+      <ul>
+        <li><strong>Half lines (−0.5, −1.5):</strong> two outcomes only, no push possible.</li>
+        <li><strong>Whole lines (−1.0):</strong> win by exactly 1 → push, stake refunded.</li>
+        <li><strong>Quarter lines (−0.75 = "−0.5 &amp; −1.0"):</strong> stake split half on each line.
+        Win by 1 → half wins (−0.5 side), half pushes (−1.0 side) → "half win."</li>
+      </ul>
+
+      <h3>Others you should recognize</h3>
+      <p><strong>Correct score</strong> (exact final score — literally one cell of your Poisson grid),
+      <strong>BTTS</strong> (both teams to score), <strong>Double chance</strong> (1X, X2, 12),
+      <strong>Draw no bet</strong> (= handicap 0: draw refunds). In-play versions of everything, with
+      markets <strong>suspended</strong> (bets rejected) during goals/VAR while prices reset.</p>
+    </section>
+
+    <section>
+      <h2>Settlement — where the money moves</h2>
+      <p>Settlement = officially deciding each market from the result (your MsgType 35). The edge cases
+      are where feed companies earn their keep:</p>
+      <ul>
+        <li><strong>VAR-cancelled goal:</strong> a goal was fed, markets settled or repriced, then the goal
+        is disallowed. The feed must issue corrections; bets settled on the phantom goal get re-settled.
+        This is why "goal confirmed" vs "goal scored" states exist.</li>
+        <li><strong>Abandoned match:</strong> house rules apply — typically markets already decided
+        (first goalscorer, HT result if the half finished) stand; undecided markets are voided (stakes refunded).</li>
+        <li><strong>90 minutes vs extra time:</strong> most football markets settle on regular time (+ injury time)
+        only. A cup match won in extra time still settles the 1X2 as a draw. Feeds carry period-scoped scores for this.</li>
+        <li><strong>Push:</strong> not a win, not a loss — stake returned (whole-line handicaps and totals).</li>
+      </ul>
+      <div class="box box--have">
+        <span class="box-title">Already in your portfolio</span>
+        Your pipeline emits MarketUpdate with <code>Probability</code>, fair <code>Price</code> and
+        <code>BookPrice</code> (5% overround), and a Settlement message type — plus knockout replays that
+        run through extra time, which is exactly the 90-minutes-vs-ET settlement distinction. Bring these
+        up yourself in the interview.
+      </div>
+    </section>
+
+    <section>
+      <h2>Drill until instant</h2>
+      <ul>
+        <li>Odds → probability for 1.25, 1.50, 2.00, 2.50, 3.00, 4.00, 5.00 without thinking.</li>
+        <li>Given three 1X2 prices, estimate the overround in your head (sum of 1/odds − 1).</li>
+        <li>Explain a quarter-line Asian handicap settlement to a friend in under a minute.</li>
+        <li>Explain how your Poisson grid prices 1X2, over/under 2.5 and correct score — one data structure, three markets.</li>
+      </ul>
+    </section>
+  </article>
+
+  <div id="quiz" class="quiz"></div>
+
+  <div class="pager">
+    <a class="btn btn--ghost" href="realtime.html">← Real-time systems</a>
+    <a class="btn btn--primary" href="python-de.html">Next: Python data engineering →</a>
+  </div>
+</main>
+
+<footer class="foot"><div class="wrap">Private prep material.</div></footer>
+
+<script>
+window.QUIZ = {
+  id: "betting",
+  title: "Betting domain knowledge test",
+  pass: 0.8,
+  questions: [
+    {
+      q: "Decimal odds of 2.50 imply what probability?",
+      choices: ["25%", "40%", "50%", "60%"],
+      answer: 1,
+      explain: "Implied probability = 1 / 2.50 = 0.40 = 40%. This conversion should be instant — it comes up constantly."
+    },
+    {
+      q: "Your model says home win probability is 62%. The fair decimal price is closest to:",
+      choices: ["1.38", "1.61", "2.63", "6.20"],
+      answer: 1,
+      explain: "Fair odds = 1 / 0.62 ≈ 1.61. (1.38 is the odds for 72%; 2.63 for 38% — the away side of the calculation.)"
+    },
+    {
+      q: "A 1X2 market is priced 2.10 / 3.40 / 3.80. The overround is roughly:",
+      choices: ["0% — this is a fair book", "3.3%", "10%", "33%"],
+      answer: 1,
+      explain: "1/2.10 + 1/3.40 + 1/3.80 ≈ 47.6% + 29.4% + 26.3% = 103.3%, so ~3.3% margin. Summing implied probabilities and subtracting 100% is the whole trick."
+    },
+    {
+      q: "What does the 5% overround in your own pipeline's BookPrice mean?",
+      choices: [
+        "Prices are 5% higher than fair, so payouts are bigger",
+        "Model probabilities are scaled so implied probabilities sum to 105%, shortening every price — the bookmaker's margin",
+        "5% of bets are rejected",
+        "The model is 5% inaccurate"
+      ],
+      answer: 1,
+      explain: "Scaling probabilities up by 1.05 before inverting to prices makes every price slightly worse than fair. Whatever the outcome, a balanced book keeps ~5%. That's what turns a model into a bookmaker."
+    },
+    {
+      q: "You bet Over 2.5 goals. The match ends 2–1. Result?",
+      choices: ["Loss", "Win", "Push — stake refunded", "Void"],
+      answer: 1,
+      explain: "Total = 3 goals, and 3 > 2.5, so Over wins. Half-lines like 2.5 can never tie — that's precisely why bookmakers love them."
+    },
+    {
+      q: "You bet Over 3.0 goals (whole line) and the match ends 2–1. Result?",
+      choices: ["Loss", "Win", "Push — stake refunded", "Half win"],
+      answer: 2,
+      explain: "Total = 3, exactly on the whole line → push, stake returned. Whole lines can land exactly; half-lines can't; quarter-lines split between the two."
+    },
+    {
+      q: "Barcelona −1.5 Asian handicap. Barcelona wins 2–1. Result for the Barcelona backer?",
+      choices: ["Win", "Loss", "Push", "Half win"],
+      answer: 1,
+      explain: "Apply the handicap: 2 − 1.5 = 0.5 vs 1 → adjusted result is a Barcelona defeat. −1.5 needs a win by 2+ goals; a one-goal win loses the bet."
+    },
+    {
+      q: "Barcelona −0.75 (quarter line) and Barcelona wins by exactly 1. Result?",
+      choices: [
+        "Full win",
+        "Half win: the −0.5 half wins, the −1.0 half pushes",
+        "Full loss",
+        "Push on the whole stake"
+      ],
+      answer: 1,
+      explain: "−0.75 means the stake is split across −0.5 (won: 1 > 0.5) and −1.0 (win by exactly 1 → push). Half the stake pays out, half returns. Quarter-line splits are a favorite trivia probe."
+    },
+    {
+      q: "A goal is fed to sportsbooks, then VAR disallows it. What must the data feed do?",
+      choices: [
+        "Nothing — first information stands",
+        "Issue a correction (goal cancelled), driving market re-pricing and re-settlement of any bets settled on the phantom goal",
+        "Void the entire match",
+        "Wait until full time and fix everything at once"
+      ],
+      answer: 1,
+      explain: "Corrections are a first-class message type in real feeds — state must be reversible. This is also why feeds distinguish 'goal' from 'goal confirmed', and it's a great topic to raise yourself."
+    },
+    {
+      q: "A cup semi-final is 1–1 after 90 minutes; one team wins 2–1 in extra time. The standard 1X2 (match result) market settles as:",
+      choices: [
+        "Win for the team that advanced",
+        "The draw — 1X2 settles on regular time unless stated otherwise",
+        "Void — cup matches have no 1X2",
+        "Push"
+      ],
+      answer: 1,
+      explain: "Match-result markets cover 90 minutes + injury time by default; extra time and penalties belong to separate markets ('to qualify'). Your pipeline's stoppage-vs-extra-time handling encodes exactly this rule."
+    },
+    {
+      q: "A match is abandoned at 0–0 in the 60th minute. Typical settlement:",
+      choices: [
+        "All markets settle on the 60-minute score",
+        "Decided markets (e.g. HT result) stand; undecided markets (full-time 1X2, over/under) are voided with stakes refunded",
+        "All bets lose",
+        "The bookmaker chooses freely per bet"
+      ],
+      answer: 1,
+      explain: "The general principle: what was already determined stands, what wasn't is voided. Exact house rules vary, but this decided-vs-undecided split is the standard answer."
+    },
+    {
+      q: "Why do bookmakers suspend in-play markets the moment a goal might have been scored?",
+      choices: [
+        "To create suspense for customers",
+        "Current prices assume the old score; until re-priced, bettors with faster information would snap up stale odds",
+        "Regulation requires a 30-second pause",
+        "To reduce server load"
+      ],
+      answer: 1,
+      explain: "Suspension closes the stale-price window — the same seconds where feed latency equals money. Low-latency feeds like TRADE360 exist so books can suspend and re-price before being picked off."
+    }
+  ]
+};
+</script>
+<script src="../quiz.js"></script>
+</body>
+</html>
