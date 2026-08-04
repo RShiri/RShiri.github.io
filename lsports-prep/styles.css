@@ -187,3 +187,98 @@ footer.foot { border-top: 1px solid var(--line); padding: 22px 0 40px; font-size
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
 }
+
+/* ===========================================================================
+   projects.html — long-form deep dive: wide layout, sticky TOC, interactives
+   =========================================================================== */
+.wrap--wide { max-width: 1120px; }
+
+/* two-column: sticky TOC + article */
+.deep { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 40px; align-items: start; }
+.toc { position: sticky; top: 72px; font-size: 13.5px; }
+.toc-title { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 11.5px;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.toc a { display: block; padding: 6px 10px; border-radius: 8px; color: var(--body); border-left: 2px solid transparent; }
+.toc a:hover { background: var(--bg-soft); text-decoration: none; color: var(--ink); }
+.toc a.active { color: var(--accent); border-left-color: var(--accent); background: var(--bg-soft); font-weight: 600; }
+
+/* section headers in the deep dive */
+.deep-sec { scroll-margin-top: 78px; padding-top: 8px; }
+.deep-sec + .deep-sec { margin-top: 56px; padding-top: 40px; border-top: 1px solid var(--line); }
+.sec-no { font-family: "Space Grotesk", sans-serif; font-size: 12.5px; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+.deep-sec h2 { font-size: clamp(23px, 3.2vw, 31px); margin: 8px 0 14px; }
+
+/* formula display */
+.formula { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 15px;
+  background: var(--bg-soft); border: 1px solid var(--line); border-left: 4px solid var(--accent-2);
+  border-radius: 12px; padding: 16px 18px; margin: 16px 0; overflow-x: auto; color: var(--ink); }
+.formula-legend { display: grid; gap: 8px; margin: 14px 0 0; padding: 0; list-style: none; }
+.formula-legend li { display: grid; grid-template-columns: 150px minmax(0,1fr); gap: 12px; font-size: 14.5px; align-items: baseline; }
+.formula-legend code { font-size: 13px; }
+@media (max-width: 620px) { .formula-legend li { grid-template-columns: 1fr; gap: 2px; } }
+
+/* interactive panels */
+.calc { border: 1px solid var(--line); border-radius: var(--r); background: var(--bg-soft);
+  padding: 22px; margin: 22px 0; box-shadow: var(--shadow-sm); }
+.calc h3 { font-size: 17px; margin-bottom: 4px; }
+.calc-hint { font-size: 13.5px; color: var(--muted); margin: 0 0 16px; }
+.calc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); gap: 14px 20px; }
+.ctl { display: grid; gap: 5px; }
+.ctl label { font-size: 13px; font-weight: 600; color: var(--ink); display: flex; justify-content: space-between; gap: 8px; }
+.ctl label b { font-family: ui-monospace, Menlo, monospace; color: var(--accent); font-weight: 700; }
+.ctl input[type="range"] { width: 100%; accent-color: var(--accent); }
+.ctl input[type="number"], .ctl input[type="text"] { width: 100%; font: inherit; font-size: 15px; padding: 9px 12px;
+  border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); }
+.ctl input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* odds output tiles (mirrors the dashboard look) */
+.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 18px; }
+.tile { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 14px; text-align: center; }
+.tile .lbl { font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.tile .val { font-family: "Space Grotesk", sans-serif; font-size: 30px; font-weight: 700; color: var(--ink); line-height: 1.15; margin-top: 4px; }
+.tile .sub { font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+.tiles--sm .val { font-size: 22px; }
+@media (max-width: 520px) { .tiles { grid-template-columns: 1fr; } }
+.sum-note { margin-top: 12px; font-size: 13.5px; color: var(--muted); text-align: center; }
+.sum-note b { color: var(--ink); font-family: ui-monospace, Menlo, monospace; }
+
+/* pipeline diagram */
+.diagram { margin: 20px 0; overflow-x: auto; }
+.diagram svg { display: block; min-width: 560px; }
+.dg-box { fill: var(--bg-soft); stroke: var(--line); }
+.dg-box--accent { fill: rgba(79,70,229,.10); stroke: var(--accent); }
+html[data-theme="dark"] .dg-box--accent { fill: rgba(143,151,255,.12); }
+.dg-t { fill: var(--ink); font-family: "Space Grotesk", sans-serif; font-size: 13px; font-weight: 600; }
+.dg-s { fill: var(--muted); font-family: ui-monospace, Menlo, monospace; font-size: 10.5px; }
+.dg-line { stroke: var(--accent); stroke-width: 1.6; fill: none; }
+.dg-line--dash { stroke-dasharray: 5 4; stroke: var(--accent-2); }
+
+/* rehearsal details blocks */
+details.rehearse { border: 1px solid var(--line); border-radius: 12px; background: var(--bg-soft);
+  padding: 14px 18px; margin: 12px 0; }
+details.rehearse > summary { cursor: pointer; font-weight: 600; color: var(--ink); font-size: 15.5px; list-style: none; }
+details.rehearse > summary::-webkit-details-marker { display: none; }
+details.rehearse > summary::before { content: "▸ "; color: var(--accent); font-weight: 700; }
+details.rehearse[open] > summary::before { content: "▾ "; }
+details.rehearse > summary:hover { color: var(--accent); }
+.rehearse-body { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); font-size: 15px; }
+.rehearse-body p:first-child { margin-top: 0; }
+
+/* script/say-this block */
+.say { border: 1px solid var(--line); border-left: 4px solid var(--ok); border-radius: 12px;
+  background: var(--bg-soft); padding: 16px 18px; margin: 18px 0; font-size: 15.5px; }
+.say .box-title { color: var(--ok); }
+.say em { color: var(--body); }
+
+/* featured dashboard card */
+.card--feature { grid-column: 1 / -1; border-color: var(--accent);
+  background: linear-gradient(120deg, rgba(79,70,229,.07), rgba(6,182,212,.05)); }
+html[data-theme="dark"] .card--feature { background: linear-gradient(120deg, rgba(143,151,255,.10), rgba(56,214,240,.06)); }
+
+@media (max-width: 900px) {
+  .deep { grid-template-columns: 1fr; gap: 22px; }
+  .toc { position: static; border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; background: var(--bg-soft); }
+  .toc ol { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+}

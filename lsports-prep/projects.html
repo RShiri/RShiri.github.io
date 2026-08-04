@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Your projects, explained — LSports Prep</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script>(function(){var t=null;try{t=localStorage.getItem("theme")}catch(e){}
+document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");})();</script>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="index.html"><span class="monogram">LS</span><span class="brand-name">LSports Prep</span></a>
+    <span class="nav-spacer"></span>
+    <a class="crumb" href="index.html">← Dashboard</a>
+    <button class="theme-toggle" id="themeToggle" aria-label="Switch theme">☀️</button>
+  </div>
+</header>
+
+<main class="wrap wrap--wide">
+  <div class="page-head">
+    <span class="kicker">Deep dive · your own work</span>
+    <h1>Your projects, <span class="grad">explained</span></h1>
+    <p class="lead">
+      The skill pages cover what LSports hires for. This page covers <strong>what you built</strong> —
+      the odds on your own dashboard, the TRADE360 architecture your pipeline mirrors, and both models,
+      in enough depth that you can explain every line of it out loud.
+    </p>
+  </div>
+
+  <div class="deep">
+    <nav class="toc" aria-label="Contents">
+      <div class="toc-title">On this page</div>
+      <ol>
+        <li><a href="#odds">1 · Reading the odds</a></li>
+        <li><a href="#trade360">2 · TRADE360</a></li>
+        <li><a href="#xg">3 · The xG model</a></li>
+        <li><a href="#winprob">4 · The win-prob model</a></li>
+        <li><a href="#rehearse">5 · Rehearsal</a></li>
+        <li><a href="#quiz-sec">6 · Self-test</a></li>
+      </ol>
+    </nav>
+
+    <article class="study" style="padding-top:0">
+
+    <!-- ================================================== 1 · ODDS -->
+    <section class="deep-sec" id="odds">
+      <span class="sec-no">01</span>
+      <h2>Reading the odds on your own dashboard</h2>
+      <p>
+        The three big numbers in your match centre are <strong>decimal odds</strong>. Decimal odds are
+        the total return per 1 unit staked — stake 1 at 42.0, get 42 back (41 profit) if it wins.
+        In fractional terms that's <strong>41-to-1</strong>.
+      </p>
+      <p>
+        Convert to probability by inverting: <strong>implied probability = 1 ÷ decimal odds</strong>.
+        Convert back with <strong>fair odds = 1 ÷ probability</strong>.
+      </p>
+
+      <h3>The real moment from your screenshot</h3>
+      <p>
+        Argentina–Switzerland, quarter-final, minute 50. Argentina lead 1–0 and are out-xG'ing
+        Switzerland 0.48 to 0.15. Your pipeline quotes:
+      </p>
+      <div class="tiles">
+        <div class="tile"><div class="lbl">1 · Argentina</div><div class="val">1.21</div><div class="sub">82.72%</div></div>
+        <div class="tile"><div class="lbl">X · draw</div><div class="val">6.71</div><div class="sub">14.90%</div></div>
+        <div class="tile"><div class="lbl">2 · Switzerland</div><div class="val">42.0</div><div class="sub">2.38%</div></div>
+      </div>
+      <p class="sum-note">82.72 + 14.90 + 2.38 = <b>100.0%</b></p>
+
+      <div class="box box--why">
+        <span class="box-title">The tell</span>
+        Because the three implied probabilities sum to <strong>100%</strong>, these are
+        <strong>fair odds</strong> — no margin. A real sportsbook's prices always sum to
+        <em>more</em> than 100%, and the excess is their profit. Your dashboard shows the honest
+        probabilities; the pipeline publishes the bookmaker version alongside them.
+      </div>
+
+      <h3>The same moment as book prices</h3>
+      <p>
+        <code>book_prices()</code> in <code>live-pipeline/tradepipe/model.py</code> scales the three
+        probabilities so they sum to 1.05, then inverts. Same match state, bookmaker's quote:
+      </p>
+      <div class="tiles tiles--sm">
+        <div class="tile"><div class="lbl">1 · Argentina</div><div class="val">1.151</div><div class="sub">86.9%</div></div>
+        <div class="tile"><div class="lbl">X · draw</div><div class="val">6.39</div><div class="sub">15.6%</div></div>
+        <div class="tile"><div class="lbl">2 · Switzerland</div><div class="val">40.04</div><div class="sub">2.5%</div></div>
+      </div>
+      <p class="sum-note">86.9 + 15.6 + 2.5 = <b>105.0%</b> &nbsp;→&nbsp; a 5% overround</p>
+      <p>
+        Every price got <em>shorter</em>. That 5 points of excess probability is the margin: whatever
+        happens, a balanced book keeps roughly 5% of the money staked. This single transformation is
+        what turns a probability model into a bookmaker.
+      </p>
+
+      <div class="calc">
+        <h3>Odds converter</h3>
+        <p class="calc-hint">Drill this until it's instant. Type in either box — the other updates.</p>
+        <div class="calc-grid">
+          <div class="ctl">
+            <label for="oc-dec">Decimal odds</label>
+            <input type="number" id="oc-dec" value="2.50" step="0.01" min="1.01" />
+          </div>
+          <div class="ctl">
+            <label for="oc-prob">Implied probability (%)</label>
+            <input type="number" id="oc-prob" value="40.00" step="0.1" min="0.1" max="99.9" />
+          </div>
+        </div>
+        <div class="tiles tiles--sm" style="margin-top:16px">
+          <div class="tile"><div class="lbl">Fractional</div><div class="val" id="oc-frac">3/2</div><div class="sub">profit per 1 staked</div></div>
+          <div class="tile"><div class="lbl">Fair odds</div><div class="val" id="oc-fair">2.500</div><div class="sub">1 ÷ probability</div></div>
+          <div class="tile"><div class="lbl">Book price (5%)</div><div class="val" id="oc-book">2.381</div><div class="sub">with overround</div></div>
+        </div>
+      </div>
+
+      <div class="say">
+        <span class="box-title">Say this</span>
+        <em>"The dashboard shows fair odds — the probabilities sum to 100%. The pipeline also publishes
+        book prices with a 5% overround, which is what a sportsbook would actually quote. Same model,
+        two outputs: one honest, one with the margin baked in."</em>
+      </div>
+    </section>
+
+    <!-- ================================================== 2 · TRADE360 -->
+    <section class="deep-sec" id="trade360">
+      <span class="sec-no">02</span>
+      <h2>TRADE360 — and what your pipeline mirrors</h2>
+
+      <h3>What LSports actually sells</h3>
+      <p>
+        LSports sells <strong>sports data as a live stream</strong>. Scouts and feeds capture what's
+        happening across thousands of matches; <strong>TRADE360</strong> is the product that delivers
+        it to sportsbooks in real time.
+      </p>
+      <p>
+        The business problem: a sportsbook running in-play betting on 500 simultaneous matches cannot
+        watch 500 matches. It buys a stream that says, within a second or two, that a goal went in — so
+        it can <strong>suspend the market</strong> before someone watching a faster TV feed picks off
+        the stale odds.
+      </p>
+      <div class="box box--why">
+        <span class="box-title">The one-line framing</span>
+        <strong>Latency is the product.</strong> The seconds between a goal and a suspended market are
+        exactly where a sportsbook loses money, and that's what customers pay to close.
+      </div>
+
+      <h3>Your architecture</h3>
+      <div class="diagram">
+        <svg viewBox="0 0 760 250" role="img" aria-label="MatchProducer publishes to a RabbitMQ topic exchange; TradeConsumer subscribes, rebuilds state and prices markets; a snapshot RPC runs back to the producer">
+          <rect class="dg-box" x="8" y="28" width="168" height="62" rx="12"/>
+          <text class="dg-t" x="26" y="54">MatchProducer</text>
+          <text class="dg-s" x="26" y="72">replays a recorded match</text>
+
+          <rect class="dg-box dg-box--accent" x="256" y="28" width="196" height="62" rx="12"/>
+          <text class="dg-t" x="274" y="54">topic exchange</text>
+          <text class="dg-s" x="274" y="72">"trade"</text>
+
+          <rect class="dg-box" x="532" y="28" width="168" height="62" rx="12"/>
+          <text class="dg-t" x="550" y="54">TradeConsumer</text>
+          <text class="dg-s" x="550" y="72">rebuilds MatchState</text>
+
+          <rect class="dg-box" x="474" y="160" width="226" height="62" rx="12"/>
+          <text class="dg-t" x="492" y="186">InPlayModel → 1X2</text>
+          <text class="dg-s" x="492" y="204">MarketUpdate, every minute</text>
+
+          <path class="dg-line" d="M176 59 H 250" marker-end="url(#ar)"/>
+          <text class="dg-s" x="182" y="48">feed.&lt;id&gt;</text>
+          <path class="dg-line" d="M452 59 H 526" marker-end="url(#ar)"/>
+          <text class="dg-s" x="458" y="48">markets.&lt;id&gt;</text>
+          <path class="dg-line" d="M616 90 V 154" marker-end="url(#ar)"/>
+
+          <path class="dg-line dg-line--dash" d="M532 120 H 210 V 96" marker-end="url(#ar2)"/>
+          <text class="dg-s" x="250" y="136">snapshot.&lt;id&gt; — RPC for late joiners / after a gap</text>
+
+          <defs>
+            <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto">
+              <path d="M0,0 L7,3.2 L0,6.4 z" fill="currentColor" style="color:var(--accent)"/>
+            </marker>
+            <marker id="ar2" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto">
+              <path d="M0,0 L7,3.2 L0,6.4 z" fill="currentColor" style="color:var(--accent-2)"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+      <p>
+        A <code>MatchProducer</code> replays a recorded World Cup match on the real match clock,
+        publishing to a RabbitMQ <strong>topic exchange</strong> named <code>trade</code> with routing
+        keys <code>feed.&lt;fixture_id&gt;</code> and <code>markets.&lt;fixture_id&gt;</code>. A
+        <code>TradeConsumer</code> subscribes, rebuilds <code>MatchState</code> from the message
+        stream, runs the in-play model every minute, and publishes 1X2 market updates.
+      </p>
+
+      <h3>The message contract</h3>
+      <p>
+        Every message is a TRADE360-style envelope: a <code>Header</code> carrying <code>Type</code>,
+        <code>MsgGuid</code>, <code>ServerTimestamp</code> and a <strong>per-fixture monotonic
+        <code>MsgSeq</code></strong>, plus a <code>Body</code>. Five types, matching theirs:
+      </p>
+      <div class="tbl-scroll"><table>
+        <tr><th>Type</th><th>Name</th><th>Carries</th><th>Why it exists</th></tr>
+        <tr><td><b>1</b></td><td>FixtureMetadataUpdate</td><td>teams, competition, venue, kickoff</td><td>the customer needs to know what match this is</td></tr>
+        <tr><td><b>2</b></td><td>LivescoreUpdate</td><td>score, minute, incidents, xG</td><td>the actual live state — the heart of the feed</td></tr>
+        <tr><td><b>3</b></td><td>MarketUpdate</td><td>probability, fair price, book price</td><td>the priced market the sportsbook trades on</td></tr>
+        <tr><td><b>31</b></td><td>KeepAlive</td><td>nothing — it's a heartbeat</td><td>proves the connection is alive when the match is quiet</td></tr>
+        <tr><td><b>35</b></td><td>Settlement</td><td>the deciding result</td><td>the market is now officially decided</td></tr>
+      </table></div>
+
+      <h3>The three things that make it credible</h3>
+
+      <h4>MsgSeq — gap detection</h4>
+      <p>
+        A per-fixture counter. The consumer tracks the last sequence it applied; if it receives 47 when
+        it expected 46, it <em>knows</em> it missed something. Without that number a dropped message is
+        invisible and the scoreboard is silently wrong — which, on a betting feed, is money.
+      </p>
+
+      <h4>KeepAlive — liveness</h4>
+      <p>
+        Without heartbeats, "nothing has happened for 90 seconds" and "the connection died 90 seconds
+        ago" look identical to a consumer. Type 31 makes silence detectable.
+      </p>
+
+      <h4>Snapshot recovery — the part that impresses</h4>
+      <p>
+        When a gap is detected, or a client joins mid-match, it <em>cannot</em> replay history:
+        <strong>RabbitMQ deletes delivered messages.</strong> There is nothing to rewind. So the
+        consumer makes an RPC call on <code>snapshot.&lt;fixture_id&gt;</code>; the producer — the
+        authority for that fixture — replies with the full current <code>MatchState</code>. The
+        consumer applies it, then discards any buffered message with
+        <code>MsgSeq &lt;= LastMsgSeq</code>, because the snapshot already covers it.
+      </p>
+      <div class="box box--have">
+        <span class="box-title">Why this matters more than anything else in the project</span>
+        This is not a pattern you invent by accident. It's precisely why LSports ships a Snapshot API,
+        and it's the strongest single signal in your portfolio that you understand their problem
+        domain rather than just their tech list. Files:
+        <code>tradepipe/snapshot.py</code>, <code>tradepipe/state.py</code> (<code>seq_gap()</code>,
+        <code>from_snapshot()</code>).
+      </div>
+
+      <h3>Design decisions to defend</h3>
+      <div class="tbl-scroll"><table>
+        <tr><th>Decision</th><th>Where</th><th>Why you did it</th></tr>
+        <tr><td>Pluggable <code>Broker</code></td><td><code>tradepipe/broker.py</code></td><td><code>InMemoryBroker</code> is synchronous and deterministic, so 18 pytest tests run with zero infrastructure; <code>RabbitBroker</code> is the real thing. <strong>This is your answer to "how do you test a distributed system?"</strong></td></tr>
+        <tr><td>Zero third-party deps in the core</td><td><code>requirements.txt</code></td><td>pure stdlib; <code>pika</code> optional, <code>pytest</code> dev-only. Anyone can clone and run it in one command.</td></tr>
+        <tr><td>Deterministic replay</td><td><code>tradepipe/producer.py</code></td><td>fixed timestamps, raw match clock — same input always gives the same output, which is what makes the tests meaningful.</td></tr>
+      </table></div>
+
+      <div class="say">
+        <span class="box-title">The 90-second walkthrough — memorize this shape</span>
+        <em>"It's a working miniature of a sportsbook data feed, modelled on LSports' TRADE360. A
+        producer replays a recorded World Cup match as a live stream over a RabbitMQ topic exchange,
+        using their message contract — fixture metadata, livescore, market update, keep-alive,
+        settlement — each with a per-fixture sequence number. A consumer rebuilds match state from
+        that stream, runs an in-play Poisson model every minute, and publishes 1X2 prices with fair
+        odds and a 5% overround. If the consumer detects a sequence gap or joins late, it can't replay
+        history because RabbitMQ deletes delivered messages, so it makes a snapshot RPC to the
+        producer, applies the state, and de-dupes anything the snapshot already covered. The broker is
+        pluggable, so the whole thing tests deterministically in memory without RabbitMQ running."</em>
+      </div>
+    </section>
+
+    <!-- ================================================== 3 · xG -->
+    <section class="deep-sec" id="xg">
+      <span class="sec-no">03</span>
+      <h2>The xG model</h2>
+      <p>
+        <strong>The question it answers:</strong> a shot was taken. Before we know the outcome, what is
+        the probability it becomes a goal? A tap-in might be 0.76; a 30-yard effort 0.03.
+      </p>
+
+      <h3>The four stages</h3>
+      <ol>
+        <li><strong>The shot becomes data</strong> — location, angle, distance, body part, assist type,
+        defensive pressure, whether it was tagged a big chance.</li>
+        <li><strong>23 features</strong> — the shot is reduced to exactly 23 facts the model is allowed
+        to see. Nothing else. Your explainer lets a reader expand all 23 with real values.</li>
+        <li><strong>Three models, blended</strong> — the 23 features are scored by three separate
+        models and averaged. Crucially: <em>how much say each one gets was decided by testing, not by
+        hand.</em></li>
+        <li><strong>Calibration</strong> — raw model outputs are not honest probabilities. Calibration
+        maps them so that shots the model calls "30%" go in about 30% of the time.</li>
+      </ol>
+
+      <div class="box">
+        <span class="box-title">The feature worth name-dropping</span>
+        <code>big_x_dist</code>. A "big chance" tag would otherwise apply at full strength from 6
+        metres or from 25 metres. This feature shaves the bonus back per metre, so the tag still
+        respects distance instead of overriding it. That's a <strong>hand-designed interaction</strong>
+        — evidence you thought about football, not just about scikit-learn.
+      </div>
+
+      <h3>The number that proves it works</h3>
+      <p>
+        <strong>Brier score 0.0722</strong>, measured on shots the model never trained on. Brier is
+        mean squared error between predicted probability and what actually happened — 0 is perfect.
+      </p>
+      <div class="box box--have">
+        <span class="box-title">Always quote the baseline with it</span>
+        Goals happen on roughly <strong>1 shot in 10</strong>. A model that guessed "10%" every single
+        time, knowing nothing about anything, would already score about <strong>0.09</strong>. So the
+        benchmark isn't zero — it's 0.09. Getting to <strong>0.0722</strong> means the model is
+        genuinely reading the shot.
+        <br><br>
+        Quoting a metric with no reference point is what a student does. Quoting the naive baseline
+        alongside it is what an engineer does.
+      </div>
+
+      <h3>The methodological point to lead with</h3>
+      <p>Your own page says it outright, and you should say it out loud:</p>
+      <div class="say">
+        <span class="box-title">Say this</span>
+        <em>"Calibrating a model against its own training predictions is how false confidence survives
+        review. Every calibration number on that page comes from shots held out of training."</em>
+      </div>
+      <p>
+        That single sentence separates someone who got a good number from someone who knows why a good
+        number might be a lie.
+      </p>
+
+      <h3>The xA extension</h3>
+      <p>
+        Same idea for passes, but <strong>two-stage</strong>: given this completed pass, (a) what is the
+        probability a shot follows, and (b) how good would that shot be? Multiply the two, then
+        calibrate the product. 19 pass features, roughly 2.4M passes.
+      </p>
+      <p>
+        <strong>Why two stages beat one black box:</strong> a pass can be dangerous by creating a chance
+        that never materialises. Modelling "does a shot happen" and "how good is it" separately, then
+        combining, is more honest — and it means you can inspect which half of the estimate is driving
+        a result.
+      </p>
+    </section>
+
+    <!-- ================================================== 4 · WIN-PROB -->
+    <section class="deep-sec" id="winprob">
+      <span class="sec-no">04</span>
+      <h2>The win-prob model</h2>
+      <p>
+        <strong>The question it answers:</strong> given the score, the clock, and how the match is
+        actually going — who wins? This is the model your pipeline runs live, and it drew the lines in
+        your match centre.
+      </p>
+      <p>
+        <strong>Training data:</strong> 3,272 matches and 82,310 shots — four seasons of the EPL and La
+        Liga, plus World Cups 2018, 2022 and 2026. Everything you have ever scraped, in one corpus.
+      </p>
+
+      <h3>Part A — the pre-match rate (Dixon-Coles-lite)</h3>
+      <p>Before kickoff you need λ: expected goals for each side.</p>
+      <div class="formula">λ = att · opp_def / μ &nbsp;&nbsp;(× hfa for the home side)</div>
+      <p>Four ideas make this good rather than naive:</p>
+      <ol>
+        <li><strong>Each competition gets its own baseline μ.</strong> A team is measured against
+        <em>its own league's</em> scoring environment, not "football in general." Your fitted values:
+        EPL <code>1.4184</code>, La Liga <code>1.2871</code>, World Cup <code>1.3674</code>. Pooling
+        them would distort both.</li>
+        <li><strong>Team rates are shrunk toward that baseline</strong> (empirical Bayes). A team with
+        3 matches of evidence shouldn't be trusted like one with 100. The shrinkage strength
+        <code>k</code> was <strong>tuned over {1, 2, 4, 8, 16} by holdout Brier — k = 1 won</strong>,
+        meaning the data preferred rates that stay responsive.</li>
+        <li><strong>Teams are namespaced by competition.</strong> <code>EPL/Arsenal</code> and
+        <code>WC/Argentina</code> are separate entities, so league form never leaks into a World Cup
+        prior.</li>
+        <li><strong>Recency decay of 0.8 per season.</strong> Last season counts ×0.8, two seasons ago
+        ×0.64. Teams change.</li>
+      </ol>
+      <p>
+        Plus <strong>home advantage ×1.1295</strong>, applied to league matches only and dropped to 1.0
+        at neutral World Cup venues.
+      </p>
+      <div class="box">
+        <span class="box-title">Worked example — the match in your screenshot</span>
+        <code>WC/Argentina</code>: att <b>1.7298</b>, def <b>0.7284</b> (19 matches).
+        <code>WC/Switzerland</code>: att <b>1.5491</b>, def <b>1.1608</b> (14 matches).
+        μ(WC) = <b>1.3674</b>, neutral venue so no hfa. That produces the pre-match rates the pipeline
+        actually used: <b>λ_home = 1.468</b>, <b>λ_away = 0.825</b> — a kickoff quote of
+        43.0% / 35.2% / 21.8%.
+      </div>
+
+      <h3>Part B — going live</h3>
+      <p>This one formula drives the entire dashboard:</p>
+      <div class="formula">lam_rem(t) = ((90 − t) / 90) · [ (1 − w)·λ_pre + w·90·pace₁₅ ]</div>
+      <ul class="formula-legend">
+        <li><code>(90 − t)/90</code><span><strong>Time left.</strong> At minute 45 half the match remains, so halve the expected goals. At 90 it's zero — nothing more can happen.</span></li>
+        <li><code>λ_pre</code><span><strong>What we expected before kickoff</strong>, from Part A.</span></li>
+        <li><code>pace₁₅</code><span><strong>What's happening right now</strong> — xG created in the last 15 minutes ÷ 15, giving xG per minute, then scaled back up to a full match.</span></li>
+        <li><code>w = 0.35</code><span><strong>The blend.</strong> 65% prior belief, 35% live momentum.</span></li>
+      </ul>
+      <p>
+        Then feed both teams' <code>lam_rem</code> plus the current score into an
+        <strong>independent-Poisson grid</strong>, 0–10 goals per side, and bucket all 121 cells by
+        final result:
+      </p>
+      <div class="formula">P(home) = Σᵢⱼ Pois(i; λ_h) · Pois(j; λ_a) · [ h+i &gt; a+j ]</div>
+      <p>
+        Draw and away are the same sum with <code>==</code> and <code>&lt;</code>. The triple is
+        renormalized to exactly 1.0, because truncating the grid at 10 goals loses a sliver of tail mass.
+      </p>
+      <p>
+        Two guards worth mentioning: <code>LAM_FLOOR = 0.05</code> means a dominated team is never
+        <em>completely</em> dead, and <code>ODDS_CAP = 999</code> stops near-zero probabilities from
+        producing absurd prices.
+      </p>
+
+      <h3>Part C — the 90-minute clock truth table</h3>
+      <p>
+        <code>effective_min()</code> is eight lines, and it's the kind of domain detail that gets
+        noticed:
+      </p>
+      <div class="tbl-scroll"><table>
+        <tr><th>Event minute</th><th>Match type</th><th>Counts at</th></tr>
+        <tr><td>≤ 90</td><td>any</td><td>the minute itself</td></tr>
+        <tr><td>&gt; 90</td><td><b>without</b> extra time (all league games, all group games)</td><td>minute 90 — it's second-half stoppage, so <b>a 90+4' goal settles the market</b></td></tr>
+        <tr><td>&gt; 90</td><td><b>with</b> extra time (knockouts)</td><td><b>never</b> — extra time doesn't enter the 90-minute market</td></tr>
+      </table></div>
+      <p>
+        That is exactly the real settlement rule: match-result markets cover 90 minutes plus injury
+        time, never extra time. <strong>You implemented the rule before you studied it</strong> — which
+        is a good line to use.
+      </p>
+
+      <h3>Part D — the back-test, and the honest result</h3>
+      <p>
+        Temporal holdout: train on league seasons 2022-23 to 2024-25 plus World Cups 2018 and 2022,
+        then <strong>test blind on 864 matches</strong> the model never saw (the 2025-26 league seasons
+        plus World Cup 2026). Brier score against the 90-minute result, at seven checkpoints, against
+        two baselines.
+      </p>
+      <div class="tbl-scroll"><table>
+        <tr><th>Variant</th><th>0'</th><th>15'</th><th>30'</th><th>45'</th><th>60'</th><th>75'</th><th>90'</th></tr>
+        <tr><td>momentum model (w = 0.35)</td><td>0.6176</td><td>0.6014</td><td>0.5812</td><td>0.5252</td><td>0.4548</td><td>0.3652</td><td>0.0</td></tr>
+        <tr><td><b>no momentum (w = 0)</b></td><td><b>0.6072</b></td><td><b>0.5832</b></td><td><b>0.5587</b></td><td><b>0.5141</b></td><td><b>0.4472</b></td><td><b>0.3625</b></td><td>0.0</td></tr>
+        <tr><td>constant base rate</td><td>0.6449</td><td>0.6449</td><td>0.6449</td><td>0.6449</td><td>0.6449</td><td>0.6449</td><td>0.6449</td></tr>
+      </table></div>
+      <div class="box box--why">
+        <span class="box-title">Read this table correctly</span>
+        This is a <strong>three-outcome</strong> Brier score (summed squared error across home/draw/away,
+        range 0–2), so don't compare it to the xG model's 0.0722, which is binary. Lower is better.
+        Two readings: your model beats the constant-quote baseline at every checkpoint (it's learning
+        something real), <strong>and the no-momentum variant beats your production blend at every live
+        checkpoint</strong>. At 90' everything is 0.0 because the result is known.
+      </div>
+      <div class="say">
+        <span class="box-title">Say this — it's your best answer in the whole interview</span>
+        <em>"My back-test showed the simpler no-momentum variant actually outperforms my production
+        blend at every checkpoint. I kept w = 0.35 because it makes the live timeline more responsive
+        to watch, but I report the result honestly — and if I were pricing real money I'd ship w = 0."</em>
+        <br><br>
+        That does three things at once: proves you evaluate properly, shows you know the difference
+        between a demo and a pricing system, and makes everything else you claim more credible.
+      </div>
+
+      <h3>Play with the actual model</h3>
+      <div class="calc">
+        <h3>In-play 1X2 calculator</h3>
+        <p class="calc-hint">
+          A faithful port of <code>tradepipe/model.py</code> — same formula, same Poisson grid, same
+          overround. Loaded with the real Argentina–Switzerland state at minute 50.
+          <strong>Drag <em>w</em> to 0 and watch what the back-test was telling you.</strong>
+        </p>
+        <div class="calc-grid">
+          <div class="ctl"><label for="c-t">Minute <b id="c-t-v">50</b></label><input type="range" id="c-t" min="0" max="89" step="1" value="50" /></div>
+          <div class="ctl"><label for="c-w">Momentum weight w <b id="c-w-v">0.35</b></label><input type="range" id="c-w" min="0" max="1" step="0.05" value="0.35" /></div>
+          <div class="ctl"><label for="c-sh">Score — home <b id="c-sh-v">1</b></label><input type="range" id="c-sh" min="0" max="6" step="1" value="1" /></div>
+          <div class="ctl"><label for="c-sa">Score — away <b id="c-sa-v">0</b></label><input type="range" id="c-sa" min="0" max="6" step="1" value="0" /></div>
+          <div class="ctl"><label for="c-lh">λ pre-match — home <b id="c-lh-v">1.468</b></label><input type="range" id="c-lh" min="0.2" max="3.5" step="any" value="1.468445" /></div>
+          <div class="ctl"><label for="c-la">λ pre-match — away <b id="c-la-v">0.825</b></label><input type="range" id="c-la" min="0.2" max="3.5" step="any" value="0.82519" /></div>
+          <div class="ctl"><label for="c-xh">xG last 15' — home <b id="c-xh-v">0.033</b></label><input type="range" id="c-xh" min="0" max="1.5" step="0.001" value="0.033" /></div>
+          <div class="ctl"><label for="c-xa">xG last 15' — away <b id="c-xa-v">0.061</b></label><input type="range" id="c-xa" min="0" max="1.5" step="0.001" value="0.061" /></div>
+        </div>
+
+        <div class="tiles" id="calc-fair">
+          <div class="tile"><div class="lbl">1 · home (fair)</div><div class="val" id="c-fh">1.209</div><div class="sub" id="c-ph">82.72%</div></div>
+          <div class="tile"><div class="lbl">X · draw (fair)</div><div class="val" id="c-fd">6.710</div><div class="sub" id="c-pd">14.90%</div></div>
+          <div class="tile"><div class="lbl">2 · away (fair)</div><div class="val" id="c-fa">42.036</div><div class="sub" id="c-pa">2.38%</div></div>
+        </div>
+        <div class="tiles tiles--sm" style="margin-top:10px">
+          <div class="tile"><div class="lbl">1 · book (5%)</div><div class="val" id="c-bh">1.151</div><div class="sub">overround price</div></div>
+          <div class="tile"><div class="lbl">X · book (5%)</div><div class="val" id="c-bd">6.390</div><div class="sub">overround price</div></div>
+          <div class="tile"><div class="lbl">2 · book (5%)</div><div class="val" id="c-ba">40.04</div><div class="sub">overround price</div></div>
+        </div>
+        <p class="sum-note">
+          expected remaining goals — home <b id="c-lrh">0.62</b> · away <b id="c-lra">0.42</b>
+        </p>
+      </div>
+    </section>
+
+    <!-- ================================================== 5 · REHEARSAL -->
+    <section class="deep-sec" id="rehearse">
+      <span class="sec-no">05</span>
+      <h2>Rehearsal</h2>
+      <p>
+        Reading is not the same as being able to say it. Answer each of these out loud
+        <em>before</em> opening the answer.
+      </p>
+
+      <details class="rehearse">
+        <summary>"Walk me through your live pipeline project."</summary>
+        <div class="rehearse-body">
+          <p>Use the 90-second script from section 2. Structure: <strong>what it imitates → the flow →
+          the message contract → the failure handling → how it's tested.</strong> Do not start with the
+          model; start with the architecture, because that's what a backend interviewer is asking about.</p>
+        </div>
+      </details>
+
+      <details class="rehearse">
+        <summary>"Why do you need a snapshot API at all? Can't you just replay the messages?"</summary>
+        <div class="rehearse-body">
+          <p>Because RabbitMQ is a mailbox, not a log — once a message is delivered and acked, it's
+          gone. There is no history to replay. So a late joiner or a consumer that detected a gap
+          requests current <em>state</em> instead, then resumes the live stream, discarding anything
+          with <code>MsgSeq &lt;= LastMsgSeq</code>. (Bonus: with Kafka you <em>could</em> replay the
+          retained log — that trade-off is exactly why a company might run both.)</p>
+        </div>
+      </details>
+
+      <details class="rehearse">
+        <summary>"How do you test a distributed system without the infrastructure?"</summary>
+        <div class="rehearse-body">
+          <p>The broker is an interface with two implementations. <code>InMemoryBroker</code> is
+          synchronous and deterministic — the producer and consumer run in one process, in a fixed
+          order, so 18 tests run with no RabbitMQ, no Docker, no sleeps. <code>RabbitBroker</code> is
+          the real transport, swapped in via a factory. Same code path either way.</p>
+        </div>
+      </details>
+
+      <details class="rehearse">
+        <summary>"Your model's Brier is 0.6176. Isn't that terrible?"</summary>
+        <div class="rehearse-body">
+          <p>It's a three-outcome Brier, so the scale runs 0–2, not 0–1 — different from the binary
+          0.0722 on the xG model. The number that matters is the comparison: a constant base-rate quote
+          scores 0.6449 at every checkpoint, and the model beats it throughout, improving as the match
+          progresses (0.6176 → 0.3652 by minute 75) as uncertainty resolves.</p>
+        </div>
+      </details>
+
+      <details class="rehearse">
+        <summary>"What's wrong with your win-probability model?"</summary>
+        <div class="rehearse-body">
+          <p>Answer honestly and specifically: the momentum term is not earning its place. w = 0 beats
+          w = 0.35 at every live checkpoint in the blind holdout. It's kept because it makes the
+          timeline more responsive to watch, but for real pricing I'd drop it. Also: independent
+          Poisson ignores the known correlation between scorelines (the reason Dixon-Coles has a
+          low-score correction), and there's no red-card or substitution term.</p>
+        </div>
+      </details>
+
+      <details class="rehearse">
+        <summary>"Explain xG to someone who's never heard of it, in 20 seconds."</summary>
+        <div class="rehearse-body">
+          <p>Every shot gets a probability of becoming a goal, based only on what was knowable at the
+          moment it was struck — distance, angle, body part, pressure. A tap-in is 0.76, a 30-yarder is
+          0.03. Add them up and you get how many goals a team <em>should</em> have scored, which is a
+          far better predictor of future results than the goals they actually scored.</p>
+        </div>
+      </details>
+
+      <details class="rehearse">
+        <summary>"Why should we hire a student with no industry experience?"</summary>
+        <div class="rehearse-body">
+          <p>Don't argue with the premise — redirect to evidence. You built a working miniature of
+          their product before applying: their message contract, their snapshot-recovery pattern, their
+          market pricing with an overround. Then the honest close: you're not claiming production
+          experience, you're claiming you already understand the problem they solve and can be useful
+          quickly.</p>
+        </div>
+      </details>
+
+      <h3>One-sentence versions</h3>
+      <div class="box box--have">
+        <span class="box-title">Memorize these three</span>
+        <p><strong>Live pipeline:</strong> "A working miniature of a sportsbook data feed — RabbitMQ
+        producer and consumer with TRADE360-style message contracts, sequence-gap detection and
+        snapshot recovery, pricing the 1X2 market live off an in-play Poisson model."</p>
+        <p><strong>xG model:</strong> "23 features per shot, three models blended by tested weights,
+        calibrated on held-out shots — Brier 0.0722 against a 0.09 naive baseline."</p>
+        <p><strong>Win-prob model:</strong> "A Dixon-Coles-lite fit with empirical-Bayes shrinkage over
+        3,272 matches, blended live with 15-minute xG pace, back-tested blind on 864 matches —
+        including the finding that the simpler variant wins."</p>
+      </div>
+    </section>
+
+    <!-- ================================================== 6 · QUIZ -->
+    <section class="deep-sec" id="quiz-sec">
+      <span class="sec-no">06</span>
+      <h2>Self-test: your own projects</h2>
+      <p>
+        These are questions about work you did yourself. Getting one wrong is a sign you've stopped
+        being able to explain your own repo — which is the one thing that must never happen in an
+        interview.
+      </p>
+      <div id="quiz" class="quiz"></div>
+    </section>
+
+    <div class="pager">
+      <a class="btn btn--ghost" href="index.html">← Dashboard</a>
+      <a class="btn btn--primary" href="skills/csharp.html">Skill pages →</a>
+    </div>
+
+    </article>
+  </div>
+</main>
+
+<footer class="foot"><div class="wrap wrap--wide">Private prep material — not linked from the portfolio.</div></footer>
+
+<script>
+/* ---------------------------------------------------------------- TOC spy */
+(function () {
+  var links = [].slice.call(document.querySelectorAll('.toc a'));
+  var secs = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+  function spy() {
+    var best = 0;
+    secs.forEach(function (s, i) { if (s && s.getBoundingClientRect().top <= 120) best = i; });
+    links.forEach(function (a, i) { a.classList.toggle('active', i === best); });
+  }
+  document.addEventListener('scroll', spy, { passive: true });
+  spy();
+})();
+
+/* -------------------------------------------------------- odds converter */
+(function () {
+  var dec = document.getElementById('oc-dec'), prob = document.getElementById('oc-prob');
+  function gcd(a, b) { return b ? gcd(b, a % b) : a; }
+  function frac(d) {
+    var p = d - 1, den = 1;
+    for (var i = 1; i <= 50; i++) { if (Math.abs(p * i - Math.round(p * i)) < 0.02) { den = i; break; } }
+    var num = Math.round(p * den), g = gcd(num, den) || 1;
+    return (num / g) + '/' + (den / g);
+  }
+  function render(d) {
+    var p = 1 / d;
+    document.getElementById('oc-frac').textContent = frac(d);
+    document.getElementById('oc-fair').textContent = d.toFixed(3);
+    document.getElementById('oc-book').textContent = (1 / (p * 1.05)).toFixed(3);
+  }
+  dec.addEventListener('input', function () {
+    var d = parseFloat(dec.value);
+    if (!(d > 1)) return;
+    prob.value = (100 / d).toFixed(2);
+    render(d);
+  });
+  prob.addEventListener('input', function () {
+    var pc = parseFloat(prob.value);
+    if (!(pc > 0 && pc < 100)) return;
+    var d = 100 / pc;
+    dec.value = d.toFixed(3);
+    render(d);
+  });
+  render(parseFloat(dec.value));
+})();
+
+/* ------------------------- in-play model — faithful port of model.py ----- */
+var MAX_GOALS = 10, LAM_FLOOR = 0.05, ODDS_CAP = 999.0;
+var FACT = [1]; for (var _i = 1; _i <= MAX_GOALS; _i++) FACT[_i] = FACT[_i - 1] * _i;
+
+function poissonPmf(i, lam) { return Math.exp(-lam) * Math.pow(lam, i) / FACT[i]; }
+
+function lamRemaining(t, lamPrematch, xgRecent15, w) {
+  if (t >= 90) return 0.0;
+  var frac = (90.0 - t) / 90.0;
+  var pace = xgRecent15 / 15.0;
+  var lam = frac * ((1.0 - w) * lamPrematch + w * 90.0 * pace);
+  return Math.max(lam, LAM_FLOOR * frac);
+}
+
+function winProbs(lamH, lamA, h, a) {
+  var ph = 0, pd = 0, pa = 0, i, j;
+  var pmfH = [], pmfA = [];
+  for (i = 0; i <= MAX_GOALS; i++) { pmfH[i] = poissonPmf(i, lamH); pmfA[i] = poissonPmf(i, lamA); }
+  for (i = 0; i <= MAX_GOALS; i++) for (j = 0; j <= MAX_GOALS; j++) {
+    var p = pmfH[i] * pmfA[j];
+    if (h + i > a + j) ph += p; else if (h + i === a + j) pd += p; else pa += p;
+  }
+  var total = ph + pd + pa;
+  return [ph / total, pd / total, pa / total];
+}
+
+function fairOdds(p) { return p < 0.001 ? ODDS_CAP : 1.0 / p; }
+
+function bookPrices(ph, pd, pa, overround) {
+  overround = overround === undefined ? 1.05 : overround;
+  var total = ph + pd + pa;
+  return [ph, pd, pa].map(function (p) {
+    var scaled = p * overround / total;
+    return scaled < 0.001 ? ODDS_CAP : 1.0 / scaled;
+  });
+}
+
+function inPlayProbs(t, lamH, lamA, scoreH, scoreA, xg15H, xg15A, w) {
+  var lrh = lamRemaining(t, lamH, xg15H, w);
+  var lra = lamRemaining(t, lamA, xg15A, w);
+  var p = winProbs(lrh, lra, scoreH, scoreA);
+  var b = bookPrices(p[0], p[1], p[2]);
+  return {
+    pH: p[0], pD: p[1], pA: p[2],
+    fairH: fairOdds(p[0]), fairD: fairOdds(p[1]), fairA: fairOdds(p[2]),
+    bookH: b[0], bookD: b[1], bookA: b[2],
+    lamRemH: lrh, lamRemA: lra
+  };
+}
+window.inPlayProbs = inPlayProbs;   /* exposed so the parity test can call it */
+
+/* ------------------------------------------------------ calculator wiring */
+(function () {
+  var ids = ['t', 'w', 'sh', 'sa', 'lh', 'la', 'xh', 'xa'];
+  var el = {};
+  ids.forEach(function (k) { el[k] = document.getElementById('c-' + k); });
+  function odds(v) { return v >= 100 ? v.toFixed(1) : v.toFixed(3); }
+
+  function update() {
+    var t = +el.t.value, w = +el.w.value, sh = +el.sh.value, sa = +el.sa.value;
+    var lh = +el.lh.value, la = +el.la.value, xh = +el.xh.value, xa = +el.xa.value;
+
+    document.getElementById('c-t-v').textContent = t;
+    document.getElementById('c-w-v').textContent = w.toFixed(2);
+    document.getElementById('c-sh-v').textContent = sh;
+    document.getElementById('c-sa-v').textContent = sa;
+    document.getElementById('c-lh-v').textContent = lh.toFixed(3);
+    document.getElementById('c-la-v').textContent = la.toFixed(3);
+    document.getElementById('c-xh-v').textContent = xh.toFixed(3);
+    document.getElementById('c-xa-v').textContent = xa.toFixed(3);
+
+    var r = inPlayProbs(t, lh, la, sh, sa, xh, xa, w);
+    document.getElementById('c-ph').textContent = (r.pH * 100).toFixed(2) + '%';
+    document.getElementById('c-pd').textContent = (r.pD * 100).toFixed(2) + '%';
+    document.getElementById('c-pa').textContent = (r.pA * 100).toFixed(2) + '%';
+    document.getElementById('c-fh').textContent = odds(r.fairH);
+    document.getElementById('c-fd').textContent = odds(r.fairD);
+    document.getElementById('c-fa').textContent = odds(r.fairA);
+    document.getElementById('c-bh').textContent = odds(r.bookH);
+    document.getElementById('c-bd').textContent = odds(r.bookD);
+    document.getElementById('c-ba').textContent = odds(r.bookA);
+    document.getElementById('c-lrh').textContent = r.lamRemH.toFixed(2);
+    document.getElementById('c-lra').textContent = r.lamRemA.toFixed(2);
+  }
+  ids.forEach(function (k) { el[k].addEventListener('input', update); });
+  update();
+})();
+
+/* ------------------------------------------------------------------ quiz */
+window.QUIZ = {
+  id: "projects",
+  title: "Your projects — self-test",
+  pass: 0.8,
+  questions: [
+    {
+      q: "Your dashboard shows Argentina 1.21, draw 6.71, Switzerland 42.0. How do you know these are fair odds rather than book prices?",
+      choices: [
+        "Because the favourite is under 2.00",
+        "Because the implied probabilities sum to ~100% — a book price would sum to more",
+        "Because there are exactly three of them",
+        "You can't tell from the numbers alone"
+      ],
+      answer: 1,
+      explain: "1/1.21 + 1/6.71 + 1/42.0 ≈ 82.7 + 14.9 + 2.4 = 100%. Book prices carry a margin, so their implied probabilities sum above 100% — yours sum to 105% by design."
+    },
+    {
+      q: "What does MsgSeq actually buy you?",
+      choices: [
+        "Faster message delivery",
+        "Encryption of the message body",
+        "The ability to DETECT a missed or out-of-order message — without it, a dropped message is invisible",
+        "Compression of the feed"
+      ],
+      answer: 2,
+      explain: "A per-fixture monotonic counter lets the consumer notice it got 47 when it expected 46. Detection is the whole point: a silently missing message means a silently wrong scoreboard."
+    },
+    {
+      q: "Why does your pipeline need a snapshot RPC instead of replaying messages to a late joiner?",
+      choices: [
+        "Replaying would be slower but would work",
+        "RabbitMQ deletes delivered messages — there is no history to replay, so current state must be fetched",
+        "The producer doesn't keep track of the fixture",
+        "Snapshots are required by the AMQP spec"
+      ],
+      answer: 1,
+      explain: "This is the RabbitMQ-vs-Kafka distinction in one sentence. A mailbox-style broker has no retained log, which is exactly why LSports ships a Snapshot API — and why your snapshot.py exists."
+    },
+    {
+      q: "After applying a snapshot, your consumer discards buffered messages with MsgSeq <= LastMsgSeq. Why?",
+      choices: [
+        "To save memory",
+        "Because the snapshot already accounts for them — re-applying would double-count or regress state",
+        "Because those messages are corrupted",
+        "To reset the sequence counter to zero"
+      ],
+      answer: 1,
+      explain: "The snapshot IS the state as of LastMsgSeq. Anything at or below that sequence is already baked in; applying it again is the duplicate-processing bug that idempotency exists to prevent."
+    },
+    {
+      q: "An interviewer asks how you test a distributed system with no infrastructure. What's your answer?",
+      choices: [
+        "I mock RabbitMQ with unittest.mock",
+        "The Broker is an interface: InMemoryBroker runs producer and consumer synchronously and deterministically, so the suite needs no RabbitMQ; RabbitBroker is swapped in for real runs",
+        "I run the tests against a live RabbitMQ in CI",
+        "Distributed systems can't be unit tested"
+      ],
+      answer: 1,
+      explain: "The pluggable broker in tradepipe/broker.py is the design decision that makes 18 tests run with zero infrastructure and no sleeps. This is the answer the question is fishing for."
+    },
+    {
+      q: "In lam_rem(t) = ((90−t)/90)·[(1−w)·λ_pre + w·90·pace₁₅], what does the (90−t)/90 term do?",
+      choices: [
+        "Weights recent form against pre-match expectation",
+        "Scales expected goals by the fraction of the match still to be played",
+        "Converts xG per minute into xG per match",
+        "Applies the home-field advantage"
+      ],
+      answer: 1,
+      explain: "It's the time-left factor: at minute 45 half the match remains so halve the expected goals; at 90 it's zero. The (1−w)/w split does the prior-vs-momentum blending, and 90·pace₁₅ does the per-minute-to-per-match conversion."
+    },
+    {
+      q: "Why is the Poisson probability triple renormalized to sum to exactly 1.0?",
+      choices: [
+        "To add the bookmaker's overround",
+        "Because the grid truncates at 10 goals per side, losing a small amount of tail probability",
+        "Because Poisson distributions never sum to 1",
+        "To correct for the home-field advantage"
+      ],
+      answer: 1,
+      explain: "Summing i,j over 0..10 misses the (tiny) mass beyond 10 goals. Renormalizing redistributes it so the three outcomes are a proper distribution. The overround is a separate, deliberate step in book_prices()."
+    },
+    {
+      q: "A goal is scored in the 90+4th minute of a Premier League match. How does effective_min() treat it?",
+      choices: [
+        "It is ignored — the market closed at 90",
+        "It counts at minute 90, so it settles the 1X2 market",
+        "It counts at minute 94",
+        "It counts only if the match goes to extra time"
+      ],
+      answer: 1,
+      explain: "In a match without extra time, anything past 90 is second-half stoppage and folds into minute 90 — a 90+4' goal settles the market. In a knockout WITH extra time, minutes past 90 never enter the 90-minute market at all."
+    },
+    {
+      q: "Your win-prob back-test reports Brier 0.6176 at kickoff. Why is that not comparable to your xG model's 0.0722?",
+      choices: [
+        "The win-prob model is simply much worse",
+        "One is a three-outcome Brier (scale 0–2), the other is binary (scale 0–1) — different scales, different baselines",
+        "0.0722 was measured on training data",
+        "Brier scores are never comparable to each other"
+      ],
+      answer: 1,
+      explain: "Three-class Brier sums squared error over home/draw/away and runs 0–2; binary shot-level Brier runs 0–1. The meaningful comparison is always against a baseline on the SAME scale — 0.6449 constant here, 0.09 naive there."
+    },
+    {
+      q: "What did your blind back-test on 864 matches find about the momentum weight w?",
+      choices: [
+        "w = 0.35 clearly beat every alternative",
+        "The no-momentum variant (w = 0) scored better at every live checkpoint",
+        "Momentum only helped in the World Cup data",
+        "The test was inconclusive"
+      ],
+      answer: 1,
+      explain: "w = 0 beat the production blend at all six live checkpoints. Publishing that — and explaining that you'd ship w = 0 for real pricing while keeping 0.35 for a responsive demo — is the strongest credibility move you have."
+    },
+    {
+      q: "Why is the xG model's Brier of 0.0722 always quoted alongside 0.09?",
+      choices: [
+        "0.09 is the score on the training set",
+        "0.09 is what a model guessing the base rate (10%) every time would score — it's the benchmark that makes 0.0722 meaningful",
+        "0.09 is the industry-standard threshold",
+        "0.09 is the xA model's score"
+      ],
+      answer: 1,
+      explain: "Roughly 1 shot in 10 is a goal, so a constant 10% guess scores ~0.09. Quoting the naive baseline is what turns a number into evidence — without it, 0.0722 means nothing to a listener."
+    },
+    {
+      q: "Why is xA modelled in two stages rather than one?",
+      choices: [
+        "It runs faster",
+        "P(a shot follows this pass) × P(that shot scores) — a pass can be dangerous even when no shot results, and separating the stages keeps the estimate inspectable",
+        "Because scikit-learn requires two models",
+        "To avoid calibration entirely"
+      ],
+      answer: 1,
+      explain: "The two-stage decomposition models 'does a chance happen' and 'how good is it' separately, then calibrates the product — more honest than one black box, and you can see which half drives a result."
+    }
+  ]
+};
+</script>
+<script src="quiz.js"></script>
+</body>
+</html>
