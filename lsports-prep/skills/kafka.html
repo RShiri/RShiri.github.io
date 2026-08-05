@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Kafka — LSports Prep</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script>(function(){var t=null;try{t=localStorage.getItem("theme")}catch(e){}
+document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");})();</script>
+<link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="../index.html"><span class="monogram">LS</span><span class="brand-name">LSports Prep</span></a>
+    <span class="nav-spacer"></span>
+    <a class="crumb" href="../index.html">← Dashboard</a>
+    <button class="theme-toggle" id="themeToggle" aria-label="Switch theme">☀️</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="page-head">
+    <span class="kicker">Skill 3 of 7 · <span class="status status--need">Need</span></span>
+    <h1>Apache <span class="grad">Kafka</span></h1>
+    <p class="lead">Named in LSports' requirements next to RabbitMQ, and currently missing from your portfolio. Different philosophy from RabbitMQ — learn the contrast and you've learned both better.</p>
+  </div>
+
+  <div class="box box--why">
+    <span class="box-title">Why LSports cares</span>
+    Thousands of simultaneous live events, every message fanned out to many customers, with replay when
+    something goes wrong downstream. That's high-throughput, multi-reader, replayable delivery — Kafka's
+    home turf. LSports job posts list Kafka alongside RabbitMQ as a core requirement.
+  </div>
+
+  <article class="study">
+    <section>
+      <h2>The mental model: a log, not a mailbox</h2>
+      <p><strong>RabbitMQ = mailbox.</strong> A message is delivered, acked, and <em>deleted</em>.<br>
+      <strong>Kafka = newspaper archive.</strong> Messages are <em>appended to a log and kept</em>
+      (hours, days, forever — per retention policy). Consumers don't remove anything; each one just
+      remembers <em>how far it has read</em>.</p>
+      <ul>
+        <li><strong>Topic</strong> — a named stream (e.g. <code>live-scores</code>), like your exchange + key family.</li>
+        <li><strong>Partition</strong> — a topic is split into N append-only logs. Partitions are Kafka's unit of parallelism <em>and</em> ordering.</li>
+        <li><strong>Offset</strong> — a message's position in its partition. A consumer's state is just "partition 3, offset 4,182."</li>
+        <li><strong>Consumer group</strong> — consumers sharing a group id split the partitions among themselves; separate groups each read the full stream independently.</li>
+      </ul>
+      <pre><code>topic "live-scores", 3 partitions (key = fixture_id):
+
+p0: [f101 ev1][f101 ev2][f101 ev3]...   ← all fixture_101 events, in order
+p1: [f102 ev1][f102 ev2]...
+p2: [f103 ev1][f104 ev1][f103 ev2]...   ← two fixtures can share a partition
+
+group "dashboard"  → reads p0+p1+p2, tracks its own offsets
+group "archiver"   → reads the same data independently, at its own pace</code></pre>
+    </section>
+
+    <section>
+      <h2>Ordering — the rule that matters for sports feeds</h2>
+      <p>Kafka guarantees order <strong>within a partition only</strong>, never across partitions.
+      Messages with the same <strong>key</strong> hash to the same partition. So for a live feed:
+      <strong>key by <code>fixture_id</code></strong> → every event of a match stays in order,
+      while different matches process in parallel. Key by nothing (round-robin) and a goal could be
+      consumed before the kickoff event that precedes it.</p>
+    </section>
+
+    <section>
+      <h2>Consumer groups and rebalancing</h2>
+      <p>Group of 3 consumers, 3 partitions → one each. A consumer dies → Kafka
+      <strong>rebalances</strong>, reassigning its partitions to the survivors, who resume from the last
+      <strong>committed offset</strong>. Two consequences interviewers probe:</p>
+      <ul>
+        <li>More consumers than partitions → the extras sit <em>idle</em> (partition count caps parallelism).</li>
+        <li>Redelivery: if a consumer crashed after processing but before committing its offset, the
+        successor re-reads those messages → <strong>at-least-once</strong> delivery → consumers must be idempotent.
+        (Same lesson as RabbitMQ acks, new mechanism.)</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Kafka vs RabbitMQ — the interview answer</h2>
+      <div class="tbl-scroll"><table>
+        <tr><th></th><th>RabbitMQ</th><th>Kafka</th></tr>
+        <tr><td>Model</td><td>Smart broker routes; message deleted after ack</td><td>Dumb log retains; consumers track offsets</td></tr>
+        <tr><td>Replay</td><td>No (hence your snapshot RPC)</td><td>Yes — rewind to any retained offset</td></tr>
+        <tr><td>Routing</td><td>Rich (topic patterns, headers, per-queue bindings)</td><td>Coarse (topics + keyed partitions)</td></tr>
+        <tr><td>Ordering</td><td>Per queue, single consumer</td><td>Per partition (per key)</td></tr>
+        <tr><td>Throughput</td><td>High</td><td>Very high (sequential disk I/O, batching)</td></tr>
+        <tr><td>Sweet spot</td><td>Task queues, RPC, per-customer selective feeds</td><td>Event streaming at scale, many independent readers, replay/audit</td></tr>
+      </table></div>
+      <p><strong>Say it in one breath:</strong> "RabbitMQ when I need clever routing and per-consumer
+      queues — like giving each sportsbook its own filtered feed. Kafka when I need massive throughput,
+      multiple independent readers, and the ability to replay history — like feeding the same event
+      stream to pricing, settlement and analytics. In my pipeline I used RabbitMQ and had to build a
+      snapshot RPC for late joiners; with Kafka they could have replayed the log instead — that trade-off
+      is exactly why you'd run both."</p>
+    </section>
+
+    <section>
+      <h2>Your 1–2 week plan</h2>
+      <ol>
+        <li>Run Kafka locally with one <code>docker compose</code> file (a single KRaft-mode broker — no ZooKeeper needed on modern Kafka).</li>
+        <li>Add a Kafka transport next to RabbitMQ in <code>live-pipeline/tradepipe/broker.py</code>
+        using <code>confluent-kafka</code>: topic <code>trade</code>, <strong>key = fixture_id</strong>, same JSON messages.</li>
+        <li>Demo the two Kafka superpowers your RabbitMQ version lacks: start a second consumer group and watch it
+        independently read the full stream; then reset offsets to 0 and replay a finished match.</li>
+      </ol>
+      <div class="box box--have">
+        <span class="box-title">Payoff</span>
+        After this, "Kafka vs RabbitMQ — when would you use which?" is a question you answer from
+        first-hand experience, with the same project demonstrating both. It also closes the last
+        messaging keyword in their job posts.
+      </div>
+    </section>
+  </article>
+
+  <div id="quiz" class="quiz"></div>
+
+  <div class="pager">
+    <a class="btn btn--ghost" href="rabbitmq.html">← RabbitMQ</a>
+    <a class="btn btn--primary" href="databases.html">Next: SQL + NoSQL →</a>
+  </div>
+</main>
+
+<footer class="foot"><div class="wrap">Private prep material.</div></footer>
+
+<script>
+window.QUIZ = {
+  id: "kafka",
+  title: "Kafka knowledge test",
+  pass: 0.8,
+  questions: [
+    {
+      q: "What happens to a Kafka message after a consumer reads it?",
+      choices: [
+        "It is deleted from the topic",
+        "It stays in the partition log until retention expires; the consumer just advances its offset",
+        "It moves to a dead-letter topic",
+        "It is marked as read and hidden from other consumers"
+      ],
+      answer: 1,
+      explain: "Kafka is a retained log — reading changes nothing on the broker except the reader's own offset. This is the root difference from RabbitMQ, where ack deletes the message."
+    },
+    {
+      q: "Kafka guarantees message ordering...",
+      choices: [
+        "across an entire topic",
+        "within a single partition only",
+        "across all topics in a cluster",
+        "only when there is exactly one consumer"
+      ],
+      answer: 1,
+      explain: "Each partition is an append-only log, so it is ordered; the topic as a whole is not. Cross-partition order is undefined — which is why keys matter."
+    },
+    {
+      q: "You publish live match events for many fixtures to one topic. How do you keep each match's events in order?",
+      choices: [
+        "Use a single partition for the whole topic",
+        "Set the message key to fixture_id so all of one fixture's events hash to the same partition",
+        "Add a timestamp and let consumers sort",
+        "Kafka always preserves order automatically"
+      ],
+      answer: 1,
+      explain: "Keying by fixture_id gives per-match ordering AND parallelism across matches. One partition (option 1) also preserves order but destroys parallelism; consumer-side sorting fights the architecture."
+    },
+    {
+      q: "A consumer group has 4 consumers reading a topic with 3 partitions. What happens?",
+      choices: [
+        "All 4 share the messages evenly",
+        "3 consumers get one partition each; the 4th is idle",
+        "Kafka creates a 4th partition automatically",
+        "The group fails to start"
+      ],
+      answer: 1,
+      explain: "Within a group, a partition is owned by exactly one consumer. Partition count caps group parallelism — the spare is a hot standby, useful only when a rebalance hands it work."
+    },
+    {
+      q: "Two consumer GROUPS (\"pricing\" and \"archiver\") subscribe to the same topic. Who gets what?",
+      choices: [
+        "Messages are split between the two groups",
+        "Each group independently receives the full stream at its own pace",
+        "Only the group created first receives messages",
+        "Both groups must stay at the same offset"
+      ],
+      answer: 1,
+      explain: "Groups are independent readers with their own offsets — Kafka's pub/sub. Splitting work happens WITHIN a group, full copies happen ACROSS groups. (In RabbitMQ you'd give each subscriber its own queue.)"
+    },
+    {
+      q: "A consumer processes a batch, crashes before committing offsets, and its partitions are reassigned. The new consumer...",
+      choices: [
+        "skips the uncommitted messages to avoid duplicates",
+        "re-reads from the last committed offset, so some messages are processed twice (at-least-once)",
+        "cannot start until the crashed consumer returns",
+        "starts from the newest message"
+      ],
+      answer: 1,
+      explain: "Resuming from the last committed offset replays whatever was processed-but-uncommitted. At-least-once delivery means consumers must be idempotent — same lesson as RabbitMQ redelivery, different mechanism."
+    },
+    {
+      q: "What is an offset?",
+      choices: [
+        "The network lag between producer and broker",
+        "A message's sequential position within its partition — and the only 'read state' a consumer needs",
+        "The replication factor of a topic",
+        "The time a message spends in the queue"
+      ],
+      answer: 1,
+      explain: "Consumer state compresses to 'partition N, offset M'. Committing offsets is how progress is saved; resetting them is how replay works."
+    },
+    {
+      q: "Your RabbitMQ pipeline needed a snapshot RPC for late joiners. What's the Kafka-native alternative?",
+      choices: [
+        "There is none — Kafka also deletes consumed messages",
+        "A late joiner can replay the retained log from an earlier offset (or a compacted topic's latest state per key)",
+        "Kafka brokers push the current state automatically to new consumers",
+        "Late joiners must wait for the next event"
+      ],
+      answer: 1,
+      explain: "Retention means history exists: rewind and rebuild state, or use a compacted topic that keeps the latest value per key. (A snapshot service can still be faster than replaying a long log — a good nuance to mention.)"
+    },
+    {
+      q: "When is RabbitMQ the better choice than Kafka?",
+      choices: [
+        "Never — Kafka is strictly newer and better",
+        "Per-customer selective routing (topic-pattern bindings), classic task queues, and request/reply over messaging",
+        "Any system that needs more than 100 messages per second",
+        "When messages must be retained for a week"
+      ],
+      answer: 1,
+      explain: "RabbitMQ's smart broker shines at routing each consumer a tailored slice and at work queues/RPC. Kafka wins on throughput, replay and many independent readers. Retention (option 4) is Kafka's strength, not RabbitMQ's."
+    },
+    {
+      q: "Why is Kafka's throughput so high?",
+      choices: [
+        "It stores everything in RAM only",
+        "Sequential append-only disk writes, zero-copy transfer, and heavy batching of messages",
+        "It compresses every message to one byte",
+        "It skips network checksums"
+      ],
+      answer: 1,
+      explain: "Appending to a log is the disk-access pattern OSes optimize best, and batching amortizes network and I/O overhead. Data is durably on disk — not RAM-only."
+    },
+    {
+      q: "In your planned pipeline extension, sportsbook A wants only fixture_101's markets; analytics wants every event of every match with 7 days of replay. Which broker serves which need most naturally?",
+      choices: [
+        "Kafka for both",
+        "RabbitMQ for A's selective feed (binding markets.fixture_101); Kafka for analytics (retained log, own consumer group)",
+        "RabbitMQ for both",
+        "Kafka for A; RabbitMQ for analytics"
+      ],
+      answer: 1,
+      explain: "A tailored per-customer slice is RabbitMQ topic-binding territory; a full replayable firehose for an independent reader is exactly Kafka. Being able to draw this line is the 'when would you use which' answer."
+    }
+  ]
+};
+</script>
+<script src="../quiz.js"></script>
+</body>
+</html>

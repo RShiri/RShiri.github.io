@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>LSports Prep — Study Dashboard</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script>/* theme before CSS paints (no flash): dark is the default */
+(function(){var t=null;try{t=localStorage.getItem("theme")}catch(e){}
+document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");})();</script>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="index.html"><span class="monogram">LS</span><span class="brand-name">LSports Prep</span></a>
+    <span class="nav-spacer"></span>
+    <a class="crumb" href="../index.html">← Portfolio</a>
+    <button class="theme-toggle" id="themeToggle" aria-label="Switch theme">☀️</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="page-head">
+    <span class="kicker">Private study site</span>
+    <h1>Road to <span class="grad">LSports</span></h1>
+    <p class="lead">
+      Everything LSports hires for, one page per skill: what it is, why TRADE360 needs it,
+      where you already stand, and a knowledge test. <strong>80%+ on a test = interview ready.</strong>
+      Best scores are saved in this browser.
+    </p>
+  </div>
+
+  <div class="cards">
+    <a class="card card--feature" href="projects.html">
+      <div class="card-top"><h3>Your projects, explained</h3><span class="status status--have">Deep dive</span></div>
+      <p>
+        The other half of interview prep: not "do you know Kafka" but "walk me through what you built."
+        Reading the odds on your own dashboard, the TRADE360 architecture your pipeline mirrors, both
+        models end to end — with a live 1X2 calculator ported from your own <code>model.py</code>.
+      </p>
+      <div class="card-score" data-score-for="projects"><span>Self-test</span><b>not taken</b></div>
+    </a>
+
+    <a class="card" href="skills/csharp.html">
+      <div class="card-top"><h3>C# / .NET</h3><span class="status status--need">Need</span></div>
+      <p>Their core backend language. Your Java gets you 80% of the way — learn the last 20%: LINQ, async/await, properties.</p>
+      <div class="card-score" data-score-for="csharp"><span>Knowledge test</span><b>not taken</b></div>
+    </a>
+
+    <a class="card" href="skills/rabbitmq.html">
+      <div class="card-top"><h3>RabbitMQ</h3><span class="status status--have">Have</span></div>
+      <p>You built their exact pattern in live-pipeline: topic exchange, routing keys, RPC snapshots. Rehearse explaining it.</p>
+      <div class="card-score" data-score-for="rabbitmq"><span>Knowledge test</span><b>not taken</b></div>
+    </a>
+
+    <a class="card" href="skills/kafka.html">
+      <div class="card-top"><h3>Kafka</h3><span class="status status--need">Need</span></div>
+      <p>Named in their job posts, missing from your portfolio. Topics, partitions, offsets, consumer groups — and vs RabbitMQ.</p>
+      <div class="card-score" data-score-for="kafka"><span>Knowledge test</span><b>not taken</b></div>
+    </a>
+
+    <a class="card" href="skills/databases.html">
+      <div class="card-top"><h3>SQL + NoSQL</h3><span class="status status--have">Have</span></div>
+      <p>PostgreSQL (La Liga pipeline) and MongoDB (World Cup pipeline) are covered. Drill JOINs and indexes for the screen.</p>
+      <div class="card-score" data-score-for="databases"><span>Knowledge test</span><b>not taken</b></div>
+    </a>
+
+    <a class="card" href="skills/realtime.html">
+      <div class="card-top"><h3>Real-time systems</h3><span class="status status--have">Have</span></div>
+      <p>Ordering, gap recovery, idempotency, backpressure — you implemented all of it. Turn code into interview answers.</p>
+      <div class="card-score" data-score-for="realtime"><span>Knowledge test</span><b>not taken</b></div>
+    </a>
+
+    <a class="card" href="skills/betting.html">
+      <div class="card-top"><h3>Betting domain</h3><span class="status status--partial">Partial</span></div>
+      <p>You price 1X2 with overround already. Add over/under, Asian handicap and settlement edge cases.</p>
+      <div class="card-score" data-score-for="betting"><span>Knowledge test</span><b>not taken</b></div>
+    </a>
+
+    <a class="card" href="skills/python-de.html">
+      <div class="card-top"><h3>Python data engineering</h3><span class="status status--have">Have</span></div>
+      <p>Your foundation: scraping, ETL, REST APIs, Docker, pytest. Keep it sharp — it's the portfolio they'll open.</p>
+      <div class="card-score" data-score-for="python-de"><span>Knowledge test</span><b>not taken</b></div>
+    </a>
+  </div>
+</main>
+
+<footer class="foot">
+  <div class="wrap">Private prep material — not linked from the portfolio. Scores live only in this browser's localStorage.</div>
+</footer>
+
+<script src="quiz.js"></script>
+</body>
+</html>

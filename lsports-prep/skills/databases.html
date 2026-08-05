@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>SQL + NoSQL — LSports Prep</title>
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script>(function(){var t=null;try{t=localStorage.getItem("theme")}catch(e){}
+document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");})();</script>
+<link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="../index.html"><span class="monogram">LS</span><span class="brand-name">LSports Prep</span></a>
+    <span class="nav-spacer"></span>
+    <a class="crumb" href="../index.html">← Dashboard</a>
+    <button class="theme-toggle" id="themeToggle" aria-label="Switch theme">☀️</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="page-head">
+    <span class="kicker">Skill 4 of 7 · <span class="status status--have">Have</span></span>
+    <h1>SQL + <span class="grad">NoSQL</span></h1>
+    <p class="lead">You've shipped both — PostgreSQL in the La Liga pipeline, MongoDB in the World Cup pipeline. The risk isn't knowledge, it's rust: SQL screens are standard and unforgiving.</p>
+  </div>
+
+  <div class="box box--why">
+    <span class="box-title">Why LSports cares</span>
+    Feed data has to land somewhere. Fixtures, markets and settlement need relational integrity and joins
+    (MySQL/PostgreSQL); raw event streams at high write rates fit document stores (MongoDB). LSports job
+    posts name MySQL, PostgreSQL and MongoDB explicitly.
+  </div>
+
+  <article class="study">
+    <section>
+      <h2>The SQL you must write cold</h2>
+      <p>Working schema for everything below:</p>
+      <pre><code>fixtures(fixture_id, home_team, away_team, kickoff, competition)
+events(event_id, fixture_id, minute, type, player)        -- type: 'goal','shot','card'
+markets(market_id, fixture_id, name, price, updated_at)</code></pre>
+
+      <h3>JOIN + GROUP BY + HAVING — the classic screen question</h3>
+      <pre><code>-- competitions averaging more than 2.5 goals per fixture
+SELECT f.competition,
+       COUNT(*) FILTER (WHERE e.type = 'goal')::numeric
+         / COUNT(DISTINCT f.fixture_id) AS goals_per_match
+FROM fixtures f
+JOIN events e ON e.fixture_id = f.fixture_id
+GROUP BY f.competition
+HAVING COUNT(*) FILTER (WHERE e.type = 'goal')
+         &gt; 2.5 * COUNT(DISTINCT f.fixture_id);</code></pre>
+      <p>Remember the trap: <strong>WHERE filters rows before grouping, HAVING filters groups after.</strong></p>
+
+      <h3>LEFT JOIN and the NULL trick</h3>
+      <pre><code>-- fixtures with no goal at all
+SELECT f.fixture_id
+FROM fixtures f
+LEFT JOIN events e ON e.fixture_id = f.fixture_id AND e.type = 'goal'
+WHERE e.event_id IS NULL;</code></pre>
+      <p>INNER JOIN drops non-matching rows; LEFT JOIN keeps the left side and fills NULLs — then
+      <code>IS NULL</code> finds the "no match" rows.</p>
+
+      <h3>Subquery / latest-row-per-group</h3>
+      <pre><code>-- current price per market: the newest row per market_id
+SELECT DISTINCT ON (market_id) market_id, name, price, updated_at
+FROM markets
+ORDER BY market_id, updated_at DESC;
+-- portable alternative: ROW_NUMBER() OVER (PARTITION BY market_id ORDER BY updated_at DESC) = 1</code></pre>
+      <p>"Latest odds per market" is literally LSports' data shape — expect a variant of this.</p>
+    </section>
+
+    <section>
+      <h2>Indexes — the two-minute theory</h2>
+      <ul>
+        <li>An index is a sorted structure (B-tree) that turns a full-table scan into a lookup:
+        O(n) → O(log n). Cost: extra disk and <strong>slower writes</strong> (every INSERT/UPDATE maintains it).</li>
+        <li>It helps: <code>WHERE fixture_id = 101</code>, range scans (<code>updated_at &gt; ...</code>), JOIN keys, ORDER BY on the indexed prefix.</li>
+        <li>It does <em>not</em> help: functions on the column (<code>WHERE UPPER(name) = ...</code>),
+        leading wildcards (<code>LIKE '%goal'</code>), low-selectivity columns (a boolean),
+        or a composite index queried without its first column.</li>
+        <li>Diagnosis tool: <code>EXPLAIN ANALYZE</code> — say those two words in the interview.</li>
+      </ul>
+      <h3>Transactions in one line each</h3>
+      <p><strong>ACID</strong>: Atomic (all or nothing), Consistent (constraints hold), Isolated
+      (concurrent transactions don't see each other's half-work), Durable (committed = survives crash).
+      Settlement — moving money on a final score — is the canonical "this must be a transaction" example
+      at a betting-data company.</p>
+    </section>
+
+    <section>
+      <h2>PostgreSQL vs MongoDB — answer from your own projects</h2>
+      <div class="tbl-scroll"><table>
+        <tr><th>Pick</th><th>When</th><th>Your evidence</th></tr>
+        <tr><td><strong>PostgreSQL</strong></td><td>Fixed-ish schema, joins across entities, constraints, transactions, analytical SQL</td><td>La Liga pipeline: fixtures/matches relational model, Docker + Postgres</td></tr>
+        <tr><td><strong>MongoDB</strong></td><td>Nested/varying documents, high write rates, entity read whole by key, schema evolves fast</td><td>World Cup pipeline: heterogeneous social + event documents stored as they arrive</td></tr>
+      </table></div>
+      <div class="box box--have">
+        <span class="box-title">Your interview line</span>
+        "I've used both on my own projects: Postgres where I needed joins and integrity across fixtures
+        and matches, Mongo where documents were nested and changing shape faster than I wanted to run
+        migrations. For settlement-grade data I'd insist on SQL and transactions; for raw feed archiving
+        a document store is fine."
+      </div>
+    </section>
+
+    <section>
+      <h2>Before any interview</h2>
+      <ul>
+        <li>Drill ~20 medium SQL exercises (joins, group-by, window functions). Rust, not ignorance, is what fails students.</li>
+        <li>Practice writing SQL on paper or a whiteboard — no autocomplete, no running it.</li>
+        <li>Re-read your own two pipelines' schemas so you can sketch them from memory.</li>
+      </ul>
+    </section>
+  </article>
+
+  <div id="quiz" class="quiz"></div>
+
+  <div class="pager">
+    <a class="btn btn--ghost" href="kafka.html">← Kafka</a>
+    <a class="btn btn--primary" href="realtime.html">Next: Real-time systems →</a>
+  </div>
+</main>
+
+<footer class="foot"><div class="wrap">Private prep material.</div></footer>
+
+<script>
+window.QUIZ = {
+  id: "databases",
+  title: "SQL + NoSQL knowledge test",
+  pass: 0.8,
+  questions: [
+    {
+      q: "What's the difference between WHERE and HAVING?",
+      choices: [
+        "They are interchangeable",
+        "WHERE filters rows before grouping; HAVING filters groups after aggregation",
+        "HAVING is faster than WHERE",
+        "WHERE works only on indexed columns"
+      ],
+      answer: 1,
+      explain: "WHERE runs pre-GROUP BY on individual rows; HAVING runs post-aggregation and can reference aggregates like COUNT(*). Putting an aggregate in WHERE is a syntax error."
+    },
+    {
+      q: "How do you find fixtures that have NO goal events?",
+      choices: [
+        "INNER JOIN events and filter type = 'goal'",
+        "LEFT JOIN events (on type='goal') and keep rows WHERE e.event_id IS NULL",
+        "GROUP BY fixture_id HAVING COUNT(*) = 0 after an inner join",
+        "SELECT * FROM fixtures WHERE type <> 'goal'"
+      ],
+      answer: 1,
+      explain: "An inner join drops fixtures without matches entirely (so option 3's groups never exist). LEFT JOIN keeps every fixture, NULL-filling where no goal matched — IS NULL isolates exactly those. (NOT EXISTS is an equivalent idiom.)"
+    },
+    {
+      q: "Table markets has many price rows per market_id. How do you get the LATEST price per market?",
+      choices: [
+        "SELECT market_id, MAX(price) GROUP BY market_id",
+        "ROW_NUMBER() OVER (PARTITION BY market_id ORDER BY updated_at DESC) and keep row 1 (or Postgres DISTINCT ON)",
+        "ORDER BY updated_at DESC LIMIT 1",
+        "SELECT DISTINCT market_id, price FROM markets"
+      ],
+      answer: 1,
+      explain: "MAX(price) gives the highest price ever, not the newest; LIMIT 1 gives one row total, not one per market. Latest-row-per-group needs a window function (or DISTINCT ON) — and 'current odds per market' is LSports' exact data shape."
+    },
+    {
+      q: "You add an index on events(fixture_id). Which query does it NOT speed up?",
+      choices: [
+        "SELECT * FROM events WHERE fixture_id = 101",
+        "JOIN fixtures f ON e.fixture_id = f.fixture_id",
+        "SELECT * FROM events WHERE minute > 80",
+        "SELECT * FROM events WHERE fixture_id BETWEEN 100 AND 200"
+      ],
+      answer: 2,
+      explain: "The index covers fixture_id; a filter on minute can't use it and still scans. Equality, join keys, and ranges on the indexed column all benefit."
+    },
+    {
+      q: "Why not simply index every column?",
+      choices: [
+        "Databases allow at most 3 indexes per table",
+        "Each index costs disk and slows every INSERT/UPDATE, since all indexes must be maintained on write",
+        "Indexes only work on numeric columns",
+        "No reason — indexing everything is best practice"
+      ],
+      answer: 1,
+      explain: "Indexes trade write speed and storage for read speed. On a feed ingesting thousands of odds updates per second, over-indexing the write path is a real performance bug."
+    },
+    {
+      q: "Market settlement writes: mark market as settled + record the payout. Why must this be one transaction?",
+      choices: [
+        "Transactions make both writes faster",
+        "Atomicity: either both writes commit or neither — a crash between them can't leave a settled market with no payout row",
+        "SQL requires transactions for any two statements",
+        "It prevents other users from reading the table forever"
+      ],
+      answer: 1,
+      explain: "This is the A in ACID. Half-applied settlement is corrupted money data. Isolation additionally keeps concurrent readers from seeing the in-between state — but atomicity is the core reason."
+    },
+    {
+      q: "Which workload most clearly favors MongoDB over PostgreSQL?",
+      choices: [
+        "Monthly financial reports joining 6 tables",
+        "Storing raw scout-event documents whose nested structure varies by sport and evolves weekly, read back whole by fixture_id",
+        "Enforcing that every market row references an existing fixture",
+        "Ad-hoc analytical queries across entities"
+      ],
+      answer: 1,
+      explain: "Varying nested documents fetched whole by key is the document-store sweet spot. Joins, cross-entity analytics, and foreign-key integrity all argue for Postgres."
+    },
+    {
+      q: "What does COUNT(DISTINCT f.fixture_id) do in a fixtures-JOIN-events aggregate that plain COUNT(*) doesn't?",
+      choices: [
+        "Nothing — they're equivalent",
+        "COUNT(*) counts joined event rows (fixtures multiplied by their events); COUNT(DISTINCT fixture_id) counts each fixture once",
+        "COUNT(DISTINCT) is just a faster version",
+        "COUNT(*) ignores NULLs"
+      ],
+      answer: 1,
+      explain: "Joins fan out: a fixture with 30 events becomes 30 rows, so COUNT(*) counts events. Forgetting this when computing 'goals per match' inflates the denominator — a classic screen trap."
+    },
+    {
+      q: "A query filtering WHERE fixture_id = 101 is slow despite an index on fixture_id. What's the FIRST diagnostic step?",
+      choices: [
+        "Drop and recreate the index",
+        "Run EXPLAIN ANALYZE to see whether the planner actually uses the index and where time goes",
+        "Move the table to MongoDB",
+        "Add more RAM"
+      ],
+      answer: 1,
+      explain: "EXPLAIN ANALYZE shows the real plan — maybe a type mismatch or function on the column disables the index, or the table is mostly fixture 101 so a scan wins. Measure before changing anything."
+    },
+    {
+      q: "In Mongo, one document holds a fixture with an embedded array of all its odds updates. The array grows by thousands of entries per match. The design smell is:",
+      choices: [
+        "Embedding is always wrong",
+        "Unbounded array growth — documents balloon (16MB cap, rewrite cost); high-rate updates belong in their own collection",
+        "Mongo cannot store arrays",
+        "Nothing — the bigger the document the better"
+      ],
+      answer: 1,
+      explain: "Embed what's bounded and read together; reference what grows without limit. A per-update document keyed by fixture_id (and indexed) handles feed-rate writes cleanly."
+    }
+  ]
+};
+</script>
+<script src="../quiz.js"></script>
+</body>
+</html>
