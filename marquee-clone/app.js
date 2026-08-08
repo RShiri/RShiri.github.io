@@ -11,7 +11,8 @@
     "Find a tall, fast striker with good ball control",
     "Young left-footed winger with dribbling",
     "Pressing central midfielder under 23",
-    "Ball-playing centre-back",
+    "Striker with an expiring contract",
+    "Creative midfielder under €25m",
     "What's on the market right now?",
     "Where is my squad weakest?"
   ];
@@ -34,8 +35,8 @@
     $("#boot").innerHTML = `<p class="answer-note">
       <b>${m.n_players.toLocaleString()} real players</b> across ${TL.leagues.length} competitions.
       ${m.n_verified.toLocaleString()} carry ratings derived from real ${m.seasons[0]}–${m.generated_for_season}
-      match data; ${m.n_prior_only.toLocaleString()} sit on an EA FC 24 baseline because their league has no
-      public event data. Ask anything above, or click an example.</p>`;
+      match data; ${m.n_valued.toLocaleString()} have a real Transfermarkt valuation and
+      ${m.n_contracts.toLocaleString()} a contract expiry date. Ask anything above, or click an example.</p>`;
     wireCards(feed);
   });
 
@@ -57,6 +58,10 @@
     $("#dna-style").addEventListener("change", (e) => {
       TL.club.style = e.target.value;
       note(`Game model set to <b>${esc(e.target.options[e.target.selectedIndex].text)}</b>. Tactical fit now weighs ${e.target.value === "possession" ? "passing, control and composure" : e.target.value === "transition" ? "pace, dribbling and finishing" : "pressing, stamina and pace"}. Re-run a query to see the ranking move.`);
+    });
+    $("#dna-budget").addEventListener("input", (e) => {
+      TL.club.budgetM = +e.target.value;
+      $("#dna-budget-out").textContent = `€${e.target.value}m`;
     });
     $("#dna-verified").addEventListener("change", (e) => {
       TL.club.verifiedOnly = e.target.checked;
@@ -158,8 +163,8 @@
       a.innerHTML = `<p class="answer-note">No signals fired for this squad right now.</p>`;
       return;
     }
-    a.innerHTML = `<p class="answer-note">Market watch — driven by <b>real</b> three-season minutes and output
-      trends (no market values: Transfermarkt data isn't available in this build, so nothing here is invented):</p>`
+    a.innerHTML = `<p class="answer-note">Market watch — real Transfermarkt contract expiries and valuations,
+      plus observed three-season minutes and output trends. Nothing here is invented:</p>`
       + items.map(it => `<div class="sig"><span class="tag tag--${it.kind}">${it.kind}</span>
           <span>${esc(it.text)} <span class="small">(fit vs. us: ${Math.round(it.score)}/100)</span></span></div>`).join("");
   }
@@ -194,8 +199,8 @@
       <div class="pcard-top">
         <div><span class="nm">${esc(p.name)}</span>
           <span class="conf conf--${p.conf}" title="${esc(conf.tip)}">${conf.label}</span>
-          <div class="meta">${p.posLabel} · ${p.age}y · ${p.foot}-footed · ${esc(p.nation)} ·
-            ${esc(p.club)} (${esc(p.league)})${p.conf ? ` · ${p.minutes} min` : ""}${extraMeta ? " · " + extraMeta : ""}</div>
+          <div class="meta">${p.posLabel} · ${p.age}y${p.height ? ` · ${p.height}cm` : ""} · ${p.foot}-footed · ${esc(p.nation)} ·
+            ${esc(p.club)} (${esc(p.league)})${p.value != null ? ` · <b class="val">€${p.value}m</b>` : ""}${p.contractTo ? ` · contract ${p.contractTo}` : ""}${p.conf ? ` · ${p.minutes} min` : ""}${extraMeta ? " · " + extraMeta : ""}</div>
         </div>
         <div class="ovr ${cls}">${ev.overall}</div>
       </div>

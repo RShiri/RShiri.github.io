@@ -108,6 +108,25 @@
         return { score: pct(clamp(s, 5, 98)), why };
       }
     },
+    value: {
+      label: "Market value", desc: "Real fee vs. budget & contract leverage",
+      run(p, ctx) {
+        if (p.value == null) {
+          return { score: 50, why: ["No Transfermarkt valuation for this player — score held neutral rather than guessed"] };
+        }
+        const b = ctx.club.budgetM;
+        let s = p.value <= b * 0.4 ? 92 : p.value <= b * 0.75 ? 78
+              : p.value <= b ? 64 : p.value <= b * 1.5 ? 34 : 12;
+        const why = [`Valued €${p.value}m vs €${b}m budget`];
+        if (p.contractTo) {
+          const yrs = p.contractTo - 2025;
+          if (yrs <= 0) { s = clamp(s + 18, 0, 98); why.push(`Contract expired/expiring ${p.contractTo} — minimal fee leverage for the selling club`); }
+          else if (yrs === 1) { s = clamp(s + 12, 0, 98); why.push(`Contract runs to ${p.contractTo} — one year left, selling club under pressure`); }
+          else why.push(`Contract to ${p.contractTo}`);
+        } else why.push("Contract end unknown");
+        return { score: pct(s), why };
+      }
+    },
     availability: {
       label: "Availability", desc: "Minutes reliability",
       run(p) {
@@ -124,7 +143,7 @@
   };
 
   const SCORING = ["performance", "physical", "technical", "tacticalFit",
-                   "synergy", "potential", "momentum", "availability"];
+                   "synergy", "potential", "momentum", "value", "availability"];
 
   function evaluate(p, ctx, weights) {
     const parts = {};
@@ -165,6 +184,8 @@
     [/experienc|veteran/, "experienced", f => { f.minAge = 28; }],
     [/regular|starter|plays every week|nailed/, "regular starter", f => { f.minMinutes = 1800; }],
     [/breakout|breakthrough|emerging|rising/, "rising", f => { f.risingOnly = true; }],
+    [/expiring|free agent|out of contract|contract (ends|expir)|final year/, "expiring contract", f => { f.maxContract = 2026; }],
+    [/cheap|bargain|budget|affordable|low fee/, "value buy", f => { f.maxValue = Math.min(f.maxValue || 1e9, TL.club.budgetM * 0.5); }],
     [/verified|proven|with data|reliable data/, "verified data only", f => { f.verifiedOnly = true; }]];
 
   function parseQuery(text) {
@@ -181,9 +202,20 @@
     if (/my squad|our squad|squad (depth|analysis|planning|audit)|weak(nesses)? in (my|our)|where do we|where is my/.test(q)) { intent.type = "squad"; return intent; }
 
     for (const [re, pos] of POS_WORDS) if (re.test(q)) { f.pos = pos; f.notes.push(`position: ${pos}`); break; }
+    // a bare "midfielder"/"defender"/"forward" still constrains the line
+    if (!f.pos) {
+      for (const [re, line] of [[/midfield/, "MID"], [/defender|defence|defense|at the back/, "DEF"],
+                                [/forward|attacker|up front/, "ATT"]]) {
+        if (re.test(q)) { f.line = line; f.notes.push(`line: ${line}`); break; }
+      }
+    }
     for (const [re, label, apply] of TRAIT_WORDS) if (re.test(q)) { apply(f); f.notes.push(label); }
 
-    const ageM = q.match(/under\s+(\d{2})\b/);
+    // "under 23" is an age; "under €20m" / "under 20m" is a fee
+    const feeM = q.match(/(?:under|below|max|up to)\s*€?\s*(\d+(?:\.\d+)?)\s*m\b/)
+              || q.match(/budget\s*(?:of)?\s*€?\s*(\d+(?:\.\d+)?)\s*m\b/);
+    if (feeM) { f.maxValue = +feeM[1]; f.notes.push(`fee ≤ €${feeM[1]}m`); }
+    const ageM = q.match(/under\s+(\d{2})\b(?!\s*m)/);
     if (ageM && +ageM[1] <= 40) { f.maxAge = +ageM[1]; f.notes.push(`age ≤ ${ageM[1]}`); }
 
     const league = TL.leagues.find(L => L !== "—" && q.includes(L.toLowerCase()));
@@ -209,12 +241,15 @@
     const excludeOwn = new Set((TL.club.squad || []).map(p => p.id));
     let pool = TL.players.filter(p => !excludeOwn.has(p.id));
     if (filters.pos) pool = pool.filter(p => p.pos === filters.pos);
+    if (filters.line) pool = pool.filter(p => p.line === filters.line);
     if (filters.maxAge) pool = pool.filter(p => p.age <= filters.maxAge);
     if (filters.minAge) pool = pool.filter(p => p.age >= filters.minAge);
     if (filters.foot) pool = pool.filter(p => p.foot === filters.foot);
     if (filters.league) pool = pool.filter(p => p.league === filters.league);
     if (filters.nation) pool = pool.filter(p => p.nation === filters.nation);
     if (filters.minMinutes) pool = pool.filter(p => p.minutes >= filters.minMinutes);
+    if (filters.maxValue) pool = pool.filter(p => p.value != null && p.value <= filters.maxValue);
+    if (filters.maxContract) pool = pool.filter(p => p.contractTo != null && p.contractTo <= filters.maxContract);
     if (filters.risingOnly) pool = pool.filter(p => p.conf && p.minTrend > 0.1 && p.age <= 24);
     if (filters.verifiedOnly || TL.club.verifiedOnly) pool = pool.filter(p => p.conf === 2);
     for (const [k, v] of Object.entries(filters.minAttr)) pool = pool.filter(p => p.attrs[k] >= v);
@@ -224,6 +259,9 @@
       relaxed = "attribute thresholds relaxed";
       pool = TL.players.filter(p => !excludeOwn.has(p.id)
         && (!filters.pos || p.pos === filters.pos)
+        && (!filters.line || p.line === filters.line)
+        && (!filters.maxValue || (p.value != null && p.value <= filters.maxValue))
+        && (!filters.maxContract || (p.contractTo != null && p.contractTo <= filters.maxContract))
         && (!filters.maxAge || p.age <= filters.maxAge)
         && (!filters.foot || p.foot === filters.foot)
         && (!filters.league || p.league === filters.league)
@@ -264,8 +302,15 @@
     const own = new Set((TL.club.squad || []).map(p => p.id));
     const items = [];
     for (const p of TL.players) {
-      if (own.has(p.id) || !p.conf) continue;
+      if (own.has(p.id)) continue;
       const q = avg(Object.values(p.attrs));
+      // contract signals are the strongest real lever and don't need match data
+      if (p.contractTo != null && p.contractTo <= 2026 && q >= 66 && p.value != null) {
+        items.push({ p, kind: "Contract", score: q + 8,
+          text: `${p.name} (${p.posLabel}, ${p.club}) is into the final stretch of his deal — expires ${p.contractTo}. Valued €${p.value}m, and the selling club's leverage drops every month.` });
+        continue;
+      }
+      if (!p.conf) continue;
       if (p.minTrend < -0.15 && q >= 68)
         items.push({ p, kind: "Minutes", score: q,
           text: `${p.name} (${p.posLabel}, ${p.club}) saw minutes fall sharply against his prior seasons — ${p.minutes} last term — despite a ${Math.round(q)}-rated profile. Classic unsettled-starter window.` });
@@ -302,9 +347,12 @@
   function writeReport(ev) {
     const p = ev.player, P = ev.parts, paras = [];
     const conf = TL.CONF[p.conf];
-    paras.push(`${p.name} is a ${p.age}-year-old ${p.foot.toLowerCase()}-footed ${p.posLabel.toLowerCase()} at ${p.club} (${p.league}), ${p.nation} by nationality. Overall rating against ${TL.club.name}'s profile: ${ev.overall}/100. Data confidence: ${conf.label.toLowerCase()} — ${conf.tip.toLowerCase()}.`);
+    const bio = [`${p.age}-year-old`, `${p.foot.toLowerCase()}-footed`,
+                 p.height ? `${p.height}cm` : null].filter(Boolean).join(" ");
+    paras.push(`${p.name} is a ${bio} ${p.posLabel.toLowerCase()} at ${p.club} (${p.league}), ${p.nation} by nationality${p.value != null ? `, valued at €${p.value}m` : ""}${p.contractTo ? ` with a contract to ${p.contractTo}` : ""}. Overall rating against ${TL.club.name}'s profile: ${ev.overall}/100. Data confidence: ${conf.label.toLowerCase()} — ${conf.tip.toLowerCase()}.`);
     paras.push(`On the pitch, the performance model grades him ${tier(P.performance.score)} (${P.performance.score}) for his position, driven by ${P.performance.why.slice(0, 2).join(" and ")}. Physically he rates ${P.physical.score} (${P.physical.why.join(", ")}); technically ${P.technical.score} (${P.technical.why.join(", ")}).`);
     paras.push(`Fit: against our ${TL.club.style} game model the tactical-fit score is ${P.tacticalFit.score}/100 (${P.tacticalFit.why.join("; ")}). Squad synergy is ${P.synergy.score}/100 — ${P.synergy.why.join("; ")}.`);
+    paras.push(`Cost: ${P.value.why.join("; ")} — market score ${P.value.score}/100.`);
     if (p.conf) {
       paras.push(`Trajectory: momentum reads ${P.momentum.score}/100 (${P.momentum.why.join("; ")}), availability ${P.availability.score}/100 (${P.availability.why.join(", ")}), and the potential model ${P.potential.score}/100 — ${P.potential.why.join("; ")}.`);
     } else {

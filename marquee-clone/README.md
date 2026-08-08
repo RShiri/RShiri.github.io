@@ -20,29 +20,33 @@ against a real club's squad and game model:
 - **Shortlists** — `find a tall, fast striker with good ball control`
 - **360° scout reports** — `scout report on <player>` (prose + pursue/monitor/pass verdict)
 - **Similarity search** — `find players similar to <player>` (cosine over attribute vectors)
-- **Market watch** — `what's on the market right now?` (real minutes/output trends)
+- **Market watch** — `what's on the market right now?` (real contract expiries, valuations, minutes trends)
+- **Fee-aware search** — `creative midfielder under €25m`, `striker with an expiring contract`
 - **Squad audit** — `where is my squad weakest?`
 
-Pick any of 638 clubs as "your" club in the sidebar; synergy, squad audits and every fit score
+Pick any real club as "your" club in the sidebar; synergy, squad audits and every fit score
 recompute against that actual squad. Click any score bar to see the factors behind it.
 
 ## The data pipeline
 
-`build_players.py` combines three public sources so that **game-style attribute priors get
-updated by observed match statistics**:
+`build_players.py` combines four public sources so that **game-style attribute priors get
+updated by observed match statistics**, then priced with real valuations:
 
 | Layer | Source | Scale |
 | --- | --- | --- |
 | Attribute prior (global) | EA FC 24 ratings | 15,846 players · 654 clubs · 155 nations |
 | League map | FIFA 22 dataset | 55 leagues |
 | Performance update | FBref Big-5 season stats, 2022/23–2024/25 | 8,117 player-seasons |
+| Valuation & contracts | Published Transfermarkt dump (Sept 2025) | 33,590 values · 38,666 contract dates |
 
 Attributes for matched players are re-derived as **percentile ranks against positional peers**
 (finishing from npxG and goals-over-expected, creativity from xAG and key passes, and so on),
 then blended over the prior with **minutes-weighted shrinkage** so small samples don't dominate.
 
-Each player is badged by data confidence: **verified** (1,575), **partial** (784), or
-**baseline** (13,802 — no public event data for their league).
+Each player is badged by data confidence: **verified** (1,575), **partial** (786), or
+**baseline** (13,802 — no public event data for their league). **10,307** carry a real market value
+and **9,286** a contract expiry date; where a valuation is missing it is shown as absent and the
+market model stays neutral rather than inventing a number.
 
 Regenerate the database with:
 

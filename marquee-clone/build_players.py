@@ -18,6 +18,11 @@ Layers
                                player we can match, attributes are re-derived from
                                observed output and blended over the prior with
                                minutes-weighted (empirical-Bayes) shrinkage.
+4. VALUATION + CONTRACTS       A public pre-scraped Transfermarkt dump (values current
+                               to Sept 2025). Supplies real market values, contract
+                               expiry dates, height and date of birth. Transfermarkt
+                               itself is not scraped here — the dataset is used as
+                               published.
 
 Players only present in FBref (recent breakthroughs missing from EA FC 24) are
 included with attributes derived purely from stats.
@@ -42,6 +47,11 @@ FC24 = "https://raw.githubusercontent.com/federicopaschetta/FootballPlayersAnaly
 FIFA22 = "https://raw.githubusercontent.com/abineshta/FIFA-22-complete-player-dataset-EDA/main/players_22.csv"
 FBREF = ("https://github.com/JaseZiv/worldfootballR_data/releases/download/"
          "fb_big5_advanced_season_stats/big5_player_{}.rds")
+TM_BASE = ("https://raw.githubusercontent.com/salimt/football-datasets/main/"
+           "datalake/transfermarkt")
+TM_VALUES = f"{TM_BASE}/player_latest_market_value/player_latest_market_value.csv"
+TM_PROFILES = f"{TM_BASE}/player_profiles/player_profiles.csv"
+SNAPSHOT = pd.Timestamp("2025-01-01")   # mid-2024/25; ages are computed against this
 STAT_TYPES = ["standard", "shooting", "passing", "defense", "possession", "misc"]
 # The upstream FBref mirror is archived and froze ~5 games into 2025/26, so the
 # latest *complete* season it carries is 2024/25 (Season_End_Year 2025). We window
@@ -209,6 +219,55 @@ def load_fbref():
 
 
 # ----------------------------------------------------------------------------
+# 2b. Transfermarkt valuations, contracts and biography
+# ----------------------------------------------------------------------------
+def load_tm():
+    """key -> [candidate dicts], from a published Transfermarkt dump."""
+    print("[3b] Transfermarkt valuations & contracts")
+    prof = pd.read_csv(fetch(TM_PROFILES, "tm_prof.csv"), low_memory=False)
+    vals = pd.read_csv(fetch(TM_VALUES, "tm_val.csv"), low_memory=False)
+    vals = vals[vals.value > 0][["player_id", "value", "date_unix"]]
+    d = prof.merge(vals, on="player_id", how="left")
+
+    dob = pd.to_datetime(d.date_of_birth, errors="coerce")
+    # age is completed years, so floor — not round, which ages half the squad up
+    d["tm_age"] = np.floor((SNAPSHOT - dob).dt.days / 365.25)
+    d["cex"] = pd.to_datetime(d.contract_expires, errors="coerce").dt.year
+    d["height_cm"] = pd.to_numeric(d.height, errors="coerce")   # already cm; 0 = unknown
+    d.loc[(d.height_cm < 140) | (d.height_cm > 220), "height_cm"] = np.nan
+    # names carry a "(id)" suffix in this dump; norm_name drops digits anyway
+    d["key"] = d.player_name.map(norm_name)
+
+    idx = {}
+    for r in d[["key", "current_club_name", "tm_age", "value", "cex",
+                "height_cm", "foot"]].to_dict("records"):
+        if r["key"]:
+            idx.setdefault(r["key"], []).append(r)
+    n_val = int(d.value.notna().sum())
+    print(f"      {len(d):,} profiles · {n_val:,} with a market value · "
+          f"{int(d.cex.notna().sum()):,} with a contract date")
+    return idx
+
+
+def match_tm(tm_idx, key, club, age):
+    """Pick the Transfermarkt record most likely to be this player."""
+    cands = tm_idx.get(key)
+    if not cands:
+        return None
+    if len(cands) == 1:
+        return cands[0]
+    want = set(norm_name(club).split()) if isinstance(club, str) else set()
+    best, best_s = None, -1
+    for r in cands:
+        s = 10 * len(want & set(norm_name(r["current_club_name"]).split()))
+        if age and pd.notna(r["tm_age"]):
+            s += max(0, 4 - abs(age - r["tm_age"]))
+        if s > best_s:
+            best, best_s = r, s
+    return best
+
+
+# ----------------------------------------------------------------------------
 # 3. stats -> attributes (positional percentile + shrinkage)
 # ----------------------------------------------------------------------------
 def per90(num, mins):
@@ -282,6 +341,7 @@ def derive_from_stats(cur):
 def main():
     priors = load_priors()
     fb = load_fbref()
+    tm_idx = load_tm()
 
     # Latest complete season. Names collide across leagues (there are several
     # "Rodri"s), so keep every candidate and resolve per-player by club agreement
@@ -365,10 +425,30 @@ def main():
             attrs["positioning"] = float(p["gk"])
 
         tkey = c["key"] if c is not None else (p["key"] if p is not None else "")
+
+        # Transfermarkt: valuation, contract, and better biography than either
+        # of the game datasets carries.
+        value = cexp = height = None
+        t = match_tm(tm_idx, tkey, club, age)
+        if t:
+            if pd.notna(t["value"]):
+                value = round(float(t["value"]) / 1e6, 2)      # EUR millions
+            if pd.notna(t["cex"]):
+                cexp = int(t["cex"])
+            if pd.notna(t["height_cm"]):
+                height = int(t["height_cm"])
+            # FBref's age is already season-accurate; TM's DOB fills the rest
+            if age is None and pd.notna(t["tm_age"]):
+                age = int(t["tm_age"])
+            # a baseline-tier club string is 2023/24; TM's is ~Sept 2025
+            if not conf and isinstance(t["current_club_name"], str):
+                club = t["current_club_name"]
+
         return {
             "n": name, "c": club, "l": league, "nat": nation,
             "p": pos, "pl": POS_LABEL[pos], "ln": LINE[pos],
-            "ag": age, "ft": foot,
+            "ag": age, "ft": foot, "ht": height,
+            "val": value, "cex": cexp,
             "mn": int(mins), "cf": conf,
             "mt": round(float(min_trend.get(tkey, 0.0)), 3) if conf else 0.0,
             "ovr": int(overall_prior) if overall_prior and pd.notna(overall_prior) else None,
@@ -410,12 +490,15 @@ def main():
             "n_verified": int((df.cf == 2).sum()),
             "n_partial": int((df.cf == 1).sum()),
             "n_prior_only": int((df.cf == 0).sum()),
+            "n_valued": int(df.val.notna().sum()),
+            "n_contracts": int(df.cex.notna().sum()),
             "attrs": [k[:4] for k in ATTRS],
             "attr_labels": {k[:4]: k for k in ATTRS},
             "sources": {
                 "priors": "EA FC 24 player ratings (global, 2023/24 vintage)",
                 "stats": f"FBref Big-5 advanced season stats {SEASONS[0]}-{LATEST}",
                 "leagues": "FIFA 22 dataset (club -> league mapping only)",
+                "market": "Published Transfermarkt dump, values current to Sept 2025",
             },
         },
         "cols": cols,

@@ -43,6 +43,9 @@ TL.load = async function () {
       nation: r[ix.nat] || "—",
       pos: r[ix.p], posLabel: r[ix.pl], line: r[ix.ln],
       age: r[ix.ag], foot: r[ix.ft] || "Right",
+      height: r[ix.ht] ?? null,
+      value: r[ix.val] ?? null,           // €m, Transfermarkt (Sept 2025); null = unknown
+      contractTo: r[ix.cex] ?? null,
       minutes: r[ix.mn] || 0,
       conf: r[ix.cf] || 0,
       minTrend: r[ix.mt] || 0,      // real: minutes vs prior seasons
@@ -65,7 +68,8 @@ TL.load = async function () {
 };
 
 /* ---- "your club": a real squad from the database ---- */
-TL.club = { name: null, league: null, style: "high-press", squad: [], verifiedOnly: false };
+TL.club = { name: null, league: null, style: "high-press", squad: [],
+            verifiedOnly: false, budgetM: 60 };
 
 TL.setClub = function (name) {
   const squad = (TL.clubsIndex[name] || []).slice()

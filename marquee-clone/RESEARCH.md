@@ -78,7 +78,8 @@ raises the hit rate of recruitment decisions pays for itself on a single avoided
 | 360° scout report | Per-player prose: performance, physical, technical, trajectory, synergy vs. a real squad, ending in a verdict |
 | Club DNA / tactical fit | Pick any of **638 real clubs** as "your" squad; game model reweights every score |
 | Squad synergy | Computed against that club's actual squad — line quality, incumbent competition, missing left foot |
-| Market watch | **Real** three-season signals: collapsing minutes, rising output, breakout seasons |
+| Market watch | **Real** signals: contract expiries and valuations, plus three-season minutes and output trends |
+| Market value | Real Transfermarkt fee vs. your budget, with contract-expiry leverage factored in |
 | Nine models | Nine named modules, eight scoring and one writing, each exposing its reasoning |
 | "Explainability" | Every score expands to the factors — and ultimately the match stats — that produced it |
 
@@ -92,6 +93,7 @@ match statistics** — the same shape as "scout judgement, corrected by data":
 | Attribute prior | EA FC 24 ratings | 15,846 players · 654 clubs · 155 nations | Global baseline, incl. leagues with no public event data |
 | League map | FIFA 22 dataset | 55 leagues | club → league, joined by player name |
 | Performance | FBref Big-5 advanced season stats | 8,117 player-seasons, 2022/23–2024/25 | Re-derives attributes from real output |
+| Valuation & contracts | Published Transfermarkt dump (values to Sept 2025) | 92,671 profiles · 33,590 values · 38,666 contract dates | Real fees, contract expiry, height, date of birth |
 
 **How the update works.** For every player matched to FBref, each attribute is re-estimated as a
 **percentile rank against positional peers** on the relevant per-90 metrics — finishing from npxG
@@ -120,8 +122,11 @@ Every player carries a confidence tier, surfaced as a badge in the UI:
   actions. Blending in duel-success rate helps, but a positional CB can still under-rate.
 - **Joins are name-based.** Players sharing a name are separated by club, position and age
   agreement, but roughly 1.8% of names are shared and some matches will be wrong.
-- **No market values or contracts.** Transfermarkt is not reachable from this build, so there are
-  no fees, wages or expiry dates anywhere — omitted rather than invented.
+- **Market values cover 64% of the database.** 10,307 of 16,163 players carry a real Transfermarkt
+  valuation and 9,286 a contract expiry. The rest show no fee at all and the market model returns a
+  neutral score rather than guessing — a missing value is never imputed.
+- **Valuations are a single Sept 2025 snapshot.** They are Transfermarkt's community-driven estimates,
+  not transfer fees, and they are not re-dated per season.
 - **The "models" are arithmetic, not learned.** Percentiles and weighted averages standing in for
   transformers over match sequences.
 
