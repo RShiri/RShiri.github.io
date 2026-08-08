@@ -1,10 +1,11 @@
 # Marquee (themarquee.ai) — platform research
 
 > Research notes compiled 2026-08-08 from public press coverage. Everything below is
-> paraphrased from public sources (linked at the bottom). The `marquee-clone/` demo in this
-> folder is an **independent, educational re-creation of the product concept** with original
-> design, copy, and synthetic data — it is not affiliated with, endorsed by, or a copy of
-> Marquee's actual site or software.
+> paraphrased from public sources (linked at the bottom). The demo in this folder is an
+> **independent, educational re-creation of the product concept** with original design and
+> code. It is not affiliated with, endorsed by, or a copy of Marquee's actual site or
+> software. Player data comes from public datasets and is used for non-commercial research
+> and demonstration only.
 
 ## 1. Company snapshot
 
@@ -73,17 +74,60 @@ raises the hit rate of recruitment decisions pays for itself on a single avoided
 
 | Marquee concept | Clone implementation |
 | --- | --- |
-| NL query → ranked shortlist | Client-side query parser over a synthetic player DB (`players.js`), scoring + ranking in `app.js` |
-| 360° scout report | Generated report per player: performance, physical, financial, synergy vs. a demo squad, written as prose from templates |
-| Squad DNA / tactical fit | A configurable "club profile" (style, budget, league) that reweights the ranking |
-| Market watch | A feed of synthetic signals (expiring contracts, minutes trends, form spikes) recomputed from the dataset |
-| Nine models | Nine named scoring modules in the demo engine, each contributing an explainable sub-score |
-| "Explainability" | Every score in the UI expands to show which factors moved it |
+| NL query → ranked shortlist | Rule-based parser over **16,161 real players**, scored and ranked in `engine.js` |
+| 360° scout report | Per-player prose: performance, physical, technical, trajectory, synergy vs. a real squad, ending in a verdict |
+| Club DNA / tactical fit | Pick any of **638 real clubs** as "your" squad; game model reweights every score |
+| Squad synergy | Computed against that club's actual squad — line quality, incumbent competition, missing left foot |
+| Market watch | **Real** three-season signals: collapsing minutes, rising output, breakout seasons |
+| Nine models | Nine named modules, eight scoring and one writing, each exposing its reasoning |
+| "Explainability" | Every score expands to the factors — and ultimately the match stats — that produced it |
 
-Everything is static HTML/CSS/JS with synthetic data — no backend, no real player data, no
-external dependencies, matching the conventions of the rest of this repo.
+## 6. The data pipeline (`build_players.py`)
 
-## 6. Sources
+Three public sources, combined so that **game-style attribute priors get updated by observed
+match statistics** — the same shape as "scout judgement, corrected by data":
+
+| Layer | Source | Scale | Role |
+| --- | --- | --- | --- |
+| Attribute prior | EA FC 24 ratings | 15,846 players · 654 clubs · 155 nations | Global baseline, incl. leagues with no public event data |
+| League map | FIFA 22 dataset | 55 leagues | club → league, joined by player name |
+| Performance | FBref Big-5 advanced season stats | 8,117 player-seasons, 2022/23–2024/25 | Re-derives attributes from real output |
+
+**How the update works.** For every player matched to FBref, each attribute is re-estimated as a
+**percentile rank against positional peers** on the relevant per-90 metrics — finishing from npxG
+and goals-over-expected, creativity from xAG and key passes, dribbling from take-ons and
+progressive carries, defending from a 50/50 blend of action volume and duel-success rate. The
+estimate is then blended over the prior with **minutes-weighted (empirical-Bayes) shrinkage**,
+`w = minutes / (minutes + 900)`, so a 200-minute sample barely moves the prior while a full
+season dominates it.
+
+Every player carries a confidence tier, surfaced as a badge in the UI:
+
+- **Verified** (1,575) — a full Big-5 season behind the ratings
+- **Partial** (784) — matched, but a small minutes sample
+- **Baseline** (13,802) — EA FC 24 prior only; the league has no public event data
+
+## 7. Known limitations — read before trusting a number
+
+- **The freshest complete season is 2024/25.** The FBref mirror used here is archived and froze
+  about five games into 2025/26, so that partial season is excluded rather than shipped as form.
+- **Non-Big-5 players are a 2023/24 snapshot.** Clubs and ages for baseline-tier players come
+  from EA FC 24; some will have transferred since.
+- **Event data can't see everything.** Positioning, composure and off-ball movement aren't
+  measurable from event data — those attributes stay at their prior. Marquee buys this gap with
+  SkillCorner tracking data; this clone has no equivalent.
+- **Defensive volume misreads elite centre-backs.** Players who prevent situations record fewer
+  actions. Blending in duel-success rate helps, but a positional CB can still under-rate.
+- **Joins are name-based.** Players sharing a name are separated by club, position and age
+  agreement, but roughly 1.8% of names are shared and some matches will be wrong.
+- **No market values or contracts.** Transfermarkt is not reachable from this build, so there are
+  no fees, wages or expiry dates anywhere — omitted rather than invented.
+- **The "models" are arithmetic, not learned.** Percentiles and weighted averages standing in for
+  transformers over match sequences.
+
+Everything is static HTML/CSS/JS — no backend, no build step, no runtime dependencies.
+
+## 8. Sources
 
 - [Marquee raises $6.5M — GlobeNewswire press release](https://www.globenewswire.com/news-release/2026/07/30/3336140/0/en/marquee-raises-6-5-million-to-scale-ai-decision-layer-across-global-sports.html)
 - [Yahoo Finance republication of the press release](https://finance.yahoo.com/technology/ai/articles/marquee-raises-6-5-million-130100497.html)

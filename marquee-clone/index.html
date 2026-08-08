@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Touchline — an AI scouting intelligence layer (study clone)</title>
-<meta name="description" content="Educational re-creation of the 'AI decision layer for soccer recruitment' product concept, with synthetic data.">
+<meta name="description" content="Educational re-creation of the 'AI decision layer for soccer recruitment' product concept, built on 16,161 real players from public datasets.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -14,8 +14,9 @@
 <body>
 
 <div class="ribbon">This is an independent <b>educational study clone</b> of the product concept behind
-<a href="https://www.themarquee.ai/" rel="noopener">Marquee (themarquee.ai)</a> — original design, original code,
-100% synthetic fictional data. Not affiliated with or endorsed by Marquee. <a href="RESEARCH.md">Read the research</a></div>
+<a href="https://www.themarquee.ai/" rel="noopener">Marquee (themarquee.ai)</a> — original design and code, built on
+real player data from public datasets for non-commercial demonstration. Not affiliated with or endorsed by Marquee.
+<a href="RESEARCH.md">Read the research &amp; limitations</a></div>
 
 <header class="wrap nav">
   <div class="brand"><span class="mark">T</span> Touchline</div>
@@ -32,17 +33,18 @@
     <span class="kicker">Football intelligence layer · demo</span>
     <h1>Your club's data already knows the answer.<br><em>Ask it in plain language.</em></h1>
     <p class="lede">Touchline is a working study clone of the "AI decision layer" idea: it doesn't collect new
-    data — it sits on top of what a club already has, applies the club's own DNA (style, squad, budget),
-    and turns weeks of scouting work into a ranked, explained answer in seconds.</p>
+    data — it sits on top of what a club already has, applies the club's own DNA (game model, squad),
+    and turns weeks of scouting work into a ranked, explained answer in seconds. Built on
+    <b>16,161 real players</b> across <b>59 competitions</b>.</p>
     <div class="cta">
       <a class="btn btn--go" href="app.html">Try the scouting workspace</a>
       <a class="btn btn--ghost" href="RESEARCH.md">How the real Marquee works →</a>
     </div>
     <div class="demo-strip">
-      <div class="q">find a tall, fast striker with good ball control under €25m</div>
-      <div class="a">14 candidates matched. Top pick rated 84/100 against your high-press profile —
-      elite finishing and pressing volume, contract entering its final year so the fee should land under
-      valuation. Full 360° report and squad-synergy reasoning attached. <a href="app.html">Run it live →</a></div>
+      <div class="q">find a tall, fast striker with good ball control</div>
+      <div class="a">27 candidates matched. Top pick rated 83/100 against your high-press model —
+      finishing 91, positioning 90, with the full three-season minutes and output trend behind it.
+      Every number expands to the stat that produced it. <a href="app.html">Run it live →</a></div>
     </div>
   </div>
 </section>
@@ -56,8 +58,9 @@
     <div class="grid grid--3">
       <div class="card"><span class="num">01 · UNIFY</span><h3>One layer over all the data</h3>
         <p>Clubs drown in event data, tracking feeds, video, contracts and scouting notes spread across vendors.
-        The layer's job is to sit on top of all of it. In this demo: a seeded synthetic database of 120
-        fictional players with 13 attributes, market, contract and availability signals each.</p></div>
+        The layer's job is to sit on top of all of it. Here: a global attribute baseline for 16,161 real
+        players, joined to three seasons of FBref match data so ratings are <em>derived from observed output</em>
+        wherever public event data exists.</p></div>
       <div class="card"><span class="num">02 · CONTEXTUALIZE</span><h3>Scored against <i>your</i> DNA</h3>
         <p>The same player is a great signing for one club and a mistake for another. Every score here is
         computed against a club profile — game model, budget, current squad — and re-ranks live when you
@@ -75,7 +78,8 @@
     <h2>Nine models, one answer</h2>
     <p class="sec-sub">The real platform runs nine proprietary AI/ML models (players as high-dimensional
     vectors, transformers over match sequences). This clone mirrors the structure with nine transparent
-    scoring modules — eight score, the ninth writes.</p>
+    scoring modules — eight score, the ninth writes. They are arithmetic over real data, not learned
+    models: the honesty is the point.</p>
     <div class="grid models">
       <div class="model"><b>Performance</b><span>Output vs. positional baseline</span></div>
       <div class="model"><b>Physical</b><span>Tracking-style athletic profile</span></div>
@@ -83,8 +87,8 @@
       <div class="model"><b>Tactical fit</b><span>Match to the club's game model</span></div>
       <div class="model"><b>Synergy</b><span>Chemistry with the current squad</span></div>
       <div class="model"><b>Potential</b><span>Age-curve trajectory</span></div>
-      <div class="model"><b>Market value</b><span>Price vs. budget, contract leverage</span></div>
-      <div class="model"><b>Availability</b><span>Durability &amp; minutes reliability</span></div>
+      <div class="model"><b>Momentum</b><span>Real 3-season minutes &amp; output trend</span></div>
+      <div class="model"><b>Availability</b><span>Minutes reliability</span></div>
       <div class="model"><b>Report writer</b><span>Turns the eight scores into prose</span></div>
     </div>
   </div>
@@ -95,18 +99,18 @@
     <span class="sec-kicker">Workflows</span>
     <h2>What a recruitment team actually does with it</h2>
     <div class="grid grid--3">
-      <div class="card"><h3>Shortlist building</h3><p>"Young left-footed winger under €15m" → ranked
-        candidates with fit scores and the constraints the parser understood, spelled out.</p></div>
+      <div class="card"><h3>Shortlist building</h3><p>"Young left-footed winger with dribbling" → ranked
+        real candidates with fit scores and the constraints the parser understood, spelled out.</p></div>
       <div class="card"><h3>360° scout reports</h3><p>Any player, full picture in seconds: performance,
-        physical, financials, synergy vs. your squad — ending in a pursue / monitor / pass verdict.</p></div>
-      <div class="card"><h3>Squad planning</h3><p>"Where is my squad weakest?" → line-by-line quality and
-        age audit with succession flags that feed straight back into search queries.</p></div>
-      <div class="card"><h3>Market watch</h3><p>A continuous scan for expiring contracts, form spikes and
-        minutes drops — the windows where good players get cheap.</p></div>
+        physical, trajectory, synergy vs. your squad — ending in a pursue / monitor / pass verdict.</p></div>
+      <div class="card"><h3>Squad planning</h3><p>Pick any of 638 real clubs as "your" squad, then ask
+        where it's weakest — a line-by-line quality and age audit with succession flags.</p></div>
+      <div class="card"><h3>Market watch</h3><p>A scan over real three-season trends for collapsing minutes,
+        rising output and genuine breakout seasons — no invented valuations.</p></div>
       <div class="card"><h3>Similarity search</h3><p>"Find players similar to X" — nearest neighbours in
         attribute-vector space, the demo's stand-in for learned player embeddings.</p></div>
-      <div class="card"><h3>Explainability</h3><p>Click any score bar anywhere and it opens the exact
-        factors that moved it. No black-box numbers.</p></div>
+      <div class="card"><h3>Honest confidence</h3><p>Every player is badged verified, partial or baseline
+        by how much real match data backs their rating — and every score expands to show its factors.</p></div>
     </div>
   </div>
 </section>
@@ -114,8 +118,10 @@
 <footer>
   <div class="wrap">
     <p>Touchline — an educational study clone of the product concept behind Marquee (themarquee.ai), built for
-    learning purposes. All players, clubs and figures are fictional and generated. No affiliation with, or
-    endorsement by, Marquee. Research notes &amp; sources: <a href="RESEARCH.md">RESEARCH.md</a>.</p>
+    learning purposes. Player data comes from public sources (EA FC 24 ratings, FBref match statistics,
+    FIFA 22 league mapping) and is used here for non-commercial research and demonstration only.
+    No affiliation with, or endorsement by, Marquee or EA. Sources, method and known limitations:
+    <a href="RESEARCH.md">RESEARCH.md</a>.</p>
   </div>
 </footer>
 
