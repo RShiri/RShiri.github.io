@@ -93,7 +93,8 @@ match statistics** — the same shape as "scout judgement, corrected by data":
 | Attribute prior | EA FC 24 ratings | 15,846 players · 654 clubs · 155 nations | Global baseline, incl. leagues with no public event data |
 | League map | FIFA 22 dataset | 55 leagues | club → league, joined by player name |
 | Performance | FBref Big-5 advanced season stats | 8,117 player-seasons, 2022/23–2024/25 | Re-derives attributes from real output |
-| Valuation & contracts | Published Transfermarkt dump (values to Sept 2025) | 92,671 profiles · 33,590 values · 38,666 contract dates | Real fees, contract expiry, height, date of birth |
+| Valuation & contracts | Published Transfermarkt dump (values to Sept 2025) | 92,671 profiles · 33,590 values · 38,666 contract dates | Real fees, contract expiry, height, date of birth, citizenship |
+| Global career | Same dump: appearances, injuries, valuation history | 1.88M appearance rows · 707 competitions · 143k injury records | Availability and momentum **worldwide**, not just the big 5 |
 
 **How the update works.** For every player matched to FBref, each attribute is re-estimated as a
 **percentile rank against positional peers** on the relevant per-90 metrics — finishing from npxG
@@ -115,6 +116,13 @@ Every player carries a confidence tier, surfaced as a badge in the UI:
   about five games into 2025/26, so that partial season is excluded rather than shipped as form.
 - **Non-Big-5 players are a 2023/24 snapshot.** Clubs and ages for baseline-tier players come
   from EA FC 24; some will have transferred since.
+- **Appearances are global; event data is not.** Appearance counts, injuries and valuations cover
+  every competition, so availability and momentum are real for an MLS or Championship player. But
+  *attribute* ratings still only get updated where FBref event data exists — the two must not be
+  confused.
+- **The appearance table's `minutes_played` column is not minutes.** It is minutes *per goal*, and
+  null whenever a player didn't score. Workload here is therefore measured in appearances and share
+  of matchday squads; the minutes column is ignored entirely.
 - **Event data can't see everything.** Positioning, composure and off-ball movement aren't
   measurable from event data — those attributes stay at their prior. Marquee buys this gap with
   SkillCorner tracking data; this clone has no equivalent.

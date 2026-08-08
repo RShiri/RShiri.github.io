@@ -48,8 +48,17 @@ TL.load = async function () {
       contractTo: r[ix.cex] ?? null,
       minutes: r[ix.mn] || 0,
       conf: r[ix.cf] || 0,
-      minTrend: r[ix.mt] || 0,      // real: minutes vs prior seasons
-      formTrend: r[ix.ft_] || 0,    // real: goals+assists vs prior seasons
+      minTrend: r[ix.mt] || 0,      // FBref: minutes vs prior seasons (big 5 only)
+      formTrend: r[ix.ft_] || 0,
+      // global career (all competitions worldwide, 22/23-24/25)
+      apps: r[ix.gap] || 0,
+      squadApps: r[ix.gsq] || 0,
+      goalsAssists: r[ix.gga] || 0,
+      startRate: r[ix.grt] ?? null,
+      injuryDays: r[ix.inj] || 0,
+      appTrend: r[ix.gmt] ?? null,
+      outputTrend: r[ix.gft] ?? null,
+      valueTrend: r[ix.vtr] ?? null,
       fcOverall: r[ix.ovr] ?? null,
       attrs
     };

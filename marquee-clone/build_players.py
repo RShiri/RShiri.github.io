@@ -51,6 +51,13 @@ TM_BASE = ("https://raw.githubusercontent.com/salimt/football-datasets/main/"
            "datalake/transfermarkt")
 TM_VALUES = f"{TM_BASE}/player_latest_market_value/player_latest_market_value.csv"
 TM_PROFILES = f"{TM_BASE}/player_profiles/player_profiles.csv"
+TM_VALHIST = f"{TM_BASE}/player_market_value/player_market_value.csv"
+TM_INJURIES = f"{TM_BASE}/player_injuries/player_injuries.csv"
+# player_performances is stored with Git LFS, so it comes from the media host
+TM_PERF = ("https://media.githubusercontent.com/media/salimt/football-datasets/main/"
+           "datalake/transfermarkt/player_performances/player_performances.csv")
+TM_SEASONS = ["22/23", "23/24", "24/25"]     # aligns with SEASONS above
+TM_LATEST = "24/25"
 SNAPSHOT = pd.Timestamp("2025-01-01")   # mid-2024/25; ages are computed against this
 STAT_TYPES = ["standard", "shooting", "passing", "defense", "possession", "misc"]
 # The upstream FBref mirror is archived and froze ~5 games into 2025/26, so the
@@ -239,10 +246,15 @@ def load_tm():
     d["key"] = d.player_name.map(norm_name)
 
     idx = {}
-    for r in d[["key", "current_club_name", "tm_age", "value", "cex",
-                "height_cm", "foot"]].to_dict("records"):
+    for r in d[["key", "player_id", "current_club_name", "tm_age", "value", "cex",
+                "height_cm", "foot", "citizenship"]].to_dict("records"):
         if r["key"]:
             idx.setdefault(r["key"], []).append(r)
+            # sources disagree on word order ("Son Heung-min" vs "Heung-Min Son"),
+            # so always index a token-sorted alias to fall back on — including when
+            # this record's own name is already in sorted order, which is exactly
+            # the case the lookup needs to find.
+            idx.setdefault("~" + " ".join(sorted(r["key"].split())), []).append(r)
     n_val = int(d.value.notna().sum())
     print(f"      {len(d):,} profiles · {n_val:,} with a market value · "
           f"{int(d.cex.notna().sum()):,} with a contract date")
@@ -251,7 +263,7 @@ def load_tm():
 
 def match_tm(tm_idx, key, club, age):
     """Pick the Transfermarkt record most likely to be this player."""
-    cands = tm_idx.get(key)
+    cands = tm_idx.get(key) or tm_idx.get("~" + " ".join(sorted(key.split())))
     if not cands:
         return None
     if len(cands) == 1:
@@ -265,6 +277,75 @@ def match_tm(tm_idx, key, club, age):
         if s > best_s:
             best, best_s = r, s
     return best
+
+
+def load_global_career():
+    """
+    Appearances, injuries and valuation history for the whole world, keyed on the
+    Transfermarkt player_id. FBref only covers the big 5, so this is what makes
+    availability and momentum meaningful for a player in MLS or the Championship.
+    Note these are match totals (minutes, goals, assists) — not event data, so
+    they inform trajectory, never the attribute ratings.
+    """
+    print("[3c] global appearances, injuries & valuation history")
+    # NOTE: this table's `minutes_played` column is NOT minutes — it is minutes
+    # *per goal* (Haaland's 31 Premier League apps read "125" = 2790/22), and it
+    # is null whenever a player did not score. Appearances, goals and assists are
+    # sound, so workload is measured in appearances and minutes are ignored.
+    perf = pd.read_csv(
+        fetch(TM_PERF, "tm_perf.csv"),
+        usecols=["player_id", "season_name", "nb_in_group", "nb_on_pitch",
+                 "goals", "assists"],
+        low_memory=False)
+    perf = perf[perf.season_name.isin(TM_SEASONS)]
+    for c in ["nb_in_group", "nb_on_pitch", "goals", "assists"]:
+        perf[c] = pd.to_numeric(perf[c], errors="coerce").fillna(0)
+    # one player can appear in several competitions per season; sum them
+    agg = perf.groupby(["player_id", "season_name"]).sum(numeric_only=True).reset_index()
+
+    cur = agg[agg.season_name == TM_LATEST].set_index("player_id")
+    prior = (agg[agg.season_name != TM_LATEST]
+             .groupby("player_id")[["nb_on_pitch", "nb_in_group", "goals", "assists"]].mean())
+
+    career = {}
+    for pid, r in cur.iterrows():
+        pm = prior.loc[pid] if pid in prior.index else None
+        apps, ga = float(r.nb_on_pitch), float(r.goals) + float(r.assists)
+        squad = float(r.nb_in_group)
+        papps = float(pm.nb_on_pitch) if pm is not None else apps
+        pga = (float(pm.goals) + float(pm.assists)) if pm is not None else ga
+        career[pid] = {
+            "apps": int(apps), "squad": int(squad), "ga": int(ga),
+            # share of matchday squads the player actually got on the pitch for
+            "start_rate": round(apps / squad, 3) if squad > 0 else None,
+            "app_trend": round(float(np.clip((apps - papps) / (papps + 8.0), -1, 1)), 3),
+            "form_trend": round(float(np.clip((ga - pga) / (abs(pga) + 4.0), -1, 1)), 3),
+            "inj_days": 0,
+        }
+    print(f"      {len(career):,} players with {TM_LATEST} appearances")
+
+    inj = pd.read_csv(fetch(TM_INJURIES, "tm_inj.csv"), low_memory=False)
+    inj = inj[inj.season_name.isin(TM_SEASONS)]
+    inj["days_missed"] = pd.to_numeric(inj.days_missed, errors="coerce").fillna(0)
+    hurt = inj.groupby("player_id").days_missed.sum()
+    for pid, days in hurt.items():
+        if pid in career:
+            career[pid]["inj_days"] = int(days)
+    print(f"      {int((hurt > 0).sum()):,} players with injury history in window")
+
+    vh = pd.read_csv(fetch(TM_VALHIST, "tm_valhist.csv"), low_memory=False)
+    vh = vh[vh.value > 0].copy()
+    vh["d"] = pd.to_datetime(vh.date_unix, errors="coerce")
+    vh = vh.dropna(subset=["d"]).sort_values("d")
+    recent = vh[vh.d >= "2023-09-01"]
+    first = recent.groupby("player_id").value.first()
+    last = recent.groupby("player_id").value.last()
+    trend = ((last - first) / first.replace(0, np.nan)).clip(-1, 3)
+    for pid, t in trend.dropna().items():
+        if pid in career:
+            career[pid]["val_trend"] = round(float(t), 3)
+    print(f"      {int(trend.notna().sum()):,} players with a 2-year valuation trend")
+    return career
 
 
 # ----------------------------------------------------------------------------
@@ -342,6 +423,7 @@ def main():
     priors = load_priors()
     fb = load_fbref()
     tm_idx = load_tm()
+    career = load_global_career()
 
     # Latest complete season. Names collide across leagues (there are several
     # "Rodri"s), so keep every candidate and resolve per-player by club agreement
@@ -399,7 +481,8 @@ def main():
         else:  # FBref-only: a recent breakthrough EA FC 24 never listed
             fbp = str(c["pos"] or "").split(",")[0]
             pos = {"GK": "GK", "DF": "CB", "MF": "CM", "FW": "ST"}.get(fbp, "CM")
-            name, club, nation = c["name"], c["club"], c["comp"]
+            name, club = c["name"], c["club"]
+            nation = c["nation"] if isinstance(c["nation"], str) and c["nation"] else "—"
             league, foot, base_age = c["comp"], "Right", None
             attrs = {k: 60.0 for k in ATTRS}
             overall_prior = None
@@ -429,14 +512,27 @@ def main():
         # Transfermarkt: valuation, contract, and better biography than either
         # of the game datasets carries.
         value = cexp = height = None
+        gapps = gsquad = gga = ginj = 0
+        gmt = gft = vtr = grate = None
         t = match_tm(tm_idx, tkey, club, age)
         if t:
+            car = career.get(t["player_id"])
+            if car:
+                gapps, gsquad, gga = car["apps"], car["squad"], car["ga"]
+                ginj = car["inj_days"]
+                gmt, gft = car["app_trend"], car["form_trend"]
+                grate = car["start_rate"]
+                vtr = car.get("val_trend")
             if pd.notna(t["value"]):
                 value = round(float(t["value"]) / 1e6, 2)      # EUR millions
             if pd.notna(t["cex"]):
                 cexp = int(t["cex"])
             if pd.notna(t["height_cm"]):
                 height = int(t["height_cm"])
+            if isinstance(t["citizenship"], str) and t["citizenship"].strip():
+                # dual nationals are stored as "Spain  Equatorial Guinea" (two
+                # spaces, no comma); take the first, which is the primary listing
+                nation = re.split(r"\s{2,}|,", t["citizenship"].strip())[0].strip()
             # FBref's age is already season-accurate; TM's DOB fills the rest
             if age is None and pd.notna(t["tm_age"]):
                 age = int(t["tm_age"])
@@ -450,6 +546,9 @@ def main():
             "ag": age, "ft": foot, "ht": height,
             "val": value, "cex": cexp,
             "mn": int(mins), "cf": conf,
+            # global career: real for every league, not just the big 5
+            "gap": gapps, "gsq": gsquad, "gga": gga, "inj": ginj,
+            "grt": grate, "gmt": gmt, "gft": gft, "vtr": vtr,
             "mt": round(float(min_trend.get(tkey, 0.0)), 3) if conf else 0.0,
             "ovr": int(overall_prior) if overall_prior and pd.notna(overall_prior) else None,
             "ft_": round(float(form_trend.get(tkey, 0.0)), 3) if conf else 0.0,
@@ -492,6 +591,8 @@ def main():
             "n_prior_only": int((df.cf == 0).sum()),
             "n_valued": int(df.val.notna().sum()),
             "n_contracts": int(df.cex.notna().sum()),
+            "n_global_apps": int((df.gap > 0).sum()),
+            "n_injury": int((df.inj > 0).sum()),
             "attrs": [k[:4] for k in ATTRS],
             "attr_labels": {k[:4]: k for k in ATTRS},
             "sources": {
@@ -499,6 +600,8 @@ def main():
                 "stats": f"FBref Big-5 advanced season stats {SEASONS[0]}-{LATEST}",
                 "leagues": "FIFA 22 dataset (club -> league mapping only)",
                 "market": "Published Transfermarkt dump, values current to Sept 2025",
+                "career": "Transfermarkt appearances, injuries and valuation history, "
+                          f"seasons {TM_SEASONS[0]}-{TM_LATEST}, all competitions",
             },
         },
         "cols": cols,

@@ -85,26 +85,35 @@
         const base = p.age <= 20 ? 88 : p.age <= 23 ? 78 : p.age <= 26 ? 62 : p.age <= 29 ? 45 : 28;
         const why = [`Age ${p.age}`];
         let s = base;
-        if (p.conf) {
-          s += p.formTrend * 18;
-          why.push(p.formTrend > 0.08 ? "Goal involvement up on prior seasons"
-            : p.formTrend < -0.08 ? "Goal involvement down on prior seasons"
+        if (p.outputTrend != null) {
+          s += p.outputTrend * 18;
+          why.push(p.outputTrend > 0.08 ? "Goal involvement up on prior seasons"
+            : p.outputTrend < -0.08 ? "Goal involvement down on prior seasons"
             : "Output stable across three seasons");
-        } else why.push("No match data — age curve only");
+        } else why.push("No appearance record — age curve only");
         return { score: pct(clamp(s, 5, 98)), why };
       }
     },
     momentum: {
-      label: "Momentum", desc: "Real 3-season minutes & output trend",
+      label: "Momentum", desc: "3-season appearance, output & valuation trend",
       run(p) {
-        if (!p.conf) return { score: 50, why: ["No Big-5 match data for this player"] };
-        const s = 50 + p.minTrend * 30 + p.formTrend * 25;
+        if (p.appTrend == null && !p.apps) {
+          return { score: 50, why: ["No appearance record matched for this player"] };
+        }
+        const at = p.appTrend || 0, ot = p.outputTrend || 0;
+        let s = 50 + at * 28 + ot * 22;
         const why = [];
-        why.push(p.minTrend > 0.08 ? `Minutes rising (${p.minutes} last season)`
-          : p.minTrend < -0.08 ? `Minutes falling (${p.minutes} last season)`
-          : `Minutes steady (${p.minutes} last season)`);
-        why.push(p.formTrend > 0.08 ? "Output trending up" :
-          p.formTrend < -0.08 ? "Output trending down" : "Output flat");
+        why.push(at > 0.08 ? `Appearances rising (${p.apps} in 24/25)`
+          : at < -0.08 ? `Appearances falling (${p.apps} in 24/25)`
+          : `Appearances steady (${p.apps} in 24/25)`);
+        why.push(ot > 0.08 ? `Output up (${p.goalsAssists} G+A)` :
+          ot < -0.08 ? `Output down (${p.goalsAssists} G+A)` : `Output flat (${p.goalsAssists} G+A)`);
+        if (p.valueTrend != null) {
+          s += clamp(p.valueTrend, -1, 1) * 10;
+          why.push(p.valueTrend > 0.15 ? `Valuation up ${Math.round(p.valueTrend * 100)}% over two years`
+            : p.valueTrend < -0.15 ? `Valuation down ${Math.round(-p.valueTrend * 100)}% over two years`
+            : "Valuation broadly flat");
+        }
         return { score: pct(clamp(s, 5, 98)), why };
       }
     },
@@ -128,12 +137,27 @@
       }
     },
     availability: {
-      label: "Availability", desc: "Minutes reliability",
+      label: "Availability", desc: "Selection rate & real injury record",
       run(p) {
-        if (!p.conf) return { score: 50, why: ["No minutes data available"] };
-        const share = clamp(p.minutes / 3060 * 100, 0, 100);   // 34 league games
-        return { score: pct(clamp(share * 0.9 + 10, 5, 98)),
-                 why: [`${p.minutes} league minutes`, `${pct(share)}% of a full season`] };
+        if (!p.squadApps && !p.conf) {
+          return { score: 50, why: ["No appearance or injury record matched"] };
+        }
+        const why = [];
+        let s;
+        if (p.squadApps) {
+          // share of matchday squads he actually played in, across all competitions
+          const rate = p.startRate != null ? p.startRate : p.apps / p.squadApps;
+          s = clamp(rate * 100, 0, 100);
+          why.push(`${p.apps} appearances from ${p.squadApps} matchday squads (${Math.round(rate * 100)}%)`);
+        } else {
+          s = clamp(p.minutes / 3060 * 100, 0, 100);
+          why.push(`${p.minutes} league minutes`);
+        }
+        if (p.injuryDays > 0) {
+          s -= clamp(p.injuryDays / 12, 0, 45);
+          why.push(`${p.injuryDays} days missed to injury across three seasons`);
+        } else why.push("No injury record in the last three seasons");
+        return { score: pct(clamp(s, 5, 98)), why };
       }
     },
     language: {
@@ -182,7 +206,8 @@
     [/left[- ]?foot/, "left-footed", f => { f.foot = "Left"; }],
     [/young|prospect|talent|wonderkid|u2[0123]|under[- ]?2[0123]/, "young", f => { f.maxAge = Math.min(f.maxAge || 99, 23); }],
     [/experienc|veteran/, "experienced", f => { f.minAge = 28; }],
-    [/regular|starter|plays every week|nailed/, "regular starter", f => { f.minMinutes = 1800; }],
+    [/regular|starter|plays every week|nailed/, "regular starter", f => { f.minStartRate = 0.7; }],
+    [/durab|injury[- ]?free|robust|never injured|reliable fitness/, "durable", f => { f.durableOnly = true; }],
     [/breakout|breakthrough|emerging|rising/, "rising", f => { f.risingOnly = true; }],
     [/expiring|free agent|out of contract|contract (ends|expir)|final year/, "expiring contract", f => { f.maxContract = 2026; }],
     [/cheap|bargain|budget|affordable|low fee/, "value buy", f => { f.maxValue = Math.min(f.maxValue || 1e9, TL.club.budgetM * 0.5); }],
@@ -247,10 +272,14 @@
     if (filters.foot) pool = pool.filter(p => p.foot === filters.foot);
     if (filters.league) pool = pool.filter(p => p.league === filters.league);
     if (filters.nation) pool = pool.filter(p => p.nation === filters.nation);
-    if (filters.minMinutes) pool = pool.filter(p => p.minutes >= filters.minMinutes);
+    if (filters.minStartRate) pool = pool.filter(p =>
+      (p.startRate != null && p.startRate >= filters.minStartRate && p.apps >= 15)
+      || p.minutes >= 1800);
     if (filters.maxValue) pool = pool.filter(p => p.value != null && p.value <= filters.maxValue);
     if (filters.maxContract) pool = pool.filter(p => p.contractTo != null && p.contractTo <= filters.maxContract);
-    if (filters.risingOnly) pool = pool.filter(p => p.conf && p.minTrend > 0.1 && p.age <= 24);
+    if (filters.risingOnly) pool = pool.filter(p => p.age <= 24 &&
+      ((p.appTrend != null && p.appTrend > 0.15) || (p.valueTrend != null && p.valueTrend > 0.3)));
+    if (filters.durableOnly) pool = pool.filter(p => p.injuryDays <= 30 && p.squadApps > 0);
     if (filters.verifiedOnly || TL.club.verifiedOnly) pool = pool.filter(p => p.conf === 2);
     for (const [k, v] of Object.entries(filters.minAttr)) pool = pool.filter(p => p.attrs[k] >= v);
 
@@ -310,16 +339,15 @@
           text: `${p.name} (${p.posLabel}, ${p.club}) is into the final stretch of his deal — expires ${p.contractTo}. Valued €${p.value}m, and the selling club's leverage drops every month.` });
         continue;
       }
-      if (!p.conf) continue;
-      if (p.minTrend < -0.15 && q >= 68)
+      if (p.appTrend != null && p.appTrend < -0.2 && q >= 66)
         items.push({ p, kind: "Minutes", score: q,
-          text: `${p.name} (${p.posLabel}, ${p.club}) saw minutes fall sharply against his prior seasons — ${p.minutes} last term — despite a ${Math.round(q)}-rated profile. Classic unsettled-starter window.` });
-      else if (p.formTrend > 0.25 && p.age <= 24)
+          text: `${p.name} (${p.posLabel}, ${p.club}) saw game time collapse against his prior seasons — ${p.apps} appearances from ${p.squadApps} matchday squads — despite a ${Math.round(q)}-rated profile. Classic unsettled-starter window.` });
+      else if (p.valueTrend != null && p.valueTrend > 0.5 && p.age <= 24)
         items.push({ p, kind: "Form", score: q + 6,
-          text: `${p.name} (${p.age}, ${p.club}) has pushed his goal involvement well above his prior two seasons while still ${p.age}. Rising profile in ${p.league}.` });
-      else if (p.minTrend > 0.3 && p.age <= 23)
+          text: `${p.name} (${p.age}, ${p.club}) has seen his valuation climb ${Math.round(p.valueTrend * 100)}% in two years on ${p.goalsAssists} goal involvements. The market is already moving in ${p.league}.` });
+      else if (p.appTrend != null && p.appTrend > 0.35 && p.age <= 23)
         items.push({ p, kind: "Breakout", score: q + 4,
-          text: `${p.name} (${p.age}, ${p.club}) went from fringe to ${p.minutes} minutes — a genuine breakthrough season in ${p.league}.` });
+          text: `${p.name} (${p.age}, ${p.club}) went from fringe to ${p.apps} appearances — a genuine breakthrough season in ${p.league}.` });
     }
     items.sort((a, b) => b.score - a.score);
     return items.slice(0, n);
@@ -353,10 +381,9 @@
     paras.push(`On the pitch, the performance model grades him ${tier(P.performance.score)} (${P.performance.score}) for his position, driven by ${P.performance.why.slice(0, 2).join(" and ")}. Physically he rates ${P.physical.score} (${P.physical.why.join(", ")}); technically ${P.technical.score} (${P.technical.why.join(", ")}).`);
     paras.push(`Fit: against our ${TL.club.style} game model the tactical-fit score is ${P.tacticalFit.score}/100 (${P.tacticalFit.why.join("; ")}). Squad synergy is ${P.synergy.score}/100 — ${P.synergy.why.join("; ")}.`);
     paras.push(`Cost: ${P.value.why.join("; ")} — market score ${P.value.score}/100.`);
-    if (p.conf) {
-      paras.push(`Trajectory: momentum reads ${P.momentum.score}/100 (${P.momentum.why.join("; ")}), availability ${P.availability.score}/100 (${P.availability.why.join(", ")}), and the potential model ${P.potential.score}/100 — ${P.potential.why.join("; ")}.`);
-    } else {
-      paras.push(`Trajectory: ${p.league} has no public event data in this build, so momentum and availability fall back to neutral and the ratings above rest on the EA FC 24 baseline. Treat this profile as a lead to verify with video, not a measured read.`);
+    paras.push(`Trajectory: momentum reads ${P.momentum.score}/100 (${P.momentum.why.join("; ")}), availability ${P.availability.score}/100 (${P.availability.why.join(", ")}), and the potential model ${P.potential.score}/100 — ${P.potential.why.join("; ")}.`);
+    if (!p.conf) {
+      paras.push(`Caveat: ${p.league} has no public event data in this build, so while the appearance, injury and valuation record above is real, the attribute ratings themselves rest on the EA FC 24 baseline. Treat those as a lead to verify with video, not a measured read.`);
     }
     paras.push(ev.overall >= 75
       ? `Recommendation: pursue. The profile clears our bar on fit and output, and the reasoning holds across every scoring model.`
