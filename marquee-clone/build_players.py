@@ -53,6 +53,10 @@ TM_VALUES = f"{TM_BASE}/player_latest_market_value/player_latest_market_value.cs
 TM_PROFILES = f"{TM_BASE}/player_profiles/player_profiles.csv"
 TM_VALHIST = f"{TM_BASE}/player_market_value/player_market_value.csv"
 TM_INJURIES = f"{TM_BASE}/player_injuries/player_injuries.csv"
+TM_TRANSFERS = ("https://media.githubusercontent.com/media/salimt/football-datasets/main/"
+                "datalake/transfermarkt/transfer_history/transfer_history.csv")
+# player_national_performances is deliberately NOT used: its team ids do not
+# resolve to team names, so senior caps cannot be told apart from youth caps.
 # player_performances is stored with Git LFS, so it comes from the media host
 TM_PERF = ("https://media.githubusercontent.com/media/salimt/football-datasets/main/"
            "datalake/transfermarkt/player_performances/player_performances.csv")
@@ -246,8 +250,11 @@ def load_tm():
     d["key"] = d.player_name.map(norm_name)
 
     idx = {}
+    d["joined_year"] = pd.to_datetime(d.joined, errors="coerce").dt.year
     for r in d[["key", "player_id", "current_club_name", "tm_age", "value", "cex",
-                "height_cm", "foot", "citizenship"]].to_dict("records"):
+                "height_cm", "foot", "citizenship", "main_position", "joined_year",
+                "is_eu", "country_of_birth", "player_agent_name",
+                "on_loan_from_club_name"]].to_dict("records"):
         if r["key"]:
             idx.setdefault(r["key"], []).append(r)
             # sources disagree on word order ("Son Heung-min" vs "Heung-Min Son"),
@@ -348,6 +355,38 @@ def load_global_career():
     return career
 
 
+def load_transfers():
+    """Career path: senior moves with fees, club count, and current loan status."""
+    print("[3d] transfer history")
+    t = pd.read_csv(fetch(TM_TRANSFERS, "tm_transfers.csv"),
+                    usecols=["player_id", "transfer_date", "from_team_name",
+                             "to_team_name", "transfer_type", "transfer_fee"],
+                    low_memory=False)
+    t = t[t.transfer_date.notna()]
+    # youth-team steps ("West Ham U18 -> West Ham U23") are noise on a scouting
+    # profile; keep moves between senior sides only
+    youth = re.compile(r"\b(?:U\d{2}|Yth|Youth|Acad|B|II)\b", re.I)
+    t = t[~t.to_team_name.astype(str).str.contains(youth, na=False)]
+    t["fee_m"] = pd.to_numeric(t.transfer_fee, errors="coerce").fillna(0) / 1e6
+    t = t.sort_values("transfer_date", ascending=False)
+
+    out = {}
+    for pid, g in t.groupby("player_id", sort=False):
+        moves = []
+        for r in g.head(3).itertuples(index=False):
+            moves.append([str(r.transfer_date)[:7], str(r.from_team_name),
+                          str(r.to_team_name), round(float(r.fee_m), 1),
+                          str(r.transfer_type)])
+        out[pid] = {
+            "moves": moves,
+            "clubs": int(g.to_team_name.nunique()),
+            "top_fee": round(float(g.fee_m.max()), 1),
+            "on_loan": bool(len(g) and str(g.iloc[0].transfer_type) == "Loan"),
+        }
+    print(f"      {len(out):,} players with a senior transfer record")
+    return out
+
+
 # ----------------------------------------------------------------------------
 # 3. stats -> attributes (positional percentile + shrinkage)
 # ----------------------------------------------------------------------------
@@ -424,6 +463,7 @@ def main():
     fb = load_fbref()
     tm_idx = load_tm()
     career = load_global_career()
+    transfers = load_transfers()
 
     # Latest complete season. Names collide across leagues (there are several
     # "Rodri"s), so keep every candidate and resolve per-player by club agreement
@@ -514,8 +554,24 @@ def main():
         value = cexp = height = None
         gapps = gsquad = gga = ginj = 0
         gmt = gft = vtr = grate = None
+        agent = birth = role = loan_from = None
+        joined = None
+        is_eu = None
+        moves, nclubs, topfee, on_loan = [], None, None, False
         t = match_tm(tm_idx, tkey, club, age)
         if t:
+            agent = t["player_agent_name"] if isinstance(t["player_agent_name"], str) else None
+            birth = t["country_of_birth"] if isinstance(t["country_of_birth"], str) else None
+            role = t["main_position"] if isinstance(t["main_position"], str) else None
+            loan_from = (t["on_loan_from_club_name"]
+                         if isinstance(t["on_loan_from_club_name"], str) else None)
+            joined = int(t["joined_year"]) if pd.notna(t["joined_year"]) else None
+            is_eu = bool(t["is_eu"]) if pd.notna(t["is_eu"]) else None
+            tr = transfers.get(t["player_id"])
+            if tr:
+                moves, nclubs = tr["moves"], tr["clubs"]
+                topfee = tr["top_fee"] if tr["top_fee"] > 0 else None
+                on_loan = tr["on_loan"] or bool(loan_from)
             car = career.get(t["player_id"])
             if car:
                 gapps, gsquad, gga = car["apps"], car["squad"], car["ga"]
@@ -549,6 +605,10 @@ def main():
             # global career: real for every league, not just the big 5
             "gap": gapps, "gsq": gsquad, "gga": gga, "inj": ginj,
             "grt": grate, "gmt": gmt, "gft": gft, "vtr": vtr,
+            # profile depth
+            "role": role, "agent": agent, "born": birth, "jn": joined,
+            "eu": is_eu, "loan": loan_from, "onloan": on_loan,
+            "car": moves, "ncl": nclubs, "tfee": topfee,
             "mt": round(float(min_trend.get(tkey, 0.0)), 3) if conf else 0.0,
             "ovr": int(overall_prior) if overall_prior and pd.notna(overall_prior) else None,
             "ft_": round(float(form_trend.get(tkey, 0.0)), 3) if conf else 0.0,
@@ -578,6 +638,28 @@ def main():
 
     df = pd.DataFrame(out)
     df = df[df.ag.notna() & (df.ag >= 15) & (df.ag <= 45)]
+
+    # League strength, derived from the data itself rather than a third-party
+    # coefficient: the median squad valuation of each competition, percentile-
+    # ranked. A 75-rated player in League Two is not a 75 in the Premier League,
+    # and this is what lets the UI say so out loud.
+    valued = df[df.val.notna() & (df.l != "Other league")]
+    med = valued.groupby("l").val.median()
+    counts = valued.groupby("l").val.size()
+    med, counts = med[counts >= 20], counts[counts >= 20]
+    if len(med):
+        # Thinly-covered leagues only have their stars valued, which inflates the
+        # median (Ukraine: 27 valued players vs Ligue 1's 400). Shrink each league
+        # toward the global median in proportion to how little of it we can see.
+        globe, K = float(valued.val.median()), 60.0
+        shrunk = (counts * med + K * globe) / (counts + K)
+        strength = (shrunk.rank(pct=True) * 100).round().astype(int)
+        df["lgs"] = df.l.map(strength)
+        top = strength.sort_values(ascending=False).head(6)
+        print("      league strength (top 6): "
+              + ", ".join(f"{k} {v}" for k, v in top.items()))
+    else:
+        df["lgs"] = None
     df = df.sort_values(["cf", "mn"], ascending=False).reset_index(drop=True)
 
     cols = list(df.columns)
@@ -593,6 +675,8 @@ def main():
             "n_contracts": int(df.cex.notna().sum()),
             "n_global_apps": int((df.gap > 0).sum()),
             "n_injury": int((df.inj > 0).sum()),
+            "n_career": int(df.car.map(bool).sum()),
+            "n_loan": int(df.onloan.sum()),
             "attrs": [k[:4] for k in ATTRS],
             "attr_labels": {k[:4]: k for k in ATTRS},
             "sources": {
@@ -600,6 +684,7 @@ def main():
                 "stats": f"FBref Big-5 advanced season stats {SEASONS[0]}-{LATEST}",
                 "leagues": "FIFA 22 dataset (club -> league mapping only)",
                 "market": "Published Transfermarkt dump, values current to Sept 2025",
+                "transfers": "Transfermarkt senior transfer history with fees",
                 "career": "Transfermarkt appearances, injuries and valuation history, "
                           f"seasons {TM_SEASONS[0]}-{TM_LATEST}, all competitions",
             },

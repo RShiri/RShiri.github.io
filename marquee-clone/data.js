@@ -59,6 +59,18 @@ TL.load = async function () {
       appTrend: r[ix.gmt] ?? null,
       outputTrend: r[ix.gft] ?? null,
       valueTrend: r[ix.vtr] ?? null,
+      // profile depth
+      role: r[ix.role] ?? null,          // Transfermarkt's detailed position
+      agent: r[ix.agent] ?? null,
+      bornIn: r[ix.born] ?? null,
+      joined: r[ix.jn] ?? null,
+      isEU: r[ix.eu] ?? null,
+      loanFrom: r[ix.loan] ?? null,
+      onLoan: !!r[ix.onloan],
+      career: r[ix.car] || [],           // [[yyyy-mm, from, to, feeM, type], ...]
+      clubCount: r[ix.ncl] ?? null,
+      topFee: r[ix.tfee] ?? null,
+      leagueStrength: r[ix.lgs] ?? null,
       fcOverall: r[ix.ovr] ?? null,
       attrs
     };

@@ -117,6 +117,19 @@
         return { score: pct(clamp(s, 5, 98)), why };
       }
     },
+    level: {
+      label: "Level", desc: "Strength of the competition he plays in",
+      run(p) {
+        if (p.leagueStrength == null) {
+          return { score: 45, why: [`${p.league} is not covered by the strength index — treat the ratings as unbenchmarked`] };
+        }
+        const s = p.leagueStrength;
+        const band = s >= 85 ? "a top-tier competition" : s >= 65 ? "a strong competition"
+          : s >= 45 ? "a mid-tier competition" : "a lower-tier competition";
+        return { score: pct(s),
+                 why: [`${p.league} rates ${s}/100 on squad valuation`, `${band} — output here does not translate 1:1 to a stronger league`] };
+      }
+    },
     value: {
       label: "Market value", desc: "Real fee vs. budget & contract leverage",
       run(p, ctx) {
@@ -167,7 +180,7 @@
   };
 
   const SCORING = ["performance", "physical", "technical", "tacticalFit",
-                   "synergy", "potential", "momentum", "value", "availability"];
+                   "synergy", "potential", "momentum", "level", "value", "availability"];
 
   function evaluate(p, ctx, weights) {
     const parts = {};
@@ -221,7 +234,8 @@
     const named = findPlayers(q);
     if (/compare/.test(q) && named.length >= 2) { intent.type = "compare"; intent.pair = named.slice(0, 2); return intent; }
     if (/similar to|like\s|replace|alternative to/.test(q) && named.length) { intent.type = "similar"; intent.anchor = named[0]; return intent; }
-    if (named.length && /report|tell me about|profile|scout|who is/.test(q)) { intent.type = "report"; intent.anchor = named[0]; return intent; }
+    if (named.length && /\bprofile\b|full profile|everything (on|about)|dossier/.test(q)) { intent.type = "profile"; intent.anchor = named[0]; return intent; }
+    if (named.length && /report|tell me about|scout|who is/.test(q)) { intent.type = "report"; intent.anchor = named[0]; return intent; }
     if (named.length && q.trim().split(/\s+/).length <= 4) { intent.type = "report"; intent.anchor = named[0]; return intent; }
     if (/market|watch|opportunit|hidden gem|undervalued/.test(q) && !/striker|winger|back|mid|keeper/.test(q)) { intent.type = "market"; return intent; }
     if (/my squad|our squad|squad (depth|analysis|planning|audit)|weak(nesses)? in (my|our)|where do we|where is my/.test(q)) { intent.type = "squad"; return intent; }
@@ -380,7 +394,11 @@
     paras.push(`${p.name} is a ${bio} ${p.posLabel.toLowerCase()} at ${p.club} (${p.league}), ${p.nation} by nationality${p.value != null ? `, valued at €${p.value}m` : ""}${p.contractTo ? ` with a contract to ${p.contractTo}` : ""}. Overall rating against ${TL.club.name}'s profile: ${ev.overall}/100. Data confidence: ${conf.label.toLowerCase()} — ${conf.tip.toLowerCase()}.`);
     paras.push(`On the pitch, the performance model grades him ${tier(P.performance.score)} (${P.performance.score}) for his position, driven by ${P.performance.why.slice(0, 2).join(" and ")}. Physically he rates ${P.physical.score} (${P.physical.why.join(", ")}); technically ${P.technical.score} (${P.technical.why.join(", ")}).`);
     paras.push(`Fit: against our ${TL.club.style} game model the tactical-fit score is ${P.tacticalFit.score}/100 (${P.tacticalFit.why.join("; ")}). Squad synergy is ${P.synergy.score}/100 — ${P.synergy.why.join("; ")}.`);
-    paras.push(`Cost: ${P.value.why.join("; ")} — market score ${P.value.score}/100.`);
+    paras.push(`Cost: ${P.value.why.join("; ")} — market score ${P.value.score}/100. Level: ${P.level.why.join("; ")}.`);
+    if (p.career && p.career.length) {
+      const path = p.career.map(m => `${m[0]} ${m[1]} → ${m[2]}${m[3] > 0 ? ` (€${m[3]}m)` : m[4] === "Loan" ? " (loan)" : " (free)"}`).join("; ");
+      paras.push(`Career: ${path}.${p.clubCount ? ` ${p.clubCount} senior clubs to date.` : ""}${p.topFee ? ` Highest fee paid for him: €${p.topFee}m.` : ""}${p.onLoan ? " Currently out on loan." : ""}${p.agent ? ` Represented by ${p.agent}.` : ""}`);
+    }
     paras.push(`Trajectory: momentum reads ${P.momentum.score}/100 (${P.momentum.why.join("; ")}), availability ${P.availability.score}/100 (${P.availability.why.join(", ")}), and the potential model ${P.potential.score}/100 — ${P.potential.why.join("; ")}.`);
     if (!p.conf) {
       paras.push(`Caveat: ${p.league} has no public event data in this build, so while the appearance, injury and valuation record above is real, the attribute ratings themselves rest on the EA FC 24 baseline. Treat those as a lead to verify with video, not a measured read.`);

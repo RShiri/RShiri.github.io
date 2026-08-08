@@ -38,7 +38,48 @@
       match data; ${m.n_valued.toLocaleString()} have a real Transfermarkt valuation and
       ${m.n_contracts.toLocaleString()} a contract expiry date. Ask anything above, or click an example.</p>`;
     wireCards(feed);
+    handleLaunchQuery();
   });
+
+  /* ---------- PWA: install, offline, deep links ---------- */
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () =>
+      navigator.serviceWorker.register("sw.js").catch(() => {}));
+  }
+
+  let deferredInstall = null;
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredInstall = e;
+    const b = $("#install");
+    if (b) b.hidden = false;
+  });
+  document.addEventListener("click", async (e) => {
+    if (e.target.id !== "install" || !deferredInstall) return;
+    deferredInstall.prompt();
+    await deferredInstall.userChoice;
+    deferredInstall = null;
+    $("#install").hidden = true;
+  });
+  window.addEventListener("appinstalled", () => { $("#install").hidden = true; });
+
+  function showOffline() {
+    const n = $("#offline-note");
+    if (n) n.hidden = navigator.onLine;
+  }
+  window.addEventListener("online", showOffline);
+  window.addEventListener("offline", showOffline);
+  showOffline();
+
+  /* manifest shortcuts land here: app.html?q=market */
+  function handleLaunchQuery() {
+    const q = new URLSearchParams(location.search).get("q");
+    if (!q) return;
+    const preset = { market: "what's on the market right now?",
+                     squad: "where is my squad weakest?" }[q] || q;
+    $("#q").value = preset;
+    ask();
+  }
 
   /* ---------- sidebar ---------- */
   function renderLegend() {
@@ -111,8 +152,59 @@
     feed.prepend(d);
   }
 
+  /* ---------- full profile ---------- */
+  function fmtFee(m) {
+    return m[3] > 0 ? `€${m[3]}m` : m[4] === "Loan" ? "loan" : "free";
+  }
+
+  function profileHTML(p) {
+    const ev = E.evaluate(p, { club: TL.club });
+    const conf = TL.CONF[p.conf];
+    const facts = [
+      ["Position", p.role || p.posLabel],
+      ["Age", p.age], ["Height", p.height ? `${p.height} cm` : null],
+      ["Foot", p.foot], ["Nationality", p.nation],
+      ["Born in", p.bornIn], ["EU passport", p.isEU == null ? null : (p.isEU ? "Yes" : "No")],
+      ["Club", p.club], ["League", p.league + (p.leagueStrength != null ? ` · strength ${p.leagueStrength}/100` : "")],
+      ["At club since", p.joined], ["Contract to", p.contractTo],
+      ["Market value", p.value != null ? `€${p.value}m` : "not listed"],
+      ["Highest fee", p.topFee ? `€${p.topFee}m` : null],
+      ["Senior clubs", p.clubCount],
+      ["Agent", p.agent],
+      ["On loan from", p.loanFrom],
+    ].filter(([, v]) => v != null && v !== "");
+
+    const season = p.apps
+      ? `<div class="pf-season"><b>${p.apps}</b> appearances from <b>${p.squadApps}</b> matchday squads ·
+         <b>${p.goalsAssists}</b> goals + assists${p.injuryDays ? ` · <b>${p.injuryDays}</b> days lost to injury` : " · no injuries recorded"}</div>`
+      : `<div class="pf-season">No appearance record matched for 24/25.</div>`;
+
+    const career = p.career.length
+      ? `<h4>Career path</h4><ul class="pf-career">` + p.career.map(m =>
+          `<li><span>${esc(m[0])}</span> ${esc(m[1])} → <b>${esc(m[2])}</b> <em>${fmtFee(m)}</em></li>`).join("") + `</ul>`
+      : "";
+
+    const attrs = TL.ATTR_KEYS.map(k =>
+      `<div class="pf-attr"><span>${TL.ATTR_LABELS[k]}</span><div class="track"><div class="fill" style="width:${p.attrs[k]}%"></div></div><b>${p.attrs[k]}</b></div>`).join("");
+
+    return `<div class="profile">
+      <div class="pf-head">
+        <div><h3>${esc(p.name)} <span class="conf conf--${p.conf}" title="${esc(conf.tip)}">${conf.label}</span></h3>
+          <div class="meta">${esc(p.role || p.posLabel)} · ${esc(p.club)} (${esc(p.league)})</div></div>
+        <div class="ovr ${ev.overall >= 75 ? "s-hi" : ev.overall >= 60 ? "s-md" : "s-lo"}">${ev.overall}</div>
+      </div>
+      ${season}
+      <div class="pf-grid">${facts.map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b></div>`).join("")}</div>
+      ${career}
+      <h4>Attributes</h4><div class="pf-attrs">${attrs}</div>
+      <h4>Model breakdown</h4>
+      ${cardHTML(ev)}
+    </div>`;
+  }
+
   function render(intent, a) {
     switch (intent.type) {
+      case "profile": return (a.innerHTML = profileHTML(intent.anchor));
       case "report": return renderReport(E.evaluate(intent.anchor, { club: TL.club }), a);
       case "similar": return renderSimilar(intent.anchor, a);
       case "market": return renderMarket(a);
@@ -206,6 +298,7 @@
       </div>
       <div class="bars">${bars}<div class="why" data-why="${p.id}"></div></div>
       <div class="actions">
+        <button class="btn btn--ghost btn--sm" data-act="profile" data-pid="${p.id}">Full profile</button>
         <button class="btn btn--ghost btn--sm" data-act="report" data-pid="${p.id}">360° report</button>
         <button class="btn btn--ghost btn--sm" data-act="similar" data-pid="${p.id}">Find similar</button>
       </div>
@@ -227,8 +320,9 @@
       const btn = e.target.closest("[data-act]");
       if (btn) {
         const p = TL.players[+btn.dataset.pid];
-        $("#q").value = btn.dataset.act === "report"
-          ? `scout report on ${p.name}` : `find players similar to ${p.name}`;
+        $("#q").value = btn.dataset.act === "profile" ? `profile ${p.name}`
+          : btn.dataset.act === "report" ? `scout report on ${p.name}`
+          : `find players similar to ${p.name}`;
         ask();
       }
     });

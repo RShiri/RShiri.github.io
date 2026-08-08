@@ -74,18 +74,19 @@ raises the hit rate of recruitment decisions pays for itself on a single avoided
 
 | Marquee concept | Clone implementation |
 | --- | --- |
-| NL query → ranked shortlist | Rule-based parser over **16,161 real players**, scored and ranked in `engine.js` |
+| NL query → ranked shortlist | Rule-based parser over **16,163 real players**, scored and ranked in `engine.js` |
 | 360° scout report | Per-player prose: performance, physical, technical, trajectory, synergy vs. a real squad, ending in a verdict |
-| Club DNA / tactical fit | Pick any of **638 real clubs** as "your" squad; game model reweights every score |
+| Club DNA / tactical fit | Pick any real club as "your" squad; game model reweights every score |
 | Squad synergy | Computed against that club's actual squad — line quality, incumbent competition, missing left foot |
 | Market watch | **Real** signals: contract expiries and valuations, plus three-season minutes and output trends |
 | Market value | Real Transfermarkt fee vs. your budget, with contract-expiry leverage factored in |
-| Nine models | Nine named modules, eight scoring and one writing, each exposing its reasoning |
+| Nine models | Eleven named modules, ten scoring and one writing, each exposing its reasoning |
+| 360° profile | Career path with fees, contract, agent, injuries, valuation trend, league strength in one view |
 | "Explainability" | Every score expands to the factors — and ultimately the match stats — that produced it |
 
 ## 6. The data pipeline (`build_players.py`)
 
-Three public sources, combined so that **game-style attribute priors get updated by observed
+Six public sources, combined so that **game-style attribute priors get updated by observed
 match statistics** — the same shape as "scout judgement, corrected by data":
 
 | Layer | Source | Scale | Role |
@@ -94,6 +95,7 @@ match statistics** — the same shape as "scout judgement, corrected by data":
 | League map | FIFA 22 dataset | 55 leagues | club → league, joined by player name |
 | Performance | FBref Big-5 advanced season stats | 8,117 player-seasons, 2022/23–2024/25 | Re-derives attributes from real output |
 | Valuation & contracts | Published Transfermarkt dump (values to Sept 2025) | 92,671 profiles · 33,590 values · 38,666 contract dates | Real fees, contract expiry, height, date of birth, citizenship |
+| Career path | Same dump: senior transfer history with fees | 1.10M transfers · 114k players | Club-by-club path, fees paid, loan status |
 | Global career | Same dump: appearances, injuries, valuation history | 1.88M appearance rows · 707 competitions · 143k injury records | Availability and momentum **worldwide**, not just the big 5 |
 
 **How the update works.** For every player matched to FBref, each attribute is re-estimated as a
@@ -107,8 +109,26 @@ season dominates it.
 Every player carries a confidence tier, surfaced as a badge in the UI:
 
 - **Verified** (1,575) — a full Big-5 season behind the ratings
-- **Partial** (784) — matched, but a small minutes sample
+- **Partial** (786) — matched, but a small minutes sample
 - **Baseline** (13,802) — EA FC 24 prior only; the league has no public event data
+
+## 6b. League strength
+
+Cross-league comparison is the quiet trap in scouting data: a 75 in League Two is not a 75 in the
+Premier League. Touchline derives a **league strength index** from the data itself — the median
+squad valuation of each competition, percentile-ranked — rather than importing a third-party
+coefficient. Thinly-covered leagues only have their stars valued, which inflates their median
+(Ukraine had 27 valued players against Ligue 1's 400 and initially outranked it), so each league is
+shrunk toward the global median in proportion to how little of it we can see. The result reads
+Premier League 100, Serie A 98, Bundesliga 95, Ligue 1 93, La Liga 91. It surfaces as its own
+**Level** module so the UI can say out loud that output in a weak league does not translate 1:1.
+
+## 6c. Deliberately excluded
+
+`player_national_performances` (92,701 rows) is reachable and was **not** used: its `team_id`
+values do not resolve against `team_details`, so senior caps cannot be separated from youth caps,
+and the per-row match counts do not reconcile with known cap totals. A wrong cap count on a scout
+profile is worse than no cap count.
 
 ## 7. Known limitations — read before trusting a number
 

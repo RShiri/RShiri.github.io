@@ -1,5 +1,9 @@
 # Touchline — a study clone of the Marquee product concept
 
+**Installable app.** Touchline ships as a PWA: open it, hit **Install app**, and it runs in its
+own window with the entire 16k-player database cached for **full offline use** — queries,
+profiles, market watch and squad audits all work with no network.
+
 A working, dependency-free re-creation of the idea behind
 [Marquee (themarquee.ai)](https://www.themarquee.ai/) — the AI "decision layer" for soccer
 scouting and recruitment that raised a $4M seed in July 2026.
@@ -23,6 +27,8 @@ against a real club's squad and game model:
 - **Market watch** — `what's on the market right now?` (real contract expiries, valuations, minutes trends)
 - **Fee-aware search** — `creative midfielder under €25m`, `striker with an expiring contract`
 - **Durability search** — `durable striker under €30m` (real injury records, worldwide)
+- **Full profiles** — `profile <player>`: career path with fees, contract, agent, injury record,
+  valuation trend, EU status, league strength and every attribute in one view
 - **Squad audit** — `where is my squad weakest?`
 
 Pick any real club as "your" club in the sidebar; synergy, squad audits and every fit score
@@ -40,6 +46,7 @@ updated by observed match statistics**, then priced with real valuations:
 | Performance update | FBref Big-5 season stats, 2022/23–2024/25 | 8,117 player-seasons |
 | Valuation & contracts | Published Transfermarkt dump (Sept 2025) | 33,590 values · 38,666 contract dates |
 | Global career | Transfermarkt appearances, injuries, value history | 1.88M rows · 707 competitions |
+| Career path | Transfermarkt senior transfer history with fees | 1.10M transfers · 114k players |
 
 Attributes for matched players are re-derived as **percentile ranks against positional peers**
 (finishing from npxG and goals-over-expected, creativity from xAG and key passes, and so on),
@@ -71,6 +78,7 @@ honest list of **known limitations** — including what event data simply cannot
 | `engine.js` | Nine modules, NL query parser, report writer, market watch |
 | `app.js` | UI wiring — intents → renderers, expandable explainability |
 | `style.css` | Original dark "sports-AI product" design |
+| `manifest.webmanifest`, `sw.js`, `icons/` | PWA shell: install metadata, offline precache, app icons |
 | `RESEARCH.md` | Research, method, sources and limitations |
 
 ## Run locally
