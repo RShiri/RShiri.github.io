@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Touchline — scouting workspace (study demo)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="ribbon">Educational study clone of the <a href="https://www.themarquee.ai/" rel="noopener">Marquee</a> product concept — original code &amp; design, 100% synthetic fictional data. Not affiliated. <a href="index.html">About</a></div>
+
+<div class="app-shell">
+  <aside class="rail">
+    <div class="brand"><span class="mark">T</span> Touchline</div>
+    <div class="sub">Scouting workspace · demo</div>
+
+    <h4>Club DNA</h4>
+    <div class="dna">
+      <label for="dna-club">Club</label>
+      <select id="dna-club" disabled><option>Harbor City FC (demo)</option></select>
+      <label for="dna-style">Game model</label>
+      <select id="dna-style">
+        <option value="high-press">High press</option>
+        <option value="possession">Possession</option>
+        <option value="transition">Fast transition</option>
+      </select>
+      <label for="dna-budget">Transfer budget — <output id="dna-budget-out">€30m</output></label>
+      <input type="range" id="dna-budget" min="5" max="120" step="5" value="30">
+      <p class="small">Every score is computed <em>against this profile</em>. Change it and re-run a query — the ranking shifts.</p>
+    </div>
+
+    <h4>The nine models</h4>
+    <div class="model-legend" id="model-legend"></div>
+  </aside>
+
+  <main class="main">
+    <div class="querybar">
+      <input id="q" type="text" placeholder="Ask anything… e.g. find a tall, fast striker with good ball control"
+             autocomplete="off" aria-label="Scouting query">
+      <button class="btn btn--go" id="go">Ask</button>
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="feed" id="feed">
+      <div>
+        <p class="answer-note">Try a query above, or click an example. Everything runs locally in your browser over a
+        synthetic database of 120 fictional players — the parser, the eight scoring models and the report writer are
+        all plain JavaScript standing in for Marquee's real LLM + ML stack (see <a href="RESEARCH.md">RESEARCH.md</a>).</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="data.js"></script>
+<script src="engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
