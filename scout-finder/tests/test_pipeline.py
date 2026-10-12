@@ -48,3 +48,39 @@ def test_percentiles_and_similarity():
     assert by_id["p9"]["pct"]["xg"] == 100 and by_id["p0"]["pct"]["xg"] == 10
     assert by_id["p9"]["similar"][0]["id"] == "p8"
     assert "xg" in by_id["p9"]["strengths"]
+
+
+def test_universe_missing_stat_and_league_factor():
+    rows = []
+    for lg, has_xg in (("ENG1", True), ("ISR1", False)):
+        for i in range(8):
+            rows.append({"source": "fotmob", "season": "2025-26", "league": lg,
+                         "player_id": f"{lg}{i}", "name": f"{lg}{i}", "team": "T",
+                         "pos_group": "FW", "matches": 30, "minutes": 2700,
+                         "xg": float(i) if has_xg else float("nan"),
+                         "shots": 10.0 + i, "xa": 1.0})
+    data = build.build(pd.DataFrame(rows), {"ENG1": 1.0, "ISR1": 0.7})
+    by_id = {p["id"]: p for p in data["players"]}
+    assert by_id["ISR17"]["per90"]["xg"] is None and by_id["ISR17"]["pct"]["xg"] is None
+    # Same raw shots, but Israel's are scaled down, so the English player ranks higher overall.
+    assert by_id["ENG17"]["pct"]["shots"] > by_id["ISR17"]["pct"]["shots"]
+    assert by_id["ENG17"]["pct_league"]["shots"] == by_id["ISR17"]["pct_league"]["shots"] == 100
+
+
+def test_fotmob_player_rows_parse():
+    from pipeline import fetch_fotmob as ff
+    details = {
+        "general": {"homeTeam": {"id": 1, "name": "Home"}, "awayTeam": {"id": 2, "name": "Away"}},
+        "content": {
+            "lineup": {"homeTeam": {"starters": [{"id": 10, "positionId": 34}], "subs": []}},
+            "playerStats": {"10": {"name": "A", "teamId": 1, "stats": [{"stats": {
+                "Minutes": {"key": "minutes_played", "stat": {"value": 90}},
+                "xG": {"key": "expected_goals", "stat": {"value": 0.31}},
+                "Passes": {"key": "accurate_passes", "stat": {"value": 40, "total": 45}},
+                "Duels": {"key": "aerials_won", "stat": {"value": "3/5 (60%)"}},
+            }}]}},
+        },
+    }
+    r = ff.player_rows({"id": 99, "date": "2025-09-01"}, details, "ENG1")[0]
+    assert (r["team"], r["position"], r["minutes"], r["xg"]) == ("Home", "DC", 90, 0.31)
+    assert (r["passAcc"], r["passes"], r["aerials"]) == (40, 45, 3)

@@ -3,6 +3,19 @@
 Pick a player, see positional percentiles and the most similar players. This
 folder is the data side only; the page comes next.
 
+## Universe
+
+12 leagues (`pipeline/leagues.py`): the big five; Portugal, Netherlands, Belgium,
+the Championship, Brazil and Argentina as feeder leagues; and Israel's Ligat ha'Al.
+
+Each player gets two percentiles per metric: within the same position in his
+own league (`pct_league`), and across the whole universe after a league-strength
+adjustment (`pct`, see `pipeline/league_strength.py`). Similar-player search runs
+across the whole universe, so it can suggest a Belgian league winger for a
+Premier League one.
+
+A stat a league does not publish (xG in smaller leagues) stays empty, never 0.
+
 ## Sources
 
 FBref lost its Opta advanced stats (xG, xA, progressive actions) in January 2026,
@@ -34,7 +47,10 @@ matchday 4.
 ## Run
 
 ```
-pip install pandas numpy requests        # + selenium if Understat blocks plain HTTP
+pip install -r requirements.txt          # + selenium if Understat blocks plain HTTP
+python -m pipeline.fetch_fotmob --check                 # FotMob's name for each league id
+python -m pipeline.fetch_fotmob --all --season 2025-26  # resumable; caches every match
+python -m pipeline.build --fotmob --elo-date 2026-05-31
 python -m pipeline.build --xepl-csv ../../XEPL/epl_dashboard/database/player_match_stats.csv
 python -m pipeline.build --understat EPL:2025-26 --understat LaLiga:2025-26
 python -m pytest tests

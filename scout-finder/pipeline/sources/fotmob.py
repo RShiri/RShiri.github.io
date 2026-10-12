@@ -40,12 +40,18 @@ def _main_group(slots: pd.Series) -> str | None:
     return groups.mode().iat[0] if not groups.empty else None
 
 
-def from_match_rows(df: pd.DataFrame, league: str = "EPL") -> pd.DataFrame:
+def from_match_rows(df: pd.DataFrame, league: str = "ENG1") -> pd.DataFrame:
     df = df.copy()
-    df["season"] = df["date"].astype(str).map(season_of)
+    if "season" not in df:
+        df["season"] = df["date"].astype(str).map(season_of)
     df = df.sort_values("date")
-    keys = ["season", "player_id"]
-    totals = df.groupby(keys)[list(SUM_COLS)].sum().rename(columns=SUM_COLS)
+    if "league" not in df:
+        df["league"] = league
+    keys = ["league", "season", "player_id"]
+    cols = [c for c in SUM_COLS if c in df]
+    # min_count=1: a stat FotMob never gave for this player stays NaN instead of 0,
+    # so a league without xG is "no xG data", not "zero xG".
+    totals = df.groupby(keys)[cols].sum(min_count=1).rename(columns=SUM_COLS)
     info = df.groupby(keys).agg(
         name=("player", "last"),
         team=("team", "last"),          # club at the end of the season
@@ -55,10 +61,14 @@ def from_match_rows(df: pd.DataFrame, league: str = "EPL") -> pd.DataFrame:
     )
     out = info.join(totals).reset_index()
     out["source"] = "fotmob"
-    out["league"] = league
     out["player_id"] = "fotmob:" + out["player_id"].astype(str)
     return out
 
 
-def load_xepl_csv(path: Path, league: str = "EPL") -> pd.DataFrame:
+def load_xepl_csv(path: Path, league: str = "ENG1") -> pd.DataFrame:
     return from_match_rows(pd.read_csv(path), league)
+
+
+def load_fetched(paths: list[Path]) -> pd.DataFrame:
+    """CSVs written by pipeline.fetch_fotmob (they carry their own league column)."""
+    return from_match_rows(pd.concat([pd.read_csv(p) for p in paths], ignore_index=True))
