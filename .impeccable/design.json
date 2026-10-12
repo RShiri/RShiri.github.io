@@ -1,0 +1,652 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-12T15:03:34+00:00",
+  "title": "Design System: Ram Shiri Portfolio",
+  "extensions": {
+    "colorMeta": {
+      "graphite-ground": {
+        "role": "neutral",
+        "displayName": "Graphite Ground",
+        "canonical": "#0a0b0e",
+        "tonalRamp": [
+          "oklch(15% 0.007 271.0)",
+          "oklch(25% 0.007 271.0)",
+          "oklch(35% 0.007 271.0)",
+          "oklch(48% 0.007 271.0)",
+          "oklch(60% 0.007 271.0)",
+          "oklch(72% 0.007 271.0)",
+          "oklch(84% 0.007 271.0)",
+          "oklch(95% 0.007 271.0)"
+        ]
+      },
+      "graphite-soft": {
+        "role": "neutral",
+        "displayName": "Graphite Soft",
+        "canonical": "#111318",
+        "tonalRamp": [
+          "oklch(15% 0.011 268.1)",
+          "oklch(25% 0.011 268.1)",
+          "oklch(35% 0.011 268.1)",
+          "oklch(48% 0.011 268.1)",
+          "oklch(60% 0.011 268.1)",
+          "oklch(72% 0.011 268.1)",
+          "oklch(84% 0.011 268.1)",
+          "oklch(95% 0.011 268.1)"
+        ]
+      },
+      "graphite-raise": {
+        "role": "neutral",
+        "displayName": "Graphite Raise",
+        "canonical": "#161920",
+        "tonalRamp": [
+          "oklch(15% 0.015 266.9)",
+          "oklch(25% 0.015 266.9)",
+          "oklch(35% 0.015 266.9)",
+          "oklch(48% 0.015 266.9)",
+          "oklch(60% 0.015 266.9)",
+          "oklch(72% 0.015 266.9)",
+          "oklch(84% 0.015 266.9)",
+          "oklch(95% 0.015 266.9)"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#22262f",
+        "tonalRamp": [
+          "oklch(15% 0.018 266.3)",
+          "oklch(25% 0.018 266.3)",
+          "oklch(35% 0.018 266.3)",
+          "oklch(48% 0.018 266.3)",
+          "oklch(60% 0.018 266.3)",
+          "oklch(72% 0.018 266.3)",
+          "oklch(84% 0.018 266.3)",
+          "oklch(95% 0.018 266.3)"
+        ]
+      },
+      "hairline-strong": {
+        "role": "neutral",
+        "displayName": "Hairline Strong",
+        "canonical": "#323844",
+        "tonalRamp": [
+          "oklch(15% 0.023 264.2)",
+          "oklch(25% 0.023 264.2)",
+          "oklch(35% 0.023 264.2)",
+          "oklch(48% 0.023 264.2)",
+          "oklch(60% 0.023 264.2)",
+          "oklch(72% 0.023 264.2)",
+          "oklch(84% 0.023 264.2)",
+          "oklch(95% 0.023 264.2)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#f2f4f8",
+        "tonalRamp": [
+          "oklch(15% 0.006 264.5)",
+          "oklch(25% 0.006 264.5)",
+          "oklch(35% 0.006 264.5)",
+          "oklch(48% 0.006 264.5)",
+          "oklch(60% 0.006 264.5)",
+          "oklch(72% 0.006 264.5)",
+          "oklch(84% 0.006 264.5)",
+          "oklch(95% 0.006 264.5)"
+        ]
+      },
+      "body": {
+        "role": "neutral",
+        "displayName": "Body Grey",
+        "canonical": "#aeb4c0",
+        "tonalRamp": [
+          "oklch(15% 0.018 264.5)",
+          "oklch(25% 0.018 264.5)",
+          "oklch(35% 0.018 264.5)",
+          "oklch(48% 0.018 264.5)",
+          "oklch(60% 0.018 264.5)",
+          "oklch(72% 0.018 264.5)",
+          "oklch(84% 0.018 264.5)",
+          "oklch(95% 0.018 264.5)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted Grey",
+        "canonical": "#7f8796",
+        "tonalRamp": [
+          "oklch(15% 0.024 263.1)",
+          "oklch(25% 0.024 263.1)",
+          "oklch(35% 0.024 263.1)",
+          "oklch(48% 0.024 263.1)",
+          "oklch(60% 0.024 263.1)",
+          "oklch(72% 0.024 263.1)",
+          "oklch(84% 0.024 263.1)",
+          "oklch(95% 0.024 263.1)"
+        ]
+      },
+      "signal": {
+        "role": "primary",
+        "displayName": "Signal Periwinkle",
+        "canonical": "#8ea6ff",
+        "tonalRamp": [
+          "oklch(15% 0.132 271.4)",
+          "oklch(25% 0.132 271.4)",
+          "oklch(35% 0.132 271.4)",
+          "oklch(48% 0.132 271.4)",
+          "oklch(60% 0.132 271.4)",
+          "oklch(72% 0.132 271.4)",
+          "oklch(84% 0.132 271.4)",
+          "oklch(95% 0.132 271.4)"
+        ]
+      },
+      "signal-ink": {
+        "role": "primary",
+        "displayName": "Signal Ink",
+        "canonical": "#0a0b0e",
+        "tonalRamp": [
+          "oklch(15% 0.007 271.0)",
+          "oklch(25% 0.007 271.0)",
+          "oklch(35% 0.007 271.0)",
+          "oklch(48% 0.007 271.0)",
+          "oklch(60% 0.007 271.0)",
+          "oklch(72% 0.007 271.0)",
+          "oklch(84% 0.007 271.0)",
+          "oklch(95% 0.007 271.0)"
+        ]
+      },
+      "signal-soft": {
+        "role": "primary",
+        "displayName": "Signal Tint",
+        "canonical": "rgba(142, 166, 255, .12)",
+        "tonalRamp": [
+          "oklch(15% 0.132 271.4)",
+          "oklch(25% 0.132 271.4)",
+          "oklch(35% 0.132 271.4)",
+          "oklch(48% 0.132 271.4)",
+          "oklch(60% 0.132 271.4)",
+          "oklch(72% 0.132 271.4)",
+          "oklch(84% 0.132 271.4)",
+          "oklch(95% 0.132 271.4)"
+        ]
+      },
+      "status-ok": {
+        "role": "status",
+        "displayName": "Live Green",
+        "canonical": "#4ade80",
+        "tonalRamp": [
+          "oklch(15% 0.182 151.7)",
+          "oklch(25% 0.182 151.7)",
+          "oklch(35% 0.182 151.7)",
+          "oklch(48% 0.182 151.7)",
+          "oklch(60% 0.182 151.7)",
+          "oklch(72% 0.182 151.7)",
+          "oklch(84% 0.182 151.7)",
+          "oklch(95% 0.182 151.7)"
+        ]
+      },
+      "pitch": {
+        "role": "data",
+        "displayName": "Pitch Navy",
+        "canonical": "#0f1626",
+        "tonalRamp": [
+          "oklch(15% 0.034 265.5)",
+          "oklch(25% 0.034 265.5)",
+          "oklch(35% 0.034 265.5)",
+          "oklch(48% 0.034 265.5)",
+          "oklch(60% 0.034 265.5)",
+          "oklch(72% 0.034 265.5)",
+          "oklch(84% 0.034 265.5)",
+          "oklch(95% 0.034 265.5)"
+        ]
+      },
+      "light-ground": {
+        "role": "neutral",
+        "displayName": "Paper Ground",
+        "canonical": "#fbfbfc",
+        "tonalRamp": [
+          "oklch(15% 0.001 286.4)",
+          "oklch(25% 0.001 286.4)",
+          "oklch(35% 0.001 286.4)",
+          "oklch(48% 0.001 286.4)",
+          "oklch(60% 0.001 286.4)",
+          "oklch(72% 0.001 286.4)",
+          "oklch(84% 0.001 286.4)",
+          "oklch(95% 0.001 286.4)"
+        ],
+        "theme": "light",
+        "darkCounterpart": "graphite-ground"
+      },
+      "light-soft": {
+        "role": "neutral",
+        "displayName": "Paper Soft",
+        "canonical": "#f3f4f6",
+        "tonalRamp": [
+          "oklch(15% 0.003 264.5)",
+          "oklch(25% 0.003 264.5)",
+          "oklch(35% 0.003 264.5)",
+          "oklch(48% 0.003 264.5)",
+          "oklch(60% 0.003 264.5)",
+          "oklch(72% 0.003 264.5)",
+          "oklch(84% 0.003 264.5)",
+          "oklch(95% 0.003 264.5)"
+        ],
+        "theme": "light",
+        "darkCounterpart": "graphite-soft"
+      },
+      "light-raise": {
+        "role": "neutral",
+        "displayName": "Paper Raise",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "oklch(15% 0.000 89.9)",
+          "oklch(25% 0.000 89.9)",
+          "oklch(35% 0.000 89.9)",
+          "oklch(48% 0.000 89.9)",
+          "oklch(60% 0.000 89.9)",
+          "oklch(72% 0.000 89.9)",
+          "oklch(84% 0.000 89.9)",
+          "oklch(95% 0.000 89.9)"
+        ],
+        "theme": "light",
+        "darkCounterpart": "graphite-raise"
+      },
+      "light-hairline": {
+        "role": "neutral",
+        "displayName": "Paper Hairline",
+        "canonical": "#e3e5ea",
+        "tonalRamp": [
+          "oklch(15% 0.007 268.5)",
+          "oklch(25% 0.007 268.5)",
+          "oklch(35% 0.007 268.5)",
+          "oklch(48% 0.007 268.5)",
+          "oklch(60% 0.007 268.5)",
+          "oklch(72% 0.007 268.5)",
+          "oklch(84% 0.007 268.5)",
+          "oklch(95% 0.007 268.5)"
+        ],
+        "theme": "light",
+        "darkCounterpart": "hairline"
+      },
+      "light-hairline-strong": {
+        "role": "neutral",
+        "displayName": "Paper Hairline Strong",
+        "canonical": "#cfd3db",
+        "tonalRamp": [
+          "oklch(15% 0.012 264.5)",
+          "oklch(25% 0.012 264.5)",
+          "oklch(35% 0.012 264.5)",
+          "oklch(48% 0.012 264.5)",
+          "oklch(60% 0.012 264.5)",
+          "oklch(72% 0.012 264.5)",
+          "oklch(84% 0.012 264.5)",
+          "oklch(95% 0.012 264.5)"
+        ],
+        "theme": "light",
+        "darkCounterpart": "hairline-strong"
+      },
+      "light-ink": {
+        "role": "neutral",
+        "displayName": "Paper Ink",
+        "canonical": "#0b0d12",
+        "tonalRamp": [
+          "oklch(15% 0.011 268.0)",
+          "oklch(25% 0.011 268.0)",
+          "oklch(35% 0.011 268.0)",
+          "oklch(48% 0.011 268.0)",
+          "oklch(60% 0.011 268.0)",
+          "oklch(72% 0.011 268.0)",
+          "oklch(84% 0.011 268.0)",
+          "oklch(95% 0.011 268.0)"
+        ],
+        "theme": "light",
+        "darkCounterpart": "ink"
+      },
+      "light-body": {
+        "role": "neutral",
+        "displayName": "Paper Body",
+        "canonical": "#3d4452",
+        "tonalRamp": [
+          "oklch(15% 0.026 264.2)",
+          "oklch(25% 0.026 264.2)",
+          "oklch(35% 0.026 264.2)",
+          "oklch(48% 0.026 264.2)",
+          "oklch(60% 0.026 264.2)",
+          "oklch(72% 0.026 264.2)",
+          "oklch(84% 0.026 264.2)",
+          "oklch(95% 0.026 264.2)"
+        ],
+        "theme": "light",
+        "darkCounterpart": "body"
+      },
+      "light-muted": {
+        "role": "neutral",
+        "displayName": "Paper Muted",
+        "canonical": "#626b7a",
+        "tonalRamp": [
+          "oklch(15% 0.026 260.7)",
+          "oklch(25% 0.026 260.7)",
+          "oklch(35% 0.026 260.7)",
+          "oklch(48% 0.026 260.7)",
+          "oklch(60% 0.026 260.7)",
+          "oklch(72% 0.026 260.7)",
+          "oklch(84% 0.026 260.7)",
+          "oklch(95% 0.026 260.7)"
+        ],
+        "theme": "light",
+        "darkCounterpart": "muted"
+      },
+      "light-signal": {
+        "role": "primary",
+        "displayName": "Signal Cobalt",
+        "canonical": "#2f55d4",
+        "tonalRamp": [
+          "oklch(15% 0.200 266.3)",
+          "oklch(25% 0.200 266.3)",
+          "oklch(35% 0.200 266.3)",
+          "oklch(48% 0.200 266.3)",
+          "oklch(60% 0.200 266.3)",
+          "oklch(72% 0.200 266.3)",
+          "oklch(84% 0.200 266.3)",
+          "oklch(95% 0.200 266.3)"
+        ],
+        "theme": "light",
+        "darkCounterpart": "signal"
+      },
+      "light-signal-ink": {
+        "role": "primary",
+        "displayName": "Signal Cobalt Ink",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "oklch(15% 0.000 89.9)",
+          "oklch(25% 0.000 89.9)",
+          "oklch(35% 0.000 89.9)",
+          "oklch(48% 0.000 89.9)",
+          "oklch(60% 0.000 89.9)",
+          "oklch(72% 0.000 89.9)",
+          "oklch(84% 0.000 89.9)",
+          "oklch(95% 0.000 89.9)"
+        ],
+        "theme": "light",
+        "darkCounterpart": "signal-ink"
+      },
+      "light-signal-soft": {
+        "role": "primary",
+        "displayName": "Signal Cobalt Tint",
+        "canonical": "rgba(47, 85, 212, .09)",
+        "tonalRamp": [
+          "oklch(15% 0.200 266.3)",
+          "oklch(25% 0.200 266.3)",
+          "oklch(35% 0.200 266.3)",
+          "oklch(48% 0.200 266.3)",
+          "oklch(60% 0.200 266.3)",
+          "oklch(72% 0.200 266.3)",
+          "oklch(84% 0.200 266.3)",
+          "oklch(95% 0.200 266.3)"
+        ],
+        "theme": "light",
+        "darkCounterpart": "signal-soft"
+      },
+      "light-status-ok": {
+        "role": "status",
+        "displayName": "Paper Live Green",
+        "canonical": "#15803d",
+        "tonalRamp": [
+          "oklch(15% 0.137 150.1)",
+          "oklch(25% 0.137 150.1)",
+          "oklch(35% 0.137 150.1)",
+          "oklch(48% 0.137 150.1)",
+          "oklch(60% 0.137 150.1)",
+          "oklch(72% 0.137 150.1)",
+          "oklch(84% 0.137 150.1)",
+          "oklch(95% 0.137 150.1)"
+        ],
+        "theme": "light",
+        "darkCounterpart": "status-ok"
+      }
+    },
+    "dataPalette": {
+      "note": "Chart encoding only, hardcoded in styles.css/main.js; not UI tokens.",
+      "values": {
+        "pitch-line": "rgba(255,255,255,.18)",
+        "goal": "#5b7cff",
+        "goal-path": "#2f6bff",
+        "on-target": "#e9f0fb",
+        "team-home": "#74acdf",
+        "team-away": "#2fbf71",
+        "won": "#34d399",
+        "failed": "#ff6b81",
+        "carry": "#ffd166",
+        "save": "#ffb020",
+        "xg-readout": "#7cf3d0",
+        "tooltip-ground": "#0a0e18"
+      }
+    },
+    "themes": {
+      "default": "dark",
+      "switch": "html[data-theme=\"light\"]",
+      "storageKey": "theme",
+      "note": "Every themed colour has a light-* counterpart in the frontmatter; pitch and data palette are theme-invariant."
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero headline only; contact closer uses clamp(40px, 6vw, 72px) in the same voice."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section titles."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Card (17px), chart panel (18px) and feature card (24px) titles."
+      },
+      "lead": {
+        "displayName": "Lead",
+        "purpose": "Hero introduction, max 60ch."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Running text; about copy 17.5px/1.7 at max 62ch."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Nav links, captions, fact-sheet terms, tags (12-14.5px), sentence case."
+      },
+      "data": {
+        "displayName": "Data",
+        "purpose": "Geist Mono tabular numerals for stats, scores, positions, lap counters."
+      }
+    },
+    "shadows": [
+      {
+        "name": "portrait-lift",
+        "value": "0 24px 60px -30px rgba(0,0,0,.8)",
+        "lightValue": "0 24px 60px -32px rgba(15,23,42,.35)",
+        "purpose": "Hero portrait card only."
+      },
+      {
+        "name": "tooltip",
+        "value": "0 12px 30px rgba(0,0,0,.4)",
+        "purpose": "Floating chart tooltip."
+      }
+    ],
+    "effects": [
+      {
+        "name": "nav-glass",
+        "value": "background: color-mix(in srgb, var(--bg) 78%, transparent); backdrop-filter: saturate(150%) blur(14px)",
+        "purpose": "Sticky nav; hairline bottom border appears once scrolled."
+      },
+      {
+        "name": "focus-ring",
+        "value": "outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px",
+        "purpose": "Global :focus-visible."
+      },
+      {
+        "name": "hero-grid",
+        "value": "64px hairline grid via linear-gradient, masked radial-gradient(ellipse 70% 80% at 30% 0%), opacity .55",
+        "purpose": "Hero backdrop only."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease",
+        "value": "cubic-bezier(.16, 1, .3, 1)",
+        "purpose": "All transforms and the load-in."
+      },
+      {
+        "name": "state",
+        "value": ".2s",
+        "purpose": "Colour and border transitions on buttons, links, rows."
+      },
+      {
+        "name": "rise",
+        "value": "0.9s ease, from opacity 0, translateY(16px), blur(6px); staggered .08-.22s",
+        "purpose": "Hero load-in only; skipped under prefers-reduced-motion."
+      },
+      {
+        "name": "shot-lift",
+        "value": "translateY(-3px) over .7s",
+        "purpose": "Screenshot inside a hovered work card."
+      },
+      {
+        "name": "arrow-nudge",
+        "value": "translate(2px, -2px) over .3s",
+        "purpose": "Outbound arrow on hovered card or row."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "tablet",
+        "value": "960px"
+      },
+      {
+        "name": "phone",
+        "value": "680px"
+      }
+    ],
+    "openDecisions": [
+      "The four peer projects sit in an equal 2x2 grid below the full-width feature card; the direction contract refuses equal-card grids and the user has not confirmed this arrangement."
+    ]
+  },
+  "components": [
+    {
+      "name": "Solid Button",
+      "kind": "button",
+      "refersTo": "button-solid",
+      "description": "Primary action: ink fill on the graphite ground.",
+      "html": "<a class=\"ds-btn ds-btn--solid\" href=\"#\">View work</a>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:500 15px/1 var(--font,'Geist',system-ui,sans-serif);letter-spacing:-.005em;height:42px;padding:0 18px;border-radius:10px;border:1px solid transparent;cursor:pointer;text-decoration:none;white-space:nowrap;transition:background-color .2s,border-color .2s,color .2s,transform .2s cubic-bezier(.16,1,.3,1)}.ds-btn:active{transform:translateY(1px)}.ds-btn:focus-visible{outline:2px solid var(--accent,#8ea6ff);outline-offset:3px}.ds-btn--solid{background:var(--ink,#f2f4f8);color:var(--bg,#0a0b0e)}.ds-btn--solid:hover{background:color-mix(in srgb,var(--ink,#f2f4f8) 86%,var(--bg,#0a0b0e))}"
+    },
+    {
+      "name": "Line Button",
+      "kind": "button",
+      "refersTo": "button-line",
+      "description": "Secondary action: hairline outline with an inline SVG icon.",
+      "html": "<a class=\"ds-btn-line\" href=\"#\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\"><path d=\"M8 3v9M4.5 8.5 8 12l3.5-3.5M3 14h10\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>Download CV</a>",
+      "css": ".ds-btn-line{display:inline-flex;align-items:center;gap:8px;font:500 15px/1 var(--font,'Geist',system-ui,sans-serif);height:42px;padding:0 18px;border-radius:10px;background:transparent;color:var(--ink,#f2f4f8);border:1px solid var(--line-strong,#323844);text-decoration:none;transition:border-color .2s,transform .2s cubic-bezier(.16,1,.3,1)}.ds-btn-line:hover{border-color:var(--ink,#f2f4f8)}.ds-btn-line:active{transform:translateY(1px)}.ds-btn-line:focus-visible{outline:2px solid var(--accent,#8ea6ff);outline-offset:3px}"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "Sticky translucent bar: brand, muted links, small solid CV button.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-brand\" href=\"#\">Ram Shiri</a><span class=\"ds-links\"><a href=\"#\">Work</a><a href=\"#\">Analytics</a><a href=\"#\">About</a><a class=\"ds-cv\" href=\"#\">Download CV</a></span></nav>",
+      "css": ".ds-nav{display:flex;align-items:center;gap:14px;height:62px;padding:0 24px;background:color-mix(in srgb,var(--bg,#0a0b0e) 78%,transparent);backdrop-filter:saturate(150%) blur(14px);border-bottom:1px solid var(--line,#22262f);font-family:var(--font,'Geist',system-ui,sans-serif)}.ds-brand{color:var(--ink,#f2f4f8);font-weight:600;font-size:16px;letter-spacing:-.01em;text-decoration:none}.ds-links{margin-left:auto;display:flex;align-items:center;gap:6px}.ds-links a{color:var(--muted,#7f8796);font-size:14.5px;font-weight:500;padding:7px 11px;border-radius:8px;text-decoration:none;transition:color .2s,background-color .2s}.ds-links a:hover{color:var(--ink,#f2f4f8);background:var(--bg-soft,#111318)}.ds-links a:focus-visible{outline:2px solid var(--accent,#8ea6ff);outline-offset:3px}.ds-links a.ds-cv{margin-left:8px;height:34px;display:inline-flex;align-items:center;padding:0 13px;background:var(--ink,#f2f4f8);color:var(--bg,#0a0b0e)}"
+    },
+    {
+      "name": "Stack Tag",
+      "kind": "chip",
+      "refersTo": "stack-tag",
+      "description": "Static technology tag under a work card.",
+      "html": "<ul class=\"ds-stack\"><li>Python</li><li>xG model</li><li>Pandas</li></ul>",
+      "css": ".ds-stack{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0}.ds-stack li{font:500 12px/1 var(--font,'Geist',system-ui,sans-serif);color:var(--muted,#7f8796);border:1px solid var(--line,#22262f);border-radius:6px;padding:5px 7px}"
+    },
+    {
+      "name": "Toggle Chip",
+      "kind": "chip",
+      "refersTo": "toggle-chip",
+      "description": "Chart filter and tab; pressed state carries the signal.",
+      "html": "<div class=\"ds-chips\"><button class=\"ds-chip\" aria-pressed=\"true\">Argentina 2-0 Algeria</button><button class=\"ds-chip\" aria-pressed=\"false\">Argentina 3-1 Austria</button></div>",
+      "css": ".ds-chips{display:flex;gap:10px;flex-wrap:wrap}.ds-chip{font:600 13.5px/1.2 var(--font,'Geist',system-ui,sans-serif);padding:7px 14px;border-radius:8px;border:1px solid var(--line,#22262f);background:transparent;color:var(--ink,#f2f4f8);cursor:pointer;transition:opacity .15s,border-color .15s}.ds-chip:hover{border-color:var(--accent,#8ea6ff);opacity:1}.ds-chip:focus-visible{outline:2px solid var(--accent,#8ea6ff);outline-offset:3px}.ds-chip[aria-pressed=true]{border-color:var(--accent,#8ea6ff);background:var(--accent-soft,rgba(142,166,255,.12))}.ds-chip[aria-pressed=false]{opacity:.72}"
+    },
+    {
+      "name": "Work Card",
+      "kind": "card",
+      "refersTo": "work-card",
+      "description": "Product shot in hairline browser chrome over a title, line and tags.",
+      "html": "<article class=\"ds-work\"><div class=\"ds-shot\"><span class=\"ds-chrome\"><i></i><i></i><i></i><span>rshiri.github.io/XEPL</span></span><span class=\"ds-frame\"></span></div><div class=\"ds-work-body\"><h3><a href=\"#\">XEPL, Premier League Analytics <svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\"><path d=\"M5 11 11 5M6 5h5v5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></a></h3><p>League tables, a custom xG model, shot maps and match stats.</p></div></article>",
+      "css": ".ds-work{position:relative;max-width:420px;border:1px solid var(--line,#22262f);border-radius:14px;background:var(--bg-soft,#111318);overflow:hidden;font-family:var(--font,'Geist',system-ui,sans-serif);transition:border-color .25s}.ds-work:hover{border-color:var(--line-strong,#323844)}.ds-shot{padding:16px 16px 0;background:var(--bg-raise,#161920);border-bottom:1px solid var(--line,#22262f)}.ds-chrome{display:flex;align-items:center;gap:5px;height:26px;padding:0 10px;border:1px solid var(--line,#22262f);border-bottom:0;border-radius:8px 8px 0 0;background:var(--bg-soft,#111318);font:500 11px/1 var(--font,'Geist',system-ui,sans-serif);color:var(--muted,#7f8796)}.ds-chrome i{width:7px;height:7px;border-radius:50%;background:var(--line-strong,#323844)}.ds-chrome span{margin-left:8px}.ds-frame{display:block;aspect-ratio:16/10;border:1px solid var(--line,#22262f);border-top:0;border-bottom:0;background:var(--pitch,#0f1626);transition:transform .7s cubic-bezier(.16,1,.3,1)}.ds-work:hover .ds-frame{transform:translateY(-3px)}.ds-work-body{padding:18px 20px 20px}.ds-work-body h3{margin:0;font-size:17px;font-weight:600;letter-spacing:-.015em}.ds-work-body h3 a{color:var(--ink,#f2f4f8);text-decoration:none}.ds-work-body h3 a:focus-visible{outline:2px solid var(--accent,#8ea6ff);outline-offset:3px}.ds-work-body h3 svg{color:var(--muted,#7f8796);vertical-align:-2px;transition:transform .3s cubic-bezier(.16,1,.3,1),color .2s}.ds-work:hover h3 svg{transform:translate(2px,-2px);color:var(--ink,#f2f4f8)}.ds-work-body p{margin:8px 0 0;font-size:14.5px;line-height:1.65;color:var(--body,#aeb4c0)}"
+    },
+    {
+      "name": "Chart Panel",
+      "kind": "custom",
+      "refersTo": "viz-panel",
+      "description": "Hairline panel holding a dark pitch chart with mono stats.",
+      "html": "<div class=\"ds-viz\"><div class=\"ds-viz-head\"><div><h3>Lamine Yamal - xG shot map</h3><p>Dot size = expected goals; filled = goal.</p></div><div class=\"ds-st\"><b>11.4</b><span>xG</span></div></div><div class=\"ds-pitch\"></div></div>",
+      "css": ".ds-viz{background:var(--bg,#0a0b0e);border:1px solid var(--line,#22262f);border-radius:14px;overflow:hidden;font-family:var(--font,'Geist',system-ui,sans-serif)}.ds-viz-head{display:flex;justify-content:space-between;gap:16px;padding:20px 22px 6px}.ds-viz-head h3{margin:0;font-size:18px;font-weight:600;letter-spacing:-.015em;color:var(--ink,#f2f4f8)}.ds-viz-head p{margin:6px 0 0;font-size:13.5px;color:var(--muted,#7f8796)}.ds-st{text-align:right}.ds-st b{display:block;font:500 22px/1 var(--mono,'Geist Mono',ui-monospace,monospace);font-variant-numeric:tabular-nums;color:var(--ink,#f2f4f8)}.ds-st span{font-size:12px;color:var(--muted,#7f8796)}.ds-pitch{margin:12px 22px 20px;height:160px;border-radius:12px;background:#0f1626}"
+    },
+    {
+      "name": "Portrait Card",
+      "kind": "card",
+      "refersTo": "hero-card",
+      "description": "Hero portrait with a hairline-ruled fact sheet.",
+      "html": "<aside class=\"ds-hero-card\"><div class=\"ds-portrait\"></div><dl><div><dt>Studying</dt><dd>B.Sc. Data Engineering, BGU</dd></div><div><dt>Year</dt><dd>3rd</dd></div></dl></aside>",
+      "css": ".ds-hero-card{width:290px;border:1px solid var(--line,#22262f);border-radius:18px;background:var(--bg-soft,#111318);padding:10px;box-shadow:var(--shadow,0 24px 60px -30px rgba(0,0,0,.8));font-family:var(--font,'Geist',system-ui,sans-serif)}.ds-portrait{aspect-ratio:1;border-radius:12px;background:var(--bg-raise,#161920)}.ds-hero-card dl{margin:0;padding:12px 8px 4px}.ds-hero-card dl div{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid var(--line,#22262f);font-size:13.5px}.ds-hero-card dl div:first-child{border-top:0}.ds-hero-card dt{color:var(--muted,#7f8796)}.ds-hero-card dd{margin:0;color:var(--ink,#f2f4f8);font-weight:500;text-align:right}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Engineered Sheet",
+    "overview": "A precise, product-grade dark page in the Linear/Vercel tradition: near-black graphite ground, 1px hairlines that do all the structural work, Geist set tight and confident, and a single cool signal blue that appears only where something is live (links, focus, pressed state). The page is a standard professional portfolio in form; its distinction is finish, not novelty. Shipped work is framed like product shots inside a thin browser chrome, and the charts sit on their own dark pitch panels, which are data, not decoration.\n\nDensity is calm and generous at section level (sections breathe at 72 to 120px) and compact inside components (13 to 15px labels, 6 to 10px radii, 16px gaps). Motion is one load-in moment on the hero and small, functional state transitions everywhere else; nothing moves on scroll. Dark is the default; a light theme (`html[data-theme=\"light\"]`) swaps every neutral and the signal for a paper-white counterpart while chart pitches stay dark.\n\nThe direction refuses glow, gradients used as brand fill, and emoji icons. Gradients appear only as tools: drawing the hairline grid behind the hero and masking it, and fading the edge of horizontally scrolling charts on phones.",
+    "keyCharacteristics": [
+      "Graphite ground in three tonal steps (ground, soft, raise) separated by 1px hairlines, not shadows.",
+      "One signal accent for state and links only; primary buttons are ink-on-ground, not accent-filled.",
+      "Geist for all text and display; Geist Mono with tabular figures for numerals and data readouts.",
+      "Screenshots framed in a hairline browser chrome; charts on dark pitch panels in both themes.",
+      "Dark default, full light theme, theme choice persisted under the shared `theme` key."
+    ],
+    "rules": [
+      {
+        "name": "The One Signal Rule",
+        "body": "The signal colour marks interactivity or state (link, focus, pressed, slider) and nothing else. A primary action is ink on ground.",
+        "section": "colors"
+      },
+      {
+        "name": "The Pitch Stays Dark Rule",
+        "body": "Chart surfaces use `pitch` and their own data palette in both themes; they are not re-themed with the UI neutrals.",
+        "section": "colors"
+      },
+      {
+        "name": "The Mono Means Measured Rule",
+        "body": "Geist Mono appears only on numerals and data readouts; prose, labels and headings stay in Geist.",
+        "section": "typography"
+      },
+      {
+        "name": "The Sentence Case Rule",
+        "body": "Labels and captions are sentence case at normal tracking; the build explicitly resets the legacy uppercase stat labels.",
+        "section": "typography"
+      },
+      {
+        "name": "The Hairline Before Shadow Rule",
+        "body": "Separate surfaces with a 1px hairline and a tonal step. Hover strengthens the hairline (`hairline` to `hairline-strong`); it never adds a shadow.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do separate surfaces with 1px hairlines and the ground / soft / raise steps before reaching for a shadow.",
+      "Do reserve the signal colour for links, focus, selection, sliders and pressed state.",
+      "Do make the primary action an ink-filled button and the secondary a hairline outline button.",
+      "Do set every numeral and data readout in Geist Mono with tabular figures.",
+      "Do frame product screenshots in the hairline browser chrome unless the image already includes one.",
+      "Do keep chart surfaces on the dark pitch with their own data palette in both themes.",
+      "Do keep content visible without JavaScript or motion; the only entrance animation is the hero rise (0.9s, `cubic-bezier(.16, 1, .3, 1)`), skipped under reduced motion.",
+      "Do define every themed colour as a custom property with a `html[data-theme=\"light\"]` counterpart."
+    ],
+    "donts": [
+      "Don't use glow, neon halos, or gradients as a brand fill; gradients are allowed only as drawing and masking tools (hairline grid, scroll-edge fade).",
+      "Don't use emoji or icon-font glyphs as icons; use the inline 16px SVG sprite.",
+      "Don't fill buttons or large areas with the signal colour.",
+      "Don't add uppercase, tracked-out labels or small headings above section titles.",
+      "Don't add hover shadows or lift the card itself; strengthen the hairline instead (only the screenshot inside rises 3px)."
+    ]
+  }
+}

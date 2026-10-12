@@ -1,0 +1,14 @@
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# impeccable: per-session install and local review captures
+.claude/skills/impeccable/
+.claude/agents/impeccable-*.md
+.claude/settings.local.json
+.impeccable/review/
+.impeccable/build/
+.impeccable/sketches/
