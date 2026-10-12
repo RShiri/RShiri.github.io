@@ -25,10 +25,8 @@
   var themeBtn = $("#themeToggle");
   var setThemeIcon = function () {
     var dark = document.documentElement.getAttribute("data-theme") !== "light";
-    if (themeBtn) {
-      themeBtn.textContent = dark ? "☀️" : "🌙";
-      themeBtn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
-    }
+    // the sun/moon SVGs inside the button are swapped by CSS on html[data-theme]
+    if (themeBtn) themeBtn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
   };
   if (themeBtn) {
     themeBtn.addEventListener("click", function () {
