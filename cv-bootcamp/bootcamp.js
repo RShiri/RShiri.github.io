@@ -15,7 +15,8 @@
     { id: "dataml", name: "דאטה ולמידת מכונה", cvLabel: "Data & ML" },
     { id: "de", name: "הנדסת נתונים", cvLabel: "Data Engineering" },
     { id: "ai", name: "פיתוח בעזרת AI", cvLabel: "AI-Assisted Development" },
-    { id: "proj", name: "טענות מתוך הפרויקטים", cvLabel: null }
+    { id: "proj", name: "טענות מתוך הפרויקטים", cvLabel: null },
+    { id: "target", name: "הכנה לחברות היעד", cvLabel: null, prep: true }
   ];
   var PROJECTS = {
     laliga: "La Liga Match Data Pipeline",
@@ -32,6 +33,11 @@
   GROUPS.forEach(function (g) { TOPICS.forEach(function (t) { if (t.group === g.id) ORDER.push(t); }); });
 
   var app = document.getElementById("app");
+  var TARGETS = window.BOOTCAMP_TARGETS || null;
+
+  // prep topics (group.prep) are interview material for target companies, not CV claims:
+  // they get a readiness verdict instead of keep/drop and stay out of the CV counts
+  function isPrep(t) { return GROUPS.some(function (g) { return g.id === t.group && g.prep; }); }
 
   /* ---------- storage (best-effort: page works without it) ---------- */
   function load(id) {
@@ -84,7 +90,14 @@
     return a;
   }
 
-  function statusPill(st) {
+  function statusPill(st, prep) {
+    if (prep) {
+      var r = recommendation(st);
+      if (r === "keep") return '<span class="pill pill--keep">מוכן</span>';
+      if (r === "weak") return '<span class="pill pill--weak">צריך חיזוק</span>';
+      if (r === "drop") return '<span class="pill pill--drop">לא מוכן</span>';
+      return '<span class="pill">עוד לא נבחן</span>';
+    }
     if (st.verdict === "keep") return '<span class="pill pill--keep">נשאר בקו״ח</span>';
     if (st.verdict === "drop") return '<span class="pill pill--drop">יורד מהקו״ח</span>';
     var rec = recommendation(st);
@@ -103,9 +116,10 @@
 
     var states = {};
     var tested = 0, kept = 0, dropped = 0, pending = 0;
-    ORDER.forEach(function (t) {
-      var st = load(t.id);
-      states[t.id] = st;
+    var cvTopics = ORDER.filter(function (t) { return !isPrep(t); });
+    ORDER.forEach(function (t) { states[t.id] = load(t.id); });
+    cvTopics.forEach(function (t) {
+      var st = states[t.id];
       if (st.best !== null && st.best !== undefined) tested++;
       if (st.verdict === "keep") kept++;
       else if (st.verdict === "drop") dropped++;
@@ -126,10 +140,19 @@
       "<li>מחליטים בכפתור בתחתית הדף, ומעתיקים את שורת הכישורים החדשה.</li>"));
 
     app.appendChild(el("div", "stats",
-      '<div class="stat"><div class="n">' + tested + "/" + ORDER.length + '</div><div class="l">נושאים שנבחנו</div></div>' +
+      '<div class="stat"><div class="n">' + tested + "/" + cvTopics.length + '</div><div class="l">נושאים שנבחנו</div></div>' +
       '<div class="stat stat--ok"><div class="n">' + kept + '</div><div class="l">נשארים</div></div>' +
       '<div class="stat stat--bad"><div class="n">' + dropped + '</div><div class="l">יורדים</div></div>' +
       '<div class="stat stat--warn"><div class="n">' + pending + '</div><div class="l">ממתינים להחלטה</div></div>'));
+
+    if (TARGETS) {
+      var feat = el("a", "card card--feature");
+      feat.href = "#targets";
+      feat.innerHTML = '<div class="card-top"><h3>תוכנית הפעולה: Marquee ו־LSports</h3><span class="pill pill--keep">חדש</span></div>' +
+        "<p>מה כל חברה עושה, למה אתה מתאים, מה חסר, הודעות מוכנות לשליחה, ורשימת צעדים לסמן.</p>" +
+        '<div class="card-foot"><span>צעדים שבוצעו</span><b>' + doneCount() + "/" + TARGETS.steps.length + "</b></div>";
+      app.appendChild(feat);
+    }
 
     GROUPS.forEach(function (g) {
       var topics = ORDER.filter(function (t) { return t.group === g.id; });
@@ -137,6 +160,7 @@
       var sec = el("section", "group");
       var cvline = g.cvLabel
         ? '<span class="cvline">בקו״ח תחת השורה ' + "<bdi>" + esc(g.cvLabel) + "</bdi></span>"
+        : g.prep ? '<span class="cvline">לא בקו״ח, אבל ישאלו עליהם</span>'
         : '<span class="cvline">משפטים מתוך תיאורי הפרויקטים</span>';
       sec.appendChild(el("div", "group-head", "<h2>" + g.name + "</h2>" + cvline));
       var cards = el("div", "cards");
@@ -146,9 +170,9 @@
         a.href = "#t/" + t.id;
         var score = st.best === null || st.best === undefined ? "—" : st.best + "%";
         a.innerHTML =
-          '<div class="card-top"><h3><bdi>' + esc(t.title) + "</bdi></h3>" + statusPill(st) + "</div>" +
+          '<div class="card-top"><h3><bdi>' + esc(t.title) + "</bdi></h3>" + statusPill(st, isPrep(t)) + "</div>" +
           "<p>" + t.summary + "</p>" +
-          (t.risk ? '<span class="pill pill--risk">אין פרויקט שמגבה</span>' : "") +
+          (t.risk ? '<span class="pill pill--risk">' + (t.riskPill || "אין פרויקט שמגבה") + "</span>" : "") +
           '<div class="card-foot"><span>ציון הכי טוב</span><b>' + score + "</b></div>";
         cards.appendChild(a);
       });
@@ -251,11 +275,13 @@
       '<h1><bdi>' + esc(t.title) + "</bdi></h1>" +
       '<p class="lead">' + t.summary + "</p>"));
 
-    var cvBox = '<span class="box-title">מה כתוב עליך בקו״ח</span>' +
+    var cvBox = group.prep
+      ? '<span class="box-title">למה זה חשוב</span>' + t.why
+      : '<span class="box-title">מה כתוב עליך בקו״ח</span>' +
       (group.cvLabel
         ? "בשורת הכישורים <bdi>" + esc(group.cvLabel) + "</bdi> מופיע: <bdi>" + esc(t.cv.join(", ")) + "</bdi>."
         : "התיאור של הפרויקט טוען לזה במפורש.");
-    if (t.usedIn && t.usedIn.length) {
+    if (!group.prep && t.usedIn && t.usedIn.length) {
       cvBox += "<br>מופיע בפרויקטים: " + t.usedIn.map(function (p) { return "<bdi>" + esc(PROJECTS[p]) + "</bdi>"; }).join(", ") + ".";
     }
     app.appendChild(el("div", "box box--cv", cvBox));
@@ -303,6 +329,20 @@
   function renderVerdict(t, root) {
     var st = load(t.id);
     var rec = recommendation(st);
+    if (isPrep(t)) {
+      root.className = "verdict-panel" + (rec === "keep" ? " is-keep" : rec === "drop" ? " is-drop" : "");
+      root.innerHTML = "<h2>מוכן לשאלות על זה?</h2><p>" +
+        (rec === null ? "עוד לא עשית את המבחן."
+          : rec === "keep" ? "הציון הכי טוב שלך הוא " + st.best + "%. מוכן. לפני הראיון תעבור שוב על השאלות הפתוחות."
+          : "הציון הכי טוב שלך הוא " + st.best + "%. עוד לא שם. תקרא שוב את ההסבר ותיבחן מחדש.") +
+        "</p>";
+      var back = el("a", "btn btn--ghost", "לתוכנית הפעולה");
+      back.href = "#targets";
+      var row = el("div", "quiz-actions");
+      row.appendChild(back);
+      root.appendChild(row);
+      return;
+    }
     root.className = "verdict-panel" + (st.verdict === "keep" ? " is-keep" : st.verdict === "drop" ? " is-drop" : "");
     var msg;
     if (rec === null) msg = "עוד לא עשית את המבחן. אפשר להחליט גם בלעדיו, אבל עדיף לבדוק את עצמך קודם.";
@@ -428,10 +468,105 @@
     renderQuestion();
   }
 
+  /* ======================================================================
+     Targets page (#targets): company dossiers, action checklist, outreach templates.
+     Data comes from window.BOOTCAMP_TARGETS = { companies, steps, templates, sources }.
+     ====================================================================== */
+  function stepKey(id) { return "cvboot:step:" + id; }
+  function stepDone(id) {
+    try { return localStorage.getItem(stepKey(id)) === "1"; } catch (e) { return false; }
+  }
+  function doneCount() {
+    return TARGETS ? TARGETS.steps.filter(function (s) { return stepDone(s.id); }).length : 0;
+  }
+
+  function copyButton(text, label) {
+    var btn = el("button", "btn btn--ghost btn--sm", label || "העתקה");
+    btn.type = "button";
+    btn.addEventListener("click", function () {
+      var orig = btn.textContent;
+      function done() { btn.textContent = "הועתק ✓"; setTimeout(function () { btn.textContent = orig; }, 1800); }
+      try { navigator.clipboard.writeText(text).then(done, function () {}); } catch (e) {}
+    });
+    return btn;
+  }
+
+  function renderTargets() {
+    document.title = "תוכנית פעולה · בוטקאמפ קורות חיים";
+    app.textContent = "";
+    app.appendChild(el("div", "page-head",
+      '<span class="kicker">מהבוטקאמפ לחוזה</span>' +
+      "<h1>תוכנית הפעולה: <bdi>Marquee</bdi> ו־<bdi>LSports</bdi></h1>" +
+      '<p class="lead">' + TARGETS.lead + "</p>"));
+
+    TARGETS.companies.forEach(function (c) {
+      var sec = el("section", "target");
+      sec.appendChild(el("div", "group-head", "<h2><bdi>" + esc(c.name) + "</bdi></h2>" + '<span class="pill ' + c.pillClass + '">' + c.pill + "</span>"));
+      sec.appendChild(el("p", "target-tag", c.tagline));
+      var grid = el("div", "target-grid");
+      grid.appendChild(el("div", "box", '<span class="box-title">מה ידוע עליהם</span><ul>' + c.facts.map(function (f) { return "<li>" + f + "</li>"; }).join("") + "</ul>"));
+      grid.appendChild(el("div", "box box--tip", '<span class="box-title">למה אתה מתאים</span><ul>' + c.fit.map(function (f) { return "<li>" + f + "</li>"; }).join("") + "</ul>"));
+      grid.appendChild(el("div", "box box--risk", '<span class="box-title">מה חסר, ואיפה סוגרים את זה</span><ul>' + c.gaps.map(function (f) { return "<li>" + f + "</li>"; }).join("") + "</ul>"));
+      sec.appendChild(grid);
+      app.appendChild(sec);
+    });
+
+    var steps = el("section", "target");
+    steps.appendChild(el("div", "group-head", "<h2>הצעדים, לפי הסדר</h2><span class=\"cvline\">מסמנים כשביצעת. נשמר בדפדפן</span>"));
+    var list = el("ol", "checklist");
+    TARGETS.steps.forEach(function (st) {
+      var li = el("li", stepDone(st.id) ? "is-done" : "");
+      var label = el("label");
+      var cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = stepDone(st.id);
+      cb.addEventListener("change", function () {
+        try { localStorage.setItem(stepKey(st.id), cb.checked ? "1" : "0"); } catch (e) {}
+        li.className = cb.checked ? "is-done" : "";
+      });
+      label.appendChild(cb);
+      label.appendChild(el("span", null, '<b class="step-for">' + st.who + "</b> " + st.text));
+      li.appendChild(label);
+      list.appendChild(li);
+    });
+    steps.appendChild(list);
+    app.appendChild(steps);
+
+    var tpl = el("section", "target");
+    tpl.appendChild(el("div", "group-head", "<h2>הודעות מוכנות</h2><span class=\"cvline\">באנגלית, להעתקה. תעבור עליהן ותתאים לפני שליחה</span>"));
+    TARGETS.templates.forEach(function (t) {
+      var card = el("div", "tpl");
+      var head = el("div", "tpl-head", "<h3>" + t.title + "</h3>");
+      head.appendChild(copyButton(t.text));
+      card.appendChild(head);
+      if (t.note) card.appendChild(el("p", "tpl-note", t.note));
+      var pre = el("pre", "cv-text");
+      pre.textContent = t.text;
+      card.appendChild(pre);
+      tpl.appendChild(card);
+    });
+    app.appendChild(tpl);
+
+    var src = el("section", "target");
+    src.appendChild(el("h2", null, "מקורות"));
+    src.appendChild(el("ul", "sources", TARGETS.sources.map(function (x) {
+      return '<li><a href="' + esc(x.url) + '" target="_blank" rel="noopener"><bdi>' + esc(x.title) + "</bdi></a></li>";
+    }).join("")));
+    app.appendChild(src);
+
+    var pager = el("nav", "pager");
+    var back = el("a", "btn btn--ghost", "→ ללוח הבקרה");
+    back.href = "#";
+    pager.appendChild(back);
+    app.appendChild(pager);
+    window.scrollTo(0, 0);
+  }
+
   /* ---------- router ---------- */
   function route() {
     var m = /^#t\/([\w-]+)$/.exec(location.hash);
     if (m && byId[m[1]]) renderTopic(byId[m[1]]);
+    else if (location.hash === "#targets" && TARGETS) renderTargets();
     else renderDashboard();
   }
   window.addEventListener("hashchange", route);

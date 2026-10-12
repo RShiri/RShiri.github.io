@@ -460,7 +460,7 @@ for epoch in range(20):                   # epoch = מעבר אחד על כל ה
     <li><code>BCEWithLogitsLoss</code> לסיווג בינארי. הוא מקבל לוגיט ומפעיל סיגמואיד בפנים, בצורה יציבה נומרית.</li>
     <li><code>MSELoss</code> לרגרסיה.</li>
     <li><strong>קצב למידה</strong> גבוה מדי גורם לשגיאה לקפוץ או להתבדר, ונמוך מדי גורם להתכנסות איטית מאוד.</li>
-    <li>שגיאה מהסוג <code>Expected all tensors to be on the same device</code> אומרת שהמודל על GPU והנתונים על CPU, או להפך.</li>
+    <li>שגיאה שמתחילה ב־<code>Expected all tensors</code> ומדברת על device אומרת שהמודל על GPU והנתונים על CPU, או להפך.</li>
   </ul>
 </section>
 `,
@@ -628,8 +628,9 @@ model.best_iteration</code></pre>
   title: "Streamlit",
   cv: ["Streamlit"],
   usedIn: [],
-  risk: "אף פרויקט בקו״ח לא מזכיר Streamlit. אם יש לך אפליקציה כזו, תוסיף אותה לתיאור הפרויקט או קישור אליה. אם אין, תהיה מוכן להסביר את מודל ההרצה מחדש ואת ה־caching.",
-  dropAdvice: "אפשר גם להשאיר ולבנות אפליקציה קטנה מעל אחד הפרויקטים, זו עבודה של ערב אחד",
+  riskPill: "לא מופיע בקו״ח",
+  risk: "בקו״ח אין פרויקט שמזכיר Streamlit, אבל באתר שלך יש דשבורד NBA שבנוי בו (nba-dashboard-ramshiri.streamlit.app). תוסיף אותו לקו״ח כפרויקט, וזה כבר לא סיכון. זה גם פרויקט כדורסל, ו־Marquee מתרחבת לכדורסל.",
+  dropAdvice: "לפני שאתה מוריד, זכור שיש לך דשבורד NBA ב־Streamlit. עדיף להוסיף אותו לקו״ח מאשר להוריד את המיומנות",
   summary: "דרך מהירה להפוך סקריפט Python לאפליקציית דאטה אינטראקטיבית. העיקר להבין את מודל ההרצה מחדש ואת ה־caching.",
   html: `
 <section>
