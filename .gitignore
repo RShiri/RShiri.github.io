@@ -6,3 +6,9 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# impeccable: installed per session by the cloud environment's setup script
+# (22 MB prebuilt binary + machine-local hooks), so it is not committed here
+.claude/skills/impeccable/
+.claude/agents/impeccable-*.md
+.claude/settings.local.json
