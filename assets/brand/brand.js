@@ -104,6 +104,8 @@
         if (!el.matches || !el.matches(WHOLE) || el.closest(".rs-bar, .rs-about, [data-he], [data-he-html]")) return;
         if (he) {
           if (el.__rsWhole != null || !el.children.length) return;
+          /* never flatten controls, media or anything scripts address by id */
+          if (el.querySelector("input, select, textarea, button, img, svg, canvas, video, iframe, datalist, [id]")) return;
           var key = el.textContent.replace(/\s+/g, " ").trim();
           if (key && Object.prototype.hasOwnProperty.call(d, key)) {
             el.__rsWhole = el.innerHTML; el.textContent = d[key];
