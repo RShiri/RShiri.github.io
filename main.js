@@ -918,5 +918,14 @@
     $("#styleA").disabled = next !== "a"; $("#styleC").disabled = next === "a";
     document.documentElement.setAttribute("data-style", next);
     try { localStorage.setItem("site-style", next); } catch (e) {}
+    syncOffsiteStyle();
   });
+  /* the NBA app lives on another origin and can't read localStorage: pass the look in its URL */
+  function syncOffsiteStyle() {
+    var v = document.documentElement.getAttribute("data-style") === "a" ? "a" : "c";
+    $$('a[href*="streamlit.app"]').forEach(function (a) {
+      var u = new URL(a.href); u.searchParams.set("style", v); a.href = u.toString();
+    });
+  }
+  syncOffsiteStyle();
 })();
