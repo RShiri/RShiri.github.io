@@ -1,0 +1,24 @@
+{
+  "name": "rshiri.github.io",
+  "version": "1.0.0",
+  "description": "Personal portfolio (data science in sports), published with GitHub Pages. Static site; npm is only used for Playwright tests.",
+  "main": "main.js",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RShiri/RShiri.github.io.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RShiri/RShiri.github.io/issues"
+  },
+  "homepage": "https://github.com/RShiri/RShiri.github.io#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.64.0",
+    "@types/node": "^26.6.5"
+  }
+}
