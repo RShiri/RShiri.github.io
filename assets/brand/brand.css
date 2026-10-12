@@ -68,4 +68,15 @@ html[data-site-style="a"] .rs-about h2 { font-style: italic; font-size: 38px; }
 .rs-about b, .rs-about strong { color: var(--rs-ink); }
 .rs-about code { font-size: .9em; background: var(--rs-panel); padding: 1px 5px; }
 body.rs-about-open { overflow: hidden; }
-@media (max-width: 640px) { .rs-bar { gap: 10px; flex-wrap: wrap; padding-top: 6px; padding-bottom: 6px; } .rs-bar__back { display: none; } }
+.rs-short { display: none; }
+/* phones: one row. The back link collapses to its arrow, About to one word. */
+@media (max-width: 640px) {
+  .rs-bar { gap: 10px; padding: 0 12px; min-height: 42px; }
+  .rs-bar .rs-long { display: none; }
+  .rs-bar .rs-short { display: inline; }
+  .rs-bar__brand { font-size: 13px; letter-spacing: .14em; }
+  html[data-site-style="a"] .rs-bar__brand { font-size: 16px; }
+  .rs-bar__back { font-size: 16px; padding: 4px 2px; }
+  .rs-bar__about, .rs-bar__lang, .rs-bar__style { padding: 6px 8px; }
+  .rs-bar__end { gap: 6px; }
+}

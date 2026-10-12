@@ -135,8 +135,8 @@
 
   /* ---------------- About panel ---------------- */
   var UI = {
-    en: { back: "All projects", about: "About this project", close: "Close", lang: "עברית", langLabel: "Switch to Hebrew" },
-    he: { back: "כל הפרויקטים", about: "על הפרויקט", close: "סגירה", lang: "EN", langLabel: "Switch to English" }
+    en: { back: "All projects", about: "About this project", aboutShort: "About", close: "Close", lang: "עברית", langLabel: "Switch to Hebrew" },
+    he: { back: "כל הפרויקטים", about: "על הפרויקט", aboutShort: "אודות", close: "סגירה", lang: "EN", langLabel: "Switch to English" }
   };
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function renderAbout() {
@@ -163,7 +163,8 @@
     bar.setAttribute("dir", lang() === "he" ? "rtl" : "ltr");
     bar.querySelector(".rs-bar__back span:last-child").textContent = u.back;
     var ab = bar.querySelector(".rs-bar__about");
-    ab.hidden = !window.RS_ABOUT; ab.textContent = u.about;
+    ab.hidden = !window.RS_ABOUT;
+    ab.innerHTML = '<span class="rs-long">' + esc(u.about) + '</span><span class="rs-short">' + esc(u.aboutShort) + "</span>";
     var lb = bar.querySelector(".rs-bar__lang"); lb.textContent = u.lang; lb.setAttribute("aria-label", u.langLabel);
     bar.querySelectorAll(".rs-bar__style b").forEach(function (el) { el.classList.toggle("on", el.textContent.toLowerCase() === style()); });
   }
@@ -186,7 +187,7 @@
     bar.className = "rs-bar";
     bar.innerHTML =
       '<a class="rs-bar__brand" href="' + HOME + '" dir="ltr">RAM<i>/</i>SHIRI</a>' +
-      '<a class="rs-bar__back" href="' + HOME + '#builds"><span aria-hidden="true">&larr;</span> <span></span></a>' +
+      '<a class="rs-bar__back" href="' + HOME + '#builds"><span aria-hidden="true">&larr;</span> <span class="rs-long"></span></a>' +
       '<button class="rs-bar__about" type="button" hidden></button>' +
       '<span class="rs-bar__end"><button class="rs-bar__lang" type="button"></button>' +
       '<button class="rs-bar__style" type="button" aria-label="Switch design" dir="ltr"><b>C</b><span aria-hidden="true">/</span><b>A</b></button></span>';
