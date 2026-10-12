@@ -911,49 +911,4 @@
   var f1Scroller = $("#f1progression .pitch-wrap");
   if (f1Scroller && window.matchMedia("(max-width: 680px)").matches) f1Scroller.scrollLeft = f1Scroller.scrollWidth;
 
-  /* ---- metro start screen: headline glide, live tiles, press tilt ---- */
-  document.documentElement.classList.add("js");
-  var calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  // poster and section headlines glide in from the right edge as their pane arrives
-  var glides = $$(".glide");
-  if ("IntersectionObserver" in window && !calm) {
-    var gio = new IntersectionObserver(function (es) {
-      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("seen"); gio.unobserve(e.target); } });
-    }, { threshold: 0.2 });
-    glides.forEach(function (g) { gio.observe(g); });
-  }
-
-  // live tiles flip to their back face: one at a time on a slow timer, and on hover / focus
-  var lives = $$(".tile.live");
-  lives.forEach(function (t) {
-    t.addEventListener("mouseenter", function () { t.classList.add("flipped"); });
-    t.addEventListener("mouseleave", function () { t.classList.remove("flipped"); });
-    t.addEventListener("focus", function () { t.classList.add("flipped"); });
-    t.addEventListener("blur", function () { t.classList.remove("flipped"); });
-  });
-  if (lives.length && !calm) {
-    var li = 0;
-    setInterval(function () {
-      if (document.hidden) return;
-      var t = lives[li % lives.length]; li++;
-      if (t.matches(":hover") || t === document.activeElement) return;
-      t.classList.add("flipped");
-      setTimeout(function () { if (!t.matches(":hover") && t !== document.activeElement) t.classList.remove("flipped"); }, 3200);
-    }, 2400);
-  }
-
-  // tiles tilt toward the finger on press
-  if (!calm) $$(".tile").forEach(function (t) {
-    t.addEventListener("pointerdown", function (e) {
-      var r = t.getBoundingClientRect();
-      var dx = (e.clientX - r.left) / r.width - 0.5, dy = (e.clientY - r.top) / r.height - 0.5;
-      t.style.setProperty("--ry", (dx * 10).toFixed(2) + "deg");
-      t.style.setProperty("--rx", (-dy * 10).toFixed(2) + "deg");
-      t.classList.add("pressed");
-    });
-    ["pointerup", "pointerleave", "pointercancel"].forEach(function (ev) {
-      t.addEventListener(ev, function () { t.style.removeProperty("--rx"); t.style.removeProperty("--ry"); t.classList.remove("pressed"); });
-    });
-  });
 })();

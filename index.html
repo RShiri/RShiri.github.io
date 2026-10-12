@@ -19,11 +19,11 @@
 <link rel="canonical" href="https://rshiri.github.io/" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Display:wght@200;300;400;600&display=swap" rel="stylesheet" />
-<script>/* theme before CSS paints (no flash): dark is the default */
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..900&display=swap" rel="stylesheet" />
+<script>/* theme before CSS paints (no flash): light is the default, like a match-day site */
 (function(){var t=null;try{t=localStorage.getItem("theme")}catch(e){}
-document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");})();</script>
-<link rel="stylesheet" href="styles.css?v=19" />
+document.documentElement.setAttribute("data-theme",t==="dark"?"dark":"light");})();</script>
+<link rel="stylesheet" href="styles.css?v=20" />
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -41,84 +41,114 @@ document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");}
   <symbol id="i-moon" viewBox="0 0 16 16"><path d="M13.5 9.6A5.5 5.5 0 0 1 6.4 2.5a5.5 5.5 0 1 0 7.1 7.1Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
 </svg>
 
-<header class="pivot" id="nav">
-  <nav class="pivot-links nav-links" id="navLinks" aria-label="Primary">
-    <a href="#top" class="pivot-home">ram shiri</a>
-    <a href="#work">work</a>
-    <a href="#analytics">analytics</a>
-    <a href="#more">more</a>
-    <a href="#about">about</a>
-    <a href="#contact">contact</a>
-  </nav>
-  <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to light mode">
-    <svg class="ic ic-sun"><use href="#i-sun"/></svg><svg class="ic ic-moon"><use href="#i-moon"/></svg>
-  </button>
+<header class="mast" id="nav">
+  <div class="mast-inner">
+    <a class="wordmark" href="#top"><span class="wm-dot" aria-hidden="true"></span>RAM SHIRI</a>
+    <nav class="mast-links nav-links" id="navLinks" aria-label="Primary">
+      <a href="#work">Work</a>
+      <a href="#analytics">Match centre</a>
+      <a href="#table">All builds</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a class="btn btn--coral btn--sm mast-cv" href="assets/Ram_Shiri_CV.pdf" download>CV</a>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to light mode">
+      <svg class="ic ic-sun"><use href="#i-sun"/></svg><svg class="ic ic-moon"><use href="#i-moon"/></svg>
+    </button>
+  </div>
+  <div class="ribbon" aria-label="Featured projects">
+    <div class="ribbon-inner">
+      <a class="fx" href="https://rshiri.github.io/XLALIGA/" target="_blank" rel="noopener"><span class="fx-comp">La Liga</span><span class="fx-name">XLALIGA</span><span class="fx-live">Live</span></a>
+      <a class="fx" href="https://rshiri.github.io/XEPL/" target="_blank" rel="noopener"><span class="fx-comp">Premier League</span><span class="fx-name">XEPL</span><span class="fx-live">Live</span></a>
+      <a class="fx" href="https://rshiri.github.io/F1Visualized/" target="_blank" rel="noopener"><span class="fx-comp">Formula 1</span><span class="fx-name">F1 Visualized</span><span class="fx-live">Live</span></a>
+      <a class="fx" href="xg-model/" target="_blank" rel="noopener"><span class="fx-comp">Machine learning</span><span class="fx-name">xG model</span><span class="fx-live">Live</span></a>
+    </div>
+  </div>
 </header>
 
 <main id="main">
 <span id="top"></span>
 
-<section class="start" aria-label="Introduction">
-  <h1 class="poster"><span class="glide">ram shiri</span></h1>
-  <div class="start-body">
-    <div class="start-copy">
-      <p class="role">sports data, engineered end to end.</p>
-      <p class="lead">Third-year Data Engineering student at Ben-Gurion University. I scrape, model and ship live football, basketball and F1 analytics: xG models, match centres, real-time pipelines and dashboards. Data and sport is what I build even when nobody asks.</p>
-    </div>
-    <div class="tiles start-tiles">
-      <a class="tile t-accent t-wide" href="mailto:puzik7399@gmail.com">
-        <span class="t-big">open to work</span>
-        <span class="t-label">student or full-time · data engineering &amp; AI · email me</span>
-      </a>
-      <div class="tile t-med t-photo live" tabindex="0" aria-label="Ram Shiri, B.Sc. Data Engineering at Ben-Gurion University, 3rd year">
-        <div class="face front"><img src="assets/img/ram.jpg" alt="Portrait of Ram Shiri" width="768" height="1024" /></div>
-        <div class="face back t-cobalt"><span class="t-big">bgu</span><span class="t-label">b.sc. data engineering · 3rd year · israel</span></div>
+<section class="lead-row wrap" aria-label="Introduction">
+  <article class="feature">
+    <div class="feature-copy">
+      <span class="pill pill--coral"><span class="pill-dot" aria-hidden="true"></span>Open to work</span>
+      <h1>Sports data, engineered end to end.</h1>
+      <p class="lead">I'm Ram Shiri, a third-year Data Engineering student at Ben-Gurion University. I scrape, model and ship live football, basketball and F1 analytics: xG models, match centres, real-time pipelines and dashboards. Data and sport is what I build even when nobody asks.</p>
+      <div class="actions">
+        <a class="btn btn--coral" href="#work">View work</a>
+        <a class="btn btn--ghost" href="assets/Ram_Shiri_CV.pdf" download><svg class="ic"><use href="#i-down"/></svg>Download CV</a>
       </div>
-      <a class="tile t-med t-magenta" href="assets/Ram_Shiri_CV.pdf" download>
-        <svg class="t-icon"><use href="#i-down"/></svg>
-        <span class="t-label">download cv</span>
-      </a>
-      <a class="tile t-med t-teal" href="https://github.com/rshiri" target="_blank" rel="noopener" aria-label="GitHub">
-        <svg class="t-icon"><use href="#i-github"/></svg><span class="t-label">github</span>
-      </a>
-      <a class="tile t-med t-cobalt" href="#" data-linkedin target="_blank" rel="noopener" aria-label="LinkedIn">
-        <svg class="t-icon"><use href="#i-linkedin"/></svg><span class="t-label">linkedin</span>
-      </a>
     </div>
+    <div class="feature-photo"><img src="assets/img/ram.jpg" alt="Portrait of Ram Shiri" width="768" height="1024" /></div>
+  </article>
+  <aside class="card glance" aria-label="At a glance">
+    <h2 class="card-title">At a glance</h2>
+    <table class="glance-table">
+      <tbody>
+        <tr><th scope="row">Studying</th><td>B.Sc. Data Engineering</td></tr>
+        <tr><th scope="row">University</th><td>Ben-Gurion University</td></tr>
+        <tr><th scope="row">Year</th><td>3rd</td></tr>
+        <tr><th scope="row">Looking for</th><td>Student or full-time</td></tr>
+        <tr><th scope="row">Focus</th><td>Data engineering, AI</td></tr>
+        <tr><th scope="row">Based in</th><td>Israel</td></tr>
+      </tbody>
+    </table>
+    <a class="glance-mail" href="mailto:puzik7399@gmail.com"><svg class="ic"><use href="#i-mail"/></svg>puzik7399@gmail.com</a>
+  </aside>
+</section>
+
+<section id="work" class="sect wrap">
+  <div class="sect-head">
+    <h2>Featured work</h2>
+    <a class="see-all" href="#table">All builds<svg class="ic"><use href="#i-arrow"/></svg></a>
+  </div>
+  <div class="feat-grid">
+    <a class="story story--xl" href="https://rshiri.github.io/XLALIGA/" target="_blank" rel="noopener">
+      <img src="assets/img/laliga.png" alt="" loading="lazy" />
+      <span class="story-body">
+        <span class="pill pill--light">La Liga</span>
+        <span class="story-title">XLALIGA: La Liga match analytics</span>
+        <span class="story-desc">Standings, an xG efficiency lab, a player leaderboard and a Poisson season projection.</span>
+        <span class="story-stack">Python · xG model · Poisson</span>
+      </span>
+    </a>
+    <a class="story" href="https://rshiri.github.io/XEPL/" target="_blank" rel="noopener">
+      <img src="assets/img/xepl.png" alt="" loading="lazy" />
+      <span class="story-body">
+        <span class="pill pill--light">Premier League</span>
+        <span class="story-title">XEPL: Premier League analytics</span>
+        <span class="story-desc">League tables, a custom xG model, shot maps and match stats.</span>
+        <span class="story-stack">Python · xG model · Pandas</span>
+      </span>
+    </a>
+    <a class="story" href="https://rshiri.github.io/F1Visualized/" target="_blank" rel="noopener">
+      <img src="assets/img/f1.png" alt="" loading="lazy" />
+      <span class="story-body">
+        <span class="pill pill--light">Formula 1</span>
+        <span class="story-title">F1 Visualized</span>
+        <span class="story-desc">Race results, driver and constructor standings, and season charts.</span>
+        <span class="story-stack">Python · Plotly · Dataviz</span>
+      </span>
+    </a>
+    <a class="story story--wide" href="xg-model/" target="_blank" rel="noopener">
+      <img src="assets/img/xg-model.png" alt="" loading="lazy" />
+      <span class="story-body">
+        <span class="pill pill--light">Machine learning</span>
+        <span class="story-title">What a shot is worth: the xG model</span>
+        <span class="story-desc">The model behind every xG number here, trained on 77,627 real shots and 2.4M passes, explained step by step with a live calculator.</span>
+        <span class="story-stack">Scikit-learn · XGBoost · Calibration</span>
+      </span>
+    </a>
   </div>
 </section>
 
-<section id="work" class="sect">
-  <h2 class="headline"><span class="glide">work</span></h2>
-  <p class="sect-sub">Deployed products, built on data I collected and modelled myself. Tiles flip to show what's inside; open any of them.</p>
-  <div class="tiles work-tiles">
-    <a class="tile t-large live t-cobalt" href="https://rshiri.github.io/XWORLDCUPTWIT/wc2026_dashboard/index.html" target="_blank" rel="noopener">
-      <span class="face front"><img src="assets/img/wc2026.png" alt="" loading="lazy" /><span class="t-name">world cup 2026</span></span>
-      <span class="face back"><span class="t-big">world cup 2026</span><span class="t-desc">A tournament hub with groups, fixtures, predictions and match centres, fed by an automated event pipeline.</span><span class="t-label">data pipeline · automation · xG model</span></span>
-    </a>
-    <a class="tile t-wide live t-orange" href="https://nba-dashboard-ramshiri.streamlit.app/" target="_blank" rel="noopener">
-      <span class="face front"><img src="assets/img/nba.png" alt="" loading="lazy" /><span class="t-name">nba analytics</span></span>
-      <span class="face back"><span class="t-big">nba analytics</span><span class="t-desc">Explore NBA team and player performance interactively.</span><span class="t-label">streamlit · plotly · pandas</span></span>
-    </a>
-    <a class="tile t-wide live t-magenta" href="https://rshiri.github.io/XEPL/" target="_blank" rel="noopener">
-      <span class="face front"><img src="assets/img/xepl.png" alt="" loading="lazy" /><span class="t-name">xepl · premier league</span></span>
-      <span class="face back"><span class="t-big">xepl</span><span class="t-desc">League tables, a custom xG model, shot maps and match stats.</span><span class="t-label">python · xG model · pandas</span></span>
-    </a>
-    <a class="tile t-wide live t-teal" href="https://rshiri.github.io/XLALIGA/" target="_blank" rel="noopener">
-      <span class="face front"><img src="assets/img/laliga.png" alt="" loading="lazy" /><span class="t-name">xlaliga · la liga</span></span>
-      <span class="face back"><span class="t-big">xlaliga</span><span class="t-desc">Standings, an xG efficiency lab, a player leaderboard and a Poisson season projection.</span><span class="t-label">python · xG model · poisson</span></span>
-    </a>
-    <a class="tile t-wide live t-crimson" href="https://rshiri.github.io/F1Visualized/" target="_blank" rel="noopener">
-      <span class="face front"><img src="assets/img/f1.png" alt="" loading="lazy" /><span class="t-name">f1 visualized</span></span>
-      <span class="face back"><span class="t-big">f1 visualized</span><span class="t-desc">Race results, driver and constructor standings, and season charts.</span><span class="t-label">python · plotly · dataviz</span></span>
-    </a>
+<section id="analytics" class="sect wrap">
+  <div class="sect-head">
+    <h2>Match centre</h2>
+    <a class="see-all" href="xg-model/" target="_blank" rel="noopener">How the xG works<svg class="ic"><use href="#i-arrow"/></svg></a>
   </div>
-</section>
-
-<section id="analytics" class="sect">
-  <h2 class="headline"><span class="glide">analytics</span></h2>
-  <p class="sect-sub">Interactive charts built from match data, running right on this page. Hover a shot, filter the take-ons, replay a goal.</p>
-  <p class="model-note">Every <b>xG</b> and <b>xA</b> number here comes from models I built and trained: a logistic-regression and gradient-boosting blend for xG on <b>~78,000</b> real shots (La Liga, Premier League and this World Cup), and a two-stage xA model on <b>2.4 million</b> passes, both calibrated so the totals line up with real goals and assists. <a href="xg-model/" target="_blank" rel="noopener">how the xG model works<svg class="ic"><use href="#i-arrow"/></svg></a></p>
+  <p class="sect-sub">Interactive charts built from match data, running right on this page. Every <b>xG</b> and <b>xA</b> value comes from models I trained: an xG blend on <b>~78,000</b> real shots and a two-stage xA model on <b>2.4 million</b> passes, both calibrated against real goals and assists.</p>
   <div class="charts">
     <!-- Shot map -->
     <div class="viz">
@@ -326,59 +356,72 @@ document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");}
   </div>
 </section>
 
-<section id="more" class="sect">
-  <h2 class="headline"><span class="glide">more builds</span></h2>
-  <p class="sect-sub">Smaller projects and write-ups behind the main work. Slide for more.</p>
-  <div class="panorama" tabindex="0" aria-label="More builds, scroll sideways">
-    <a class="tile t-wide t-emerald" href="https://rshiri.github.io/BCNFINAL/" target="_blank" rel="noopener">
-      <span class="t-big">barça xG lab</span><span class="t-desc">Every Barça 2025/26 fixture: results, an xG model, shot maps and a player lab.</span><span class="t-label">python · pandas · xG</span>
-    </a>
-    <a class="tile t-wide t-cobalt" href="xg-model/" target="_blank" rel="noopener">
-      <span class="t-big">what a shot is worth</span><span class="t-desc">Walkthrough of the xG model: real shot data, 23 features, calibration and a live calculator.</span><span class="t-label">machine learning · xG</span>
-    </a>
-    <a class="tile t-wide t-magenta" href="winprob-model/" target="_blank" rel="noopener">
-      <span class="t-big">one model, four sites</span><span class="t-desc">An in-play win-probability model fit on 3,272 matches and 82,310 shots, back-tested blind on 864 matches.</span><span class="t-label">model training · back-testing</span>
-    </a>
-    <a class="tile t-wide t-orange" href="live-pipeline/" target="_blank" rel="noopener">
-      <span class="t-big">mini trade360</span><span class="t-desc">A replayed live feed over RabbitMQ with sequence-gap recovery and an in-play model pricing the 1X2 market.</span><span class="t-label">real-time · rabbitmq</span>
-    </a>
+<section id="table" class="sect wrap">
+  <div class="sect-head">
+    <h2>All builds</h2>
+  </div>
+  <div class="card standings">
+    <table class="league">
+      <thead><tr><th scope="col" class="pos">#</th><th scope="col">Project</th><th scope="col" class="hide-sm">Competition</th><th scope="col" class="hide-sm">Built with</th><th scope="col" class="open"><span class="sr">Open</span></th></tr></thead>
+      <tbody>
+        <tr><td class="pos"><span class="mk mk--a">1</span></td><td><a href="https://rshiri.github.io/XLALIGA/" target="_blank" rel="noopener"><b>XLALIGA</b><span>La Liga match analytics</span></a></td><td class="hide-sm">La Liga</td><td class="hide-sm">Python, xG, Poisson</td><td class="open"><svg class="ic"><use href="#i-arrow"/></svg></td></tr>
+        <tr><td class="pos"><span class="mk mk--a">2</span></td><td><a href="https://rshiri.github.io/XEPL/" target="_blank" rel="noopener"><b>XEPL</b><span>Premier League analytics</span></a></td><td class="hide-sm">Premier League</td><td class="hide-sm">Python, xG, Pandas</td><td class="open"><svg class="ic"><use href="#i-arrow"/></svg></td></tr>
+        <tr><td class="pos"><span class="mk mk--a">3</span></td><td><a href="https://rshiri.github.io/F1Visualized/" target="_blank" rel="noopener"><b>F1 Visualized</b><span>Season dashboard</span></a></td><td class="hide-sm">Formula 1</td><td class="hide-sm">Python, Plotly</td><td class="open"><svg class="ic"><use href="#i-arrow"/></svg></td></tr>
+        <tr><td class="pos"><span class="mk mk--a">4</span></td><td><a href="xg-model/" target="_blank" rel="noopener"><b>xG model</b><span>How a shot is valued</span></a></td><td class="hide-sm">Machine learning</td><td class="hide-sm">Scikit-learn, XGBoost</td><td class="open"><svg class="ic"><use href="#i-arrow"/></svg></td></tr>
+        <tr><td class="pos"><span class="mk">5</span></td><td><a href="https://rshiri.github.io/XWORLDCUPTWIT/wc2026_dashboard/index.html" target="_blank" rel="noopener"><b>World Cup 2026</b><span>Tournament hub and event pipeline</span></a></td><td class="hide-sm">World Cup</td><td class="hide-sm">Python, MongoDB</td><td class="open"><svg class="ic"><use href="#i-arrow"/></svg></td></tr>
+        <tr><td class="pos"><span class="mk">6</span></td><td><a href="winprob-model/" target="_blank" rel="noopener"><b>Win-probability model</b><span>3,272 matches, back-tested on 864</span></a></td><td class="hide-sm">Machine learning</td><td class="hide-sm">Python</td><td class="open"><svg class="ic"><use href="#i-arrow"/></svg></td></tr>
+        <tr><td class="pos"><span class="mk">7</span></td><td><a href="live-pipeline/" target="_blank" rel="noopener"><b>Live match pipeline</b><span>A mini TRADE360 over RabbitMQ</span></a></td><td class="hide-sm">Real-time</td><td class="hide-sm">Python, RabbitMQ</td><td class="open"><svg class="ic"><use href="#i-arrow"/></svg></td></tr>
+        <tr><td class="pos"><span class="mk">8</span></td><td><a href="https://nba-dashboard-ramshiri.streamlit.app/" target="_blank" rel="noopener"><b>NBA analytics</b><span>Team and player dashboard</span></a></td><td class="hide-sm">NBA</td><td class="hide-sm">Streamlit, Plotly</td><td class="open"><svg class="ic"><use href="#i-arrow"/></svg></td></tr>
+        <tr><td class="pos"><span class="mk">9</span></td><td><a href="https://rshiri.github.io/BCNFINAL/" target="_blank" rel="noopener"><b>Barça xG Lab</b><span>Every 2025/26 fixture</span></a></td><td class="hide-sm">La Liga</td><td class="hide-sm">Python, Pandas</td><td class="open"><svg class="ic"><use href="#i-arrow"/></svg></td></tr>
+      </tbody>
+    </table>
+    <p class="league-key"><span class="mk mk--a"></span>Featured</p>
   </div>
 </section>
 
-<section id="about" class="sect">
-  <h2 class="headline"><span class="glide">why sport, why data</span></h2>
-  <div class="about">
+<section id="about" class="sect wrap">
+  <div class="about card">
     <div class="about-copy">
+      <h2>Why sport, why data</h2>
       <p>I fell for football numbers long before I studied them, and every project on this page started the same way: a question about a match, and a tool I didn't know yet. I learned scraping to get the data, modelling to make sense of it, and pipelines to keep it live.</p>
       <p>That is the deal I offer an employer: give me any problem in this space and I will learn what it takes and do it properly. I work fast with AI-assisted tools, and I still own and can explain every line I ship.</p>
     </div>
     <dl class="skills">
-      <div><dt>languages</dt><dd>Python, SQL, Java, JavaScript</dd></div>
-      <div><dt>data &amp; ml</dt><dd>Pandas, NumPy, scikit-learn, XGBoost, Plotly, Streamlit</dd></div>
-      <div><dt>data engineering</dt><dd>Web scraping, ETL pipelines, REST APIs, PostgreSQL, MongoDB, Docker, Git</dd></div>
-      <div><dt>ai-assisted development</dt><dd>Claude Code, Cursor, agentic workflows</dd></div>
+      <div><dt>Languages</dt><dd>Python, SQL, Java, JavaScript</dd></div>
+      <div><dt>Data &amp; ML</dt><dd>Pandas, NumPy, scikit-learn, XGBoost, Plotly, Streamlit</dd></div>
+      <div><dt>Data engineering</dt><dd>Web scraping, ETL pipelines, REST APIs, PostgreSQL, MongoDB, Docker, Git</dd></div>
+      <div><dt>AI-assisted development</dt><dd>Claude Code, Cursor, agentic workflows</dd></div>
     </dl>
   </div>
 </section>
 
-<section id="contact" class="sect">
-  <h2 class="headline"><span class="glide">let's talk</span></h2>
-  <p class="sect-sub">Looking for a student or full-time role in data engineering or AI, ideally where sport is the product.</p>
-  <div class="tiles contact-tiles">
-    <a class="tile t-wide t-accent" href="mailto:puzik7399@gmail.com"><svg class="t-icon"><use href="#i-mail"/></svg><span class="t-big">email</span><span class="t-label">puzik7399@gmail.com</span></a>
-    <a class="tile t-med t-magenta" href="assets/Ram_Shiri_CV.pdf" download><svg class="t-icon"><use href="#i-down"/></svg><span class="t-label">download cv</span></a>
-    <a class="tile t-med t-cobalt" href="#" data-linkedin target="_blank" rel="noopener"><svg class="t-icon"><use href="#i-linkedin"/></svg><span class="t-label">linkedin</span></a>
-    <a class="tile t-med t-teal" href="https://github.com/rshiri" target="_blank" rel="noopener"><svg class="t-icon"><use href="#i-github"/></svg><span class="t-label">github</span></a>
+<section id="contact" class="sect wrap">
+  <div class="band">
+    <div>
+      <h2>Let's talk.</h2>
+      <p>Looking for a student or full-time role in data engineering or AI, ideally where sport is the product.</p>
+    </div>
+    <div class="band-actions">
+      <a class="btn btn--white" href="mailto:puzik7399@gmail.com"><svg class="ic"><use href="#i-mail"/></svg>Email me</a>
+      <a class="btn btn--ghost-light" href="assets/Ram_Shiri_CV.pdf" download><svg class="ic"><use href="#i-down"/></svg>Download CV</a>
+    </div>
   </div>
 </section>
 </main>
 
 <footer class="footer">
-  <span>© <span id="year"></span> ram shiri</span>
-  <a href="#top" class="to-top">back to top</a>
+  <div class="wrap footer-inner">
+    <a class="wordmark" href="#top"><span class="wm-dot" aria-hidden="true"></span>RAM SHIRI</a>
+    <ul class="footer-links">
+      <li><a href="https://github.com/rshiri" target="_blank" rel="noopener"><svg class="ic"><use href="#i-github"/></svg>GitHub</a></li>
+      <li><a href="#" data-linkedin target="_blank" rel="noopener"><svg class="ic"><use href="#i-linkedin"/></svg>LinkedIn</a></li>
+      <li><a href="mailto:puzik7399@gmail.com"><svg class="ic"><use href="#i-mail"/></svg>Email</a></li>
+    </ul>
+    <span class="footer-copy">© <span id="year"></span> Ram Shiri</span>
+  </div>
 </footer>
 
 <div class="tooltip" id="tooltip" role="status" aria-live="polite"></div>
-<script src="main.js?v=17" defer></script>
+<script src="main.js?v=18" defer></script>
 </body>
 </html>

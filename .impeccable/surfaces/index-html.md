@@ -6,13 +6,13 @@ related_targets: []
 ---
 
 Scope: portfolio homepage (index.html). Visitor mode: Experience (the work leads).
-Audience: sports-data hiring managers and recruiters, equally. Job: decide in seconds that Ram fits a data/AI role in sports, then open live work.
-Constraints: static GitHub Pages; keep main.js charts working and featured; BCN xG Lab, xG explainer, win-prob write-up and live pipeline stay demoted. User rejected the canon build as generic and asked for futuristic; bolder re-roll, user chose the Metro typographic tiles world.
+Audience: sports-data hiring managers and recruiters, equally.
+Constraints: static GitHub Pages; charts in main.js kept. Featured big (user, explicit): XLALIGA, XEPL, F1 Visualized, the xG model site. Everything else (World Cup 2026, NBA, Barça xG Lab, win-prob write-up, live pipeline) goes small. Rejected: canon graphite build ("generic"), Metro tiles build ("it sucks"). User pinned the direction: "get inspiration from La Liga website".
 
 ## Direction contract
-THESIS: the portfolio as a live start screen: giant light lowercase type cropped off the right edge and flat colour tiles are the whole interface; refuses cards, borders, gradients, glow and button chrome.
-OWN-WORLD: pure black ground (white in light theme), white light-weight Noto Sans Display lowercase from caption to poster size, flat tiles in cobalt, magenta, teal, crimson, emerald and orange, one lime accent owning every live/selected state, square tile grid, no borders or shadows.
-STORY: see the name at poster scale and the open-to-work tile; flip through live project tiles; play with the charts; slide the panorama of smaller builds; read why; tap a tile to email or get the CV.
-FIRST VIEWPORT: pivot nav of lowercase words across the top; "ram shiri" at ~20vw cropped off the right edge; a one-line role in light type; a tile cluster (portrait live tile, lime open-to-work wide tile, CV tile, email, GitHub, LinkedIn) with the primary action as the lime tile.
-FORM: challenger digital-design-canon-metro-typographic-tiles (bolder re-roll 1), seed 2cba5cbe.
+THESIS: the portfolio as a football league's media site: a black masthead, a fixtures ribbon, a big rounded feature card and a standings-style table carry the pitch; refuses developer-portfolio tropes (terminal, mono, glow, neutral cards).
+OWN-WORLD: light grey page (#f2f2f2) with white rounded cards (16px), a black masthead and footer, one hot coral (#ff4b44) for live state, primary actions and markers, heavy wide uppercase Archivo headlines, image cards with a bottom scrim and a competition pill, a league table with position markers. Dark theme is the night-match variant.
+STORY: the masthead and ribbon say "live sports data"; the feature card says who Ram is and offers View work / CV; four big project cards; the match-centre charts; a standings table of every other build; why; contact band.
+FIRST VIEWPORT: black masthead (wordmark, uppercase nav, coral CV button); a fixtures ribbon of the four featured projects marked LIVE; a large rounded dark feature card (headline, lead, coral View work, outline CV, portrait right) beside an "at a glance" table card.
+FORM: user-pinned brief (La Liga website inspiration), seed 2cba5cbe (rolls superseded by the pin).
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
