@@ -30,11 +30,42 @@ html[data-site-style="a"] {
 .rs-bar__brand i { font-style: normal; color: var(--rs-accent); }
 .rs-bar__back { letter-spacing: .14em; text-transform: uppercase; transition: color .2s; }
 .rs-bar__back:hover, .rs-bar__back:focus-visible { color: var(--rs-accent); }
-.rs-bar__style { margin-left: auto; display: inline-flex; gap: 6px; align-items: center; padding: 6px 10px; border: 1px solid var(--rs-line-strong);
+.rs-bar__end { margin-inline-start: auto; display: inline-flex; gap: 10px; align-items: center; }
+.rs-bar__style { display: inline-flex; gap: 6px; align-items: center; padding: 6px 10px; border: 1px solid var(--rs-line-strong);
   background: transparent; color: var(--rs-muted); font: 600 11px/1 var(--rs-display); letter-spacing: .14em; cursor: pointer; }
 .rs-bar__style b { font-weight: 700; }
 .rs-bar__style b.on { color: var(--rs-accent); }
 .rs-bar :focus-visible { outline: 2px solid var(--rs-accent); outline-offset: 3px; }
 html[data-site-style="a"] .rs-bar__brand { font-style: italic; font-size: 18px; letter-spacing: .04em; }
 html[data-site-style="a"] .rs-bar__style { transform: skewX(-12deg); }
-@media (max-width: 520px) { .rs-bar { gap: 14px; } .rs-bar__back { display: none; } }
+.rs-bar__about, .rs-bar__lang { padding: 6px 10px; border: 1px solid var(--rs-line-strong); background: transparent; color: var(--rs-ink);
+  font: 600 11px/1 var(--rs-display); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
+.rs-bar__about { border-color: var(--rs-accent); color: var(--rs-accent); }
+.rs-bar__about:hover { background: var(--rs-accent-soft); }
+.rs-bar__lang { font-family: "IBM Plex Sans Hebrew", var(--rs-text); letter-spacing: .04em; font-size: 12px; text-transform: none; }
+.rs-bar[dir="rtl"] { font-family: "IBM Plex Sans Hebrew", var(--rs-text); }
+.rs-bar[dir="rtl"] .rs-bar__back, .rs-bar[dir="rtl"] .rs-bar__about { font-family: "IBM Plex Sans Hebrew", var(--rs-text); letter-spacing: 0; font-size: 13px; }
+.rs-bar[dir="rtl"] .rs-bar__back span[aria-hidden] { display: inline-block; transform: scaleX(-1); }
+html[data-site-lang="he"] [dir="auto"] { font-family: "IBM Plex Sans Hebrew", inherit; }
+html[data-site-style="a"] .rs-bar__about, html[data-site-style="a"] .rs-bar__lang { transform: skewX(-12deg); }
+
+/* About panel: a side sheet with the detailed explanation */
+.rs-about { position: fixed; inset: 0; z-index: 2000; }
+.rs-about[hidden] { display: none; }
+.rs-about__scrim { position: absolute; inset: 0; background: rgba(0, 0, 0, .6); }
+.rs-about__sheet { position: absolute; top: 0; bottom: 0; inset-inline-end: 0; width: min(640px, 100%); overflow-y: auto; overscroll-behavior: contain;
+  background: var(--rs-bg); border-inline-start: 1px solid var(--rs-line-strong); padding: 28px clamp(18px, 4vw, 40px) 48px; color: var(--rs-body);
+  font: 400 16px/1.65 var(--rs-text); }
+.rs-about[dir="rtl"] .rs-about__sheet { font-family: "IBM Plex Sans Hebrew", var(--rs-text); }
+.rs-about__close { float: inline-end; padding: 6px 12px; border: 1px solid var(--rs-line-strong); background: transparent; color: var(--rs-ink); font: 600 12px/1 var(--rs-text); cursor: pointer; }
+.rs-about h2 { margin: 6px 0 14px; font: 700 30px/1.05 var(--rs-display); text-transform: uppercase; color: var(--rs-ink); letter-spacing: 0; }
+.rs-about[dir="rtl"] h2, .rs-about[dir="rtl"] h3 { font-family: "IBM Plex Sans Hebrew", var(--rs-text); text-transform: none; letter-spacing: 0; }
+html[data-site-style="a"] .rs-about h2 { font-style: italic; font-size: 38px; }
+.rs-about__intro { font-size: 17px; color: var(--rs-ink); margin: 0 0 22px; }
+.rs-about section { border-top: 1px solid var(--rs-line); padding: 16px 0 4px; }
+.rs-about h3 { margin: 0 0 6px; font: 600 13px/1.2 var(--rs-display); letter-spacing: .16em; text-transform: uppercase; color: var(--rs-accent); }
+.rs-about p { margin: 0 0 10px; }
+.rs-about b, .rs-about strong { color: var(--rs-ink); }
+.rs-about code { font-size: .9em; background: var(--rs-panel); padding: 1px 5px; }
+body.rs-about-open { overflow: hidden; }
+@media (max-width: 640px) { .rs-bar { gap: 10px; flex-wrap: wrap; padding-top: 6px; padding-bottom: 6px; } .rs-bar__back { display: none; } }
