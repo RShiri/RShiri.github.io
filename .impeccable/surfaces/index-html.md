@@ -7,12 +7,12 @@ related_targets: []
 
 Scope: portfolio homepage (index.html). Visitor mode: Experience (the work leads).
 Audience: sports-data hiring managers and recruiters, equally. Job: decide in seconds that Ram fits a data/AI role in sports, then open live work.
-Constraints: static GitHub Pages, keep main.js charts (shot map, take-on map, Argentina match centre, F1 progression) working and featured; demote BCN xG Lab, xG explainer, win-prob write-up, live pipeline to a compact list.
+Constraints: static GitHub Pages; keep main.js charts working and featured; BCN xG Lab, xG explainer, win-prob write-up and live pipeline stay demoted. User rejected the canon build as generic and asked for futuristic; bolder re-roll, user chose the Metro typographic tiles world.
 
 ## Direction contract
-THESIS: the category standard (canon, chosen by the user) executed at Linear/Vercel craft: a precise, engineered dark page where shipped work and playable charts carry the pitch; refuses glow, gradients-as-brand, emoji icons and equal-card grids.
-OWN-WORLD: near-black graphite ground, hairline 1px borders, one cool signal accent used for state and links only, Geist for text and display, Geist Mono for numerals and data labels, dark pitch panels for charts, screenshots framed like product shots.
-STORY: who Ram is and what he wants in one line; proof that he ships (five live products); play with the analytics; skim the smaller builds; understand the passion; email or download the CV.
-FIRST VIEWPORT: left two-thirds: name, one-line headline, two-sentence lead, primary "View work", secondary "Download CV", availability status; right: portrait with a hairline fact sheet. Top of the Selected work bento visible below the fold line on desktop.
-FORM: canon (standard professional portfolio), seed 2cba5cbe.
+THESIS: the portfolio as a live start screen: giant light lowercase type cropped off the right edge and flat colour tiles are the whole interface; refuses cards, borders, gradients, glow and button chrome.
+OWN-WORLD: pure black ground (white in light theme), white light-weight Noto Sans Display lowercase from caption to poster size, flat tiles in cobalt, magenta, teal, crimson, emerald and orange, one lime accent owning every live/selected state, square tile grid, no borders or shadows.
+STORY: see the name at poster scale and the open-to-work tile; flip through live project tiles; play with the charts; slide the panorama of smaller builds; read why; tap a tile to email or get the CV.
+FIRST VIEWPORT: pivot nav of lowercase words across the top; "ram shiri" at ~20vw cropped off the right edge; a one-line role in light type; a tile cluster (portrait live tile, lime open-to-work wide tile, CV tile, email, GitHub, LinkedIn) with the primary action as the lime tile.
+FORM: challenger digital-design-canon-metro-typographic-tiles (bolder re-roll 1), seed 2cba5cbe.
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
