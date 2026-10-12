@@ -366,12 +366,12 @@ document.documentElement.setAttribute("data-style",v);})();</script>
       </dl></details>
     </li>
     <li>
-      <a href="https://nba-dashboard-ramshiri.streamlit.app/" target="_blank" rel="noopener"><img class="bimg" src="assets/img/thumb/nba.webp" alt="" width="96" height="60" loading="lazy" /><span class="n">08</span><span class="bt">NBA analytics</span><span class="bd">Team and player dashboard</span><span class="bw">Streamlit, Plotly</span><svg class="ic"><use href="#i-arrow"/></svg></a>
+      <a href="https://rshiri.github.io/nba-dashboard/" target="_blank" rel="noopener"><img class="bimg" src="assets/img/thumb/nba.webp" alt="" width="96" height="60" loading="lazy" /><span class="n">08</span><span class="bt">NBA analytics</span><span class="bd">Every Israeli player in the NBA, updated daily</span><span class="bw">Python, Plotly.js</span><svg class="ic"><use href="#i-arrow"/></svg></a>
       <details class="notes"><summary>How I built it</summary><dl>
         <div><dt>Problem</dt><dd>See how a player or team is really doing this season, beyond the box score.</dd></div>
-        <div><dt>Data</dt><dd>2025/26 NBA team and player statistics.</dd></div>
-        <div><dt>Method</dt><dd>A Streamlit app with Plotly charts: player profile cards, shooting efficiency and season impact, plus league and team views.</dd></div>
-        <div><dt>Result</dt><dd>A deployed, interactive NBA dashboard that anyone can open in the browser.</dd></div>
+        <div><dt>Data</dt><dd>The official NBA stats API (via nba_api): game logs, career and advanced stats, every shot location, an All-Star cohort and league leaderboards, refreshed daily by a GitHub Action.</dd></div>
+        <div><dt>Method</dt><dd>Python builds the data into JSON; a static JavaScript front end draws Plotly charts: season cards with deltas, career per-36 and efficiency trends, 14-zone shot maps and an All-Star comparison lab.</dd></div>
+        <div><dt>Result</dt><dd>A live dashboard on GitHub Pages that opens instantly, in English or Hebrew, and stays current without a server.</dd></div>
       </dl></details>
     </li>
     <li>

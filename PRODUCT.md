@@ -27,7 +27,7 @@ A third-year Data Engineering student who is in love with the meeting point of d
 
 - Static site on GitHub Pages (`rshiri.github.io`), no build step; plain HTML/CSS/JS.
 - Visitors arrive from a CV link, LinkedIn, or a direct message, often on a phone.
-- Projects live on sibling GitHub Pages sites (`/BCNFINAL/`, `/XEPL/`, `/XLALIGA/`, `/F1Visualized/`, `/XWORLDCUPTWIT/...`) and in sub-folders of this repo (`xg-model/`, `winprob-model/`, `live-pipeline/`). One project (NBA dashboard) is a Streamlit app that sleeps when idle.
+- Projects live on sibling GitHub Pages sites (`/BCNFINAL/`, `/XEPL/`, `/XLALIGA/`, `/F1Visualized/`, `/XWORLDCUPTWIT/...`) and in sub-folders of this repo (`xg-model/`, `winprob-model/`, `live-pipeline/`). The NBA dashboard moved from a sleeping Streamlit app to a static GitHub Pages site (`/nba-dashboard/`).
 
 ## Capabilities and Constraints
 
