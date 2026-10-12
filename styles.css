@@ -429,3 +429,14 @@ img { max-width: 100%; display: block; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
 }
+
+/* design switch (temporary, while choosing between styles C and A) */
+.style-switch { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; background: transparent; color: var(--muted);
+  border: 1px solid var(--line-strong); cursor: pointer; font: 600 12px/1 var(--font); letter-spacing: .14em; text-transform: uppercase; }
+.style-switch b { color: var(--muted); font-weight: 700; }
+html[data-style="c"] .style-switch b:first-of-type, html[data-style="a"] .style-switch b:last-of-type { color: var(--c); }
+.style-switch:hover { border-color: var(--c); color: var(--ink); }
+@media (max-width: 1000px) { .style-switch { margin-left: auto; } .nav-inner .btn { margin-left: 0 !important; } }
+@media (max-width: 420px) { .style-switch { padding: 0 8px; letter-spacing: .06em; } .nav-inner { gap: 10px; } }
+@media (max-width: 680px) { .nav .hide-sm { display: none; } }
+@media (max-width: 680px) { .nav-inner { gap: 10px; } .style-switch { margin-left: auto; padding: 0 10px; } .brand { font-size: 15px; letter-spacing: .14em; } }

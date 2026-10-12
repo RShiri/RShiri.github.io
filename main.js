@@ -911,4 +911,12 @@
   var f1Scroller = $("#f1progression .pitch-wrap");
   if (f1Scroller && window.matchMedia("(max-width: 680px)").matches) f1Scroller.scrollLeft = f1Scroller.scrollWidth;
 
+  /* temporary design switch: flips between style C (styles.css) and style A (style-a.css) */
+  var styleBtn = $("#styleSwitch");
+  if (styleBtn) styleBtn.addEventListener("click", function () {
+    var next = document.documentElement.getAttribute("data-style") === "a" ? "c" : "a";
+    $("#styleA").disabled = next !== "a"; $("#styleC").disabled = next === "a";
+    document.documentElement.setAttribute("data-style", next);
+    try { localStorage.setItem("site-style", next); } catch (e) {}
+  });
 })();

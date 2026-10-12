@@ -17,9 +17,14 @@
 <link rel="canonical" href="https://rshiri.github.io/" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=Barlow+Condensed:ital,wght@0,700;0,800;1,700;1,800;1,900&family=Barlow:wght@500;600;700&display=swap" rel="stylesheet" />
 <script>document.documentElement.setAttribute("data-theme","dark");</script>
-<link rel="stylesheet" href="styles.css?v=21" />
+<link rel="stylesheet" id="styleC" href="styles.css?v=22" />
+<link rel="stylesheet" id="styleA" href="style-a.css?v=1" />
+<script>/* two looks while choosing: C (HUD, default) and A (matchday); the switch in the nav flips them */
+(function(){var v="c";try{v=localStorage.getItem("site-style")==="a"?"a":"c"}catch(e){}
+document.getElementById("styleA").disabled=v!=="a";document.getElementById("styleC").disabled=v==="a";
+document.documentElement.setAttribute("data-style",v);})();</script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -46,7 +51,8 @@
       <a href="#builds">All builds</a>
       <a href="#about">About</a>
     </nav>
-    <a class="btn btn--solid btn--sm" href="assets/Ram_Shiri_CV.pdf" download>Download CV</a>
+    <button class="style-switch" id="styleSwitch" type="button" aria-label="Switch design"><span class="hide-sm">Style </span><b>C</b><span aria-hidden="true">/</span><b>A</b></button>
+    <a class="btn btn--solid btn--sm" href="assets/Ram_Shiri_CV.pdf" download><span class="hide-sm">Download&nbsp;</span>CV</a>
   </div>
 </header>
 
@@ -96,7 +102,7 @@
           <span><i class="lg-blocked"></i> Blocked</span>
           <span class="lg-size"><i></i><i></i><i></i> size = xG</span>
           <span class="lg-path"><i></i> shot path → goal</span>
-        </div><div class="chart-tip" id="shotTip">Tap or hover a shot. Dot size is xG from my model; magenta is a goal.</div></div>
+        </div><div class="chart-tip" id="shotTip">Tap or hover a shot. Dot size is xG from my model; highlighted dots are goals.</div></div>
   </div>
 </section>
 
