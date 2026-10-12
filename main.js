@@ -920,6 +920,19 @@
     try { localStorage.setItem("site-style", next); } catch (e) {}
     syncOffsiteStyle();
   });
+  /* language: English by default, Hebrew on request (assets/brand/brand.js does the swapping) */
+  var langBtn = $("#langSwitch");
+  function syncLangBtn() {
+    var he = window.RSBrand && RSBrand.lang() === "he";
+    langBtn.textContent = he ? "EN" : "עברית";
+    langBtn.setAttribute("lang", he ? "en" : "he");
+    langBtn.setAttribute("aria-label", he ? "Switch to English" : "Switch to Hebrew");
+  }
+  if (langBtn && window.RSBrand) {
+    langBtn.addEventListener("click", function () { RSBrand.setLang(RSBrand.lang() === "he" ? "en" : "he"); syncLangBtn(); });
+    syncLangBtn();
+  }
+
   /* the NBA app lives on another origin and can't read localStorage: pass the look in its URL */
   function syncOffsiteStyle() {
     var v = document.documentElement.getAttribute("data-style") === "a" ? "a" : "c";

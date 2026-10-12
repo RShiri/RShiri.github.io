@@ -14,7 +14,9 @@
         Text nodes and title/placeholder/aria-label attributes whose trimmed text matches a key
         are swapped while Hebrew is on (also inside content rendered later), and restored in
         English. Swapped elements get dir="auto" so Hebrew reads right-to-left.
-     Elements with data-he="..." swap their textContent the same way.
+     Elements with data-he="..." swap their textContent the same way; data-he-html="..." swaps
+     innerHTML (for paragraphs with inline markup) and sets dir="rtl".
+   html[data-rs-nobar] (the portfolio home page) gets the language engine without the bar.
    About panel: window.RS_ABOUT = { en: {title, intro, sections:[{h, p}]}, he: {...} }
      adds an "About this project" button to the bar that opens a detailed explainer
      (p may contain simple HTML). The panel follows the language switch.
@@ -54,7 +56,7 @@
       var key = src.trim();
       if (key && Object.prototype.hasOwnProperty.call(d, key)) {
         if (node[ORIG] == null) node[ORIG] = node.nodeValue;
-        node.nodeValue = src.replace(key, d[key]);
+        var nv = src.replace(key, d[key]); if (node.nodeValue !== nv) node.nodeValue = nv;
         if (node.parentElement && !node.parentElement.hasAttribute("dir")) { node.parentElement.setAttribute("dir", "auto"); node.parentElement.setAttribute("data-rs-dir", ""); }
       }
     } else if (node[ORIG] != null) {
@@ -71,8 +73,12 @@
         if (src && Object.prototype.hasOwnProperty.call(d, src.trim())) { if (!el.hasAttribute(k)) el.setAttribute(k, src); el.setAttribute(a, d[src.trim()]); }
       } else if (el.hasAttribute(k)) { el.setAttribute(a, el.getAttribute(k)); el.removeAttribute(k); }
     });
+    if (el.hasAttribute("data-he-html")) {
+      if (he) { if (el.__rsHtml == null) { el.__rsHtml = el.innerHTML; el.innerHTML = el.getAttribute("data-he-html"); el.setAttribute("dir", "rtl"); } }
+      else if (el.__rsHtml != null) { el.innerHTML = el.__rsHtml; el.__rsHtml = null; el.removeAttribute("dir"); }
+    }
     if (el.hasAttribute("data-he")) {
-      if (he) { if (!el.hasAttribute("data-en")) el.setAttribute("data-en", el.textContent); el.textContent = el.getAttribute("data-he"); el.setAttribute("dir", "auto"); }
+      if (he) { if (!el.hasAttribute("data-en")) { el.setAttribute("data-en", el.textContent); el.textContent = el.getAttribute("data-he"); el.setAttribute("dir", "auto"); } }
       else if (el.hasAttribute("data-en")) { el.textContent = el.getAttribute("data-en"); el.removeAttribute("data-en"); el.removeAttribute("dir"); }
     }
   }
@@ -84,14 +90,14 @@
     var w = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT, {
       acceptNode: function (n) {
         var p = n.parentElement;
-        if (!p || /^(SCRIPT|STYLE|NOSCRIPT|TEXTAREA)$/.test(p.tagName) || p.closest(".rs-bar, .rs-about")) return NodeFilter.FILTER_REJECT;
+        if (!p || /^(SCRIPT|STYLE|NOSCRIPT|TEXTAREA)$/.test(p.tagName) || p.closest(".rs-bar, .rs-about, [data-he], [data-he-html]")) return NodeFilter.FILTER_REJECT;
         return NodeFilter.FILTER_ACCEPT;
       }
     });
     var n; while ((n = w.nextNode())) swapText(n, d, he);
     if (scope.nodeType === 1) {
       swapEl(scope, d, he);
-      scope.querySelectorAll("[title],[placeholder],[aria-label],[data-he]").forEach(function (el) { if (!el.closest(".rs-bar, .rs-about")) swapEl(el, d, he); });
+      scope.querySelectorAll("[title],[placeholder],[aria-label],[data-he],[data-he-html]").forEach(function (el) { if (!el.closest(".rs-bar, .rs-about")) swapEl(el, d, he); });
     }
     busy = false;
   }
@@ -140,11 +146,17 @@
   function setLang(v) {
     root.setAttribute("data-site-lang", v); save("site-lang", v);
     refreshBar(); translate();
-    if (!document.querySelector(".rs-about").hidden) renderAbout();
+    var ap = document.querySelector(".rs-about");
+    if (ap && !ap.hidden) renderAbout();
     window.dispatchEvent(new CustomEvent("sitelangchange", { detail: v }));
   }
 
   function init() {
+    if (root.hasAttribute("data-rs-nobar")) { /* the portfolio itself: no bar, just the language engine */
+      translate();
+      mo.observe(document.body, { childList: true, subtree: true, characterData: true });
+      return;
+    }
     if (document.querySelector(".rs-bar")) return;
     var bar = document.createElement("div");
     bar.className = "rs-bar";
@@ -181,7 +193,7 @@
   window.addEventListener("load", function () { refreshBar(); translate(); });
 
   window.RSBrand = {
-    style: style, lang: lang,
+    style: style, lang: lang, setLang: setLang,
     refresh: function () { refreshBar(); translate(); if (document.querySelector(".rs-about") && !document.querySelector(".rs-about").hidden) renderAbout(); },
     openAbout: function () { openAbout(true); }
   };
