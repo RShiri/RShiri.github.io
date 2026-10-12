@@ -1,0 +1,40 @@
+/* Ram Shiri portfolio brand kit: the shared top bar and the two looks' core tokens.
+   html[data-site-style="c"] = HUD (navy, cyan hairlines, Chakra Petch + IBM Plex Sans)
+   html[data-site-style="a"] = Matchday (near-black, lime, Barlow Condensed italic + Barlow)
+   Projects map their own variables onto these --rs-* tokens. */
+html[data-site-style="c"] {
+  --rs-bg: #050b14; --rs-bg-soft: #08121f; --rs-panel: #07111e; --rs-panel-2: #0b1828;
+  --rs-line: rgba(77, 240, 255, .18); --rs-line-strong: rgba(77, 240, 255, .38);
+  --rs-ink: #e8f8ff; --rs-body: #a9c6d3; --rs-muted: #7f9fb0;
+  --rs-accent: #4df0ff; --rs-accent-ink: #04101b; --rs-accent-soft: rgba(77, 240, 255, .12);
+  --rs-goal: #ff3df2;
+  --rs-display: "Chakra Petch", ui-sans-serif, system-ui, sans-serif;
+  --rs-text: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --rs-radius: 0px;
+}
+html[data-site-style="a"] {
+  --rs-bg: #0c0d10; --rs-bg-soft: #121419; --rs-panel: #15171c; --rs-panel-2: #1c1f26;
+  --rs-line: #262a33; --rs-line-strong: #3a3f4a;
+  --rs-ink: #f5f7fa; --rs-body: #c4c9d2; --rs-muted: #9aa1ad;
+  --rs-accent: #d7ff3a; --rs-accent-ink: #0c0d10; --rs-accent-soft: rgba(215, 255, 58, .12);
+  --rs-goal: #d7ff3a;
+  --rs-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --rs-text: "Barlow", ui-sans-serif, system-ui, sans-serif;
+  --rs-radius: 0px;
+}
+
+.rs-bar { position: relative; z-index: 1000; display: flex; align-items: center; gap: 20px; min-height: 44px; padding: 0 clamp(16px, 3vw, 32px);
+  background: var(--rs-bg); border-bottom: 1px solid var(--rs-line); font: 500 12px/1 var(--rs-text); color: var(--rs-muted); }
+.rs-bar a { color: inherit; text-decoration: none; }
+.rs-bar__brand { font: 700 14px/1 var(--rs-display); letter-spacing: .22em; color: var(--rs-ink); text-transform: uppercase; }
+.rs-bar__brand i { font-style: normal; color: var(--rs-accent); }
+.rs-bar__back { letter-spacing: .14em; text-transform: uppercase; transition: color .2s; }
+.rs-bar__back:hover, .rs-bar__back:focus-visible { color: var(--rs-accent); }
+.rs-bar__style { margin-left: auto; display: inline-flex; gap: 6px; align-items: center; padding: 6px 10px; border: 1px solid var(--rs-line-strong);
+  background: transparent; color: var(--rs-muted); font: 600 11px/1 var(--rs-display); letter-spacing: .14em; cursor: pointer; }
+.rs-bar__style b { font-weight: 700; }
+.rs-bar__style b.on { color: var(--rs-accent); }
+.rs-bar :focus-visible { outline: 2px solid var(--rs-accent); outline-offset: 3px; }
+html[data-site-style="a"] .rs-bar__brand { font-style: italic; font-size: 18px; letter-spacing: .04em; }
+html[data-site-style="a"] .rs-bar__style { transform: skewX(-12deg); }
+@media (max-width: 520px) { .rs-bar { gap: 14px; } .rs-bar__back { display: none; } }
