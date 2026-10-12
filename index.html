@@ -36,6 +36,10 @@ document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");}
   <symbol id="i-mail" viewBox="0 0 16 16"><rect x="2" y="3.5" width="12" height="9" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="m2.5 4.5 5.5 4 5.5-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
   <symbol id="i-github" viewBox="0 0 16 16"><path fill="currentColor" d="M8 .2a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.23.83 1.23.83.71 1.22 1.87.87 2.33.66.07-.52.28-.87.5-1.07-1.78-.2-3.65-.89-3.65-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.03 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.66 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 8 .2Z"/></symbol>
   <symbol id="i-linkedin" viewBox="0 0 16 16"><path fill="currentColor" d="M13.6 1H2.4C1.6 1 1 1.6 1 2.4v11.2c0 .8.6 1.4 1.4 1.4h11.2c.8 0 1.4-.6 1.4-1.4V2.4c0-.8-.6-1.4-1.4-1.4ZM5.2 13H3.1V6.2h2.1V13ZM4.1 5.3a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4ZM13 13h-2.1V9.7c0-.8 0-1.8-1.1-1.8s-1.3.9-1.3 1.8V13H6.4V6.2h2v.9h.1c.3-.5 1-1.1 2-1.1 2.1 0 2.5 1.4 2.5 3.2V13Z"/></symbol>
+  <symbol id="i-play" viewBox="0 0 16 16"><path d="M5 3.5v9l7-4.5z" fill="currentColor"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 16 16"><path d="M5 3.5v9M11 3.5v9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-replay" viewBox="0 0 16 16"><path d="M3 8a5 5 0 1 0 1.6-3.7M3 2.5v2.8h2.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-ball" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="m8 5.2 2.4 1.7-.9 2.8h-3l-.9-2.8z" fill="currentColor"/><path d="M8 5.2V1.9M10.4 6.9l3-1M9.5 9.7l1.9 2.6M6.5 9.7l-1.9 2.6M5.6 6.9l-3-1" stroke="currentColor" stroke-width="1.2"/></symbol>
   <symbol id="i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
   <symbol id="i-moon" viewBox="0 0 16 16"><path d="M13.5 9.6A5.5 5.5 0 0 1 6.4 2.5a5.5 5.5 0 1 0 7.1 7.1Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
 </svg>
@@ -94,12 +98,13 @@ document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");}
   <div class="wrap">
     <header class="section-head">
       <h2>Selected work</h2>
-      <p class="section-sub">Deployed products, each built from data I collected and modelled myself. Open any of them.</p>
+      <p class="section-sub">Deployed products, built on data I collected and modelled myself.</p>
     </header>
     <div class="bento">
       <article class="work work--wide">
         <a class="work-shot" href="https://rshiri.github.io/XWORLDCUPTWIT/wc2026_dashboard/index.html" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
-          <img src="assets/img/wc2026.png" alt="" loading="lazy" onerror="this.closest('.work-shot').classList.add('noshot')" />
+          <span class="chrome"><i></i><i></i><i></i><span>rshiri.github.io/XWORLDCUPTWIT</span></span>
+          <span class="frame"><img src="assets/img/wc2026.png" alt="" loading="lazy" onerror="this.closest('.work-shot').classList.add('noshot')" /></span>
         </a>
         <div class="work-body">
           <h3><a href="https://rshiri.github.io/XWORLDCUPTWIT/wc2026_dashboard/index.html" target="_blank" rel="noopener">World Cup 2026 Dashboard<svg class="ic"><use href="#i-arrow"/></svg></a></h3>
@@ -109,7 +114,8 @@ document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");}
       </article>
       <article class="work">
         <a class="work-shot" href="https://nba-dashboard-ramshiri.streamlit.app/" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
-          <img src="assets/img/nba.png" alt="" loading="lazy" onerror="this.closest('.work-shot').classList.add('noshot')" />
+          <span class="chrome"><i></i><i></i><i></i><span>nba-dashboard-ramshiri.streamlit.app</span></span>
+          <span class="frame"><img src="assets/img/nba.png" alt="" loading="lazy" onerror="this.closest('.work-shot').classList.add('noshot')" /></span>
         </a>
         <div class="work-body">
           <h3><a href="https://nba-dashboard-ramshiri.streamlit.app/" target="_blank" rel="noopener">NBA Analytics Dashboard<svg class="ic"><use href="#i-arrow"/></svg></a></h3>
@@ -119,7 +125,8 @@ document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");}
       </article>
       <article class="work">
         <a class="work-shot" href="https://rshiri.github.io/XEPL/" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
-          <img src="assets/img/xepl.png" alt="" loading="lazy" onerror="this.closest('.work-shot').classList.add('noshot')" />
+          <span class="chrome"><i></i><i></i><i></i><span>rshiri.github.io/XEPL</span></span>
+          <span class="frame"><img src="assets/img/xepl.png" alt="" loading="lazy" onerror="this.closest('.work-shot').classList.add('noshot')" /></span>
         </a>
         <div class="work-body">
           <h3><a href="https://rshiri.github.io/XEPL/" target="_blank" rel="noopener">XEPL, Premier League Analytics<svg class="ic"><use href="#i-arrow"/></svg></a></h3>
@@ -129,7 +136,8 @@ document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");}
       </article>
       <article class="work">
         <a class="work-shot" href="https://rshiri.github.io/XLALIGA/" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
-          <img src="assets/img/laliga.png" alt="" loading="lazy" onerror="this.closest('.work-shot').classList.add('noshot')" />
+          <span class="chrome"><i></i><i></i><i></i><span>rshiri.github.io/XLALIGA</span></span>
+          <span class="frame"><img src="assets/img/laliga.png" alt="" loading="lazy" onerror="this.closest('.work-shot').classList.add('noshot')" /></span>
         </a>
         <div class="work-body">
           <h3><a href="https://rshiri.github.io/XLALIGA/" target="_blank" rel="noopener">XLALIGA, La Liga Match Analytics<svg class="ic"><use href="#i-arrow"/></svg></a></h3>
@@ -139,7 +147,8 @@ document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");}
       </article>
       <article class="work">
         <a class="work-shot" href="https://rshiri.github.io/F1Visualized/" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
-          <img src="assets/img/f1.png" alt="" loading="lazy" onerror="this.closest('.work-shot').classList.add('noshot')" />
+          <span class="chrome"><i></i><i></i><i></i><span>rshiri.github.io/F1Visualized</span></span>
+          <span class="frame"><img src="assets/img/f1.png" alt="" loading="lazy" onerror="this.closest('.work-shot').classList.add('noshot')" /></span>
         </a>
         <div class="work-body">
           <h3><a href="https://rshiri.github.io/F1Visualized/" target="_blank" rel="noopener">F1 Visualized<svg class="ic"><use href="#i-arrow"/></svg></a></h3>
@@ -170,10 +179,10 @@ document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");}
         <div class="viz-stats" id="shotStats"><!-- filled by JS --></div>
       </div>
       <div class="pitch-wrap">
-        <svg id="shotmap" viewBox="0 0 680 520" role="img" aria-label="Lamine Yamal shot map">
+        <svg id="shotmap" viewBox="0 0 680 345" role="img" aria-label="Lamine Yamal shot map">
           <defs>
             <linearGradient id="goalDot" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#2f6bff"/><stop offset="1" stop-color="#c8154f"/>
+              <stop offset="0" stop-color="#5b7cff"/><stop offset="1" stop-color="#5b7cff"/>
             </linearGradient>
           </defs>
           <rect x="4" y="4" width="672" height="512" rx="12" fill="#0f1626"/>
@@ -256,7 +265,7 @@ document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");}
           <h3>Argentina Match Centre · WC2026</h3>
           <p class="viz-sub">Every Argentina game at the World Cup, built straight into this page from my event pipeline - head-to-head stats, both teams' shots, and every goal replayed pass-by-pass. <b>Pick a match</b> below, then press <b>Play</b> on a goal to watch it rebuild.</p>
         </div>
-        <a class="btn btn--sm btn--line" id="mcFullLink" href="https://rshiri.github.io/XWORLDCUPTWIT/wc2026_dashboard/match.html?id=2026_06_17_Argentina_vs_Algeria" target="_blank" rel="noopener">Full WC2026 match centre ↗</a>
+        <a class="btn btn--sm btn--line" id="mcFullLink" href="https://rshiri.github.io/XWORLDCUPTWIT/wc2026_dashboard/match.html?id=2026_06_17_Argentina_vs_Algeria" target="_blank" rel="noopener">Full WC2026 match centre<svg class="ic"><use href="#i-arrow"/></svg></a>
       </div>
 
       <div class="toggles mc-matchtabs" id="mcMatchTabs" role="tablist" aria-label="Choose an Argentina match"><!-- filled by JS --></div>
@@ -296,7 +305,7 @@ document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");}
       <h4 class="mc-subhead">Goal replays <span>· the ball travels the real build-up: passes, carries, then the finish</span></h4>
       <div class="mc-goalbar">
         <div class="toggles mc-goaltabs" id="mcGoalTabs"><!-- filled by JS --></div>
-        <button class="btn btn--sm btn--solid mc-play" id="mcPlay">▶ Play</button>
+        <button class="btn btn--sm btn--solid mc-play" id="mcPlay"><svg class="ic"><use href="#i-play"/></svg>Play</button>
       </div>
       <div class="pitch-wrap">
         <svg id="mcReplay" viewBox="0 0 700 452" role="img" aria-label="Goal replay">
@@ -355,7 +364,7 @@ document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");}
         <svg id="f1pSvg" viewBox="0 0 1000 440" class="f1p-svg" role="img" aria-label="Abu Dhabi Grand Prix 2025 lap-by-lap position chart"></svg>
       </div>
       <div class="f1p-controls" id="f1pControls">
-        <button type="button" class="btn btn--sm btn--solid f1p-play" id="f1pPlay">▶ Play</button>
+        <button type="button" class="btn btn--sm btn--solid f1p-play" id="f1pPlay"><svg class="ic"><use href="#i-play"/></svg>Play</button>
         <input type="range" class="f1p-slider" id="f1pSlider" min="1" max="58" value="58" step="1" aria-label="Lap">
         <span class="f1p-lap" id="f1pLap">Lap 58 / 58</span>
       </div>

@@ -98,7 +98,7 @@
     tip.style.top = Math.max(8, yy - ht - pad) + "px";
   };
   var hideTip = function () { if (tip) tip.classList.remove("show"); };
-  var OUT_LABEL = { goal: "Goal ⚽", saved: "On target", off: "Off target", blocked: "Blocked" };
+  var OUT_LABEL = { goal: "Goal", saved: "On target", off: "Off target", blocked: "Blocked" };
   var vs = function (s) { return s.note ? "vs " + s.note : "Shot"; };
   var tipHtml = function (s) {
     return "<b>" + vs(s) + "</b><br>" + s.min + "' · " + s.body + " · " + s.situ +
@@ -303,9 +303,9 @@
           '<div class="mc-team away">' + esc(D.away.name) + '<i style="background:' + D.away.color + '"></i></div>' +
         "</div>" +
         '<div class="mc-row mc-scorers">' +
-          '<div class="mc-team home">⚽ ' + (goalsFor("home") || "-") + "</div>" +
+          '<div class="mc-team home">' + (goalsFor("home") ? '<svg class="ic ic-ball"><use href="#i-ball"/></svg>' : "") + (goalsFor("home") || "-") + "</div>" +
           '<div class="mc-num sm">xG ' + D.xg[0].toFixed(2) + " - " + D.xg[1].toFixed(2) + "</div>" +
-          '<div class="mc-team away">' + (goalsFor("away") ? "⚽ " + goalsFor("away") : "") + "</div>" +
+          '<div class="mc-team away">' + (goalsFor("away") ? '<svg class="ic ic-ball"><use href="#i-ball"/></svg>' + goalsFor("away") : "") + "</div>" +
         "</div>" +
         '<div class="mc-meta">' + esc(D.stage) + " · " + esc(D.venue) + " · " + fmtDate(D.date) + "</div>";
     };
@@ -326,7 +326,7 @@
 
     /* ---- shot map (both teams, opposite directions) ---- */
     var OUTC = function (s) { return s.goal ? "goal" : s.blocked ? "blocked" : s.onTarget ? "on" : "off"; };
-    var OUT_TXT = { goal: "Goal ⚽", on: "On target", off: "Off target", blocked: "Blocked" };
+    var OUT_TXT = { goal: "Goal", on: "On target", off: "Off target", blocked: "Blocked" };
     var mcRadius = function (xg) { return Math.max(4, Math.min(15, 4 + xg * 15)); };
     // stable per-shot [0,1) so paths fan out to DIFFERENT spots on the goal line
     var mcHash = function (s) { var h = Math.sin(s.x * 12.9898 + s.y * 78.233 + (s.min + 1) * 37.719) * 43758.5453; return h - Math.floor(h); };
@@ -408,7 +408,7 @@
     var nodeTip = function (pt, i, seq) {
       var who = "<b>" + esc(pt.player) + (pt.num != null ? " · #" + pt.num : "") + "</b><br>";
       if (pt.k === "save") return who + "Goalkeeper save";
-      if (pt.k === "shot") return who + "⚽ Goal" + (pt.xg != null ? " · xG " + pt.xg.toFixed(2) : "") + " · " + seq.min + "'";
+      if (pt.k === "shot") return who + "Goal" + (pt.xg != null ? " · xG " + pt.xg.toFixed(2) : "") + " · " + seq.min + "'";
       if (pt.k === "shot_eff") return who + "Shot saved" + (pt.xg != null ? " · xG " + pt.xg.toFixed(2) : "");
       if (pt.k === "dribble") return who + "Take-on / dribble";
       return who + (i === 0 ? "Move start" : "On the ball");
@@ -530,7 +530,7 @@
               i++; arrived = false; t0 = now;
               if (i >= mv.length) {
                 goalText.style.opacity = "1"; current.cancel = null;
-                if (playBtn) playBtn.textContent = "↻ Replay";
+                if (playBtn) playBtn.innerHTML = '<svg class="ic"><use href="#i-replay"/></svg>Replay';
                 return;
               }
             }
@@ -565,7 +565,7 @@
       if (playBtn) playBtn.disabled = false;
       var select = function (i) {
         $$(".toggle-chip", tabsEl).forEach(function (b, j) { b.setAttribute("aria-pressed", j === i ? "true" : "false"); });
-        if (playBtn) playBtn.textContent = "▶ Play";
+        if (playBtn) playBtn.innerHTML = '<svg class="ic"><use href="#i-play"/></svg>Play';
         buildReplay(D.replays[i], D);
       };
       D.replays.forEach(function (r, i) {
@@ -573,7 +573,7 @@
         b.className = "toggle-chip mc-goaltab";
         b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
         var who = r.own ? "OG " + esc((r.ogBy || "").split(" ").pop()) : esc(r.scorer.split(" ").pop());
-        b.innerHTML = "⚽ " + r.min + "' " + who;
+        b.innerHTML = '<svg class="ic ic-ball"><use href="#i-ball"/></svg>' + r.min + "' " + who;
         b.addEventListener("click", function () { select(i); });
         tabsEl.appendChild(b);
       });
@@ -582,7 +582,7 @@
 
     // Play button is wired once; it always drives the current replay.
     if (playBtn) playBtn.addEventListener("click", function () {
-      if (current) { playBtn.textContent = "↻ Replay"; current.play(); }
+      if (current) { playBtn.innerHTML = '<svg class="ic"><use href="#i-replay"/></svg>Replay'; current.play(); }
     });
 
     /* ---- win probability (in-play model, assets/data/winprob/<id>.json) ----
@@ -605,7 +605,7 @@
 
       winprobEl.innerHTML =
         '<div class="mc-wp-head"><h4 class="mc-subhead">Win probability <span>· in-play model</span></h4>' +
-        '<a class="mc-wp-link" href="live-pipeline/" target="_blank" rel="noopener">full demo ↗</a></div>';
+        '<a class="mc-wp-link" href="live-pipeline/" target="_blank" rel="noopener">Full demo<svg class="ic"><use href="#i-arrow"/></svg></a></div>';
       var svg = E("svg", { viewBox: "0 0 640 120", "class": "mc-wp-svg", role: "img",
                            "aria-label": "Win probability by minute: " + D.home.name + " vs " + D.away.name });
       [0, 0.5, 1].forEach(function (p) {
@@ -882,11 +882,11 @@
       }
 
       var timer = null;
-      function stop() { if (timer) { clearInterval(timer); timer = null; } if (playBtn) playBtn.textContent = "▶ Play"; }
+      function stop() { if (timer) { clearInterval(timer); timer = null; } if (playBtn) playBtn.innerHTML = '<svg class="ic"><use href="#i-play"/></svg>Play'; }
       function play() {
         stop();
         var L = (+slider.value >= total) ? 1 : +slider.value;
-        if (playBtn) playBtn.textContent = "❚❚ Pause";
+        if (playBtn) playBtn.innerHTML = '<svg class="ic"><use href="#i-pause"/></svg>Pause';
         timer = setInterval(function () {
           L += 1;
           if (L > total) { setLap(total); stop(); return; }
