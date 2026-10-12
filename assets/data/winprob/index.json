@@ -1,5 +1,5 @@
 {
- "generated_from": "live-pipeline (mini-TRADE360 replay)",
+ "generated_from": "live-pipeline (MatchFeed replay)",
  "model": {
   "mu": {
    "EPL": 1.4184,

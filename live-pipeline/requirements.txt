@@ -1,4 +1,4 @@
-# mini-TRADE360 pipeline — the core (messages, broker "memory" mode, model,
+# MatchFeed pipeline — the core (messages, broker "memory" mode, model,
 # producer/consumer, run_demo.py) is pure Python stdlib: nothing to install.
 #
 # Optional extras:

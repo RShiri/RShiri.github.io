@@ -1,4 +1,4 @@
-"""Feed producer: replays one recorded match as a live TRADE360-style feed.
+"""Feed producer: replays one recorded match as a live odds feed.
 
 MatchProducer loads a match JSON (assets/data/argentina/<id>.json) and
 replays it on the RAW match clock, minutes 0..end_min, on routing key

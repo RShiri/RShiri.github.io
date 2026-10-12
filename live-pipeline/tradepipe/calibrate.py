@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Fit team attack/defence rates from ALL of Ram's scraped football data
 (EPL + La Liga + three World Cups, ~3,275 matches) and back-test the
-in-play model, mini-TRADE360 style.
+in-play model the way MatchFeed runs it.
 
 The fit is a Dixon-Coles-lite with empirical-Bayes shrinkage, one baseline
 per COMPETITION (an EPL goal habitat is not a World Cup goal habitat):

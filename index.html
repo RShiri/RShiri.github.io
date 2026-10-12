@@ -19,8 +19,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=Barlow+Condensed:ital,wght@0,700;0,800;1,700;1,800;1,900&family=Barlow:wght@500;600;700&display=swap" rel="stylesheet" />
 <script>document.documentElement.setAttribute("data-theme","dark");</script>
-<link rel="stylesheet" id="styleC" href="styles.css?v=22" />
-<link rel="stylesheet" id="styleA" href="style-a.css?v=1" />
+<link rel="stylesheet" id="styleC" href="styles.css?v=23" />
+<link rel="stylesheet" id="styleA" href="style-a.css?v=2" />
 <script>/* two looks while choosing: C (HUD, default) and A (matchday); the switch in the nav flips them */
 (function(){var v="c";try{v=localStorage.getItem("site-style")==="a"?"a":"c"}catch(e){}
 document.getElementById("styleA").disabled=v!=="a";document.getElementById("styleC").disabled=v==="a";
@@ -93,8 +93,7 @@ document.documentElement.setAttribute("data-style",v);})();</script>
           <circle cx="340" cy="124" r="2.5" fill="rgba(255,255,255,.5)"/>
           <g id="pathLayer"></g>
           <g id="shotLayer"></g>
-        </svg></div>
-    <div class="scan" aria-hidden="true"></div>
+        </svg><div class="scan" aria-hidden="true"></div></div>
     <div class="viz-foot"><div class="legend">
           <span><i class="lg-goal"></i> Goal</span>
           <span><i class="lg-saved"></i> On target</span>
@@ -289,7 +288,7 @@ document.documentElement.setAttribute("data-style",v);})();</script>
         <span class="f1p-lap" id="f1pLap">Lap 58 / 58</span>
       </div>
       <div class="viz-foot">
-        <div class="chart-tip" id="f1pTip">Grid → finish, reconstructed from starting grid and classified result.</div>
+        <div class="chart-tip" id="f1pTip">Grid, finishing order and laps completed are the official race results. The lines in between are an estimate, not lap-by-lap timing data.</div>
       </div>
     </div>
   </div>
@@ -297,12 +296,89 @@ document.documentElement.setAttribute("data-style",v);})();</script>
 
 <section id="builds" class="sect wrap">
   <div class="sh"><h2>All builds</h2></div>
-  <ol class="table">
-      <li><a href="https://rshiri.github.io/XWORLDCUPTWIT/wc2026_dashboard/index.html" target="_blank" rel="noopener"><span class="n">05</span><span class="bt">World Cup 2026</span><span class="bd">Tournament hub and event pipeline</span><span class="bw">Python, MongoDB</span><svg class="ic"><use href="#i-arrow"/></svg></a></li>
-      <li><a href="winprob-model/" target="_blank" rel="noopener"><span class="n">06</span><span class="bt">Win-probability model</span><span class="bd">3,272 matches, back-tested on 864</span><span class="bw">Python</span><svg class="ic"><use href="#i-arrow"/></svg></a></li>
-      <li><a href="live-pipeline/" target="_blank" rel="noopener"><span class="n">07</span><span class="bt">Live match pipeline</span><span class="bd">A mini TRADE360 over RabbitMQ</span><span class="bw">Python, RabbitMQ</span><svg class="ic"><use href="#i-arrow"/></svg></a></li>
-      <li><a href="https://nba-dashboard-ramshiri.streamlit.app/" target="_blank" rel="noopener"><span class="n">08</span><span class="bt">NBA analytics</span><span class="bd">Team and player dashboard</span><span class="bw">Streamlit, Plotly</span><svg class="ic"><use href="#i-arrow"/></svg></a></li>
-      <li><a href="https://rshiri.github.io/BCNFINAL/" target="_blank" rel="noopener"><span class="n">09</span><span class="bt">Barça xG Lab</span><span class="bd">Every 2025/26 fixture</span><span class="bw">Python, Pandas</span><svg class="ic"><use href="#i-arrow"/></svg></a></li>
+  <p class="sect-sub">Every project on this page. Open <b>How I built it</b> on any row for the problem, the data, the method and the result.</p>
+  <ol class="table builds">
+    <li>
+      <a href="https://rshiri.github.io/XLALIGA/" target="_blank" rel="noopener"><img class="bimg" src="assets/img/thumb/laliga.webp" alt="" width="96" height="60" loading="lazy" /><span class="n">01</span><span class="bt">XLALIGA</span><span class="bd">La Liga match analytics</span><span class="bw">Python, xG model, Poisson</span><svg class="ic"><use href="#i-arrow"/></svg></a>
+      <details class="notes"><summary>How I built it</summary><dl>
+        <div><dt>Problem</dt><dd>League tables say who won, not who created the better chances or where the season is heading.</dd></div>
+        <div><dt>Data</dt><dd>1,520 La Liga matches and 37,193 shots, 2022-23 to 2025-26, scraped match by match into one shared schema.</dd></div>
+        <div><dt>Method</dt><dd>Every shot is valued by my xG model. The site adds an xG efficiency lab (goals against expected), a player leaderboard and a Poisson projection of the final table.</dd></div>
+        <div><dt>Result</dt><dd>A live La Liga dashboard. The same match files also train the win-probability model below.</dd></div>
+      </dl></details>
+    </li>
+    <li>
+      <a href="https://rshiri.github.io/XEPL/" target="_blank" rel="noopener"><img class="bimg" src="assets/img/thumb/xepl.webp" alt="" width="96" height="60" loading="lazy" /><span class="n">02</span><span class="bt">XEPL</span><span class="bd">Premier League analytics</span><span class="bw">Python, xG model, Pandas</span><svg class="ic"><use href="#i-arrow"/></svg></a>
+      <details class="notes"><summary>How I built it</summary><dl>
+        <div><dt>Problem</dt><dd>The same question for the Premier League: how good were the chances behind each result?</dd></div>
+        <div><dt>Data</dt><dd>1,520 Premier League matches and 39,451 shots across four seasons, in the same schema as XLALIGA.</dd></div>
+        <div><dt>Method</dt><dd>League tables, shot maps and match stats, with every shot scored by my own xG model and an interactive explainer of how it values a shot.</dd></div>
+        <div><dt>Result</dt><dd>A live EPL dashboard, and the largest of the five corpora behind the win-probability model.</dd></div>
+      </dl></details>
+    </li>
+    <li>
+      <a href="https://rshiri.github.io/F1Visualized/" target="_blank" rel="noopener"><img class="bimg" src="assets/img/thumb/f1.webp" alt="" width="96" height="60" loading="lazy" /><span class="n">03</span><span class="bt">F1 Visualized</span><span class="bd">Race results and standings, 2022 to 2026</span><span class="bw">Python, Plotly</span><svg class="ic"><use href="#i-arrow"/></svg></a>
+      <details class="notes"><summary>How I built it</summary><dl>
+        <div><dt>Problem</dt><dd>Following a Formula 1 season means jumping between results pages. I wanted one place for the whole picture.</dd></div>
+        <div><dt>Data</dt><dd>Official race results for every Grand Prix from 2022 to 2026: grid, finishing order, laps completed and status for every driver.</dd></div>
+        <div><dt>Method</dt><dd>Python builds driver and constructor standings and season charts from the results; Plotly renders them as interactive charts.</dd></div>
+        <div><dt>Result</dt><dd>A season-by-season F1 dashboard. The race progression chart on this page is a port of one of its views.</dd></div>
+      </dl></details>
+    </li>
+    <li>
+      <a href="xg-model/" target="_blank" rel="noopener"><img class="bimg" src="assets/img/thumb/xg-model.webp" alt="" width="96" height="60" loading="lazy" /><span class="n">04</span><span class="bt">xG model</span><span class="bd">What every shot on this site is worth</span><span class="bw">Scikit-learn, XGBoost</span><svg class="ic"><use href="#i-arrow"/></svg></a>
+      <details class="notes"><summary>How I built it</summary><dl>
+        <div><dt>Problem</dt><dd>Public xG numbers are black boxes. I wanted a model I built myself and can explain line by line.</dd></div>
+        <div><dt>Data</dt><dd>77,627 real shots with 23 features each, and 2.4 million passes with 19 features for xA.</dd></div>
+        <div><dt>Method</dt><dd>Three blended models: a transparent logistic score, a gradient-boosted model forced to respect distance and angle, and a light nudge toward public xG shapes. Then calibration against real goals and a small per-competition adjustment. xA is two stages: will a shot follow this pass, and how good would it be.</dd></div>
+        <div><dt>Result</dt><dd>Every xG and xA number on this site and the league dashboards, with a step-by-step explainer and a live calculator.</dd></div>
+      </dl></details>
+    </li>
+    <li>
+      <a href="https://rshiri.github.io/XWORLDCUPTWIT/wc2026_dashboard/index.html" target="_blank" rel="noopener"><img class="bimg" src="assets/img/thumb/wc2026.webp" alt="" width="96" height="60" loading="lazy" /><span class="n">05</span><span class="bt">World Cup 2026</span><span class="bd">Tournament hub and event pipeline</span><span class="bw">Python, MongoDB</span><svg class="ic"><use href="#i-arrow"/></svg></a>
+      <details class="notes"><summary>How I built it</summary><dl>
+        <div><dt>Problem</dt><dd>Cover a whole World Cup as it happens: every match, every shot, every goal build-up.</dd></div>
+        <div><dt>Data</dt><dd>All 104 matches of the 2026 tournament as event data, plus the 2018 and 2022 editions, stored in MongoDB, together with fan social-media posts collected around each fixture.</dd></div>
+        <div><dt>Method</dt><dd>A Python pipeline turns raw match events into per-match files: stats, shots with xG, and pass-by-pass goal sequences. The hub builds group tables, match pages and player views from them.</dd></div>
+        <div><dt>Result</dt><dd>A full tournament hub. The Argentina match centre on this page is built from the same pipeline.</dd></div>
+      </dl></details>
+    </li>
+    <li>
+      <a href="winprob-model/" target="_blank" rel="noopener"><img class="bimg" src="assets/img/thumb/winprob-model.webp" alt="" width="96" height="60" loading="lazy" /><span class="n">06</span><span class="bt">Win-probability model</span><span class="bd">One model behind four sites</span><span class="bw">Python</span><svg class="ic"><use href="#i-arrow"/></svg></a>
+      <details class="notes"><summary>How I built it</summary><dl>
+        <div><dt>Problem</dt><dd>Show who is winning a match in probability terms, minute by minute, from data I collected myself.</dd></div>
+        <div><dt>Data</dt><dd>3,272 matches and 82,310 shots: four seasons of the EPL and La Liga plus the 2018, 2022 and 2026 World Cups.</dd></div>
+        <div><dt>Method</dt><dd>A Dixon-Coles-style fit: a baseline per competition, team attack and defence rates shrunk toward it, older seasons faded, home advantage measured (x1.13 in leagues). In play, the score, the clock and recent xG turn those rates into home, draw and away probabilities.</dd></div>
+        <div><dt>Result</dt><dd>Trained on 2,408 matches and tested blind on 864 it never saw; it beats quoting base rates at every checkpoint. One JSON file feeds the pipeline and all three dashboards.</dd></div>
+      </dl></details>
+    </li>
+    <li>
+      <a href="live-pipeline/" target="_blank" rel="noopener"><img class="bimg" src="assets/img/thumb/live-pipeline.webp" alt="" width="96" height="60" loading="lazy" /><span class="n">07</span><span class="bt">MatchFeed</span><span class="bd">Live odds pipeline over RabbitMQ</span><span class="bw">Python, RabbitMQ</span><svg class="ic"><use href="#i-arrow"/></svg></a>
+      <details class="notes"><summary>How I built it</summary><dl>
+        <div><dt>Problem</dt><dd>Real betting feeds push match events and prices to many consumers that must never fall out of sync. I built a small one end to end.</dd></div>
+        <div><dt>Data</dt><dd>Recorded World Cup 2026 matches, replayed minute by minute as a live JSON message feed.</dd></div>
+        <div><dt>Method</dt><dd>A producer publishes fixture, livescore, keep-alive and settlement messages to a RabbitMQ topic exchange. A consumer rebuilds match state and prices the 1X2 market with the win-probability model. If it joins late or misses a message, it requests a snapshot and carries on.</dd></div>
+        <div><dt>Result</dt><dd>A runnable pipeline with a pure-Python core and a test suite. It also generates the win-probability timelines shown in the match centre.</dd></div>
+      </dl></details>
+    </li>
+    <li>
+      <a href="https://nba-dashboard-ramshiri.streamlit.app/" target="_blank" rel="noopener"><img class="bimg" src="assets/img/thumb/nba.webp" alt="" width="96" height="60" loading="lazy" /><span class="n">08</span><span class="bt">NBA analytics</span><span class="bd">Team and player dashboard</span><span class="bw">Streamlit, Plotly</span><svg class="ic"><use href="#i-arrow"/></svg></a>
+      <details class="notes"><summary>How I built it</summary><dl>
+        <div><dt>Problem</dt><dd>See how a player or team is really doing this season, beyond the box score.</dd></div>
+        <div><dt>Data</dt><dd>2025/26 NBA team and player statistics.</dd></div>
+        <div><dt>Method</dt><dd>A Streamlit app with Plotly charts: player profile cards, shooting efficiency and season impact, plus league and team views.</dd></div>
+        <div><dt>Result</dt><dd>A deployed, interactive NBA dashboard that anyone can open in the browser.</dd></div>
+      </dl></details>
+    </li>
+    <li>
+      <a href="https://rshiri.github.io/BCNFINAL/" target="_blank" rel="noopener"><img class="bimg" src="assets/img/thumb/bcn.webp" alt="" width="96" height="60" loading="lazy" /><span class="n">09</span><span class="bt">Barça xG Lab</span><span class="bd">Every FC Barcelona fixture, 2025/26</span><span class="bw">Python, Pandas, XGBoost</span><svg class="ic"><use href="#i-arrow"/></svg></a>
+      <details class="notes"><summary>How I built it</summary><dl>
+        <div><dt>Problem</dt><dd>Follow one club&#x27;s whole season through the quality of its chances, not just its results.</dd></div>
+        <div><dt>Data</dt><dd>Every FC Barcelona fixture of 2025/26 across all competitions, scraped match by match.</dd></div>
+        <div><dt>Method</dt><dd>Season overview and record by competition, an xG lab comparing goals with expected goals, a player lab and shot maps, with machine-learning models on the match data to surface performance patterns.</dd></div>
+        <div><dt>Result</dt><dd>A complete season dashboard for one club.</dd></div>
+      </dl></details>
+    </li>
   </ol>
 </section>
 

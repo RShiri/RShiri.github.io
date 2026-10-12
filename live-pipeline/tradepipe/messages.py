@@ -1,4 +1,4 @@
-"""TRADE360-style message contracts.
+"""Feed message contracts.
 
 Every message on the wire is a JSON envelope:
 
@@ -56,7 +56,7 @@ def _iso_utc(ts_ms):
 
 @dataclass
 class Message:
-    """One TRADE360-style envelope: header fields + Body dict."""
+    """One feed envelope: header fields + Body dict."""
     msg_type: int
     msg_seq: int
     server_timestamp: int                       # epoch ms

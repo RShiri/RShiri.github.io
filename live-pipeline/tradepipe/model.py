@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""In-play win-probability model for the mini-TRADE360 pipeline.
+"""In-play win-probability model for the MatchFeed pipeline.
 
 Pure stdlib, importable standalone. The whole model is one teaching formula:
 

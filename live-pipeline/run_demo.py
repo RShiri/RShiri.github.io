@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Terminal demo of the mini-TRADE360 pipeline: replay one recorded match
+"""Terminal demo of the MatchFeed pipeline: replay one recorded match
 as a live feed (producer) and price it in real time (consumer).
 
     python3 run_demo.py --list

@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Live Pipeline — a mini TRADE360 · Ram Shiri</title>
-<meta name="description" content="A real-time sports data pipeline in the style of LSports' TRADE360: a producer replays World Cup matches as RabbitMQ-style messages, a consumer rebuilds match state and prices the 1X2 market live." />
+<title>MatchFeed — a live odds pipeline · Ram Shiri</title>
+<meta name="description" content="A real-time sports data pipeline built like a sportsbook odds feed: a producer replays World Cup matches as RabbitMQ-style messages, a consumer rebuilds match state and prices the 1X2 market live." />
 <meta name="author" content="Ram Shiri" />
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -264,9 +264,9 @@ html[data-theme="dark"] .footer { background: #070b15; }
 <!-- 1 · HERO -->
 <div class="hero">
   <div class="wrap">
-    <span class="eyebrow">live-pipeline · a mini TRADE360</span>
+    <span class="eyebrow">MatchFeed · live odds pipeline</span>
     <h1>One match feed in, <span class="grad">live 1X2 prices out.</span></h1>
-    <p class="lead">A real-time sports data pipeline in the style of LSports' TRADE360.
+    <p class="lead">A real-time sports data pipeline built like a sportsbook odds feed.
       A producer replays World Cup matches as RabbitMQ-style messages. A consumer rebuilds
       match state from those messages and prices the 1X2 market live, minute by minute,
       with an xG-driven model calibrated on 82,000 shots across four seasons of the EPL
@@ -583,7 +583,7 @@ python3 -m pytest live-pipeline/tests -q</pre>
 
 <footer class="footer">
   <div class="wrap footer-inner">
-    <span>© <span id="year"></span> Ram Shiri · live-pipeline, a mini TRADE360</span>
+    <span>© <span id="year"></span> Ram Shiri · MatchFeed, a live odds pipeline</span>
     <a href="../#projects">← Back to projects</a>
   </div>
 </footer>
