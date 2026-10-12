@@ -1,4 +1,4 @@
-"""tradepipe: a mini TRADE360-style sports-data pipeline. Football fixtures
+"""tradepipe: the MatchFeed sports-data pipeline. Football fixtures
 are replayed as a live feed — fixture metadata, per-minute livescores and
 in-play 1X2 odds — as JSON envelopes over a pluggable broker (in-memory for
 tests and deterministic replay, RabbitMQ topic exchange for the real demo),

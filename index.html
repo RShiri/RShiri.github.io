@@ -1,123 +1,88 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-rs-nobar>
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Ram Shiri - Sports Data Scientist &amp; Data Engineering Student</title>
-<meta name="description" content="Ram Shiri - Data Engineering student turning sports data into insight. Interactive xG shot maps, match analytics and live dashboards built with Python, Pandas, Streamlit &amp; Plotly. Open to work." />
+<title>Ram Shiri - Sports Data Engineering</title>
+<meta name="description" content="Ram Shiri - Data Engineering student at Ben-Gurion University building live sports-data products: xG models, match centres, real-time pipelines and dashboards. Open to student and full-time roles." />
 <meta name="author" content="Ram Shiri" />
-
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Ram Shiri - Sports Data Scientist" />
-<meta property="og:description" content="Data Engineering student turning sports data into insight - xG shot maps, match analytics & live dashboards." />
+<meta property="og:title" content="Ram Shiri - Sports Data Engineering" />
+<meta property="og:description" content="Live sports-data products: xG models, match centres, real-time pipelines and dashboards." />
 <meta property="og:url" content="https://rshiri.github.io/" />
 <meta property="og:image" content="https://rshiri.github.io/assets/img/og.png" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Ram Shiri - Sports Data Scientist" />
-<meta name="twitter:image" content="https://rshiri.github.io/assets/img/og.png" />
-
+<meta name="theme-color" content="#050b14" />
+<link rel="stylesheet" href="assets/brand/brand.css" />
+<script src="assets/i18n-he.js"></script>
+<script src="assets/brand/brand.js"></script>
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 <link rel="canonical" href="https://rshiri.github.io/" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<script>/* theme before CSS paints (no flash): dark is the default */
-(function(){var t=null;try{t=localStorage.getItem("theme")}catch(e){}
-document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");})();</script>
-<link rel="stylesheet" href="styles.css?v=17" />
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=Barlow+Condensed:ital,wght@0,700;0,800;1,700;1,800;1,900&family=Barlow:wght@500;600;700&display=swap" rel="stylesheet" />
+<script>document.documentElement.setAttribute("data-theme","dark");</script>
+<link rel="stylesheet" id="styleC" href="styles.css?v=24" />
+<link rel="stylesheet" id="styleA" href="style-a.css?v=3" />
+<script>/* two looks while choosing: C (HUD, default) and A (matchday); the switch in the nav flips them */
+(function(){var v="c";try{v=localStorage.getItem("site-style")==="a"?"a":"c"}catch(e){}
+document.getElementById("styleA").disabled=v!=="a";document.getElementById("styleC").disabled=v==="a";
+document.documentElement.setAttribute("data-style",v);})();</script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
+<svg class="icon-sprite" aria-hidden="true" focusable="false">
+  <symbol id="i-arrow" viewBox="0 0 16 16"><path d="M5 11 11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-down" viewBox="0 0 16 16"><path d="M8 3v9M4.5 8.5 8 12l3.5-3.5M3 14h10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 16 16"><rect x="2" y="3.5" width="12" height="9" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="m2.5 4.5 5.5 4 5.5-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+  <symbol id="i-github" viewBox="0 0 16 16"><path fill="currentColor" d="M8 .2a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.23.83 1.23.83.71 1.22 1.87.87 2.33.66.07-.52.28-.87.5-1.07-1.78-.2-3.65-.89-3.65-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.03 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.66 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 8 .2Z"/></symbol>
+  <symbol id="i-linkedin" viewBox="0 0 16 16"><path fill="currentColor" d="M13.6 1H2.4C1.6 1 1 1.6 1 2.4v11.2c0 .8.6 1.4 1.4 1.4h11.2c.8 0 1.4-.6 1.4-1.4V2.4c0-.8-.6-1.4-1.4-1.4ZM5.2 13H3.1V6.2h2.1V13ZM4.1 5.3a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4ZM13 13h-2.1V9.7c0-.8 0-1.8-1.1-1.8s-1.3.9-1.3 1.8V13H6.4V6.2h2v.9h.1c.3-.5 1-1.1 2-1.1 2.1 0 2.5 1.4 2.5 3.2V13Z"/></symbol>
+  <symbol id="i-play" viewBox="0 0 16 16"><path d="M5 3.5v9l7-4.5z" fill="currentColor"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 16 16"><path d="M5 3.5v9M11 3.5v9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-replay" viewBox="0 0 16 16"><path d="M3 8a5 5 0 1 0 1.6-3.7M3 2.5v2.8h2.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-ball" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="m8 5.2 2.4 1.7-.9 2.8h-3l-.9-2.8z" fill="currentColor"/><path d="M8 5.2V1.9M10.4 6.9l3-1M9.5 9.7l1.9 2.6M6.5 9.7l-1.9 2.6M5.6 6.9l-3-1" stroke="currentColor" stroke-width="1.2"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 16 16"><path d="M13.5 9.6A5.5 5.5 0 0 1 6.4 2.5a5.5 5.5 0 1 0 7.1 7.1Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+</svg>
 
-<!-- NAV -->
 <header class="nav" id="nav">
   <div class="wrap nav-inner">
-    <a class="brand" href="#top"><span class="monogram">RS</span><span class="brand-name">Ram Shiri</span></a>
+    <a class="brand" href="#top">RAM<i>/</i>SHIRI</a>
     <nav class="nav-links" id="navLinks" aria-label="Primary">
+      <a href="#work">Work</a>
+      <a href="#analytics">Match centre</a>
+      <a href="#builds">All builds</a>
       <a href="#about">About</a>
-      <a href="#analytics">Analytics</a>
-      <a href="#projects">Projects</a>
-      <a href="#contact">Contact</a>
-      <a class="btn btn--sm" href="assets/Ram_Shiri_CV.pdf" download>Download CV</a>
     </nav>
-    <button class="theme-toggle" id="themeToggle" aria-label="Switch to light mode">☀️</button>
-    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
-      <span></span><span></span><span></span>
-    </button>
+    <button class="style-switch lang-switch" id="langSwitch" type="button" lang="he">עברית</button>
+    <button class="style-switch" id="styleSwitch" type="button" aria-label="Switch design"><span class="hide-sm">Style </span><b>C</b><span aria-hidden="true">/</span><b>A</b></button>
+    <a class="btn btn--solid btn--sm" href="assets/Ram_Shiri_CV.pdf" download><span class="hide-sm">Download&nbsp;</span>CV</a>
   </div>
 </header>
 
 <main id="main">
 <span id="top"></span>
-
-<!-- HERO -->
-<section class="hero">
-  <div class="wrap hero-inner">
-    <div class="hero-copy">
-      <span class="pill pill--open"><span class="dot"></span> Open to work - student / full-time</span>
-      <h1>Hi, I'm Ram Shiri.<br /><span class="grad">I turn sports data into insight.</span></h1>
-      <p class="lead">
-        3rd-year B.Sc. Data Engineering student specialising in data science.<br>
-        I build interactive analytics - xG shot maps, match centres and live dashboards - for the games I love.
-      </p>
-      <div class="hero-actions">
-        <a class="btn btn--primary" href="#analytics">See it in action</a>
-        <a class="btn btn--ghost" href="assets/Ram_Shiri_CV.pdf" download>Download CV</a>
-        <a class="btn btn--text" href="#contact">Contact →</a>
-      </div>
+<section class="hero wrap">
+  <div class="hero-copy">
+    <p class="sys"><span class="blink" aria-hidden="true"></span>Online · open to student and full-time roles</p>
+    <h1 data-he-html="דאטה ספורטיבי,<br /><span class=&quot;hl&quot;>מהונדס</span><br />מקצה לקצה.">Sports data,<br /><span class="hl">engineered</span><br />end to end.</h1>
+    <p class="lead">I'm Ram Shiri, a third-year Data Engineering student at Ben-Gurion University. I scrape, model and ship live football, basketball and F1 analytics: xG models, match centres and real-time pipelines. Data and sport is what I build even when nobody asks.</p>
+    <div class="readouts">
+      <div><b>77,627</b><span>Shots modelled</span></div>
+      <div><b>2.4M</b><span>Passes modelled</span></div>
+      <div><b>9</b><span>Live builds</span></div>
     </div>
-    <div class="hero-photo">
-      <img src="assets/img/ram.jpg" alt="Ram Shiri" width="768" height="1024" />
+    <div class="actions">
+      <a class="btn btn--solid" href="#work">View work</a>
+      <a class="btn btn--line" href="assets/Ram_Shiri_CV.pdf" download><svg class="ic"><use href="#i-down"/></svg>Download CV</a>
     </div>
   </div>
-</section>
-
-<!-- ABOUT -->
-<section id="about" class="section">
-  <div class="wrap">
-    <span class="kicker">About</span>
-    <h2>Creative thinking, backed by engineering.</h2>
-    <p class="about-lead">
-      I'm a 3rd-year B.Sc. Data Engineering student focused on data science and sports analytics.
-      I love combining creativity with technical skills to drive real-world impact - especially in
-      the games I love - and I'm comfortable using AI tools to move fast while keeping a deep
-      understanding of the core logic underneath. I'm currently open to work.
-    </p>
-    <div class="skills">
-      <span class="tag">Python</span><span class="tag">Java</span><span class="tag">SQL</span>
-      <span class="tag">Pandas</span><span class="tag">NumPy</span><span class="tag">Streamlit</span><span class="tag">Plotly</span>
-      <span class="tag">JavaScript</span><span class="tag">HTML/CSS</span><span class="tag">Web scraping</span><span class="tag">REST APIs</span><span class="tag">Git &amp; GitHub</span>
-      <span class="tag tag--soft">Fast learning</span><span class="tag tag--soft">Problem solving</span>
-    </div>
-  </div>
-</section>
-
-<!-- ANALYTICS -->
-<section id="analytics" class="section section--alt">
-  <div class="wrap">
-    <span class="kicker">Live analytics</span>
-    <h2>Data you can play with.</h2>
-    <p class="section-sub">Interactive graphs I build from match data - hover a shot, or play the goal replay.</p>
-    <p class="model-note">All the <b>xG</b> / <b>xA</b> numbers on this page come from models I built and trained
-      myself: a logistic-regression + gradient-boosting blend for xG (<b>~78,000</b> real shots across La Liga,
-      the Premier League and this World Cup), and a two-stage model for xA (<b>2.4 million</b> real passes) -
-      both calibrated so the totals line up with real goals and assists.
-      <a href="xg-model/" target="_blank" rel="noopener">See how the xG model works, step by step ↗</a></p>
-
-    <!-- Shot map -->
-    <div class="viz">
-      <div class="viz-head">
-        <div>
-          <h3>Lamine Yamal - xG shot map · 2025/26</h3>
-          <p class="viz-sub">Every shot from his 2025/26 season (all competitions), goal at top ▲. Dot size = expected goals (xG); filled = goal. Built from WhoScored event data; xG is my model estimate.</p>
-        </div>
-        <div class="viz-stats" id="shotStats"><!-- filled by JS --></div>
-      </div>
-      <div class="pitch-wrap">
-        <svg id="shotmap" viewBox="0 0 680 520" role="img" aria-label="Lamine Yamal shot map">
+  <div class="panel hero-panel">
+    <div class="ph"><span>Target · Lamine Yamal · 2025/26</span><span class="viz-stats" id="shotStats"></span></div>
+    <div class="pitch-wrap"><svg id="shotmap" viewBox="0 0 680 345" role="img" aria-label="Lamine Yamal shot map">
           <defs>
             <linearGradient id="goalDot" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#2f6bff"/><stop offset="1" stop-color="#c8154f"/>
+              <stop offset="0" stop-color="#5b7cff"/><stop offset="1" stop-color="#5b7cff"/>
             </linearGradient>
           </defs>
           <rect x="4" y="4" width="672" height="512" rx="12" fill="#0f1626"/>
@@ -132,22 +97,45 @@ document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");}
           <circle cx="340" cy="124" r="2.5" fill="rgba(255,255,255,.5)"/>
           <g id="pathLayer"></g>
           <g id="shotLayer"></g>
-        </svg>
-      </div>
-      <div class="viz-foot">
-        <div class="legend">
+        </svg><div class="scan" aria-hidden="true"></div></div>
+    <div class="viz-foot"><div class="legend">
           <span><i class="lg-goal"></i> Goal</span>
           <span><i class="lg-saved"></i> On target</span>
           <span><i class="lg-off"></i> Off target</span>
           <span><i class="lg-blocked"></i> Blocked</span>
           <span class="lg-size"><i></i><i></i><i></i> size = xG</span>
           <span class="lg-path"><i></i> shot path → goal</span>
-        </div>
-        <div class="chart-tip" id="shotTip">Tap or hover a shot for details.</div>
-      </div>
-    </div>
+        </div><div class="chart-tip" id="shotTip">Tap or hover a shot. Dot size is xG from my model; highlighted dots are goals.</div></div>
+  </div>
+</section>
 
-    <!-- Take-on map -->
+<section id="work" class="sect wrap">
+  <div class="sh"><h2>Featured work</h2><a class="more" href="#builds">All builds<svg class="ic"><use href="#i-arrow"/></svg></a></div>
+  <div class="grid">
+    <a class="proj proj--xl" href="https://rshiri.github.io/XLALIGA/" target="_blank" rel="noopener">
+      <img src="assets/img/laliga.png" alt="" loading="lazy" />
+      <span class="meta"><span class="tag">La Liga</span><span class="pt">XLALIGA<svg class="ic"><use href="#i-arrow"/></svg></span><span class="pd">La Liga match analytics: standings, an xG efficiency lab, a player leaderboard and a Poisson season projection.</span><span class="stack">Python · xG model · Poisson</span></span>
+    </a>
+    <a class="proj" href="https://rshiri.github.io/XEPL/" target="_blank" rel="noopener">
+      <img src="assets/img/xepl.png" alt="" loading="lazy" />
+      <span class="meta"><span class="tag">Premier League</span><span class="pt">XEPL<svg class="ic"><use href="#i-arrow"/></svg></span><span class="pd">Premier League analytics: league tables, a custom xG model, shot maps and match stats.</span><span class="stack">Python · xG model · Pandas</span></span>
+    </a>
+    <a class="proj" href="https://rshiri.github.io/F1Visualized/" target="_blank" rel="noopener">
+      <img src="assets/img/f1.png" alt="" loading="lazy" />
+      <span class="meta"><span class="tag">Formula 1</span><span class="pt">F1 Visualized<svg class="ic"><use href="#i-arrow"/></svg></span><span class="pd">Race results, driver and constructor standings and season charts, 2022 to 2026.</span><span class="stack">Python · Plotly · Dataviz</span></span>
+    </a>
+    <a class="proj proj--wide" href="xg-model/" target="_blank" rel="noopener">
+      <img src="assets/img/xg-model.png" alt="" loading="lazy" />
+      <span class="meta"><span class="tag">Machine learning</span><span class="pt">xG model<svg class="ic"><use href="#i-arrow"/></svg></span><span class="pd">The model behind every xG number here: 77,627 real shots and 2.4M passes, explained step by step with a live calculator.</span><span class="stack">Scikit-learn · XGBoost · Calibration</span></span>
+    </a>
+  </div>
+</section>
+
+<section id="analytics" class="sect wrap">
+  <div class="sh"><h2>Match centre</h2><a class="more" href="xg-model/" target="_blank" rel="noopener">How the xG works<svg class="ic"><use href="#i-arrow"/></svg></a></div>
+  <p class="sect-sub" data-he-html="גרפים אינטראקטיביים מנתוני משחק, שרצים ישר בעמוד הזה. כל ערך <b>xG</b> ו־<b>xA</b> מגיע ממודלים שאימנתי: שילוב מודלי xG על <b>כ־78,000</b> בעיטות אמיתיות ומודל xA דו־שלבי על <b>2.4 מיליון</b> מסירות, שניהם מכוילים מול שערים ובישולים אמיתיים.">Interactive charts built from match data, running right on this page. Every <b>xG</b> and <b>xA</b> value comes from models I trained: an xG blend on <b>~78,000</b> real shots and a two-stage xA model on <b>2.4 million</b> passes, both calibrated against real goals and assists.</p>
+  <div class="charts">
+<!-- Take-on map -->
     <div class="viz">
       <div class="viz-head">
         <div>
@@ -198,9 +186,9 @@ document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");}
       <div class="viz-head">
         <div>
           <h3>Argentina Match Centre · WC2026</h3>
-          <p class="viz-sub">Every Argentina game at the World Cup, built straight into this page from my event pipeline - head-to-head stats, both teams' shots, and every goal replayed pass-by-pass. <b>Pick a match</b> below, then press <b>Play</b> on a goal to watch it rebuild.</p>
+          <p class="viz-sub" data-he-html="כל משחקי ארגנטינה במונדיאל, בנויים ישר לתוך העמוד מה־Pipeline שלי: סטטיסטיקות ראש בראש, הבעיטות של שתי הקבוצות וכל שער משוחזר מסירה אחר מסירה. <b>בחרו משחק</b> למטה, ואז לחצו <b>הפעלה</b> על שער כדי לראות אותו נבנה מחדש.">Every Argentina game at the World Cup, built straight into this page from my event pipeline - head-to-head stats, both teams' shots, and every goal replayed pass-by-pass. <b>Pick a match</b> below, then press <b>Play</b> on a goal to watch it rebuild.</p>
         </div>
-        <a class="btn btn--sm btn--outline" id="mcFullLink" href="https://rshiri.github.io/XWORLDCUPTWIT/wc2026_dashboard/match.html?id=2026_06_17_Argentina_vs_Algeria" target="_blank" rel="noopener">Full WC2026 match centre ↗</a>
+        <a class="btn btn--sm btn--line" id="mcFullLink" href="https://rshiri.github.io/XWORLDCUPTWIT/wc2026_dashboard/match.html?id=2026_06_17_Argentina_vs_Algeria" target="_blank" rel="noopener">Full WC2026 match centre<svg class="ic"><use href="#i-arrow"/></svg></a>
       </div>
 
       <div class="toggles mc-matchtabs" id="mcMatchTabs" role="tablist" aria-label="Choose an Argentina match"><!-- filled by JS --></div>
@@ -240,7 +228,7 @@ document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");}
       <h4 class="mc-subhead">Goal replays <span>· the ball travels the real build-up: passes, carries, then the finish</span></h4>
       <div class="mc-goalbar">
         <div class="toggles mc-goaltabs" id="mcGoalTabs"><!-- filled by JS --></div>
-        <button class="btn btn--sm btn--primary mc-play" id="mcPlay">▶ Play</button>
+        <button class="btn btn--sm btn--solid mc-play" id="mcPlay"><svg class="ic"><use href="#i-play"/></svg>Play</button>
       </div>
       <div class="pitch-wrap">
         <svg id="mcReplay" viewBox="0 0 700 452" role="img" aria-label="Goal replay">
@@ -299,163 +287,140 @@ document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");}
         <svg id="f1pSvg" viewBox="0 0 1000 440" class="f1p-svg" role="img" aria-label="Abu Dhabi Grand Prix 2025 lap-by-lap position chart"></svg>
       </div>
       <div class="f1p-controls" id="f1pControls">
-        <button type="button" class="btn btn--sm btn--primary f1p-play" id="f1pPlay">▶ Play</button>
+        <button type="button" class="btn btn--sm btn--solid f1p-play" id="f1pPlay"><svg class="ic"><use href="#i-play"/></svg>Play</button>
         <input type="range" class="f1p-slider" id="f1pSlider" min="1" max="58" value="58" step="1" aria-label="Lap">
         <span class="f1p-lap" id="f1pLap">Lap 58 / 58</span>
       </div>
       <div class="viz-foot">
-        <div class="chart-tip" id="f1pTip">Grid → finish, reconstructed from starting grid and classified result.</div>
+        <div class="chart-tip" id="f1pTip">Grid, finishing order and laps completed are the official race results. The lines in between are an estimate, not lap-by-lap timing data.</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- PROJECTS -->
-<section id="projects" class="section">
-  <div class="wrap">
-    <span class="kicker">Projects</span>
-    <h2>Live sports-analytics products.</h2>
-    <p class="section-sub">Real, deployed apps - click through to explore each one.</p>
-    <div class="projects">
-      <article class="project">
-        <a class="project-shot" href="https://rshiri.github.io/BCNFINAL/" target="_blank" rel="noopener">
-          <img src="assets/img/bcn.png" alt="FC Barcelona 2025/26 analytics dashboard" loading="lazy" onerror="this.closest('.project-shot').classList.add('noshot')" />
-          <span class="project-fallback">FC Barcelona<br />xG Lab</span>
-        </a>
-        <div class="project-body">
-          <h3>FC Barcelona 2025/26 - xG Lab</h3>
-          <p>Every Barça fixture: results, an xG model, shot maps and a player lab.</p>
-          <div class="tags"><span>Python</span><span>Pandas</span><span>xG model</span></div>
-          <a class="project-link" href="https://rshiri.github.io/BCNFINAL/" target="_blank" rel="noopener">Live site ↗</a>
-        </div>
-      </article>
-      <article class="project">
-        <a class="project-shot" href="https://nba-dashboard-ramshiri.streamlit.app/" target="_blank" rel="noopener">
-          <img src="assets/img/nba.png" alt="NBA analytics dashboard built with Streamlit" loading="lazy" onerror="this.closest('.project-shot').classList.add('noshot')" />
-          <span class="project-fallback">NBA<br />Dashboard</span>
-        </a>
-        <div class="project-body">
-          <h3>NBA Analytics Dashboard</h3>
-          <p>An interactive Streamlit app for exploring NBA team &amp; player performance.</p>
-          <div class="tags"><span>Streamlit</span><span>Plotly</span><span>Pandas</span></div>
-          <a class="project-link" href="https://nba-dashboard-ramshiri.streamlit.app/" target="_blank" rel="noopener">Live app ↗</a>
-        </div>
-      </article>
-      <article class="project">
-        <a class="project-shot" href="https://rshiri.github.io/XWORLDCUPTWIT/wc2026_dashboard/index.html" target="_blank" rel="noopener">
-          <img src="assets/img/wc2026.png" alt="World Cup 2026 analytics dashboard" loading="lazy" onerror="this.closest('.project-shot').classList.add('noshot')" />
-          <span class="project-fallback">World Cup<br />2026</span>
-        </a>
-        <div class="project-body">
-          <h3>World Cup 2026 Dashboard</h3>
-          <p>A tournament hub with groups, fixtures, predictions &amp; match centres.</p>
-          <div class="tags"><span>Data pipeline</span><span>Automation</span><span>Dataviz</span></div>
-          <a class="project-link" href="https://rshiri.github.io/XWORLDCUPTWIT/wc2026_dashboard/index.html" target="_blank" rel="noopener">Live site ↗</a>
-        </div>
-      </article>
-      <article class="project">
-        <a class="project-shot" href="xg-model/" target="_blank" rel="noopener">
-          <img src="assets/img/xg-model.png" alt="Interactive explainer of the xG/xA machine-learning model" loading="lazy" onerror="this.closest('.project-shot').classList.add('noshot')" />
-          <span class="project-fallback">xG Model<br />Explainer</span>
-        </a>
-        <div class="project-body">
-          <h3>How This Model Decides What a Shot Is Worth</h3>
-          <p>An interactive walkthrough of the xG model behind my World Cup dashboard - real shot data, 23 features, a calibration curve, and a live in-browser calculator.</p>
-          <div class="tags"><span>Machine Learning</span><span>xG model</span><span>JavaScript</span></div>
-          <a class="project-link" href="xg-model/" target="_blank" rel="noopener">Open explainer ↗</a>
-        </div>
-      </article>
-      <article class="project">
-        <a class="project-shot" href="live-pipeline/" target="_blank" rel="noopener">
-          <img src="assets/img/live-pipeline.png" alt="Live match data pipeline demo styled after TRADE360" loading="lazy" onerror="this.closest('.project-shot').classList.add('noshot')" />
-          <span class="project-fallback">Live Data<br />Pipeline</span>
-        </a>
-        <div class="project-body">
-          <h3>Live Match Pipeline - a mini TRADE360</h3>
-          <p>Real-time feed replay over RabbitMQ-style messages, an in-play xG win-probability model calibrated on 82k shots (EPL, La Liga, World Cups) pricing the 1X2 market, and snapshot recovery.</p>
-          <div class="tags"><span>Real-time</span><span>Message queue</span><span>In-play model</span></div>
-          <a class="project-link" href="live-pipeline/" target="_blank" rel="noopener">Open demo ↗</a>
-        </div>
-      </article>
-      <article class="project">
-        <a class="project-shot" href="winprob-model/" target="_blank" rel="noopener">
-          <img src="assets/img/winprob-model.png" alt="Explainer of how the in-play win-probability model was trained on 82,310 shots" loading="lazy" onerror="this.closest('.project-shot').classList.add('noshot')" />
-          <span class="project-fallback">Win-Prob<br />Model</span>
-        </a>
-        <div class="project-body">
-          <h3>One Model, Four Sites - Training the Win-Prob Model</h3>
-          <p>How the in-play win-probability model was fit on everything I've scraped - 3,272 matches, 82,310 shots - and back-tested blind on 864 matches.</p>
-          <div class="tags"><span>Model training</span><span>Empirical Bayes</span><span>Back-testing</span></div>
-          <a class="project-link" href="winprob-model/" target="_blank" rel="noopener">Open explainer ↗</a>
-        </div>
-      </article>
-      <article class="project">
-        <a class="project-shot" href="https://rshiri.github.io/F1Visualized/" target="_blank" rel="noopener">
-          <img src="assets/img/f1.png" alt="Formula 1 season analytics dashboard" loading="lazy" onerror="this.closest('.project-shot').classList.add('noshot')" />
-          <span class="project-fallback">F1<br />Visualized</span>
-        </a>
-        <div class="project-body">
-          <h3>F1 Visualized - Season Dashboard</h3>
-          <p>An interactive Formula 1 hub: race results, driver &amp; constructor standings and season charts.</p>
-          <div class="tags"><span>Python</span><span>Plotly</span><span>Dataviz</span></div>
-          <a class="project-link" href="https://rshiri.github.io/F1Visualized/" target="_blank" rel="noopener">Live site ↗</a>
-        </div>
-      </article>
-      <article class="project">
-        <a class="project-shot" href="https://rshiri.github.io/XEPL/" target="_blank" rel="noopener">
-          <img src="assets/img/xepl.png" alt="English Premier League analytics dashboard" loading="lazy" onerror="this.closest('.project-shot').classList.add('noshot')" />
-          <span class="project-fallback">EPL<br />Analytics</span>
-        </a>
-        <div class="project-body">
-          <h3>XEPL - Premier League Analytics</h3>
-          <p>English Premier League analytics: league tables, an xG model, shot maps and match stats.</p>
-          <div class="tags"><span>Python</span><span>xG model</span><span>Pandas</span></div>
-          <a class="project-link" href="https://rshiri.github.io/XEPL/" target="_blank" rel="noopener">Live site ↗</a>
-        </div>
-      </article>
-      <article class="project">
-        <a class="project-shot" href="https://rshiri.github.io/XLALIGA/" target="_blank" rel="noopener">
-          <img src="assets/img/laliga.png" alt="La Liga match analytics dashboard" loading="lazy" onerror="this.closest('.project-shot').classList.add('noshot')" />
-          <span class="project-fallback">La Liga<br />Analytics</span>
-        </a>
-        <div class="project-body">
-          <h3>XLALIGA - La Liga Match Analytics</h3>
-          <p>Spanish La Liga analytics: standings, results, an xG efficiency lab, player leaderboard and Poisson season projection.</p>
-          <div class="tags"><span>Python</span><span>xG model</span><span>Poisson</span></div>
-          <a class="project-link" href="https://rshiri.github.io/XLALIGA/" target="_blank" rel="noopener">Live site ↗</a>
-        </div>
-      </article>
-    </div>
-  </div>
+<section id="builds" class="sect wrap">
+  <div class="sh"><h2>All builds</h2></div>
+  <p class="sect-sub" data-he-html="כל הפרויקטים שבעמוד. פתחו <b>איך בניתי את זה</b> בכל שורה כדי לראות את הבעיה, הנתונים, השיטה והתוצאה.">Every project on this page. Open <b>How I built it</b> on any row for the problem, the data, the method and the result.</p>
+  <ol class="table builds">
+    <li>
+      <a href="https://rshiri.github.io/XLALIGA/" target="_blank" rel="noopener"><img class="bimg" src="assets/img/thumb/laliga.webp" alt="" width="96" height="60" loading="lazy" /><span class="n">01</span><span class="bt">XLALIGA</span><span class="bd">La Liga match analytics</span><span class="bw">Python, xG model, Poisson</span><svg class="ic"><use href="#i-arrow"/></svg></a>
+      <details class="notes"><summary>How I built it</summary><dl>
+        <div><dt>Problem</dt><dd>League tables say who won, not who created the better chances or where the season is heading.</dd></div>
+        <div><dt>Data</dt><dd>1,520 La Liga matches and 37,193 shots, 2022-23 to 2025-26, scraped match by match into one shared schema.</dd></div>
+        <div><dt>Method</dt><dd>Every shot is valued by my xG model. The site adds an xG efficiency lab (goals against expected), a player leaderboard and a Poisson projection of the final table.</dd></div>
+        <div><dt>Result</dt><dd>A live La Liga dashboard. The same match files also train the win-probability model below.</dd></div>
+      </dl></details>
+    </li>
+    <li>
+      <a href="https://rshiri.github.io/XEPL/" target="_blank" rel="noopener"><img class="bimg" src="assets/img/thumb/xepl.webp" alt="" width="96" height="60" loading="lazy" /><span class="n">02</span><span class="bt">XEPL</span><span class="bd">Premier League analytics</span><span class="bw">Python, xG model, Pandas</span><svg class="ic"><use href="#i-arrow"/></svg></a>
+      <details class="notes"><summary>How I built it</summary><dl>
+        <div><dt>Problem</dt><dd>The same question for the Premier League: how good were the chances behind each result?</dd></div>
+        <div><dt>Data</dt><dd>1,520 Premier League matches and 39,451 shots across four seasons, in the same schema as XLALIGA.</dd></div>
+        <div><dt>Method</dt><dd>League tables, shot maps and match stats, with every shot scored by my own xG model and an interactive explainer of how it values a shot.</dd></div>
+        <div><dt>Result</dt><dd>A live EPL dashboard, and the largest of the five corpora behind the win-probability model.</dd></div>
+      </dl></details>
+    </li>
+    <li>
+      <a href="https://rshiri.github.io/F1Visualized/" target="_blank" rel="noopener"><img class="bimg" src="assets/img/thumb/f1.webp" alt="" width="96" height="60" loading="lazy" /><span class="n">03</span><span class="bt">F1 Visualized</span><span class="bd">Race results and standings, 2022 to 2026</span><span class="bw">Python, Plotly</span><svg class="ic"><use href="#i-arrow"/></svg></a>
+      <details class="notes"><summary>How I built it</summary><dl>
+        <div><dt>Problem</dt><dd>Following a Formula 1 season means jumping between results pages. I wanted one place for the whole picture.</dd></div>
+        <div><dt>Data</dt><dd>Official race results for every Grand Prix from 2022 to 2026: grid, finishing order, laps completed and status for every driver.</dd></div>
+        <div><dt>Method</dt><dd>Python builds driver and constructor standings and season charts from the results; Plotly renders them as interactive charts.</dd></div>
+        <div><dt>Result</dt><dd>A season-by-season F1 dashboard. The race progression chart on this page is a port of one of its views.</dd></div>
+      </dl></details>
+    </li>
+    <li>
+      <a href="xg-model/" target="_blank" rel="noopener"><img class="bimg" src="assets/img/thumb/xg-model.webp" alt="" width="96" height="60" loading="lazy" /><span class="n">04</span><span class="bt">xG model</span><span class="bd">What every shot on this site is worth</span><span class="bw">Scikit-learn, XGBoost</span><svg class="ic"><use href="#i-arrow"/></svg></a>
+      <details class="notes"><summary>How I built it</summary><dl>
+        <div><dt>Problem</dt><dd>Public xG numbers are black boxes. I wanted a model I built myself and can explain line by line.</dd></div>
+        <div><dt>Data</dt><dd>77,627 real shots with 23 features each, and 2.4 million passes with 19 features for xA.</dd></div>
+        <div><dt>Method</dt><dd>Three blended models: a transparent logistic score, a gradient-boosted model forced to respect distance and angle, and a light nudge toward public xG shapes. Then calibration against real goals and a small per-competition adjustment. xA is two stages: will a shot follow this pass, and how good would it be.</dd></div>
+        <div><dt>Result</dt><dd>Every xG and xA number on this site and the league dashboards, with a step-by-step explainer and a live calculator.</dd></div>
+      </dl></details>
+    </li>
+    <li>
+      <a href="https://rshiri.github.io/XWORLDCUPTWIT/wc2026_dashboard/index.html" target="_blank" rel="noopener"><img class="bimg" src="assets/img/thumb/wc2026.webp" alt="" width="96" height="60" loading="lazy" /><span class="n">05</span><span class="bt">World Cup 2026</span><span class="bd">Tournament hub and event pipeline</span><span class="bw">Python, MongoDB</span><svg class="ic"><use href="#i-arrow"/></svg></a>
+      <details class="notes"><summary>How I built it</summary><dl>
+        <div><dt>Problem</dt><dd>Cover a whole World Cup as it happens: every match, every shot, every goal build-up.</dd></div>
+        <div><dt>Data</dt><dd>All 104 matches of the 2026 tournament as event data, plus the 2018 and 2022 editions, stored in MongoDB, together with fan social-media posts collected around each fixture.</dd></div>
+        <div><dt>Method</dt><dd>A Python pipeline turns raw match events into per-match files: stats, shots with xG, and pass-by-pass goal sequences. The hub builds group tables, match pages and player views from them.</dd></div>
+        <div><dt>Result</dt><dd>A full tournament hub. The Argentina match centre on this page is built from the same pipeline.</dd></div>
+      </dl></details>
+    </li>
+    <li>
+      <a href="winprob-model/" target="_blank" rel="noopener"><img class="bimg" src="assets/img/thumb/winprob-model.webp" alt="" width="96" height="60" loading="lazy" /><span class="n">06</span><span class="bt">Win-probability model</span><span class="bd">One model behind four sites</span><span class="bw">Python</span><svg class="ic"><use href="#i-arrow"/></svg></a>
+      <details class="notes"><summary>How I built it</summary><dl>
+        <div><dt>Problem</dt><dd>Show who is winning a match in probability terms, minute by minute, from data I collected myself.</dd></div>
+        <div><dt>Data</dt><dd>3,272 matches and 82,310 shots: four seasons of the EPL and La Liga plus the 2018, 2022 and 2026 World Cups.</dd></div>
+        <div><dt>Method</dt><dd>A Dixon-Coles-style fit: a baseline per competition, team attack and defence rates shrunk toward it, older seasons faded, home advantage measured (x1.13 in leagues). In play, the score, the clock and recent xG turn those rates into home, draw and away probabilities.</dd></div>
+        <div><dt>Result</dt><dd>Trained on 2,408 matches and tested blind on 864 it never saw; it beats quoting base rates at every checkpoint. One JSON file feeds the pipeline and all three dashboards.</dd></div>
+      </dl></details>
+    </li>
+    <li>
+      <a href="live-pipeline/" target="_blank" rel="noopener"><img class="bimg" src="assets/img/thumb/live-pipeline.webp" alt="" width="96" height="60" loading="lazy" /><span class="n">07</span><span class="bt">MatchFeed</span><span class="bd">Live odds pipeline over RabbitMQ</span><span class="bw">Python, RabbitMQ</span><svg class="ic"><use href="#i-arrow"/></svg></a>
+      <details class="notes"><summary>How I built it</summary><dl>
+        <div><dt>Problem</dt><dd>Real betting feeds push match events and prices to many consumers that must never fall out of sync. I built a small one end to end.</dd></div>
+        <div><dt>Data</dt><dd>Recorded World Cup 2026 matches, replayed minute by minute as a live JSON message feed.</dd></div>
+        <div><dt>Method</dt><dd>A producer publishes fixture, livescore, keep-alive and settlement messages to a RabbitMQ topic exchange. A consumer rebuilds match state and prices the 1X2 market with the win-probability model. If it joins late or misses a message, it requests a snapshot and carries on.</dd></div>
+        <div><dt>Result</dt><dd>A runnable pipeline with a pure-Python core and a test suite. It also generates the win-probability timelines shown in the match centre.</dd></div>
+      </dl></details>
+    </li>
+    <li>
+      <a href="https://rshiri.github.io/nba-dashboard/" target="_blank" rel="noopener"><img class="bimg" src="assets/img/thumb/nba.webp" alt="" width="96" height="60" loading="lazy" /><span class="n">08</span><span class="bt">NBA analytics</span><span class="bd">Every Israeli player in the NBA, updated daily</span><span class="bw">Python, Plotly.js</span><svg class="ic"><use href="#i-arrow"/></svg></a>
+      <details class="notes"><summary>How I built it</summary><dl>
+        <div><dt>Problem</dt><dd>See how a player or team is really doing this season, beyond the box score.</dd></div>
+        <div><dt>Data</dt><dd>The official NBA stats API (via nba_api): game logs, career and advanced stats, every shot location, an All-Star cohort and league leaderboards, refreshed daily by a GitHub Action.</dd></div>
+        <div><dt>Method</dt><dd>Python builds the data into JSON; a static JavaScript front end draws Plotly charts: season cards with deltas, career per-36 and efficiency trends, 14-zone shot maps and an All-Star comparison lab.</dd></div>
+        <div><dt>Result</dt><dd>A live dashboard on GitHub Pages that opens instantly, in English or Hebrew, and stays current without a server.</dd></div>
+      </dl></details>
+    </li>
+    <li>
+      <a href="https://rshiri.github.io/BCNFINAL/" target="_blank" rel="noopener"><img class="bimg" src="assets/img/thumb/bcn.webp" alt="" width="96" height="60" loading="lazy" /><span class="n">09</span><span class="bt">Barça xG Lab</span><span class="bd">Every FC Barcelona fixture, 2025/26</span><span class="bw">Python, Pandas, XGBoost</span><svg class="ic"><use href="#i-arrow"/></svg></a>
+      <details class="notes"><summary>How I built it</summary><dl>
+        <div><dt>Problem</dt><dd>Follow one club&#x27;s whole season through the quality of its chances, not just its results.</dd></div>
+        <div><dt>Data</dt><dd>Every FC Barcelona fixture of 2025/26 across all competitions, scraped match by match.</dd></div>
+        <div><dt>Method</dt><dd>Season overview and record by competition, an xG lab comparing goals with expected goals, a player lab and shot maps, with machine-learning models on the match data to surface performance patterns.</dd></div>
+        <div><dt>Result</dt><dd>A complete season dashboard for one club.</dd></div>
+      </dl></details>
+    </li>
+  </ol>
 </section>
 
-<!-- CONTACT -->
-<section id="contact" class="section section--alt">
-  <div class="wrap contact">
-    <span class="kicker">Contact</span>
-    <h2>Let's build something.</h2>
-    <p class="section-sub">Actively seeking a student or full-time role in software or data engineering.</p>
-    <div class="contact-actions">
-      <a class="btn btn--primary" href="mailto:puzik7399@gmail.com">✉︎ Email me</a>
-      <a class="btn btn--outline" href="assets/Ram_Shiri_CV.pdf" download>Download CV</a>
+<section id="about" class="sect wrap about">
+  <h2 data-he-html="למה ספורט,<br />למה דאטה">Why sport,<br />why data</h2>
+  <div class="about-copy">
+    <p data-he="התאהבתי במספרים של כדורגל הרבה לפני שלמדתי אותם, וכל פרויקט בעמוד הזה התחיל באותה דרך: שאלה על משחק, וכלי שעוד לא הכרתי. למדתי Scraping כדי להשיג את הנתונים, מידול כדי להבין אותם, ו־Pipelines כדי לשמור אותם חיים.">I fell for football numbers long before I studied them, and every project on this page started the same way: a question about a match, and a tool I didn't know yet. I learned scraping to get the data, modelling to make sense of it, and pipelines to keep it live.</p>
+    <p data-he="זו העסקה שאני מציע למעסיק: תנו לי כל בעיה בתחום הזה, ואני אלמד מה שצריך ואעשה את זה כמו שצריך. אני עובד מהר עם כלי AI, ועדיין מבין ויכול להסביר כל שורה שאני מעלה.">That is the deal I offer an employer: give me any problem in this space and I will learn what it takes and do it properly. I work fast with AI-assisted tools, and I still own and can explain every line I ship.</p>
+  </div>
+  <dl class="skills">
+    <div><dt>Languages</dt><dd>Python, SQL, Java, JavaScript</dd></div>
+    <div><dt>Data &amp; ML</dt><dd>Pandas, NumPy, scikit-learn, XGBoost, Plotly, Streamlit</dd></div>
+    <div><dt>Data engineering</dt><dd>Web scraping, ETL pipelines, REST APIs, PostgreSQL, MongoDB, Docker, Git</dd></div>
+    <div><dt>AI-assisted development</dt><dd>Claude Code, Cursor, agentic workflows</dd></div>
+  </dl>
+</section>
+
+<section id="contact" class="sect wrap">
+  <div class="panel contact">
+    <h2>Let's talk.</h2>
+    <p>Looking for a student or full-time role in data engineering or AI, ideally where sport is the product.</p>
+    <div class="actions">
+      <a class="btn btn--solid" href="mailto:puzik7399@gmail.com"><svg class="ic"><use href="#i-mail"/></svg>puzik7399@gmail.com</a>
+      <a class="btn btn--line" href="assets/Ram_Shiri_CV.pdf" download><svg class="ic"><use href="#i-down"/></svg>Download CV</a>
     </div>
-    <ul class="contact-links">
-      <li><a href="https://github.com/rshiri" target="_blank" rel="noopener">GitHub</a></li>
-      <li><a href="#" data-linkedin target="_blank" rel="noopener">LinkedIn</a></li>
-      <li><a href="mailto:puzik7399@gmail.com">puzik7399@gmail.com</a></li>
-    </ul>
   </div>
 </section>
 </main>
 
-<footer class="footer">
-  <div class="wrap footer-inner">
-    <span>© <span id="year"></span> Ram Shiri</span>
-    <a href="#top" class="to-top">Back to top ↑</a>
-  </div>
+<footer class="footer wrap">
+  <span>© <span id="year"></span> Ram Shiri</span>
+  <span class="footer-links">
+    <a href="https://github.com/rshiri" target="_blank" rel="noopener"><svg class="ic"><use href="#i-github"/></svg>GitHub</a>
+    <a href="#" data-linkedin target="_blank" rel="noopener"><svg class="ic"><use href="#i-linkedin"/></svg>LinkedIn</a>
+  </span>
 </footer>
 
 <div class="tooltip" id="tooltip" role="status" aria-live="polite"></div>
-<script src="main.js?v=15" defer></script>
+<script src="main.js?v=21" defer></script>
 </body>
 </html>

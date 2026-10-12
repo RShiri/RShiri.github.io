@@ -2,7 +2,7 @@
 """Build the offline win-probability timelines for rshiri.github.io.
 
 For every Argentina match in assets/data/argentina/index.json this replays
-the recorded match through the mini-TRADE360 pipeline — MatchProducer ->
+the recorded match through the MatchFeed pipeline — MatchProducer ->
 InMemoryBroker -> TradeConsumer — instantly and deterministically, then
 writes the consumer's minute-by-minute timeline (win/draw/win
 probabilities, fair odds, cumulative xG, score, shot/goal events) to
@@ -87,7 +87,7 @@ def main():
                  T["prematch"]["pA"], len(T["timeline"]), T["endMin"]))
 
     index = {
-        "generated_from": "live-pipeline (mini-TRADE360 replay)",
+        "generated_from": "live-pipeline (MatchFeed replay)",
         "model": {"mu": params["mu"], "w": params["w"], "k": params["k"],
                   "hfa": params.get("hfa", 1.0),
                   "version": params.get("version", 1)},

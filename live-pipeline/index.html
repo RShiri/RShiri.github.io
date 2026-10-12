@@ -1,18 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark" class="rs-page rs-pipeline">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Live Pipeline — a mini TRADE360 · Ram Shiri</title>
-<meta name="description" content="A real-time sports data pipeline in the style of LSports' TRADE360: a producer replays World Cup matches as RabbitMQ-style messages, a consumer rebuilds match state and prices the 1X2 market live." />
+<title>MatchFeed — a live odds pipeline · Ram Shiri</title>
+<meta name="description" content="A real-time sports data pipeline built like a sportsbook odds feed: a producer replays World Cup matches as RabbitMQ-style messages, a consumer rebuilds match state and prices the 1X2 market live." />
 <meta name="author" content="Ram Shiri" />
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<script>/* theme before CSS paints (no flash): dark is the default — same key as the main site */
-(function(){var t=null;try{t=localStorage.getItem("theme")}catch(e){}
-document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark");})();</script>
+<link rel="stylesheet" href="/assets/brand/brand.css" />
+<script src="/assets/brand/brand.js"></script>
 <style>
 /* ==========================================================================
    Sibling page of the portfolio: same brand (indigo→cyan), same fonts,
@@ -248,25 +246,19 @@ html[data-theme="dark"] .footer { background: #070b15; }
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
 }
 </style>
+<link rel="stylesheet" href="/assets/brand/pages-theme.css" />
 </head>
 <body>
 
-<header class="nav">
-  <div class="wrap nav-inner">
-    <a class="brand" href="../"><span class="monogram">RS</span><span class="brand-name">Ram Shiri</span></a>
-    <a class="backlink" href="../#projects">← Back to portfolio</a>
-    <button class="theme-toggle" id="themeToggle" aria-label="Switch to light mode">☀️</button>
-  </div>
-</header>
 
 <main>
 
 <!-- 1 · HERO -->
 <div class="hero">
   <div class="wrap">
-    <span class="eyebrow">live-pipeline · a mini TRADE360</span>
+    <span class="eyebrow">MatchFeed · live odds pipeline</span>
     <h1>One match feed in, <span class="grad">live 1X2 prices out.</span></h1>
-    <p class="lead">A real-time sports data pipeline in the style of LSports' TRADE360.
+    <p class="lead">A real-time sports data pipeline built like a sportsbook odds feed.
       A producer replays World Cup matches as RabbitMQ-style messages. A consumer rebuilds
       match state from those messages and prices the 1X2 market live, minute by minute,
       with an xG-driven model calibrated on 82,000 shots across four seasons of the EPL
@@ -583,7 +575,7 @@ python3 -m pytest live-pipeline/tests -q</pre>
 
 <footer class="footer">
   <div class="wrap footer-inner">
-    <span>© <span id="year"></span> Ram Shiri · live-pipeline, a mini TRADE360</span>
+    <span>© <span id="year"></span> Ram Shiri · MatchFeed, a live odds pipeline</span>
     <a href="../#projects">← Back to projects</a>
   </div>
 </footer>
@@ -598,21 +590,8 @@ python3 -m pytest live-pipeline/tests -q</pre>
 
   $("#year").textContent = String(new Date().getFullYear());
 
-  /* ---------------- theme toggle (same mechanism + storage key as the main site) */
-  var themeBtn = $("#themeToggle");
-  function paintTheme() {
-    var dark = document.documentElement.getAttribute("data-theme") !== "light";
-    themeBtn.textContent = dark ? "☀️" : "🌙";
-    themeBtn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
-  }
-  themeBtn.addEventListener("click", function () {
-    var toLight = document.documentElement.getAttribute("data-theme") !== "light";
-    document.documentElement.setAttribute("data-theme", toLight ? "light" : "dark");
-    try { localStorage.setItem("theme", toLight ? "light" : "dark"); } catch (e) {}
-    paintTheme();
-    if (replay.match) applyTeamColors();       /* re-fit team colours to the new surface */
-  });
-  paintTheme();
+  /* page theme: always the dark surface; the portfolio bar switches between two dark looks
+     (html[data-site-style]), styled by /assets/brand/pages-theme.css */
 
   /* ---------------- colour helpers: keep team colours readable on either surface */
   function hexToRgb(hex) {
@@ -1169,5 +1148,7 @@ python3 -m pytest live-pipeline/tests -q</pre>
   });
 })();
 </script>
+<script src="content-he.js"></script>
+<script src="/assets/brand/pages-he.js"></script>
 </body>
 </html>

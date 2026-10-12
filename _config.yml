@@ -1,0 +1,13 @@
+# GitHub Pages (Jekyll): keep design/process notes and tooling out of the published site
+exclude:
+  - PRODUCT.md
+  - DESIGN.md
+  - node_modules
+  - tests
+  - package.json
+  - package-lock.json
+  - playwright.config.ts
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+  - cv-src
