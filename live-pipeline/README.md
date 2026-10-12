@@ -1,7 +1,7 @@
-# mini-TRADE360 - a live sports-data pipeline
+# MatchFeed - a live sports-data pipeline
 
-A working miniature of a sportsbook data feed, modelled on the architecture of LSports'
-**TRADE360**: a producer replays recorded World Cup 2026 matches as a live JSON message
+A working miniature of a sportsbook odds feed:
+a producer replays recorded World Cup 2026 matches as a live JSON message
 feed (fixture metadata, per-minute livescores, keep-alives, settlement), a RabbitMQ topic
 exchange routes it, and a trading consumer rebuilds match state, runs an in-play Poisson
 win-probability model and publishes 1X2 market updates - with Snapshot API-style recovery
@@ -35,7 +35,7 @@ exchange named `trade`, lazy `pika` import). Routing keys are `feed.<fixture_id>
 
 ## Message contract
 
-Every message is a TRADE360-style envelope: a `Header` (`Type`, `MsgGuid`, per-fixture
+Every message is a typed envelope: a `Header` (`Type`, `MsgGuid`, per-fixture
 monotonic `MsgSeq`, `ServerTimestamp`, `CreationDate`) plus a `Body` with an `Events`
 list. Timestamps are supplied by the producer, so replays are fully deterministic.
 
@@ -145,7 +145,7 @@ Regeneration order after new match data: `calibrate.py` (rewrites
 | --- | --- |
 | `run_demo.py` | CLI: replay one match as a live feed and price it (`--list`, `--match`, `--speed`, `--broker`, `--late-join`) |
 | `requirements.txt` | Documents that the core has no deps; `pika` optional for rabbit mode |
-| `tradepipe/messages.py` | TRADE360-style envelope + builders for MsgTypes 1/2/3/31/35 |
+| `tradepipe/messages.py` | Typed message envelope + builders for MsgTypes 1/2/3/31/35 |
 | `tradepipe/broker.py` | `Broker` API, synchronous `InMemoryBroker`, `RabbitBroker` (topic exchange `trade`, RPC) |
 | `tradepipe/producer.py` | `MatchProducer`: deterministic raw-clock replay to the real final whistle, snapshot authority |
 | `tradepipe/snapshot.py` | Snapshot payload contract shared by producer (build) and consumer (parse) |
@@ -176,7 +176,7 @@ Regeneration order after new match data: `calibrate.py` (rewrites
   topic exchange and an RPC queue, behind a transport abstraction that runs identically
   in-memory (tests) and on RabbitMQ (deployment-shaped).
 
-> Built a real-time sports data pipeline mirroring TRADE360 architecture - RabbitMQ
-> producer/consumer with snapshot recovery, TRADE-style message contracts, and an
+> Built a real-time sports data pipeline modelled on a sportsbook odds feed - RabbitMQ
+> producer/consumer with snapshot recovery, typed message contracts, and an
 > in-play Poisson win-probability model calibrated on World Cup xG data, powering
 > live dashboards.

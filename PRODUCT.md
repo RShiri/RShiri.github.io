@@ -33,7 +33,7 @@ A third-year Data Engineering student who is in love with the meeting point of d
 
 - Interactive analytics embedded on the homepage (Lamine Yamal xG shot map and take-on map, Argentina WC2026 match centre with goal replay and win-probability, F1 race progression) are kept and featured.
 - Main projects: NBA dashboard, World Cup 2026 dashboard, F1 Visualized, XEPL, XLALIGA.
-- Smaller projects (shown compactly, not prominent): FC Barcelona xG Lab, the xG model explainer, the win-probability model write-up, the live match pipeline (mini-TRADE360).
+- Smaller projects (shown compactly, not prominent): FC Barcelona xG Lab, the xG model explainer, the win-probability model write-up, the live match pipeline (MatchFeed).
 - Light/dark theme toggle with the `theme` localStorage key is shared with sub-pages.
 - Must work at phone width and stay fast on GitHub Pages (no framework).
 - Private study material (CV bootcamp, LSports prep) does not belong on the public site.
