@@ -49,6 +49,7 @@
   /* ---------------- Hebrew swapping ---------------- */
   var ORIG = "__rsOrig", ATTRS = ["title", "placeholder", "aria-label"];
   var busy = false;
+  var WHOLE = "p, li, dd, dt, td, th, h1, h2, h3, h4, h5, label, figcaption, small, .chart-tip, .sub, .lead, .note, .caption, .hint, .desc";
   function dict() { return window.RS_I18N || {}; }
   function swapText(node, d, he) {
     if (he) {
@@ -90,10 +91,31 @@
     var w = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT, {
       acceptNode: function (n) {
         var p = n.parentElement;
-        if (!p || /^(SCRIPT|STYLE|NOSCRIPT|TEXTAREA)$/.test(p.tagName) || p.closest(".rs-bar, .rs-about, [data-he], [data-he-html]")) return NodeFilter.FILTER_REJECT;
+        if (!p || /^(SCRIPT|STYLE|NOSCRIPT|TEXTAREA)$/.test(p.tagName) || p.closest(".rs-bar, .rs-about, [data-he], [data-he-html], [data-rs-whole]")) return NodeFilter.FILTER_REJECT;
         return NodeFilter.FILTER_ACCEPT;
       }
     });
+    /* whole-element match first: paragraphs whose text is split by inline markup
+       (<b>, <a>, <code>) match a key on their normalised full text */
+    var host = scope.nodeType === 1 ? scope : scope.parentElement;
+    if (host) {
+      var cands = [host].concat(Array.prototype.slice.call(host.querySelectorAll(WHOLE)));
+      cands.forEach(function (el) {
+        if (!el.matches || !el.matches(WHOLE) || el.closest(".rs-bar, .rs-about, [data-he], [data-he-html]")) return;
+        if (he) {
+          if (el.__rsWhole != null || !el.children.length) return;
+          var key = el.textContent.replace(/\s+/g, " ").trim();
+          if (key && Object.prototype.hasOwnProperty.call(d, key)) {
+            el.__rsWhole = el.innerHTML; el.textContent = d[key];
+            if (!el.hasAttribute("dir")) { el.setAttribute("dir", "auto"); el.setAttribute("data-rs-dir", ""); }
+            el.setAttribute("data-rs-whole", "");
+          }
+        } else if (el.__rsWhole != null) {
+          el.innerHTML = el.__rsWhole; el.__rsWhole = null; el.removeAttribute("data-rs-whole");
+          if (el.hasAttribute("data-rs-dir")) { el.removeAttribute("dir"); el.removeAttribute("data-rs-dir"); }
+        }
+      });
+    }
     var n; while ((n = w.nextNode())) swapText(n, d, he);
     if (scope.nodeType === 1) {
       swapEl(scope, d, he);
