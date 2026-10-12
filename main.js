@@ -907,4 +907,7 @@
         if (tip) tip.textContent = "Race data could not be loaded.";
       });
   })();
+  /* phones: the F1 chart scrolls sideways; start it at the finish, where the driver key sits */
+  var f1Scroller = $("#f1progression .pitch-wrap");
+  if (f1Scroller && window.matchMedia("(max-width: 680px)").matches) f1Scroller.scrollLeft = f1Scroller.scrollWidth;
 })();

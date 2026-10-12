@@ -164,6 +164,9 @@ html[data-theme="light"] .theme-toggle .ic-moon { display: block; }
 .work-shot img { width: 100%; height: auto; transition: transform .7s var(--ease); transform-origin: top center; }
 .work:hover .work-shot img { transform: translateY(-3px); }
 .work-shot.noshot img { display: none; }
+/* laliga.png is already a framed browser mock-up: no second chrome bar */
+.work-shot--bare { padding: 0; }
+.work-shot--bare .frame { border: 0; }
 .work--wide .work-body { display: flex; flex-direction: column; justify-content: center; padding: 32px; }
 .work-body { padding: 18px 20px 20px; }
 .work-body h3 { font-size: 17px; letter-spacing: -.015em; }
@@ -426,7 +429,7 @@ html[data-theme="light"] .viz { background: var(--bg-raise); }
 .mc-team .ic-ball { flex: none; margin-right: 0; }
 .mc-goaltab .ic-ball { margin-right: 2px; }
 #shotmap { max-height: none; }
-html[data-theme="light"] .lg-saved { border: 1px solid var(--line-strong); }
+html[data-theme="light"] .lg-saved { border: 1.5px solid var(--muted); }
 html[data-theme="light"] .mc-team i { border-color: rgba(13,18,32,.18); }
 .mc-team i { border-color: rgba(255,255,255,.28); }
 .mc-bar { background: color-mix(in srgb, var(--ink) 8%, transparent); }
@@ -462,8 +465,11 @@ html[data-theme="light"] .mc-team i { border-color: rgba(13,18,32,.18); }
   .hero-card { grid-template-columns: 96px 1fr; padding: 8px; }
   .bento { grid-template-columns: 1fr; }
   #f1progression .pitch-wrap, .mc-winprob { overflow-x: auto; }
-  #f1pSvg { min-width: 640px; }
-  .mc-wp-svg { min-width: 560px; }
+  /* phones: draw the charts at a legible scale and scroll them; the faded edge says there is more */
+  #f1pSvg { min-width: 920px; }
+  .mc-wp-svg { min-width: 720px; }
+  #f1progression .pitch-wrap { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 48px); mask-image: linear-gradient(to right, transparent 0, #000 48px); }
+  .mc-winprob { -webkit-mask-image: linear-gradient(to left, transparent 0, #000 48px); mask-image: linear-gradient(to left, transparent 0, #000 48px); }
   .viz-foot { flex-direction: column; align-items: flex-start; }
   .mc-team { font-size: 15px; }
   .mc-num { font-size: 26px; }
