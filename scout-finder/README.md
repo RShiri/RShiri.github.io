@@ -15,6 +15,19 @@ across the whole universe, so it can suggest a Belgian league winger for a
 Premier League one.
 
 A stat a league does not publish (xG in smaller leagues) stays empty, never 0.
+FotMob itself leaves a stat out of a player's match when it is zero (no xG key
+for a player who never shot), so within a match a stat anyone has is 0 for the
+rest; only a stat nobody in the match has stays empty. In 2025-26 that is xG,
+npxG and xA in Ligat ha'Al; every other league has them.
+
+Positions come from the starting slot (FotMob positionId, mapped in
+`fetch_fotmob.POSITION_ID`); a player's group is his most-started slot. Bench
+appearances only count for players who never started. A player who changed
+leagues mid-season gets one entry per league (`fotmob:<id>@<league>`).
+
+League strength: the ClubElo API was down when `data/universe_2025-26.json` was
+built (Oct 2026), so the factors come from the league averages on the clubelo.com
+front page that day (2026-27 membership), Brazil and Argentina included.
 
 ## Sources
 

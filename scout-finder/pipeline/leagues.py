@@ -1,9 +1,8 @@
 """The scouting universe: which leagues Scout Finder covers.
 
 FotMob league ids. `clubelo` is the country code ClubElo uses, for league strength.
-Ids marked unverified were not checked against FotMob from where this was
-written; `python -m pipeline.fetch_fotmob --check` prints the name FotMob
-returns for each id so a wrong one shows up at once.
+All ids checked live with `python -m pipeline.fetch_fotmob --check` (Oct 2026);
+FotMob calls BEL1 "First Division A" and BRA1 "Série A".
 """
 
 LEAGUES = {
@@ -18,8 +17,8 @@ LEAGUES = {
     "NED1": {"fotmob": 57,  "name": "Eredivisie",            "clubelo": "NED", "level": 1},
     "BEL1": {"fotmob": 40,  "name": "Belgian Pro League",    "clubelo": "BEL", "level": 1},
     "ENG2": {"fotmob": 48,  "name": "Championship",          "clubelo": "ENG", "level": 2},
-    "BRA1": {"fotmob": 268, "name": "Serie A (Brazil)",      "clubelo": None,  "level": 1},
-    "ARG1": {"fotmob": 112, "name": "Liga Profesional",      "clubelo": None,  "level": 1},
+    "BRA1": {"fotmob": 268, "name": "Serie A (Brazil)",      "clubelo": "BRA", "level": 1},
+    "ARG1": {"fotmob": 112, "name": "Liga Profesional",      "clubelo": "ARG", "level": 1},
     # Home
     "ISR1": {"fotmob": 127, "name": "Ligat ha'Al",           "clubelo": "ISR", "level": 1},
 }

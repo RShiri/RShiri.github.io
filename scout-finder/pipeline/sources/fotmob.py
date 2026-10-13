@@ -18,7 +18,7 @@ from ..positions import group_from_slot
 
 # XEPL column -> schema column. Everything here is summed over the season.
 SUM_COLS = {
-    "goals": "goals", "assists": "assists", "xg": "xg", "xa": "xa",
+    "goals": "goals", "assists": "assists", "xg": "xg", "npxg": "npxg", "xa": "xa",
     "shots": "shots", "sot": "shots_on_target", "keyPasses": "key_passes",
     "passes": "passes", "passAcc": "passes_accurate", "touches": "touches",
     "dribbles": "dribbles", "tackles": "tackles", "interceptions": "interceptions",
@@ -35,8 +35,12 @@ def season_of(date: str) -> str:
 
 
 def _main_group(slots: pd.Series) -> str | None:
-    """Most-started position. Bench appearances ('Sub') carry no position."""
+    """Most-started position. Bench appearances ('Sub' or 'Sub:<coarse slot>') only
+    count for players who never started, using FotMob's coarse usual position."""
     groups = slots.map(group_from_slot).dropna()
+    if groups.empty:
+        subs = slots.dropna().astype(str)
+        groups = subs[subs.str.startswith("Sub:")].str[4:].map(group_from_slot).dropna()
     return groups.mode().iat[0] if not groups.empty else None
 
 
@@ -62,6 +66,10 @@ def from_match_rows(df: pd.DataFrame, league: str = "ENG1") -> pd.DataFrame:
     out = info.join(totals).reset_index()
     out["source"] = "fotmob"
     out["player_id"] = "fotmob:" + out["player_id"].astype(str)
+    # A player who moved between leagues mid-season keeps one entry per league (so
+    # league percentiles stay within a league); those stints get "@<league>".
+    multi = out.duplicated(["season", "player_id"], keep=False)
+    out.loc[multi, "player_id"] += "@" + out.loc[multi, "league"]
     return out
 
 

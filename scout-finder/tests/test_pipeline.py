@@ -84,3 +84,56 @@ def test_fotmob_player_rows_parse():
     r = ff.player_rows({"id": 99, "date": "2025-09-01"}, details, "ENG1")[0]
     assert (r["team"], r["position"], r["minutes"], r["xg"]) == ("Home", "DC", 90, 0.31)
     assert (r["passAcc"], r["passes"], r["aerials"]) == (40, 45, 3)
+
+
+def test_fotmob_live_response_regression():
+    """A trimmed real matchDetails (Liverpool 4-2 Bournemouth, 15 Aug 2025)."""
+    from pathlib import Path
+    from pipeline import fetch_fotmob as ff
+    path = Path(__file__).parent / "fixtures" / "fotmob_match_4813374_trimmed.json"
+    details = json.loads(path.read_text(encoding="utf-8"))
+    rows = {r["player"]: r for r in ff.player_rows({"id": 4813374, "date": "2025-08-15"},
+                                                   details, "ENG1")}
+    # Mamardashvili was an unused sub: no minutes, no row.
+    assert set(rows) == {"Virgil van Dijk", "Mohamed Salah", "Cody Gakpo",
+                         "Federico Chiesa", "Djordje Petrovic"}
+    salah, vvd = rows["Mohamed Salah"], rows["Virgil van Dijk"]
+    assert (salah["team"], salah["minutes"], salah["goals"]) == ("Liverpool", 90, 1)
+    assert (salah["xg"], salah["xa"], salah["passAcc"], salah["passes"]) == (0.26, 0.11, 18, 30)
+    assert salah["npxg"] == salah["xg"]
+    assert (vvd["tackles"], vvd["clearances"], vvd["aerials"], vvd["touches"]) == (1, 17, 12, 100)
+    # positionId 83/87 are the wide men of the 4-2-3-1, 36 a centre-back, 11 the keeper.
+    assert (salah["position"], rows["Cody Gakpo"]["position"], vvd["position"]) == (
+        "AMR", "AML", "DC")
+    assert rows["Djordje Petrovic"]["position"] == "GK" and rows["Djordje Petrovic"]["saves"] == 6
+    # Subs have no slot, only a coarse usual position.
+    chiesa = rows["Federico Chiesa"]
+    assert chiesa["position"] == "Sub:FW" and chiesa["minutes"] == 8
+    # FotMob omits zero stats: no xG key for a keeper who never shot, no xA for Chiesa.
+    # In a league that publishes them they are 0, not missing; a cameo has no rating.
+    assert rows["Djordje Petrovic"]["xg"] == 0 and chiesa["xa"] == 0
+    assert vvd["dribbles"] == 0 and "rating" not in chiesa
+    season = fotmob.from_match_rows(pd.DataFrame(list(rows.values())))
+    groups = dict(zip(season["name"], season["pos_group"]))
+    assert groups == {"Virgil van Dijk": "CB", "Mohamed Salah": "W", "Cody Gakpo": "W",
+                      "Federico Chiesa": "FW", "Djordje Petrovic": "GK"}
+
+
+def test_fotmob_no_xg_league_stays_missing():
+    from pipeline import fetch_fotmob as ff
+    stat = lambda k, v: {k: {"key": k, "stat": {"value": v}}}
+    details = {"general": {}, "content": {"lineup": {}, "playerStats": {
+        str(i): {"name": f"P{i}", "stats": [{"stats": {**stat("minutes_played", 90),
+                                                       **stat("total_shots", i)}}]}
+        for i in (1, 2)}}}
+    rows = ff.player_rows({"id": 1, "date": "2025-09-01"}, details, "ISR1")
+    assert all("xg" not in r for r in rows) and [r["shots"] for r in rows] == [1, 2]
+
+
+def test_fotmob_mid_season_move_gets_one_entry_per_league():
+    base = {"date": "2026-01-10", "team": "A", "player": "X", "position": "FW", "minutes": 90}
+    rows = pd.DataFrame([{**base, "league": "BRA1", "match_id": 1, "player_id": 7},
+                         {**base, "league": "ENG1", "match_id": 2, "player_id": 7},
+                         {**base, "league": "ENG1", "match_id": 2, "player_id": 8}])
+    out = fotmob.from_match_rows(rows)
+    assert sorted(out["player_id"]) == ["fotmob:7@BRA1", "fotmob:7@ENG1", "fotmob:8"]

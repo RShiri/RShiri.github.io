@@ -20,6 +20,7 @@ import csv
 import json
 import random
 import re
+import sys
 import time
 from pathlib import Path
 
@@ -83,12 +84,16 @@ def match_details(match_id: int) -> dict:
     return data
 
 
-# FotMob stat key -> XEPL column. Values like "34/40 (85%)" give made/attempted.
+# FotMob stat key -> XEPL column, checked against live matchDetails (Oct 2026).
+# Fraction stats come as {"value": made, "total": attempted}; older or XEPL-cached
+# responses may carry "34/40 (85%)" strings instead, so _value accepts both.
+# Leagues without Opta xG (e.g. Israel) simply omit expected_goals/expected_assists.
 STAT_KEYS = {
     "minutes_played": "minutes",
     "goals": "goals",
     "assists": "assists",
     "expected_goals": "xg",
+    "expected_goals_non_penalty": "npxg",
     "expected_assists": "xa",
     "total_shots": "shots",
     "ShotsOnTarget": "sot",
@@ -97,7 +102,6 @@ STAT_KEYS = {
     "touches": "touches",
     "dribbles_succeeded": "dribbles",
     "matchstats.headers.tackles": "tackles",
-    "tackles_succeeded": "tackles",
     "interceptions": "interceptions",
     "clearances": "clearances",
     "aerials_won": "aerials",
@@ -105,6 +109,8 @@ STAT_KEYS = {
     "saves": "saves",
     "rating_title": "rating",
 }
+COUNT_COLS = {c for v in STAT_KEYS.values() for c in (v if isinstance(v, tuple) else (v,))
+              } - {"rating", "minutes"}
 _FRACTION = re.compile(r"^\s*(\d+)\s*/\s*(\d+)")
 
 
@@ -126,7 +132,12 @@ def _value(stat: dict):
 
 
 def _positions(details: dict) -> dict[int, str]:
-    """player id -> lineup position label (falls back to 'Sub' for the bench)."""
+    """player id -> lineup position label.
+
+    Starters get their slot. Subs have no positionId, only usualPlayingPositionId,
+    so they get 'Sub:<coarse slot>': not counted as a start, but a fallback for
+    players who never started (see sources/fotmob._main_group).
+    """
     pos = {}
     lineup = details.get("content", {}).get("lineup", {}) or {}
     for side in ("homeTeam", "awayTeam"):
@@ -134,19 +145,25 @@ def _positions(details: dict) -> dict[int, str]:
         for p in team.get("starters", []) or []:
             pos[int(p["id"])] = slot_from_fotmob(p)
         for p in team.get("subs", []) or []:
-            pos[int(p["id"])] = "Sub"
+            coarse = COARSE.get(p.get("usualPlayingPositionId"), "")
+            pos[int(p["id"])] = f"Sub:{coarse}" if coarse else "Sub"
     return pos
 
 
 # FotMob lineup positionId -> WhoScored-style slot (positions.py understands these).
+# The id encodes the row (1x GK, 3x back line, 5x/6x wing-back & pivot, 7x midfield,
+# 8x attacking midfield, 10x/115 forwards) and the column (low digit = right side).
+# Checked against live lineups and their pitch coordinates: 83/87 are the wide
+# men of a 4-2-3-1 (mostly forwards by trade), 84/86 the two 8s of a 4-1-4-1 or
+# the two 10s of a 3-4-2-1, 62/68 the wing-backs of a 3-4-x.
 # Unknown ids fall back to the coarse usualPlayingPositionId (0 GK, 1 DEF, 2 MID, 3 FWD).
 POSITION_ID = {
     11: "GK",
-    32: "DR", 34: "DC", 36: "DC", 33: "DC", 35: "DC", 38: "DL",
+    32: "DR", 33: "DC", 34: "DC", 35: "DC", 36: "DC", 37: "DC", 38: "DL",
     51: "DMR", 59: "DML", 62: "DMR", 68: "DML",
     63: "DMC", 64: "DMC", 65: "DMC", 66: "DMC", 67: "DMC",
     71: "MR", 72: "MR", 73: "MC", 74: "MC", 75: "MC", 76: "MC", 77: "MC", 78: "ML", 79: "ML",
-    82: "AMR", 83: "AMC", 84: "AMC", 85: "AMC", 86: "AMC", 87: "AMC", 88: "AML",
+    82: "AMR", 83: "AMR", 84: "AMC", 85: "AMC", 86: "AMC", 87: "AML", 88: "AML",
     103: "FWR", 104: "FW", 105: "FW", 106: "FW", 107: "FWL", 115: "FW",
 }
 COARSE = {0: "GK", 1: "DC", 2: "MC", 3: "FW"}
@@ -185,11 +202,19 @@ def player_rows(match: dict, details: dict, league: str) -> list[dict]:
                     row[col] = v
         if row.get("minutes"):
             rows.append(row)
+    # FotMob leaves a stat out when it is zero (no xG key for a player who never
+    # shot, no dribbles key for one who never tried). So a stat that anyone in the
+    # match has is 0 for the rest; a stat nobody has (no xG in this league) stays
+    # missing. Rating is not a count: short cameos have none, and that is not 0.
+    published = {k for r in rows for k in r if k in COUNT_COLS}
+    for r in rows:
+        for k in published:
+            r.setdefault(k, 0.0)
     return rows
 
 
 COLUMNS = ["league", "season", "match_id", "date", "team", "player_id", "player", "position",
-           "minutes", "rating", "goals", "assists", "xg", "xa", "shots", "sot", "keyPasses",
+           "minutes", "rating", "goals", "assists", "xg", "npxg", "xa", "shots", "sot", "keyPasses",
            "passes", "passAcc", "touches", "dribbles", "tackles", "interceptions",
            "clearances", "aerials", "dispossessed", "saves"]
 
@@ -226,6 +251,7 @@ def main() -> None:
     ap.add_argument("--season", default="2025-26")
     ap.add_argument("--check", action="store_true", help="print FotMob's name for each id")
     a = ap.parse_args()
+    sys.stdout.reconfigure(encoding="utf-8")  # 'Série A' on a Windows console
     if a.check:
         for code, lg in LEAGUES.items():
             d = _get(f"/leagues?id={lg['fotmob']}")

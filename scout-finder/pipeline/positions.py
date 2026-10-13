@@ -24,7 +24,9 @@ UNDERSTAT_TO_GROUP = {"GK": "GK", "D": "CB", "M": "CM", "F": "FW"}
 
 
 def group_from_slot(slot: str) -> str | None:
-    return SLOT_TO_GROUP.get((slot or "").strip().upper())
+    if not isinstance(slot, str):  # an empty CSV cell reads back as NaN
+        return None
+    return SLOT_TO_GROUP.get(slot.strip().upper())
 
 
 def group_from_understat(position: str) -> str | None:
