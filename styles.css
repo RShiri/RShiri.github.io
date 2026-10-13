@@ -464,3 +464,11 @@ html[data-style="c"] .style-switch b:first-of-type, html[data-style="a"] .style-
 .lang-switch { font-family: "IBM Plex Sans Hebrew", var(--text); letter-spacing: 0; font-size: 13px; color: var(--ink); }
 html[data-site-lang="he"] [dir="auto"], html[data-site-lang="he"] [dir="rtl"] { font-family: "IBM Plex Sans Hebrew", var(--text); letter-spacing: 0; }
 html[data-site-lang="he"] h1[dir="rtl"], html[data-site-lang="he"] h2[dir="rtl"], html[data-site-lang="he"] h2[dir="auto"], html[data-site-lang="he"] h3[dir="auto"] { text-transform: none; }
+
+/* portrait under the About heading: a HUD frame with corner brackets */
+.about-photo { position: relative; margin: 28px 0 0; width: min(240px, 100%); padding: 8px; border: 1px solid var(--line); background: var(--bg-soft, #08121f); }
+.about-photo::before, .about-photo::after { content: ""; position: absolute; width: 14px; height: 14px; border-color: var(--c); border-style: solid; }
+.about-photo::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+.about-photo::after { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+.about-photo img { display: block; width: 100%; height: auto; }
+@media (max-width: 900px) { .about-photo { width: 180px; margin-top: 20px; } }
