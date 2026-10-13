@@ -22,8 +22,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=Barlow+Condensed:ital,wght@0,700;0,800;1,700;1,800;1,900&family=Barlow:wght@500;600;700&display=swap" rel="stylesheet" />
 <script>document.documentElement.setAttribute("data-theme","dark");</script>
-<link rel="stylesheet" id="styleC" href="styles.css?v=24" />
-<link rel="stylesheet" id="styleA" href="style-a.css?v=3" />
+<link rel="stylesheet" id="styleC" href="styles.css?v=25" />
+<link rel="stylesheet" id="styleA" href="style-a.css?v=4" />
 <script>/* two looks while choosing: C (HUD, default) and A (matchday); the switch in the nav flips them */
 (function(){var v="c";try{v=localStorage.getItem("site-style")==="a"?"a":"c"}catch(e){}
 document.getElementById("styleA").disabled=v!=="a";document.getElementById("styleC").disabled=v==="a";
@@ -387,7 +387,10 @@ document.documentElement.setAttribute("data-style",v);})();</script>
 </section>
 
 <section id="about" class="sect wrap about">
-  <h2 data-he-html="למה ספורט,<br />למה דאטה">Why sport,<br />why data</h2>
+  <div class="about-head">
+    <h2 data-he-html="למה ספורט,<br />למה דאטה">Why sport,<br />why data</h2>
+    <figure class="about-photo"><img src="assets/img/ram.webp" alt="Ram Shiri" width="480" height="480" loading="lazy" /></figure>
+  </div>
   <div class="about-copy">
     <p data-he="התאהבתי במספרים של כדורגל הרבה לפני שלמדתי אותם, וכל פרויקט בעמוד הזה התחיל באותה דרך: שאלה על משחק, וכלי שעוד לא הכרתי. למדתי Scraping כדי להשיג את הנתונים, מידול כדי להבין אותם, ו־Pipelines כדי לשמור אותם חיים.">I fell for football numbers long before I studied them, and every project on this page started the same way: a question about a match, and a tool I didn't know yet. I learned scraping to get the data, modelling to make sense of it, and pipelines to keep it live.</p>
     <p data-he="זו העסקה שאני מציע למעסיק: תנו לי כל בעיה בתחום הזה, ואני אלמד מה שצריך ואעשה את זה כמו שצריך. אני עובד מהר עם כלי AI, ועדיין מבין ויכול להסביר כל שורה שאני מעלה.">That is the deal I offer an employer: give me any problem in this space and I will learn what it takes and do it properly. I work fast with AI-assisted tools, and I still own and can explain every line I ship.</p>

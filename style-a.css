@@ -474,3 +474,8 @@ html[data-style="c"] .style-switch b:first-of-type, html[data-style="a"] .style-
 @media (max-width: 680px) { .brand { font-size: 22px; letter-spacing: 0; } }
 .lang-switch { font-family: "IBM Plex Sans Hebrew", var(--text); letter-spacing: 0; font-size: 13px; color: var(--ink); transform: none; }
 html[data-site-lang="he"] [dir="auto"], html[data-site-lang="he"] [dir="rtl"] { font-family: "IBM Plex Sans Hebrew", var(--text); letter-spacing: 0; font-style: normal; }
+
+/* portrait under the About heading: a chamfered plate with a lime edge */
+.about-photo { margin: 28px 0 0; width: min(240px, 100%); padding: 0; border-left: 4px solid var(--c); clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 0 100%); }
+.about-photo img { display: block; width: 100%; height: auto; }
+@media (max-width: 900px) { .about-photo { width: 180px; margin-top: 20px; } }
