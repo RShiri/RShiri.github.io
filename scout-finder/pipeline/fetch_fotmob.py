@@ -94,21 +94,43 @@ STAT_KEYS = {
     "assists": "assists",
     "expected_goals": "xg",
     "expected_goals_non_penalty": "npxg",
+    "expected_goals_on_target_variant": "xgot",
     "expected_assists": "xa",
     "total_shots": "shots",
     "ShotsOnTarget": "sot",
+    "big_chance_missed_title": "bigChancesMissed",
     "chances_created": "keyPasses",
+    "big_chance_created_team_title": "bigChancesCreated",
     "accurate_passes": ("passAcc", "passes"),
+    "passes_into_final_third": "finalThirdPasses",
+    "accurate_crosses": ("crossesAcc", "crosses"),
+    "long_balls_accurate": ("longBallsAcc", "longBalls"),
     "touches": "touches",
-    "dribbles_succeeded": "dribbles",
+    "touches_opp_box": "boxTouches",
+    "dribbles_succeeded": ("dribbles", "dribblesAtt"),
+    "dispossessed": "dispossessed",
+    "was_fouled": "wasFouled",
     "matchstats.headers.tackles": "tackles",
     "interceptions": "interceptions",
+    "recoveries": "recoveries",
     "clearances": "clearances",
-    "aerials_won": "aerials",
-    "dispossessed": "dispossessed",
+    "shot_blocks": "blocks",
+    "dribbled_past": "dribbledPast",
+    "ground_duels_won": ("groundDuelsWon", "groundDuels"),
+    "aerials_won": ("aerials", "aerialsAtt"),
+    "fouls": "fouls",
+    # Keepers
     "saves": "saves",
+    "saves_inside_box": "savesInsideBox",
+    "goals_conceded": "goalsConceded",
+    "expected_goals_on_target_faced": "xgotFaced",
+    "goals_prevented": "goalsPrevented",
+    "keeper_sweeper": "sweeperActions",
+    "keeper_high_claim": "highClaims",
     "rating_title": "rating",
 }
+# Line-breaking passes and the physical metrics (distance, sprints) exist only
+# for the Premier League, so they are left out: a metric must cover the universe.
 COUNT_COLS = {c for v in STAT_KEYS.values() for c in (v if isinstance(v, tuple) else (v,))
               } - {"rating", "minutes"}
 _FRACTION = re.compile(r"^\s*(\d+)\s*/\s*(\d+)")
@@ -129,6 +151,32 @@ def _value(stat: dict):
         except ValueError:
             return None
     return float(v) if isinstance(v, (int, float)) else None
+
+
+def _lineup_info(details: dict) -> dict[int, dict]:
+    """player id -> age, market value (EUR) and nationality, as the lineup lists them."""
+    info = {}
+    lineup = details.get("content", {}).get("lineup", {}) or {}
+    for side in ("homeTeam", "awayTeam"):
+        team = lineup.get(side) or {}
+        for p in (team.get("starters") or []) + (team.get("subs") or []):
+            info[int(p["id"])] = {"age": p.get("age"), "valueEur": p.get("marketValue"),
+                                  "country": p.get("countryName")}
+    return info
+
+
+def _possession(details: dict) -> dict:
+    """team id -> that team's ball possession in the match (%), when FotMob gives it."""
+    general = details.get("general", {})
+    home, away = general.get("homeTeam", {}).get("id"), general.get("awayTeam", {}).get("id")
+    periods = (details.get("content", {}).get("stats") or {}).get("Periods") or {}
+    for section in (periods.get("All") or {}).get("stats") or []:
+        for st in section.get("stats") or []:
+            if st.get("key") == "BallPossesion" and all(isinstance(v, (int, float))
+                                                         for v in st.get("stats", [])):
+                h, a = st["stats"]
+                return {home: h, away: a}
+    return {}
 
 
 def _positions(details: dict) -> dict[int, str]:
@@ -186,12 +234,19 @@ def player_rows(match: dict, details: dict, league: str) -> list[dict]:
     teams = {general.get("homeTeam", {}).get("id"): general.get("homeTeam", {}).get("name"),
              general.get("awayTeam", {}).get("id"): general.get("awayTeam", {}).get("name")}
     positions = _positions(details)
+    profile = _lineup_info(details)
+    poss = _possession(details)
     rows = []
     for pid, p in (details.get("content", {}).get("playerStats") or {}).items():
         row = {"league": league, "match_id": match["id"], "date": match["date"],
                "player_id": int(pid), "player": p.get("name"),
                "team": teams.get(p.get("teamId")) or p.get("teamName"),
                "position": positions.get(int(pid), "")}
+        row.update({k: v for k, v in profile.get(int(pid), {}).items() if v is not None})
+        # Opponent's possession, for possession-adjusted defending (sources/fotmob.py).
+        mine = poss.get(p.get("teamId"))
+        if mine is not None:
+            row["oppPossession"] = 100 - mine
         for section in p.get("stats", []):
             for stat in (section.get("stats") or {}).values():
                 col = STAT_KEYS.get(stat.get("key"))
@@ -219,13 +274,23 @@ def player_rows(match: dict, details: dict, league: str) -> list[dict]:
 
 
 COLUMNS = ["league", "season", "match_id", "date", "team", "player_id", "player", "position",
-           "minutes", "rating", "goals", "assists", "xg", "npxg", "xa", "shots", "sot", "keyPasses",
-           "passes", "passAcc", "touches", "dribbles", "tackles", "interceptions",
-           "clearances", "aerials", "dispossessed", "saves"]
+           "age", "valueEur", "country", "oppPossession", "minutes", "rating"] + sorted(
+    COUNT_COLS)
 
 
-def fetch_league(code: str, season: str) -> Path:
-    matches = league_matches(code, season)
+def cached_matches(code: str, season: str) -> list[dict]:
+    """The match list of an earlier run, from its CSV: re-parse without the network."""
+    path = DATA / "fotmob" / f"{code}_{season}.csv"
+    with path.open(encoding="utf-8") as fh:
+        seen = {}
+        for r in csv.DictReader(fh):
+            seen.setdefault(r["match_id"], {"id": int(r["match_id"]), "date": r["date"],
+                                            "home": "", "away": ""})
+    return [m for m in seen.values() if (RAW / f"{m['id']}.json").exists()]
+
+
+def fetch_league(code: str, season: str, offline: bool = False) -> Path:
+    matches = cached_matches(code, season) if offline else league_matches(code, season)
     out = DATA / "fotmob" / f"{code}_{season}.csv"
     out.parent.mkdir(parents=True, exist_ok=True)
     n = 0
@@ -255,6 +320,8 @@ def main() -> None:
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--season", default="2025-26")
     ap.add_argument("--check", action="store_true", help="print FotMob's name for each id")
+    ap.add_argument("--offline", action="store_true",
+                    help="re-parse the cached matches of an earlier run, no network")
     a = ap.parse_args()
     sys.stdout.reconfigure(encoding="utf-8")  # 'Série A' on a Windows console
     if a.check:
@@ -264,7 +331,7 @@ def main() -> None:
                   f"FotMob says {d.get('details', {}).get('name')!r}")
         return
     for code in (sorted(LEAGUES) if a.all else a.league):
-        fetch_league(code, a.season)
+        fetch_league(code, a.season, a.offline)
 
 
 if __name__ == "__main__":
