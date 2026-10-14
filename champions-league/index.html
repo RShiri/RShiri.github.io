@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en" class="rs-page rs-ucl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Champions League Dashboard · Ram Shiri</title>
+<meta name="description" content="Five Champions League seasons, 2022-23 to 2026-27, across both formats: the 32-team group stage and the 36-team league phase with its knockout playoff round." />
+<meta name="author" content="Ram Shiri" />
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/assets/brand/brand.css" />
+<script src="/assets/brand/brand.js"></script>
+<style>
+/* Champions League dashboard. Colours and type come from the brand kit's --rs-* tokens,
+   so the page follows the C (HUD) and A (Matchday) looks without its own theme file.
+   Series colours are the dataviz reference palette's dark steps (blue, orange, aqua). */
+:root { --maxw: 1180px; --s1: #3987e5; --s2: #d95926; --s3: #199e70; }
+html[data-site-style] { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--rs-bg); color: var(--rs-body); font: 15px/1.55 var(--rs-text); }
+html[data-site-lang="he"] body { font-family: "IBM Plex Sans Hebrew", var(--rs-text); }
+a { color: var(--rs-accent); }
+button, input, select { font: inherit; color: inherit; }
+.wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 clamp(16px, 3vw, 32px); }
+[hidden] { display: none !important; }
+
+header.hero { padding: 40px 0 20px; border-bottom: 1px solid var(--rs-line); }
+.kicker { font: 600 12px/1 var(--rs-display); letter-spacing: .2em; text-transform: uppercase; color: var(--rs-accent); }
+h1 { margin: 10px 0 8px; font: 700 clamp(34px, 6vw, 58px)/1 var(--rs-display); color: var(--rs-ink); letter-spacing: .02em; text-transform: uppercase; }
+html[data-site-style="a"] h1, html[data-site-style="a"] h2 { font-style: italic; font-weight: 800; }
+.lead { max-width: 780px; margin: 0; }
+.stats { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 16px; font: 600 13px/1 var(--rs-display); letter-spacing: .1em; text-transform: uppercase; color: var(--rs-muted); }
+.stats b { color: var(--rs-ink); font-size: 18px; margin-inline-end: 6px; }
+html[data-site-lang="he"] .stats, html[data-site-lang="he"] .kicker { letter-spacing: 0; }
+
+h2 { margin: 0 0 6px; font: 700 20px/1.1 var(--rs-display); letter-spacing: .08em; text-transform: uppercase; color: var(--rs-ink); }
+html[data-site-lang="he"] h2 { letter-spacing: 0; }
+.sub { margin: 0 0 14px; color: var(--rs-muted); font-size: 14px; max-width: 820px; }
+section.block { margin: 34px 0; }
+.panel { background: var(--rs-panel); border: 1px solid var(--rs-line); padding: 16px; }
+.muted { color: var(--rs-muted); }
+.small { font-size: 13px; }
+
+/* season switch */
+.seasons { position: sticky; top: 0; z-index: 15; background: var(--rs-bg); border-bottom: 1px solid var(--rs-line); padding: 12px 0; }
+.seasonbar { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: thin; }
+.seasonbar button { flex: 0 0 auto; padding: 9px 14px 8px; background: transparent; border: 1px solid var(--rs-line-strong); cursor: pointer; text-align: start; color: var(--rs-muted); }
+.seasonbar button b { display: block; font: 700 17px/1 var(--rs-display); letter-spacing: .04em; color: var(--rs-ink); }
+.seasonbar button span { display: block; margin-top: 4px; font: 600 10px/1 var(--rs-display); letter-spacing: .12em; text-transform: uppercase; }
+.seasonbar button[aria-pressed="true"] { background: var(--rs-accent); border-color: var(--rs-accent); color: var(--rs-accent-ink); }
+.seasonbar button[aria-pressed="true"] b { color: var(--rs-accent-ink); }
+.seasonbar .fmtsep { flex: 0 0 auto; width: 1px; margin: 0 6px; background: var(--rs-line-strong); position: relative; }
+html[data-site-lang="he"] .seasonbar button span { letter-spacing: 0; }
+
+/* tiles */
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-top: 18px; }
+.tile { background: var(--rs-panel); border: 1px solid var(--rs-line); padding: 14px 16px; min-width: 0; }
+.tile .k { font: 600 11px/1.2 var(--rs-display); letter-spacing: .14em; text-transform: uppercase; color: var(--rs-muted); }
+html[data-site-lang="he"] .tile .k { letter-spacing: 0; }
+.tile .v { margin-top: 8px; font: 700 26px/1.05 var(--rs-display); color: var(--rs-ink); overflow-wrap: anywhere; }
+.tile .v.acc { color: var(--rs-accent); }
+.tile .d { margin-top: 6px; font-size: 13px; color: var(--rs-muted); }
+.formatnote { margin-top: 14px; padding: 12px 14px; border-inline-start: 3px solid var(--rs-accent); background: var(--rs-accent-soft); color: var(--rs-ink); font-size: 14px; }
+
+/* tables */
+.tablewrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: start; font: 600 11px/1 var(--rs-display); letter-spacing: .12em; text-transform: uppercase; color: var(--rs-muted); padding: 8px; border-bottom: 1px solid var(--rs-line-strong); white-space: nowrap; }
+html[data-site-lang="he"] th { letter-spacing: 0; }
+td { padding: 7px 8px; border-bottom: 1px solid var(--rs-line); white-space: nowrap; }
+td.num, th.num { text-align: end; font-variant-numeric: tabular-nums; }
+td .n { color: var(--rs-ink); font-weight: 600; }
+td.pos { width: 34px; color: var(--rs-muted); font-variant-numeric: tabular-nums; }
+tr.click { cursor: pointer; }
+tr.click:hover td { background: var(--rs-accent-soft); }
+.cc { margin-inline-start: 2px; font: 600 10px/1 var(--rs-display); letter-spacing: .08em; color: var(--rs-muted); }
+
+/* zones */
+.zone { display: inline-block; width: 4px; height: 18px; vertical-align: middle; background: transparent; }
+.z1 .zone { background: var(--rs-accent); }
+.z2 .zone { background: var(--rs-muted); }
+.z3 .zone { background: transparent; }
+tr.zline td { border-bottom: 1px solid var(--rs-line-strong); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0 0 10px; font-size: 13px; color: var(--rs-muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; margin-inline-end: 6px; vertical-align: -1px; }
+.chip { display: inline-block; padding: 3px 7px; border: 1px solid var(--rs-line-strong); font: 600 11px/1 var(--rs-display); letter-spacing: .06em; color: var(--rs-muted); white-space: nowrap; }
+.chip.w { background: var(--rs-accent); border-color: var(--rs-accent); color: var(--rs-accent-ink); }
+.chip.f { border-color: var(--rs-accent); color: var(--rs-accent); }
+.chip.ko { color: var(--rs-ink); }
+.chip.live { border-style: dashed; }
+html[data-site-style="a"] .chip { transform: skewX(-10deg); }
+
+/* groups */
+.groups { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 12px; }
+@media (max-width: 400px) { .groups { grid-template-columns: 1fr; } }
+.group { overflow-x: auto; }
+.group .chip { font-size: 10px; padding: 2px 5px; }
+.group h3 { margin: 0 0 6px; font: 700 15px/1 var(--rs-display); letter-spacing: .12em; text-transform: uppercase; color: var(--rs-accent); }
+.group td { padding: 6px 5px; }
+@media (max-width: 600px) { .opt { display: none; } }
+.group td:first-child { width: 8px; padding-inline-end: 0; }
+.group .zone { height: 16px; }
+.g3 .zone { background: repeating-linear-gradient(45deg, var(--rs-muted) 0 2px, transparent 2px 4px); }
+
+/* knockout */
+.bracket { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(200px, 1fr); gap: 12px; overflow-x: auto; padding-bottom: 6px; }
+.round h3 { margin: 0 0 8px; font: 600 12px/1 var(--rs-display); letter-spacing: .14em; text-transform: uppercase; color: var(--rs-muted); }
+html[data-site-lang="he"] .round h3, html[data-site-lang="he"] .group h3 { letter-spacing: 0; }
+.round .ties { display: flex; flex-direction: column; gap: 8px; justify-content: space-around; min-height: calc(100% - 20px); }
+.tie { background: var(--rs-panel); border: 1px solid var(--rs-line); padding: 8px 10px; font-size: 13px; }
+.tie .r { display: flex; justify-content: space-between; gap: 8px; color: var(--rs-body); }
+.tie .r b { font-variant-numeric: tabular-nums; font-weight: 600; }
+.tie .r.win { color: var(--rs-ink); font-weight: 600; }
+.tie .r.win b { color: var(--rs-accent); }
+.tie .legs { margin-top: 4px; font-size: 11px; color: var(--rs-muted); }
+.tie.final { border-color: var(--rs-accent); }
+
+/* charts */
+.charts { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+@media (max-width: 900px) { .charts { grid-template-columns: 1fr; } }
+svg text { font-family: var(--rs-text); }
+.ax { stroke: var(--rs-line); stroke-width: 1; }
+.axl { fill: var(--rs-muted); font-size: 11px; }
+.vl { fill: var(--rs-ink); font-size: 11px; font-variant-numeric: tabular-nums; }
+.band { fill: var(--rs-muted); opacity: .08; }
+.sw { display: inline-block; width: 12px; height: 12px; margin-inline-end: 6px; vertical-align: -1px; }
+
+/* club journey */
+.picker { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+.picker label { display: flex; flex-direction: column; gap: 4px; font: 600 11px/1 var(--rs-display); letter-spacing: .12em; text-transform: uppercase; color: var(--rs-muted); }
+html[data-site-lang="he"] .picker label { letter-spacing: 0; }
+.picker select { min-width: 190px; padding: 8px 10px; background: var(--rs-bg-soft); border: 1px solid var(--rs-line-strong); color: var(--rs-ink); text-transform: none; letter-spacing: 0; font: 14px/1.2 var(--rs-text); }
+.picker .k1 select { border-color: var(--s1); }
+.picker .k2 select { border-color: var(--s2); }
+.picker .k3 select { border-color: var(--s3); }
+#tip { position: fixed; z-index: 40; pointer-events: none; padding: 8px 10px; background: var(--rs-panel-2); border: 1px solid var(--rs-line-strong); color: var(--rs-ink); font-size: 13px; max-width: 260px; }
+
+/* matches */
+.mlist { columns: 2 360px; column-gap: 24px; }
+.mday { break-inside: avoid; margin-bottom: 12px; }
+.mday h4 { margin: 0 0 4px; font: 600 12px/1 var(--rs-display); letter-spacing: .1em; text-transform: uppercase; color: var(--rs-muted); }
+.m { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; padding: 4px 0; border-bottom: 1px solid var(--rs-line); font-size: 14px; }
+.m .h { text-align: end; }
+.m .s { min-width: 54px; text-align: center; color: var(--rs-ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.m .s.tbd { color: var(--rs-muted); font-weight: 400; }
+.m .x { grid-column: 1 / -1; text-align: center; font-size: 11px; color: var(--rs-muted); margin-top: -2px; }
+.m b { color: var(--rs-ink); font-weight: 600; }
+
+footer { padding: 26px 0 50px; border-top: 1px solid var(--rs-line); font-size: 13px; color: var(--rs-muted); }
+footer p { max-width: 860px; }
+#loading { padding: 40px 0; }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker" data-t="kicker">UEFA Champions League · 2022-23 to 2026-27</div>
+    <h1 data-t="title">Champions League</h1>
+    <p class="lead" data-t="lead">Five seasons across two formats. Until 2023-24 it was 32 clubs in eight groups of four; from 2024-25 it is one 36-club league phase, a knockout playoff round for 9th to 24th, then the usual knockouts. Every view below knows which format it is looking at.</p>
+    <div class="stats" id="stats"></div>
+  </div>
+</header>
+
+<div class="seasons"><div class="wrap"><div class="seasonbar" id="seasonbar" role="group"></div></div></div>
+
+<main class="wrap">
+  <p id="loading" class="muted" data-t="loading">Loading five seasons…</p>
+  <div id="app" hidden>
+    <div class="tiles" id="tiles"></div>
+    <div class="formatnote" id="fmtnote"></div>
+
+    <section class="block">
+      <h2 id="firstTitle"></h2>
+      <p class="sub" id="firstSub"></p>
+      <div id="first"></div>
+    </section>
+
+    <section class="block">
+      <h2 data-t="koTitle">Knockout rounds</h2>
+      <p class="sub" id="koSub"></p>
+      <div id="ko"></div>
+    </section>
+
+    <section class="block">
+      <h2 data-t="mTitle">Results</h2>
+      <div class="picker"><label><span data-t="round">Round</span><select id="mRound"></select></label></div>
+      <div class="mlist" id="matches"></div>
+    </section>
+
+    <section class="block">
+      <h2 data-t="cmpTitle">Old format vs new format</h2>
+      <p class="sub" data-t="cmpSub">Raw totals are not comparable (125 matches vs 189), so the table puts every season on a per-match or per-game footing and shows what it took to survive the first phase in each format.</p>
+      <div class="panel tablewrap" id="cmpTable"></div>
+      <div class="charts" style="margin-top:12px">
+        <div class="panel" id="goalsChart"></div>
+        <div class="panel" id="cutChart"></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2 data-t="clubTitle">Club journeys</h2>
+      <p class="sub" data-t="clubSub">How far a club went each season. In the group-stage years there was no playoff round, so that rung is shaded for those seasons. The current season is a hollow dot on a dashed line: it is still in the league phase.</p>
+      <div class="picker" id="picker"></div>
+      <div class="panel" id="ladder"></div>
+      <div class="panel tablewrap" id="clubTable" style="margin-top:12px"></div>
+    </section>
+
+    <section class="block">
+      <h2 data-t="rankTitle">Most consistent clubs, last four completed seasons</h2>
+      <p class="sub" data-t="rankSub">Points for the furthest stage reached each season: group or league phase 0, playoff 1, last 16 2, quarter-final 3, semi-final 4, final 5, winner 6. Click a club to draw its journey.</p>
+      <div class="panel tablewrap" id="rank"></div>
+    </section>
+
+    <section class="block">
+      <h2 data-t="ctyTitle">Last-16 clubs by country</h2>
+      <p class="sub" data-t="ctySub">Sixteen places every season, in both formats. Darker cells mean more clubs.</p>
+      <div class="panel tablewrap" id="cty"></div>
+    </section>
+  </div>
+</main>
+
+<footer><div class="wrap" id="method"></div></footer>
+<div id="tip" hidden></div>
+
+<script>
+(function () {
+  "use strict";
+  var DATA_URL = "data/ucl.json";
+
+  var T = {
+    kicker: ["UEFA Champions League · 2022-23 to 2026-27", "ליגת האלופות · 2022-23 עד 2026-27"],
+    title: ["Champions League", "ליגת האלופות"],
+    lead: ["Five seasons across two formats. Until 2023-24 it was 32 clubs in eight groups of four; from 2024-25 it is one 36-club league phase, a knockout playoff round for 9th to 24th, then the usual knockouts. Every view below knows which format it is looking at.",
+           "חמש עונות בשני פורמטים. עד 2023-24 שיחקו 32 קבוצות בשמונה בתים של ארבע. מ־2024-25 יש שלב ליגה אחד של 36 קבוצות, סיבוב פלייאוף למקומות 9 עד 24, ואחריו שלבי הנוקאאוט הרגילים. כל תצוגה בדף יודעת באיזה פורמט מדובר."],
+    loading: ["Loading five seasons…", "טוען חמש עונות…"],
+    seasons: ["seasons", "עונות"], formats: ["formats", "פורמטים"], matches: ["matches", "משחקים"], clubs: ["clubs", "קבוצות"],
+    fmtGroups: ["32 clubs · groups", "32 קבוצות · בתים"], fmtLeague: ["36 clubs · league", "36 קבוצות · ליגה"],
+    live: ["live", "בתהליך"],
+    champion: ["Champion", "אלופה"], runnerUp: ["Runner-up", "סגנית"], leader: ["Leader now", "מובילה כרגע"],
+    played: ["Matches played", "משחקים ששוחקו"], gpm: ["Goals per match", "שערים למשחק"], homeWin: ["Home wins", "ניצחונות בית"],
+    of: ["of", "מתוך"], finalScore: ["Final", "גמר"], pensShort: ["pens", "פנדלים"], aetShort: ["aet", "בהארכה"],
+    notesGroups: ["Old format: eight groups of four, six games each. Top two went to the last 16, third dropped into the Europa League knockouts, fourth went out.",
+                  "פורמט ישן: שמונה בתים של ארבע, שישה משחקים לכל קבוצה. שתי הראשונות עלו לשמינית הגמר, השלישית ירדה לנוקאאוט של הליגה האירופית, הרביעית הודחה."],
+    notesLeague: ["New format: one table of 36, eight games each against eight different opponents. 1st to 8th go straight to the last 16, 9th to 24th play a two-legged playoff for the other eight places, 25th to 36th are out (no Europa League drop).",
+                  "פורמט חדש: טבלה אחת של 36, שמונה משחקים לכל קבוצה מול שמונה יריבות שונות. מקומות 1 עד 8 עולים ישר לשמינית הגמר, מקומות 9 עד 24 משחקים פלייאוף דו־משחקי על שמונה המקומות הנותרים, מקומות 25 עד 36 מודחים (בלי ירידה לליגה האירופית)."],
+    notesLive: ["Season in progress: matchday {md} of 8, results up to {date}. Positions are live, not final.",
+                "העונה בעיצומה: מחזור {md} מתוך 8, תוצאות עד {date}. המיקומים חיים ולא סופיים."],
+    groupsTitle: ["Group stage", "שלב הבתים"], leagueTitle: ["League phase", "שלב הליגה"],
+    groupsSub: ["Top two in each group (solid bar) reached the last 16; third (striped) went to the Europa League. Tiebreak: head-to-head first, then goal difference.",
+                "שתי הראשונות בכל בית (פס מלא) עלו לשמינית הגמר; השלישית (פס מקווקו) ירדה לליגה האירופית. שובר שוויון: קודם מפגשים ישירים, אחר כך הפרש שערים."],
+    leagueSub: ["Solid bar: straight into the last 16. Grey bar: knockout playoff. No bar: out. The last column says how far each club went.",
+                "פס מלא: ישר לשמינית הגמר. פס אפור: פלייאוף. בלי פס: הודחה. העמודה האחרונה מראה עד לאן כל קבוצה הגיעה."],
+    leagueSubLive: ["Solid bar: currently in a last-16 place. Grey bar: currently in a playoff place. Tiebreaks after points: goal difference, goals scored, away goals, wins, away wins.",
+                    "פס מלא: כרגע במקום שעולה ישר לשמינית. פס אפור: כרגע במקום פלייאוף. שוברי שוויון אחרי נקודות: הפרש שערים, שערי זכות, שערי חוץ, ניצחונות, ניצחונות חוץ."],
+    zone1: ["1-8: last 16", "1-8: שמינית הגמר"], zone2: ["9-24: playoff", "9-24: פלייאוף"], zone3: ["25-36: out", "25-36: הודחה"],
+    zoneG1: ["1-2: last 16", "1-2: שמינית הגמר"], zoneG3: ["3rd: Europa League", "3: ליגה אירופית"],
+    team: ["Club", "קבוצה"], p: ["P", "מש'"], w: ["W", "נ'"], d: ["D", "ת'"], l: ["L", "ה'"], gf: ["GF", "זכות"], ga: ["GA", "חובה"],
+    gd: ["GD", "הפרש"], pts: ["Pts", "נק'"], went: ["Went on to", "הגיעה עד"],
+    group: ["Group", "בית"],
+    koTitle: ["Knockout rounds", "שלבי הנוקאאוט"],
+    koSubGroups: ["Two legs per tie until the one-off final. No away-goals rule in any of these seasons.",
+                  "שני משחקים לכל מפגש עד לגמר החד־פעמי. כלל שערי החוץ לא היה קיים באף אחת מהעונות."],
+    koSubLeague: ["The new format adds a knockout playoff round (9th to 24th) before the last 16. Two legs per tie until the one-off final.",
+                  "הפורמט החדש מוסיף סיבוב פלייאוף (מקומות 9 עד 24) לפני שמינית הגמר. שני משחקים לכל מפגש עד לגמר החד־פעמי."],
+    koLive: ["The knockouts start after the league phase ends (late January 2027). Nothing to show yet.",
+             "הנוקאאוט מתחיל אחרי שלב הליגה (סוף ינואר 2027). עדיין אין מה להציג."],
+    mTitle: ["Results", "תוצאות"], round: ["Round", "שלב"], md: ["Matchday", "מחזור"], notYet: ["result not in yet", "התוצאה עוד לא הוזנה"],
+    cmpTitle: ["Old format vs new format", "פורמט ישן מול פורמט חדש"],
+    cmpSub: ["Raw totals are not comparable (125 matches vs 189), so the table puts every season on a per-match or per-game footing and shows what it took to survive the first phase in each format.",
+             "סכומים גולמיים לא ניתנים להשוואה (125 משחקים מול 189), לכן הטבלה מציגה כל עונה ביחס למשחק ומראה כמה היה צריך כדי לשרוד את השלב הראשון בכל פורמט."],
+    season: ["Season", "עונה"], format: ["Format", "פורמט"], gamesPer: ["First-phase games per club", "משחקים לקבוצה בשלב הראשון"],
+    gpmFirst: ["Goals / match, first phase", "שערים למשחק, שלב ראשון"], gpmKo: ["Goals / match, knockouts", "שערים למשחק, נוקאאוט"],
+    homeW: ["Home win %", "% ניצחונות בית"], draws: ["Draw %", "% תיקו"],
+    cutStay: ["Fewest points that survived", "הכי מעט נקודות ששרדו"], cutDirect: ["Points of 8th (last direct spot)", "נקודות המקום ה־8 (אחרון שעולה ישר)"],
+    cutStayPct: ["…as share of points available", "כאחוז מהנקודות האפשריות"],
+    groups: ["Groups", "בתים"], league: ["League", "ליגה"], na: ["n/a", "לא רלוונטי"],
+    partial: ["partial", "חלקי"],
+    goalsChart: ["Goals per match", "שערים למשחק"], firstPhase: ["First phase", "שלב ראשון"], knockouts: ["Knockouts", "נוקאאוט"],
+    cutChart: ["What it took to stay in", "מה היה צריך כדי להישאר"],
+    cutChartSub: ["Fewest points that still went through, as a share of the points available in the first phase.",
+                  "הכי מעט נקודות שעדיין הספיקו כדי להמשיך, כאחוז מהנקודות האפשריות בשלב הראשון."],
+    clubTitle: ["Club journeys", "המסע של כל קבוצה"],
+    clubSub: ["How far a club went each season. In the group-stage years there was no playoff round, so that rung is shaded for those seasons. The current season is a hollow dot on a dashed line: it is still in the league phase.",
+              "עד לאן הגיעה כל קבוצה בכל עונה. בשנות הבתים לא היה סיבוב פלייאוף, לכן השלב הזה מוצלל בעונות האלה. העונה הנוכחית מסומנת בנקודה חלולה על קו מקווקו: היא עדיין בשלב הליגה."],
+    club1: ["Club", "קבוצה"], club2: ["Compare with", "השוואה עם"], club3: ["And with", "ועם"], none: ["None", "בלי"],
+    notIn: ["Did not play", "לא השתתפה"], firstFinish: ["First-phase finish", "סיום בשלב הראשון"], ppg: ["Pts / game", "נק' למשחק"],
+    reached: ["Reached", "הגיעה עד"], record: ["W-D-L (all games)", "נ-ת-ה (כל המשחקים)"], goals: ["Goals", "שערים"],
+    inGroup: ["in group", "בבית"], ofN: ["of", "מתוך"],
+    rankTitle: ["Most consistent clubs, last four completed seasons", "הקבוצות העקביות ביותר, ארבע העונות האחרונות שהסתיימו"],
+    rankSub: ["Points for the furthest stage reached each season: group or league phase 0, playoff 1, last 16 2, quarter-final 3, semi-final 4, final 5, winner 6. Click a club to draw its journey.",
+              "ניקוד לפי השלב הרחוק ביותר בכל עונה: שלב בתים או ליגה 0, פלייאוף 1, שמינית 2, רבע גמר 3, חצי גמר 4, גמר 5, זכייה 6. לחיצה על קבוצה מציירת את המסע שלה."],
+    score: ["Score", "ניקוד"], now: ["Now", "עכשיו"],
+    ctyTitle: ["Last-16 clubs by country", "קבוצות בשמינית הגמר לפי מדינה"],
+    ctySub: ["Sixteen places every season, in both formats. Darker cells mean more clubs.", "16 מקומות בכל עונה, בשני הפורמטים. תא כהה יותר = יותר קבוצות."],
+    country: ["Country", "מדינה"], total: ["Total", "סה״כ"], others: ["Others", "אחרות"]
+  };
+  var STAGE = {
+    out: ["Did not play", "לא השתתפה"], first_g: ["Group stage", "שלב הבתים"], first_l: ["League phase", "שלב הליגה"],
+    PO: ["Playoff", "פלייאוף"], R16: ["Last 16", "שמינית גמר"], QF: ["Quarter-final", "רבע גמר"], SF: ["Semi-final", "חצי גמר"],
+    F: ["Final", "גמר"], W: ["Winner", "זכתה"]
+  };
+  var LEVEL = { first: 0, PO: 1, R16: 2, QF: 3, SF: 4, F: 5, W: 6 };
+  var CC = { ENG: ["England", "אנגליה"], ESP: ["Spain", "ספרד"], GER: ["Germany", "גרמניה"], ITA: ["Italy", "איטליה"], FRA: ["France", "צרפת"],
+    POR: ["Portugal", "פורטוגל"], NED: ["Netherlands", "הולנד"], BEL: ["Belgium", "בלגיה"], NOR: ["Norway", "נורווגיה"], TUR: ["Turkey", "טורקיה"] };
+
+  var D, S = [], cur = 4, lang = "en", picks = ["Paris Saint-Germain", "Real Madrid", ""], mRound = null;
+  var $ = function (id) { return document.getElementById(id); };
+  var L = function () { return lang === "he" ? 1 : 0; };
+  var t = function (k) { return T[k][L()]; };
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+  var pct = function (x) { return Math.round(x * 100) + "%"; };
+  var f2 = function (x) { return x.toFixed(2); };
+  function stageName(code, fmt) {
+    if (code === "first") return STAGE[fmt === "groups" ? "first_g" : "first_l"][L()];
+    return STAGE[code][L()];
+  }
+  function chip(code, s) {
+    if (!code) return '<span class="muted">–</span>';
+    var live = s && !s.complete;
+    if (live) return '<span class="chip live">' + esc(T.live[L()]) + "</span>";
+    var cls = code === "W" ? "chip w" : code === "F" ? "chip f" : code === "first" ? "chip" : "chip ko";
+    return '<span class="' + cls + '">' + esc(stageName(code, s.format)) + "</span>";
+  }
+  function fmtDate(iso) {
+    var d = new Date(iso + "T12:00:00Z");
+    return d.toLocaleDateString(lang === "he" ? "he-IL" : "en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+  }
+  function played(s) { return s.matches.filter(function (m) { return m.hg != null; }); }
+  function curMd(s) { var md = 0; played(s).forEach(function (m) { if (m.md > md) md = m.md; }); return md; }
+  function teamLabel(n, s) { return '<span class="n">' + esc(n) + '</span> <span class="cc">' + esc(s.countries[n] || "") + "</span>"; }
+
+  /* ------------------------------------------------------------ per-season stats */
+  function phaseStats(ms) {
+    var n = ms.length, g = 0, hw = 0, dr = 0;
+    ms.forEach(function (m) { g += m.hg + m.ag; if (m.hg > m.ag) hw++; else if (m.hg === m.ag) dr++; });
+    return { n: n, gpm: n ? g / n : null, hw: n ? hw / n : null, dr: n ? dr / n : null };
+  }
+  function seasonStats(s) {
+    var pl = played(s);
+    var first = pl.filter(function (m) { return m.phase === "first"; });
+    var ko = pl.filter(function (m) { return m.phase !== "first"; });
+    var games = s.format === "groups" ? 6 : 8, stay = null, direct = null;
+    if (s.complete) {
+      if (s.format === "groups") {
+        stay = Infinity;
+        Object.keys(s.groups).forEach(function (g) { stay = Math.min(stay, s.groups[g][1].pts); });
+      } else { stay = s.league[23].pts; direct = s.league[7].pts; }
+    }
+    return { all: phaseStats(pl), first: phaseStats(first), ko: phaseStats(ko), games: games, stay: stay, direct: direct, stayPct: stay == null ? null : stay / (3 * games) };
+  }
+
+  /* ------------------------------------------------------------ hero + season bar */
+  function renderHero() {
+    var n = 0, clubs = {};
+    S.forEach(function (s) { n += s.played; Object.keys(s.reach).forEach(function (c) { clubs[c] = 1; }); });
+    $("stats").innerHTML = "<span><b>5</b>" + t("seasons") + "</span><span><b>2</b>" + t("formats") + "</span><span><b>" + n + "</b>" + t("matches") +
+      "</span><span><b>" + Object.keys(clubs).length + "</b>" + t("clubs") + "</span>";
+    $("seasonbar").innerHTML = S.map(function (s, i) {
+      var sep = i > 0 && S[i - 1].format !== s.format ? '<span class="fmtsep" aria-hidden="true"></span>' : "";
+      var sub = (s.format === "groups" ? t("fmtGroups") : t("fmtLeague")) + (s.complete ? "" : " · " + t("live"));
+      return sep + '<button type="button" data-i="' + i + '" aria-pressed="' + (i === cur) + '"><b>' + s.season + "</b><span>" + esc(sub) + "</span></button>";
+    }).join("");
+  }
+
+  function renderTiles() {
+    var s = S[cur], st = seasonStats(s), html = "";
+    if (s.complete) {
+      var fin = s.rounds.F[0], lg = fin.legs[0];
+      var sc = lg.hg + "-" + lg.ag + (lg.pens ? " (" + lg.pens[0] + "-" + lg.pens[1] + " " + t("pensShort") + ")" : "");
+      html += tile(t("champion"), s.champion, t("finalScore") + ": " + lg.home + " " + sc + " " + lg.away, true);
+      html += tile(t("runnerUp"), s.runner_up, "");
+    } else {
+      var top = s.league[0];
+      html += tile(t("leader"), top.team, top.pts + " " + t("pts") + " · " + t("md") + " " + curMd(s), true);
+    }
+    html += tile(t("played"), s.played + (s.complete ? "" : " / 189"), s.complete ? "" : fmtDate(s.last_date));
+    html += tile(t("gpm"), f2(st.all.gpm), "");
+    html += tile(t("homeWin"), pct(st.all.hw), "");
+    $("tiles").innerHTML = html;
+    var note = s.format === "groups" ? t("notesGroups") : t("notesLeague");
+    if (!s.complete) note += " " + t("notesLive").replace("{md}", curMd(s)).replace("{date}", fmtDate(s.last_date));
+    $("fmtnote").textContent = note;
+  }
+  function tile(k, v, d, acc) {
+    return '<div class="tile"><div class="k">' + esc(k) + '</div><div class="v' + (acc ? " acc" : "") + '">' + esc(v) + "</div>" + (d ? '<div class="d">' + esc(d) + "</div>" : "") + "</div>";
+  }
+
+  /* ------------------------------------------------------------ first phase */
+  function renderFirst() {
+    var s = S[cur];
+    if (s.format === "groups") {
+      $("firstTitle").textContent = t("groupsTitle");
+      $("firstSub").textContent = t("groupsSub");
+      var leg = '<div class="legend"><span><i style="background:var(--rs-accent)"></i>' + t("zoneG1") + '</span><span><i style="background:repeating-linear-gradient(45deg,var(--rs-muted) 0 2px,transparent 2px 4px)"></i>' + t("zoneG3") + "</span></div>";
+      $("first").innerHTML = leg + '<div class="groups">' + Object.keys(s.groups).map(function (g) {
+        return '<div class="panel group"><h3>' + t("group") + " " + g + "</h3><table><thead><tr><th></th><th>" + t("team") + '</th><th class="num">' + t("gd") +
+          '</th><th class="num">' + t("pts") + "</th><th>" + t("went") + "</th></tr></thead><tbody>" + s.groups[g].map(function (r) {
+            var cls = r.pos <= 2 ? "z1" : r.pos === 3 ? "g3" : "z3";
+            return '<tr class="click ' + cls + '" data-club="' + esc(r.team) + '"><td><span class="zone"></span></td><td>' + teamLabel(r.team, s) + '</td><td class="num">' +
+              "<bdi>" + (r.gd > 0 ? "+" : "") + r.gd + "</bdi>" + '</td><td class="num"><span class="n">' + r.pts + "</span></td><td>" + (r.pos <= 2 ? chip(s.reach[r.team], s) : "") + "</td></tr>";
+          }).join("") + "</tbody></table></div>";
+      }).join("") + "</div>";
+      return;
+    }
+    $("firstTitle").textContent = t("leagueTitle");
+    $("firstSub").textContent = s.complete ? t("leagueSub") : t("leagueSubLive");
+    var lg = '<div class="legend"><span><i style="background:var(--rs-accent)"></i>' + t("zone1") + '</span><span><i style="background:var(--rs-muted)"></i>' + t("zone2") +
+      '</span><span><i style="border:1px solid var(--rs-line-strong)"></i>' + t("zone3") + "</span></div>";
+    var cols = ["p", "w", "d", "l", "gf", "ga", "gd", "pts"], OPT = { w: 1, d: 1, l: 1, gf: 1, ga: 1 };
+    $("first").innerHTML = lg + '<div class="panel tablewrap"><table><thead><tr><th></th><th></th><th>' + t("team") + "</th>" +
+      cols.map(function (c) { return '<th class="num' + (OPT[c] ? " opt" : "") + '">' + t(c) + "</th>"; }).join("") + (s.complete ? "<th>" + t("went") + "</th>" : "") + "</tr></thead><tbody>" +
+      s.league.map(function (r) {
+        var z = r.pos <= 8 ? "z1" : r.pos <= 24 ? "z2" : "z3";
+        var line = r.pos === 8 || r.pos === 24 ? " zline" : "";
+        return '<tr class="click ' + z + line + '" data-club="' + esc(r.team) + '"><td style="width:6px;padding-inline-end:0"><span class="zone"></span></td><td class="pos">' + r.pos + "</td><td>" + teamLabel(r.team, s) + "</td>" +
+          cols.map(function (c) { var v = r[c]; if (c === "gd") v = "<bdi>" + (v > 0 ? "+" : "") + v + "</bdi>"; return '<td class="num' + (OPT[c] ? " opt" : "") + '">' + (c === "pts" ? '<span class="n">' + v + "</span>" : v) + "</td>"; }).join("") +
+          (s.complete ? "<td>" + chip(s.reach[r.team], s) + "</td>" : "") + "</tr>";
+      }).join("") + "</tbody></table></div>";
+  }
+
+  /* ------------------------------------------------------------ knockouts */
+  function renderKO() {
+    var s = S[cur];
+    $("koSub").textContent = s.format === "groups" ? t("koSubGroups") : t("koSubLeague");
+    var order = ["PO", "R16", "QF", "SF", "F"].filter(function (r) { return s.rounds[r]; });
+    if (!order.length) { $("ko").innerHTML = '<p class="panel muted">' + esc(t("koLive")) + "</p>"; return; }
+    $("ko").innerHTML = '<div class="bracket">' + order.map(function (r) {
+      return '<div class="round"><h3>' + esc(STAGE[r][L()]) + '</h3><div class="ties">' + s.rounds[r].map(function (tie) { return tieCard(tie, r, s); }).join("") + "</div></div>";
+    }).join("") + "</div>";
+  }
+  function tieCard(tie, r, s) {
+    var one = tie.legs.length === 1;
+    var row = function (team, g) {
+      return '<div class="r' + (tie.winner === team ? " win" : "") + '"><span>' + esc(team) + "</span><b>" + g + "</b></div>";
+    };
+    var legs = one ? "" : tie.legs.map(function (m) { return m.home + " " + m.hg + "-" + m.ag + " " + m.away; }).map(esc).join(" · ");
+    var extra = [];
+    if (tie.et) extra.push(t("aetShort"));
+    if (tie.pens) extra.push(t("pensShort") + " " + tie.pens[0] + "-" + tie.pens[1]);
+    if (one && tie.legs[0].hg != null) legs = esc(fmtDate(tie.legs[0].date));
+    return '<div class="tie' + (r === "F" ? " final" : "") + '">' + row(tie.a, tie.agg[0]) + row(tie.b, tie.agg[1]) +
+      '<div class="legs" dir="ltr">' + legs + (extra.length ? " · " + esc(extra.join(", ")) : "") + "</div></div>";
+  }
+
+  /* ------------------------------------------------------------ results */
+  function roundOptions(s) {
+    var o = [];
+    if (s.format === "groups") Object.keys(s.groups).forEach(function (g) { o.push(["g:" + g, t("group") + " " + g]); });
+    else for (var i = 1; i <= 8; i++) if (s.matches.some(function (m) { return m.phase === "first" && m.md === i; })) o.push(["md:" + i, t("md") + " " + i]);
+    ["PO", "R16", "QF", "SF", "F"].forEach(function (r) { if (s.rounds[r]) o.push(["r:" + r, STAGE[r][L()]]); });
+    return o;
+  }
+  function renderMatches(keep) {
+    var s = S[cur], opts = roundOptions(s);
+    if (!keep || !opts.some(function (o) { return o[0] === mRound; })) {
+      mRound = opts[0][0];
+      if (!s.complete) { var md = curMd(s); mRound = "md:" + md; }
+    }
+    $("mRound").innerHTML = opts.map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === mRound ? " selected" : "") + ">" + esc(o[1]) + "</option>"; }).join("");
+    var kind = mRound.split(":")[0], val = mRound.split(":")[1];
+    var ms = s.matches.filter(function (m) {
+      if (kind === "g") return m.phase === "first" && m.group === val;
+      if (kind === "md") return m.phase === "first" && String(m.md) === val;
+      return m.round === val;
+    });
+    var byDate = {};
+    ms.forEach(function (m) { (byDate[m.date] = byDate[m.date] || []).push(m); });
+    $("matches").innerHTML = Object.keys(byDate).sort().map(function (d) {
+      return '<div class="mday"><h4>' + esc(fmtDate(d)) + "</h4>" + byDate[d].map(function (m) {
+        if (m.hg == null) return '<div class="m"><span class="h">' + esc(m.home) + '</span><span class="s tbd">–</span><span>' + esc(m.away) + '</span><span class="x">' + esc(t("notYet")) + "</span></div>";
+        var hw = m.hg > m.ag || (m.pens && m.pens[0] > m.pens[1]), aw = m.ag > m.hg || (m.pens && m.pens[1] > m.pens[0]);
+        var x = [];
+        if (m.et) x.push(t("aetShort"));
+        if (m.pens) x.push(t("pensShort") + " " + m.pens[0] + "-" + m.pens[1]);
+        return '<div class="m"><span class="h">' + (hw ? "<b>" + esc(m.home) + "</b>" : esc(m.home)) + '</span><span class="s">' + m.hg + " - " + m.ag + "</span><span>" +
+          (aw ? "<b>" + esc(m.away) + "</b>" : esc(m.away)) + "</span>" + (x.length ? '<span class="x">' + esc(x.join(" · ")) + "</span>" : "") + "</div>";
+      }).join("") + "</div>";
+    }).join("");
+  }
+
+  /* ------------------------------------------------------------ format comparison */
+  function renderCompare() {
+    var rows = S.map(function (s) { return { s: s, st: seasonStats(s) }; });
+    var head = "<tr><th>" + t("season") + "</th><th>" + t("format") + '</th><th class="num">' + t("gamesPer") + '</th><th class="num">' + t("gpmFirst") +
+      '</th><th class="num">' + t("gpmKo") + '</th><th class="num">' + t("homeW") + '</th><th class="num">' + t("draws") + '</th><th class="num">' + t("cutStay") +
+      '</th><th class="num">' + t("cutStayPct") + '</th><th class="num">' + t("cutDirect") + "</th></tr>";
+    var body = rows.map(function (r) {
+      var s = r.s, st = r.st, part = s.complete ? "" : ' <span class="chip live">' + t("partial") + "</span>";
+      return "<tr><td><span class=\"n\">" + s.season + "</span>" + part + "</td><td>" + (s.format === "groups" ? t("groups") + " (32)" : t("league") + " (36)") + '</td><td class="num">' + st.games +
+        '</td><td class="num">' + f2(st.first.gpm) + '</td><td class="num">' + (st.ko.n ? f2(st.ko.gpm) : "–") + '</td><td class="num">' + pct(st.first.hw) +
+        '</td><td class="num">' + pct(st.first.dr) + '</td><td class="num">' + (st.stay == null ? "–" : "<bdi>" + st.stay + " / " + 3 * st.games + "</bdi>") +
+        '</td><td class="num">' + (st.stayPct == null ? "–" : pct(st.stayPct)) + '</td><td class="num">' + (st.direct == null ? (s.format === "groups" ? '<span class="muted">' + t("na") + "</span>" : "–") : st.direct) + "</td></tr>";
+    }).join("");
+    $("cmpTable").innerHTML = "<table><thead>" + head + "</thead><tbody>" + body + "</tbody></table>";
+    goalsChart(rows);
+    cutChart(rows);
+  }
+  function chartFrame(title, sub, legend, svg) {
+    return "<h2 style=\"font-size:16px\">" + esc(title) + "</h2>" + (sub ? '<p class="sub" style="margin-bottom:8px">' + esc(sub) + "</p>" : "") + (legend || "") + svg;
+  }
+  function goalsChart(rows) {
+    var W = 520, H = 230, padL = 34, padB = 26, padT = 18, max = 4;
+    var bw = 26, gap = 3, slot = (W - padL) / rows.length;
+    var y = function (v) { return padT + (H - padT - padB) * (1 - v / max); };
+    var svg = '<svg viewBox="0 0 ' + W + " " + H + '" width="100%" role="img" aria-label="' + esc(t("goalsChart")) + '">';
+    for (var g = 0; g <= max; g++) svg += '<line class="ax" x1="' + padL + '" x2="' + W + '" y1="' + y(g) + '" y2="' + y(g) + '"/><text class="axl" x="' + (padL - 8) + '" y="' + (y(g) + 4) + '" text-anchor="end">' + g + "</text>";
+    rows.forEach(function (r, i) {
+      var cx = padL + slot * i + slot / 2;
+      [[r.st.first.gpm, "var(--s1)", t("firstPhase")], [r.st.ko.n ? r.st.ko.gpm : null, "var(--s2)", t("knockouts")]].forEach(function (b, j) {
+        if (b[0] == null) return;
+        var x = cx - bw - gap / 2 + j * (bw + gap), yy = y(b[0]), h = y(0) - yy;
+        svg += '<path d="M' + x + "," + y(0) + "V" + (yy + 4) + "Q" + x + "," + yy + " " + (x + 4) + "," + yy + "H" + (x + bw - 4) + "Q" + (x + bw) + "," + yy + " " + (x + bw) + "," + (yy + 4) + "V" + y(0) + 'Z" fill="' + b[1] + '" data-tip="' +
+          esc(r.s.season + " · " + b[2] + ": " + f2(b[0])) + '"/>';
+        svg += '<text class="vl" x="' + (x + bw / 2) + '" y="' + (yy - 5) + '" text-anchor="middle">' + b[0].toFixed(1) + "</text>";
+      });
+      svg += '<text class="axl" x="' + cx + '" y="' + (H - 8) + '" text-anchor="middle">' + r.s.season + (r.s.complete ? "" : "*") + "</text>";
+    });
+    svg += "</svg>";
+    var legend = '<div class="legend"><span><i style="background:var(--s1)"></i>' + t("firstPhase") + '</span><span><i style="background:var(--s2)"></i>' + t("knockouts") + "</span><span>* " + t("partial") + "</span></div>";
+    $("goalsChart").innerHTML = chartFrame(t("goalsChart"), "", legend, svg);
+  }
+  function cutChart(rows) {
+    var done = rows.filter(function (r) { return r.st.stayPct != null; });
+    var W = 520, rowH = 34, padL = 120, padR = 54, H = done.length * rowH + 10;
+    var x = function (v) { return padL + (W - padL - padR) * v; };
+    var svg = '<svg viewBox="0 0 ' + W + " " + H + '" width="100%" role="img" aria-label="' + esc(t("cutChart")) + '">';
+    [0, .25, .5].forEach(function (v) { svg += '<line class="ax" x1="' + x(v) + '" x2="' + x(v) + '" y1="0" y2="' + H + '"/>'; });
+    done.forEach(function (r, i) {
+      var yy = 6 + i * rowH, v = r.st.stayPct, w = x(v) - padL;
+      var lab = r.s.season + " · " + (r.s.format === "groups" ? t("groups") : t("league"));
+      svg += '<text class="axl" x="' + (padL - 8) + '" y="' + (yy + 15) + '" text-anchor="end">' + esc(lab) + "</text>";
+      svg += '<path d="M' + padL + "," + yy + "H" + (padL + w - 4) + "Q" + (padL + w) + "," + yy + " " + (padL + w) + "," + (yy + 4) + "V" + (yy + 18) + "Q" + (padL + w) + "," + (yy + 22) + " " + (padL + w - 4) + "," + (yy + 22) + "H" + padL + 'Z" fill="var(--s1)" data-tip="' +
+        esc(r.s.season + ": " + r.st.stay + " / " + 3 * r.st.games + " " + t("pts")) + '"/>';
+      svg += '<text class="vl" x="' + (padL + w + 6) + '" y="' + (yy + 15) + '">' + pct(v) + " (" + r.st.stay + ")</text>";
+    });
+    svg += "</svg>";
+    $("cutChart").innerHTML = chartFrame(t("cutChart"), t("cutChartSub"), "", svg);
+  }
+
+  /* ------------------------------------------------------------ club journeys */
+  function allClubs() {
+    var c = {};
+    S.forEach(function (s) { Object.keys(s.reach).forEach(function (n) { c[n] = (c[n] || 0) + 1; }); });
+    return Object.keys(c).sort(function (a, b) { return a.localeCompare(b); });
+  }
+  function renderPicker() {
+    var clubs = allClubs(), labs = ["club1", "club2", "club3"];
+    $("picker").innerHTML = labs.map(function (k, i) {
+      return '<label class="k' + (i + 1) + '"><span><i class="sw" style="background:var(--s' + (i + 1) + ')"></i>' + t(k) + '</span><select data-k="' + i + '">' +
+        (i ? '<option value="">' + t("none") + "</option>" : "") + clubs.map(function (c) { return "<option" + (c === picks[i] ? " selected" : "") + ">" + esc(c) + "</option>"; }).join("") + "</select></label>";
+    }).join("");
+  }
+  function journey(club) {
+    return S.map(function (s) {
+      var code = s.reach[club];
+      if (!code) return null;
+      return { s: s, code: code, live: !s.complete, level: LEVEL[code] };
+    });
+  }
+  function renderLadder() {
+    var sel = picks.filter(Boolean), W = 640, H = 300, padL = 112, padR = 20, padT = 14, padB = 30;
+    var levels = [["out", -1], ["first", 0], ["PO", 1], ["R16", 2], ["QF", 3], ["SF", 4], ["F", 5], ["W", 6]];
+    var y = function (lv) { return padT + (H - padT - padB) * (6 - lv) / 7; };
+    var x = function (i) { return padL + (W - padL - padR) * (i + .5) / S.length; };
+    var colW = (W - padL - padR) / S.length;
+    var svg = '<svg viewBox="0 0 ' + W + " " + H + '" width="100%" role="img" aria-label="' + esc(t("clubTitle")) + '">';
+    // no playoff rung in group-stage seasons
+    S.forEach(function (s, i) { if (s.format === "groups") svg += '<rect class="band" x="' + (x(i) - colW / 2) + '" y="' + (y(1) - 10) + '" width="' + colW + '" height="20"/>'; });
+    levels.forEach(function (l) {
+      var name = l[0] === "out" ? t("notIn") : l[0] === "first" ? T.groupsTitle[L()] + " / " + T.leagueTitle[L()] : STAGE[l[0]][L()];
+      if (l[0] === "first") name = lang === "he" ? "שלב ראשון" : "First phase";
+      svg += '<line class="ax" x1="' + padL + '" x2="' + (W - padR) + '" y1="' + y(l[1]) + '" y2="' + y(l[1]) + '"/><text class="axl" x="' + (padL - 8) + '" y="' + (y(l[1]) + 4) + '" text-anchor="end">' + esc(name) + "</text>";
+    });
+    S.forEach(function (s, i) { svg += '<text class="axl" x="' + x(i) + '" y="' + (H - 8) + '" text-anchor="middle">' + s.season + "</text>"; });
+    var offs = [-6, 0, 6];
+    sel.forEach(function (club, k) {
+      var idx = picks.indexOf(club), col = "var(--s" + (idx + 1) + ")", j = journey(club), pts = [];
+      j.forEach(function (p, i) { pts.push([x(i) + offs[idx], y(p ? p.level : -1), p, i]); });
+      var d = "", dl = "";
+      pts.forEach(function (p, i) {
+        if (p[2] && p[2].live) dl = "M" + pts[i - 1][0] + "," + pts[i - 1][1] + "L" + p[0] + "," + p[1];
+        else d += (i ? "L" : "M") + p[0] + "," + p[1];
+      });
+      svg += '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="2"/>';
+      if (dl) svg += '<path d="' + dl + '" fill="none" stroke="' + col + '" stroke-width="2" stroke-dasharray="4 4"/>';
+      pts.forEach(function (p) {
+        var s = S[p[3]], label = p[2] ? (p[2].live ? s.season + ": " + T.live[L()] + " (" + leaguePos(s, club) + ")" : s.season + ": " + stageName(p[2].code, s.format)) : s.season + ": " + t("notIn");
+        var hollow = p[2] && p[2].live;
+        svg += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="5" fill="' + (hollow ? "var(--rs-panel)" : col) + '" stroke="' + (hollow ? col : "var(--rs-panel)") + '" stroke-width="2" data-tip="' + esc(club + " · " + label) + '"/>';
+      });
+    });
+    svg += "</svg>";
+    $("ladder").innerHTML = svg;
+    renderClubTable();
+  }
+  function leaguePos(s, club) {
+    var r = s.league && s.league.filter(function (x) { return x.team === club; })[0];
+    return r ? r.pos + " " + t("ofN") + " 36" : "";
+  }
+  function firstFinish(s, club) {
+    if (s.format === "groups") {
+      for (var g in s.groups) { var r = s.groups[g].filter(function (x) { return x.team === club; })[0]; if (r) return { txt: r.pos + " " + t("inGroup") + " " + g, row: r }; }
+    } else {
+      var q = s.league.filter(function (x) { return x.team === club; })[0];
+      if (q) return { txt: q.pos + " " + t("ofN") + " 36", row: q };
+    }
+    return null;
+  }
+  function record(s, club) {
+    var w = 0, d = 0, l = 0, gf = 0, ga = 0;
+    played(s).forEach(function (m) {
+      var h = m.home === club, a = m.away === club; if (!h && !a) return;
+      var f = h ? m.hg : m.ag, g = h ? m.ag : m.hg; gf += f; ga += g;
+      if (f > g) w++; else if (f < g) l++; else d++;
+    });
+    return { w: w, d: d, l: l, gf: gf, ga: ga };
+  }
+  function renderClubTable() {
+    var club = picks[0];
+    var head = "<tr><th>" + t("season") + "</th><th>" + t("format") + "</th><th>" + t("firstFinish") + '</th><th class="num">' + t("ppg") + "</th><th>" + t("reached") + "</th><th>" + t("record") + '</th><th class="num">' + t("goals") + "</th></tr>";
+    var body = S.map(function (s) {
+      var ff = firstFinish(s, club);
+      if (!ff) return '<tr><td><span class="n">' + s.season + '</span></td><td>' + (s.format === "groups" ? t("groups") : t("league")) + '</td><td colspan="5" class="muted">' + t("notIn") + "</td></tr>";
+      var rec = record(s, club);
+      return '<tr><td><span class="n">' + s.season + "</span></td><td>" + (s.format === "groups" ? t("groups") : t("league")) + "</td><td>" + esc(ff.txt) + '</td><td class="num">' + (ff.row.p ? f2(ff.row.pts / ff.row.p) : "–") +
+        "</td><td>" + chip(s.reach[club], s) + "</td><td>" + rec.w + "-" + rec.d + "-" + rec.l + '</td><td class="num">' + rec.gf + ":" + rec.ga + "</td></tr>";
+    }).join("");
+    $("clubTable").innerHTML = '<h2 style="font-size:16px">' + esc(club) + "</h2><table><thead>" + head + "</thead><tbody>" + body + "</tbody></table>";
+  }
+
+  /* ------------------------------------------------------------ consistency ranking */
+  function renderRank() {
+    var done = S.filter(function (s) { return s.complete; }), live = S.filter(function (s) { return !s.complete; })[0];
+    var score = {};
+    done.forEach(function (s) { Object.keys(s.reach).forEach(function (c) { score[c] = (score[c] || 0) + LEVEL[s.reach[c]]; }); });
+    var list = Object.keys(score).sort(function (a, b) { return score[b] - score[a] || a.localeCompare(b); }).slice(0, 20);
+    var head = '<tr><th></th><th>' + t("team") + "</th>" + done.map(function (s) { return "<th>" + s.season + "</th>"; }).join("") + '<th class="num">' + t("score") + "</th>" +
+      (live ? "<th>" + live.season + " · " + t("now") + "</th>" : "") + "</tr>";
+    var body = list.map(function (c, i) {
+      var any = done.filter(function (s) { return s.countries[c]; })[0];
+      return '<tr class="click" data-club="' + esc(c) + '"><td class="pos">' + (i + 1) + "</td><td>" + teamLabel(c, any) + "</td>" +
+        done.map(function (s) { return "<td>" + (s.reach[c] ? chip(s.reach[c], s) : '<span class="muted">–</span>') + "</td>"; }).join("") +
+        '<td class="num"><span class="n">' + score[c] + "</span></td>" + (live ? "<td>" + (live.reach[c] ? esc(leaguePos(live, c)) : '<span class="muted">–</span>') + "</td>" : "") + "</tr>";
+    }).join("");
+    $("rank").innerHTML = "<table><thead>" + head + "</thead><tbody>" + body + "</tbody></table>";
+  }
+
+  /* ------------------------------------------------------------ countries */
+  function renderCountries() {
+    var done = S.filter(function (s) { return s.complete; });
+    var cnt = {}, tot = {};
+    done.forEach(function (s) {
+      cnt[s.season] = {};
+      s.rounds.R16.forEach(function (tie) { [tie.a, tie.b].forEach(function (c) { var k = s.countries[c]; cnt[s.season][k] = (cnt[s.season][k] || 0) + 1; tot[k] = (tot[k] || 0) + 1; }); });
+    });
+    var top = Object.keys(tot).sort(function (a, b) { return tot[b] - tot[a] || a.localeCompare(b); });
+    var main = top.slice(0, 7), rest = top.slice(7);
+    var rowsData = main.map(function (k) { return [CC[k] ? CC[k][L()] : k, [k]]; });
+    if (rest.length) rowsData.push([t("others") + " (" + rest.join(", ") + ")", rest]);
+    var head = "<tr><th>" + t("country") + "</th>" + done.map(function (s) { return '<th class="num">' + s.season + "</th>"; }).join("") + '<th class="num">' + t("total") + "</th></tr>";
+    var body = rowsData.map(function (r) {
+      var sum = 0;
+      var cells = done.map(function (s) {
+        var v = 0; r[1].forEach(function (k) { v += cnt[s.season][k] || 0; }); sum += v;
+        var a = Math.min(v / 6, 1);
+        return '<td class="num" style="background:color-mix(in srgb, var(--rs-accent) ' + Math.round(a * 45) + '%, transparent);' + (a > .5 ? "color:var(--rs-ink);font-weight:600" : "") + '">' + (v || '<span class="muted">0</span>') + "</td>";
+      }).join("");
+      return "<tr><td>" + esc(r[0]) + "</td>" + cells + '<td class="num"><span class="n">' + sum + "</span></td></tr>";
+    }).join("");
+    $("cty").innerHTML = "<table><thead>" + head + "</thead><tbody>" + body + "</tbody></table>";
+  }
+
+  /* ------------------------------------------------------------ static text, method */
+  function renderStatic() {
+    document.querySelectorAll("[data-t]").forEach(function (el) { el.textContent = t(el.getAttribute("data-t")); });
+    var dir = lang === "he" ? "rtl" : "ltr";
+    document.querySelector("header.hero").dir = $("app").dir = $("method").dir = document.querySelector(".seasons").dir = dir;
+    var built = D ? D.built : "";
+    $("method").innerHTML = lang === "he"
+      ? "<p>נתונים: 2022-23 עד 2025-26 מתוך <a href=\"https://github.com/openfootball/champions-league\">openfootball/champions-league</a> (רשות הציבור, CC0), כל משחקי השלב הראשון והנוקאאוט. את עונת 2026-27 openfootball עוד לא פרסמו, ולכן התוצאות שלה הוזנו ידנית מדיווחי חדשות לקובץ <code>data/raw/cl_2026-27.csv</code>. הדאטה נבנה ב־" + esc(built) + ".</p>" +
+        "<p>שמות קבוצות אוחדו בין העונות (למשל Club Atlético de Madrid ו־Atlético Madrid). את הבתים של 2023-24 שחזרנו מתוך מי שיחק נגד מי. שוברי שוויון: בפורמט הישן מפגשים ישירים ואז הפרש שערים; בפורמט החדש נקודות, הפרש, זכות, שערי חוץ, ניצחונות. השוברים האחרונים של אופ״א (נקודות היריבות, משמעת, מקדם) לא ממומשים, וזה משנה רק בשוויונים נדירים.</p>" +
+        "<p>אין כאן xG: זה דשבורד תוצאות ומבנה טורניר. הקוד: <a href=\"https://github.com/RShiri/RShiri.github.io/tree/main/champions-league\">champions-league/pipeline</a>.</p>"
+      : "<p>Data: 2022-23 to 2025-26 from <a href=\"https://github.com/openfootball/champions-league\">openfootball/champions-league</a> (public domain, CC0), every first-phase and knockout match. openfootball has not published 2026-27 yet, so its results were entered by hand from news reports into <code>data/raw/cl_2026-27.csv</code>. Data built " + esc(built) + ".</p>" +
+        "<p>Club names are unified across seasons (Club Atlético de Madrid and Atlético Madrid are one club). The 2023-24 groups are rebuilt from who played whom. Tiebreaks: head-to-head then goal difference in the old format; points, goal difference, goals, away goals, wins, away wins in the new one. UEFA's later tiebreaks (opponents' points, discipline, coefficient) are not implemented, which only matters in rare ties.</p>" +
+        "<p>No xG here: this is a results and tournament-structure dashboard. Code: <a href=\"https://github.com/RShiri/RShiri.github.io/tree/main/champions-league\">champions-league/pipeline</a>.</p>";
+    window.RS_ABOUT = ABOUT;
+    if (D) { renderHero(); renderSeason(true); renderCompare(); renderPicker(); renderLadder(); renderRank(); renderCountries(); }
+  }
+  function renderSeason(keep) {
+    $("seasonbar").querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", String(+b.getAttribute("data-i") === cur)); });
+    renderTiles(); renderFirst(); renderKO(); renderMatches(keep);
+    var on = $("seasonbar").querySelector('[aria-pressed="true"]');
+    if (on) $("seasonbar").scrollLeft = on.offsetLeft - $("seasonbar").offsetLeft - 16;
+  }
+
+  var ABOUT = {
+    en: { title: "Champions League, five seasons", intro: "A static dashboard of every Champions League match from 2022-23 to the current 2026-27 season, built to handle the 2024 format change instead of hiding it.",
+      sections: [
+        { h: "Why two formats matter", p: "Until 2023-24, 32 clubs played six games in groups of four. From 2024-25, 36 clubs play eight games in one league table, and 9th to 24th meet in a knockout playoff. A raw total like 'goals in the first phase' jumps just because there are more games, so every comparison here is per match or as a share of the points available." },
+        { h: "What you can do", p: "Pick a season to see its groups or league table, the knockout bracket (with the playoff round where it exists) and every result. Below that, compare the formats, follow up to three clubs across all five seasons, and see which clubs and countries reached the last 16 most often." },
+        { h: "Data and refresh", p: "Completed seasons come from openfootball (CC0). The current season is a small hand-kept CSV until openfootball publishes it; <code>python champions-league/pipeline/build_data.py</code> rebuilds <code>data/ucl.json</code> from whatever is in <code>data/raw/</code>." }
+      ] },
+    he: { title: "ליגת האלופות, חמש עונות", intro: "דשבורד סטטי של כל משחקי ליגת האלופות מ־2022-23 ועד עונת 2026-27 הנוכחית, שבנוי להתמודד עם שינוי הפורמט ב־2024 במקום להסתיר אותו.",
+      sections: [
+        { h: "למה שני פורמטים משנים", p: "עד 2023-24 שיחקו 32 קבוצות שישה משחקים בבתים של ארבע. מ־2024-25 משחקות 36 קבוצות שמונה משחקים בטבלה אחת, והמקומות 9 עד 24 נפגשים בפלייאוף. סכום גולמי כמו 'שערים בשלב הראשון' קופץ רק כי יש יותר משחקים, ולכן כל השוואה כאן היא למשחק או כאחוז מהנקודות האפשריות." },
+        { h: "מה אפשר לעשות", p: "בוחרים עונה ורואים את הבתים או טבלת הליגה, את עץ הנוקאאוט (כולל סיבוב הפלייאוף כשהוא קיים) וכל תוצאה. מתחת: השוואה בין הפורמטים, מעקב אחרי עד שלוש קבוצות לאורך חמש העונות, ואילו קבוצות ומדינות הגיעו הכי הרבה לשמינית הגמר." },
+        { h: "נתונים ועדכון", p: "העונות שהסתיימו מגיעות מ־openfootball (CC0). העונה הנוכחית היא קובץ CSV קטן שמתוחזק ידנית עד ש־openfootball יפרסמו אותה; <code>python champions-league/pipeline/build_data.py</code> בונה מחדש את <code>data/ucl.json</code> ממה שיש ב־<code>data/raw/</code>." }
+      ] }
+  };
+
+  /* ------------------------------------------------------------ wiring */
+  function setClub(c) { picks[0] = c; renderPicker(); renderLadder(); $("ladder").scrollIntoView({ behavior: "smooth", block: "center" }); }
+  function wire() {
+    $("seasonbar").addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-i]"); if (!b) return;
+      cur = +b.getAttribute("data-i"); history.replaceState(null, "", "#" + S[cur].season); renderSeason(false);
+    });
+    $("mRound").addEventListener("change", function () { mRound = this.value; renderMatches(true); });
+    $("picker").addEventListener("change", function (e) {
+      var s = e.target.closest("select[data-k]"); if (!s) return;
+      picks[+s.getAttribute("data-k")] = s.value; renderLadder();
+    });
+    document.addEventListener("click", function (e) { var tr = e.target.closest("tr[data-club]"); if (tr) setClub(tr.getAttribute("data-club")); });
+    var tip = $("tip");
+    document.addEventListener("mousemove", function (e) {
+      var el = e.target.closest && e.target.closest("[data-tip]");
+      if (!el) { tip.hidden = true; return; }
+      tip.textContent = el.getAttribute("data-tip"); tip.hidden = false;
+      var x = Math.min(e.clientX + 14, window.innerWidth - tip.offsetWidth - 8);
+      tip.style.left = x + "px"; tip.style.top = (e.clientY + 14) + "px";
+    });
+    window.addEventListener("sitelangchange", function (e) { lang = e.detail === "he" ? "he" : "en"; renderStatic(); });
+  }
+
+  lang = document.documentElement.getAttribute("data-site-lang") === "he" ? "he" : "en";
+  window.RS_ABOUT = ABOUT;
+  renderStatic(); wire();
+  fetch(DATA_URL).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (d) {
+    D = d; S = d.seasons;
+    var h = decodeURIComponent(location.hash.slice(1));
+    cur = S.length - 1;
+    S.forEach(function (s, i) { if (s.season === h) cur = i; });
+    $("loading").hidden = true; $("app").hidden = false;
+    renderStatic();
+  }).catch(function (err) { $("loading").textContent = "Could not load " + DATA_URL + " (" + err.message + ")"; });
+})();
+</script>
+</body>
+</html>
