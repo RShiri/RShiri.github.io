@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en" class="rs-page rs-scout">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Scout Finder · Ram Shiri</title>
+<meta name="description" content="Pick any of 3,880 players across 12 leagues: positional percentiles, the most similar players anywhere, and a scouting note written only from the numbers." />
+<meta name="author" content="Ram Shiri" />
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/assets/brand/brand.css" />
+<script src="/assets/brand/brand.js"></script>
+<style>
+/* Scout Finder. Colours and type come from the brand kit's --rs-* tokens, so the
+   page follows the C (HUD) and A (Matchday) looks without its own theme file. */
+:root { --hi: #3ddc97; --lo: #ff6b6b; --maxw: 1180px; }
+html[data-site-style] { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--rs-bg); color: var(--rs-body); font: 15px/1.55 var(--rs-text); }
+html[data-site-lang="he"] body { font-family: "IBM Plex Sans Hebrew", var(--rs-text); }
+a { color: var(--rs-accent); }
+button, input, select { font: inherit; color: inherit; }
+.wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 clamp(16px, 3vw, 32px); }
+
+header.hero { padding: 40px 0 20px; border-bottom: 1px solid var(--rs-line); }
+.kicker { font: 600 12px/1 var(--rs-display); letter-spacing: .2em; text-transform: uppercase; color: var(--rs-accent); }
+h1 { margin: 10px 0 8px; font: 700 clamp(34px, 6vw, 58px)/1 var(--rs-display); color: var(--rs-ink); letter-spacing: .02em; text-transform: uppercase; }
+html[data-site-style="a"] h1, html[data-site-style="a"] h2 { font-style: italic; font-weight: 800; }
+.lead { max-width: 760px; margin: 0; color: var(--rs-body); }
+.stats { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 16px; font: 600 13px/1 var(--rs-display); letter-spacing: .1em; text-transform: uppercase; color: var(--rs-muted); }
+.stats b { color: var(--rs-ink); font-size: 18px; margin-inline-end: 6px; }
+
+h2 { margin: 0 0 12px; font: 700 20px/1.1 var(--rs-display); letter-spacing: .08em; text-transform: uppercase; color: var(--rs-ink); }
+.panel { background: var(--rs-panel); border: 1px solid var(--rs-line); padding: 18px; }
+.muted { color: var(--rs-muted); }
+.small { font-size: 13px; }
+
+/* search */
+.search { position: relative; margin: 22px 0 18px; }
+.search input { width: 100%; padding: 14px 16px; background: var(--rs-bg-soft); border: 1px solid var(--rs-line-strong); color: var(--rs-ink); font-size: 17px; outline: none; }
+.search input:focus { border-color: var(--rs-accent); }
+.hits { position: absolute; inset-inline: 0; top: 100%; z-index: 20; max-height: 360px; overflow: auto; margin: 0; padding: 0; list-style: none; background: var(--rs-panel-2); border: 1px solid var(--rs-line-strong); border-top: 0; }
+.hits li { display: flex; gap: 10px; align-items: baseline; padding: 9px 14px; cursor: pointer; }
+.hits li[aria-selected="true"], .hits li:hover { background: var(--rs-accent-soft); }
+.hits .n { color: var(--rs-ink); font-weight: 600; }
+.chip { display: inline-block; padding: 3px 7px; border: 1px solid var(--rs-line-strong); font: 600 11px/1 var(--rs-display); letter-spacing: .1em; color: var(--rs-muted); white-space: nowrap; }
+.chip.g { color: var(--rs-accent); border-color: var(--rs-accent); }
+html[data-site-style="a"] .chip { transform: skewX(-10deg); }
+
+/* profile */
+.profile { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; }
+@media (max-width: 860px) { .profile { grid-template-columns: 1fr; } }
+.who { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin-bottom: 4px; }
+.who h2 { font-size: clamp(26px, 4vw, 36px); margin: 0; letter-spacing: .03em; text-transform: none; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 16px; }
+.toggle { display: inline-flex; border: 1px solid var(--rs-line-strong); margin-bottom: 14px; }
+.toggle button { padding: 7px 12px; background: transparent; border: 0; cursor: pointer; font: 600 12px/1 var(--rs-display); letter-spacing: .1em; text-transform: uppercase; color: var(--rs-muted); }
+.toggle button[aria-pressed="true"] { background: var(--rs-accent); color: var(--rs-accent-ink); }
+.bars { display: grid; gap: 10px; }
+.bar { display: grid; grid-template-columns: minmax(120px, 190px) 1fr 44px; gap: 10px; align-items: center; }
+.bar .lab { color: var(--rs-ink); font-size: 14px; }
+.bar .lab small { display: block; color: var(--rs-muted); font-size: 12px; }
+.track { position: relative; height: 12px; background: var(--rs-bg-soft); border: 1px solid var(--rs-line); }
+.track i { position: absolute; inset-block: 0; inset-inline-start: 0; background: var(--rs-body); }
+.track i.hi { background: var(--hi); } .track i.lo { background: var(--lo); }
+.track::after { content: ""; position: absolute; inset-block: -3px; inset-inline-start: 50%; width: 1px; background: var(--rs-line-strong); }
+.bar .p { font: 700 16px/1 var(--rs-display); color: var(--rs-ink); text-align: end; }
+.bar .p.na { color: var(--rs-muted); font-weight: 500; font-size: 13px; }
+
+.radar svg { width: 100%; max-width: 480px; display: block; margin: 0 auto; }
+.radar .ax { stroke: var(--rs-line); fill: none; }
+.radar .ring { stroke: var(--rs-line); fill: none; }
+.radar .me { fill: var(--rs-accent-soft); stroke: var(--rs-accent); stroke-width: 2; }
+.radar .vs { fill: rgba(255, 61, 242, .10); stroke: var(--rs-goal); stroke-width: 1.5; stroke-dasharray: 5 4; }
+html[data-site-style="a"] .radar .vs { fill: rgba(255, 255, 255, .06); stroke: #f5f7fa; }
+.radar text { fill: var(--rs-muted); font: 500 11px var(--rs-text); }
+.legend { display: flex; gap: 16px; justify-content: center; font-size: 13px; margin-top: 6px; }
+.legend span::before { content: ""; display: inline-block; width: 14px; height: 3px; margin-inline-end: 6px; vertical-align: middle; background: var(--rs-accent); }
+.legend span.vs::before { background: var(--rs-goal); }
+html[data-site-style="a"] .legend span.vs::before { background: #f5f7fa; }
+
+.note { margin-top: 18px; border-inline-start: 3px solid var(--rs-accent); }
+.note p { margin: 0 0 10px; color: var(--rs-ink); }
+.note p:last-child { margin: 0; }
+.note b { color: var(--rs-accent); font-weight: 600; }
+
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: start; font: 600 11px/1 var(--rs-display); letter-spacing: .12em; text-transform: uppercase; color: var(--rs-muted); padding: 8px 8px; border-bottom: 1px solid var(--rs-line-strong); white-space: nowrap; }
+td { padding: 9px 8px; border-bottom: 1px solid var(--rs-line); }
+td.num, th.num { text-align: end; font-variant-numeric: tabular-nums; }
+tbody tr { cursor: pointer; }
+tbody tr:hover, tbody tr.on { background: var(--rs-accent-soft); }
+td .n { color: var(--rs-ink); font-weight: 600; }
+.score { font: 700 15px/1 var(--rs-display); color: var(--rs-accent); }
+.tablewrap { overflow-x: auto; }
+
+section.block { margin: 28px 0; }
+.filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+.filters label { display: grid; gap: 4px; font: 600 11px/1 var(--rs-display); letter-spacing: .12em; text-transform: uppercase; color: var(--rs-muted); }
+.filters select { min-width: 150px; padding: 8px 10px; background: var(--rs-bg-soft); border: 1px solid var(--rs-line-strong); color: var(--rs-ink); text-transform: none; letter-spacing: 0; font: 14px var(--rs-text); }
+footer { padding: 26px 0 50px; border-top: 1px solid var(--rs-line); font-size: 13px; color: var(--rs-muted); }
+footer p { max-width: 860px; }
+#loading { padding: 40px 0; }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker" data-t="kicker">Scouting tool · 2025-26</div>
+    <h1>Scout Finder</h1>
+    <p class="lead" data-t="lead">Pick a player. See how they rank against every player in the same position, find the most similar profiles in twelve leagues, and read a scouting note written only from the numbers.</p>
+    <div class="stats" id="stats"></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="search">
+    <input id="q" type="search" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="hits" />
+    <ul class="hits" id="hits" role="listbox" hidden></ul>
+  </div>
+
+  <p id="loading" class="muted" data-t="loading">Loading 3,880 players…</p>
+
+  <div id="app" hidden>
+    <div class="profile">
+      <div class="panel" id="card"></div>
+      <div>
+        <div class="panel radar" id="radar"></div>
+        <div class="panel note" id="note"></div>
+      </div>
+    </div>
+
+    <section class="block">
+      <h2 data-t="simTitle">Most similar players</h2>
+      <p class="muted small" data-t="simLead">Same position, any of the twelve leagues. Click a row to draw them on the radar; click the name to open their profile.</p>
+      <div class="panel tablewrap" id="similar"></div>
+    </section>
+
+    <section class="block">
+      <h2 data-t="findTitle">Find players</h2>
+      <div class="filters">
+        <label><span data-t="pos">Position</span><select id="fGroup"></select></label>
+        <label><span data-t="league">League</span><select id="fLeague"></select></label>
+        <label><span data-t="sortBy">Sort by</span><select id="fMetric"></select></label>
+      </div>
+      <div class="panel tablewrap" id="finder"></div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap" id="method"></div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var DATA_URL = "data/universe_2025-26.json";
+
+  var LEAGUE = {
+    ENG1: ["Premier League", "פרמייר ליג"], ESP1: ["LaLiga", "לה ליגה"], ITA1: ["Serie A", "סרייה A"],
+    GER1: ["Bundesliga", "בונדסליגה"], FRA1: ["Ligue 1", "ליגה 1"], POR1: ["Liga Portugal", "הליגה הפורטוגלית"],
+    NED1: ["Eredivisie", "ארדיביזי"], BEL1: ["Belgian Pro League", "הליגה הבלגית"], ENG2: ["Championship", "צ'מפיונשיפ"],
+    BRA1: ["Brasileirão", "הליגה הברזילאית"], ARG1: ["Liga Profesional", "הליגה הארגנטינאית"], ISR1: ["Ligat ha'Al", "ליגת העל"]
+  };
+  var GROUP = {
+    GK: ["Goalkeeper", "שוער", "goalkeepers", "שוערים"], CB: ["Centre-back", "בלם", "centre-backs", "בלמים"],
+    FB: ["Full-back", "מגן", "full-backs", "מגנים"], CM: ["Central midfielder", "קשר מרכזי", "central midfielders", "קשרים מרכזיים"],
+    AM: ["Attacking midfielder", "קשר התקפי", "attacking midfielders", "קשרים התקפיים"], W: ["Winger", "כנף", "wingers", "כנפיים"],
+    FW: ["Striker", "חלוץ", "strikers", "חלוצים"]
+  };
+  var GROUP_ORDER = ["FW", "W", "AM", "CM", "FB", "CB", "GK"];
+  // [English, Hebrew, decimals, unit]; dispossessed is ranked lower-is-better by the pipeline.
+  var METRIC = {
+    xg: ["xG", "xG", 2], npxg: ["Non-penalty xG", "xG ללא פנדלים", 2], xa: ["xA (expected assists)", "xA (בישולים צפויים)", 2],
+    shots: ["Shots", "בעיטות", 2], shots_on_target: ["Shots on target", "בעיטות למסגרת", 2],
+    xg_per_shot: ["xG per shot", "xG לבעיטה", 2, "ratio"], key_passes: ["Chances created", "מצבים שיצר", 2],
+    dribbles: ["Successful dribbles", "דריבלים מוצלחים", 2], touches: ["Touches", "נגיעות", 1],
+    dispossessed: ["Dispossessed (fewer is better)", "איבודי כדור (פחות זה טוב)", 2],
+    passes: ["Passes", "מסירות", 1], pass_pct: ["Pass completion", "דיוק מסירות", 0, "pct"],
+    tackles: ["Tackles", "תיקולים", 2], interceptions: ["Interceptions", "חטיפות", 2],
+    clearances: ["Clearances", "הרחקות", 2], aerials_won: ["Aerials won", "דו־קרבים אוויריים שנוצחו", 2],
+    saves: ["Saves", "הצלות", 2]
+  };
+  var T = {
+    kicker: ["Scouting tool · 2025-26", "כלי סקאוטינג · 2025-26"],
+    lead: ["Pick a player. See how they rank against every player in the same position, find the most similar profiles in twelve leagues, and read a scouting note written only from the numbers.",
+           "בוחרים שחקן. רואים איך הוא מדורג מול כל השחקנים באותה עמדה, מוצאים את הפרופילים הכי דומים לו ב־12 ליגות, וקוראים דוח סקאוטינג שנכתב רק מתוך המספרים."],
+    loading: ["Loading 3,880 players…", "טוען 3,880 שחקנים…"],
+    placeholder: ["Search a player or club, e.g. Yamal, Pedri, Maccabi", "חיפוש שחקן או קבוצה, למשל Yamal, Pedri, Maccabi"],
+    players: ["players", "שחקנים"], leagues: ["leagues", "ליגות"], positions: ["position groups", "קבוצות עמדה"],
+    simTitle: ["Most similar players", "השחקנים הכי דומים"],
+    simLead: ["Same position, any of the twelve leagues. Click a row to draw them on the radar; click the name to open their profile.",
+              "אותה עמדה, בכל אחת מ־12 הליגות. לחיצה על שורה מציירת את השחקן על הרדאר, ולחיצה על השם פותחת את הפרופיל שלו."],
+    findTitle: ["Find players", "חיפוש שחקנים"], pos: ["Position", "עמדה"], league: ["League", "ליגה"], sortBy: ["Sort by", "מיון לפי"],
+    allLeagues: ["All twelve leagues", "כל 12 הליגות"],
+    vsAll: ["vs all 12 leagues", "מול כל 12 הליגות"], vsLeague: ["vs own league", "מול הליגה שלו"],
+    per90: ["per 90", "ל־90 דקות"], min: ["min", "דק'"], apps: ["apps", "הופעות"],
+    noData: ["not published", "לא מפורסם"],
+    player: ["Player", "שחקן"], team: ["Club", "קבוצה"], minutes: ["Minutes", "דקות"], sim: ["Similarity", "דמיון"],
+    pctile: ["Pctl", "אחוזון"], value: ["Per 90", "ל־90"],
+    radarNote: ["Percentile vs all 12 leagues, league-adjusted", "אחוזון מול כל 12 הליגות, אחרי התאמה לחוזק הליגה"],
+    noteTitle: ["Scouting note", "דוח סקאוטינג"],
+    noHits: ["No player matches", "לא נמצא שחקן"]
+  };
+
+  var D, byId = {}, players = [], lang = "en", mode = "all", current = null, compare = null, hitIdx = -1, hitList = [];
+  var $ = function (id) { return document.getElementById(id); };
+  var L = function () { return lang === "he" ? 1 : 0; };
+  var t = function (k) { return T[k][L()]; };
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+  var fold = function (s) { return String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/ø/g, "o").replace(/ß/g, "ss").toLowerCase(); };
+  var lg = function (code) { return LEAGUE[code] ? LEAGUE[code][L()] : code; };
+  var grp = function (g, plural) { return GROUP[g][(plural ? 2 : 0) + L()]; };
+  var mName = function (m) { return METRIC[m] ? METRIC[m][L()] : m; };
+  function fmt(m, v) {
+    if (v == null) return "–";
+    var spec = METRIC[m] || [m, m, 2];
+    if (spec[3] === "pct") return Math.round(v * 100) + "%";
+    return v.toFixed(spec[2]);
+  }
+  function band(p) { return p == null ? "" : p >= 80 ? "hi" : p <= 20 ? "lo" : ""; }
+  function ordinal(n) {
+    if (lang === "he") return "אחוזון " + n;
+    var s = n % 100 >= 11 && n % 100 <= 13 ? "th" : ["th", "st", "nd", "rd"][n % 10] || "th";
+    return n + s + " percentile";
+  }
+
+  /* ------------------------------------------------------------ search */
+  function search(q) {
+    q = fold(q.trim());
+    if (q.length < 2) return [];
+    var words = q.split(/\s+/), out = [];
+    for (var i = 0; i < players.length; i++) {
+      var p = players[i], hay = p._key, ok = true;
+      for (var w = 0; w < words.length; w++) if (hay.indexOf(words[w]) < 0) { ok = false; break; }
+      if (ok) out.push(p);
+    }
+    // Name starts with the query first, then most minutes.
+    out.sort(function (a, b) {
+      var sa = fold(a.name).indexOf(q) === 0 || fold(a.name).indexOf(" " + q) >= 0 ? 0 : 1;
+      var sb = fold(b.name).indexOf(q) === 0 || fold(b.name).indexOf(" " + q) >= 0 ? 0 : 1;
+      return sa - sb || b.minutes - a.minutes;
+    });
+    return out.slice(0, 12);
+  }
+  function showHits() {
+    var ul = $("hits"), q = $("q").value;
+    hitList = search(q); hitIdx = hitList.length ? 0 : -1;
+    if (q.trim().length < 2) { ul.hidden = true; $("q").setAttribute("aria-expanded", "false"); return; }
+    ul.innerHTML = hitList.length ? hitList.map(function (p, i) {
+      return '<li role="option" data-id="' + esc(p.id) + '" aria-selected="' + (i === 0) + '"><span class="n">' + esc(p.name) +
+        '</span><span class="muted small">' + esc(p.team) + " · " + esc(lg(p.league)) + '</span><span class="chip g">' + p.group + "</span></li>";
+    }).join("") : '<li class="muted">' + t("noHits") + "</li>";
+    ul.hidden = false; $("q").setAttribute("aria-expanded", "true");
+  }
+  function moveHit(d) {
+    if (!hitList.length) return;
+    hitIdx = (hitIdx + d + hitList.length) % hitList.length;
+    [].forEach.call($("hits").children, function (li, i) { li.setAttribute("aria-selected", i === hitIdx); });
+    $("hits").children[hitIdx].scrollIntoView({ block: "nearest" });
+  }
+
+  /* ------------------------------------------------------------ profile */
+  function open(id, push) {
+    var p = byId[id]; if (!p) return;
+    current = p; compare = p.similar.length ? byId[p.similar[0].id] : null;
+    $("hits").hidden = true; $("q").value = ""; $("q").setAttribute("aria-expanded", "false");
+    if (push !== false) history.replaceState(null, "", "#" + encodeURIComponent(p.id));
+    $("fGroup").value = p.group; fillMetrics(); renderFinder();
+    renderProfile();
+    window.scrollTo({ top: $("app").offsetTop - 20, behavior: "smooth" });
+  }
+
+  function renderProfile() {
+    var p = current, metrics = D.meta.groups[p.group].metrics, pct = mode === "all" ? p.pct : p.pct_league;
+    var factor = D.meta.league_factor[p.league];
+    var html = '<div class="who"><h2>' + esc(p.name) + "</h2></div>" +
+      '<div class="meta"><span class="chip g">' + grp(p.group) + '</span><span class="chip">' + esc(p.team) + '</span><span class="chip">' +
+      esc(lg(p.league)) + '</span><span class="chip">' + p.minutes.toLocaleString() + " " + t("min") + '</span><span class="chip">' + p.matches + " " + t("apps") + "</span></div>" +
+      '<div class="toggle" role="group"><button data-mode="all" aria-pressed="' + (mode === "all") + '">' + t("vsAll") +
+      '</button><button data-mode="league" aria-pressed="' + (mode === "league") + '">' + t("vsLeague") + "</button></div>" +
+      '<div class="bars">' + metrics.map(function (m) {
+        var v = p.per90[m], q = pct[m];
+        return '<div class="bar"><div class="lab">' + esc(mName(m)) + "<small>" + (v == null ? t("noData") : fmt(m, v) + (METRIC[m] && METRIC[m][3] ? "" : " " + t("per90"))) +
+          '</small></div><div class="track"><i class="' + band(q) + '" style="width:' + (q || 0) + '%"></i></div><div class="p' + (q == null ? " na" : "") + '">' +
+          (q == null ? "–" : q) + "</div></div>";
+      }).join("") + "</div>" +
+      '<p class="muted small" style="margin:14px 0 0">' + (mode === "all"
+        ? (lang === "he" ? "אחוזון מול כל ה" + grp(p.group, true) + " ב־12 הליגות (" + D.meta.groups[p.group].players + "). נפח התקפי מוכפל במקדם חוזק הליגה: ×" + factor.toFixed(2) + "."
+                         : "Percentile among all " + D.meta.groups[p.group].players + " " + grp(p.group, true) + " in the twelve leagues. Attacking volume is scaled by league strength: ×" + factor.toFixed(2) + ".")
+        : (lang === "he" ? "אחוזון מול ה" + grp(p.group, true) + " ב" + lg(p.league) + " בלבד, בלי התאמה."
+                         : "Percentile among " + grp(p.group, true) + " in the " + lg(p.league) + " only, unadjusted.")) + "</p>";
+    $("card").innerHTML = html;
+    renderRadar(); renderNote(); renderSimilar();
+  }
+
+  function renderRadar() {
+    var p = current, metrics = D.meta.groups[p.group].metrics, n = metrics.length;
+    var cx = 210, cy = 200, R = 140;
+    function pt(i, r) { var a = -Math.PI / 2 + 2 * Math.PI * i / n; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; }
+    function poly(q) { return metrics.map(function (m, i) { var v = q.pct[m]; return pt(i, R * (v == null ? 0 : v) / 100).map(function (x) { return x.toFixed(1); }).join(","); }).join(" "); }
+    var s = '<svg viewBox="-70 0 560 400" role="img" aria-label="' + esc(p.name) + '">';
+    [25, 50, 75, 100].forEach(function (r) { s += '<polygon class="ring" points="' + metrics.map(function (m, i) { return pt(i, R * r / 100).join(","); }).join(" ") + '"/>'; });
+    metrics.forEach(function (m, i) {
+      var e = pt(i, R), l = pt(i, R + 22), anchor = Math.abs(l[0] - cx) < 8 ? "middle" : l[0] > cx ? "start" : "end";
+      s += '<line class="ax" x1="' + cx + '" y1="' + cy + '" x2="' + e[0] + '" y2="' + e[1] + '"/>';
+      s += '<text x="' + l[0].toFixed(1) + '" y="' + (l[1] + 4).toFixed(1) + '" text-anchor="' + anchor + '">' + esc(mName(m).replace(/ \(.*\)$/, "")) + "</text>";
+    });
+    if (compare && compare.group === p.group) s += '<polygon class="vs" points="' + poly(compare) + '"/>';
+    s += '<polygon class="me" points="' + poly(p) + '"/></svg>';
+    s += '<div class="legend"><span>' + esc(p.name) + "</span>" + (compare ? '<span class="vs">' + esc(compare.name) + "</span>" : "") + "</div>";
+    s += '<p class="muted small" style="text-align:center;margin:6px 0 0">' + t("radarNote") + "</p>";
+    $("radar").innerHTML = s;
+  }
+
+  /* A scouting note from the numbers only: strengths, weaknesses, how the league
+     view differs from the universe view, and who else plays like this. */
+  function renderNote() {
+    var p = current, metrics = D.meta.groups[p.group].metrics, he = lang === "he";
+    var line = function (m) {
+      return "<b>" + esc(mName(m).replace(/ \(.*\)$/, "")) + "</b> (" + fmt(m, p.per90[m]) + (METRIC[m][3] ? "" : " " + t("per90")) + ", " + ordinal(p.pct[m]) + ")";
+    };
+    var list = function (a) { return a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + (he ? " ו" : " and ") + a[a.length - 1]; };
+    var top = metrics.filter(function (m) { return p.pct[m] != null; }).sort(function (a, b) { return p.pct[b] - p.pct[a]; });
+    var strong = p.strengths.slice().sort(function (a, b) { return p.pct[b] - p.pct[a]; });
+    var weak = p.weaknesses.slice().sort(function (a, b) { return p.pct[a] - p.pct[b]; });
+    var out = [];
+    out.push(he
+      ? esc(p.name) + ", " + grp(p.group) + " ב" + esc(p.team) + " (" + lg(p.league) + "), " + p.minutes.toLocaleString() + " דקות ב־" + p.matches + " הופעות בעונת 2025-26."
+      : esc(p.name) + ", " + grp(p.group).toLowerCase() + " at " + esc(p.team) + " (" + lg(p.league) + "), " + p.minutes.toLocaleString() + " minutes in " + p.matches + " appearances in 2025-26.");
+    if (strong.length) out.push((he ? "בולט מול כל ה" + grp(p.group, true) + " ב־12 הליגות ב: " : "Stands out against all " + grp(p.group, true) + " in the twelve leagues for ") + list(strong.slice(0, 3).map(line)) + ".");
+    else if (top.length) out.push((he ? "אין מדד באחוזון 80 ומעלה. הצד החזק ביותר: " : "No metric reaches the 80th percentile. Best area: ") + line(top[0]) + ".");
+    if (weak.length) out.push((he ? "מתחת לרמה ב: " : "Below par for ") + list(weak.slice(0, 3).map(line)) + ".");
+    // Where the league-adjusted view and the own-league view disagree by 25+ points.
+    var gap = metrics.filter(function (m) { return p.pct[m] != null && p.pct_league[m] != null && p.pct_league[m] - p.pct[m] >= 25; });
+    if (gap.length) out.push(he
+      ? "בתוך " + lg(p.league) + " הוא מדורג גבוה יותר ב" + list(gap.slice(0, 2).map(function (m) { return mName(m).replace(/ \(.*\)$/, "") + " (" + p.pct_league[m] + " מול " + p.pct[m] + ")"; })) + ": המספרים נבנו בליגה חלשה יותר."
+      : "Within the " + lg(p.league) + " the ranking is higher on " + list(gap.slice(0, 2).map(function (m) { return mName(m).replace(/ \(.*\)$/, "").toLowerCase() + " (" + p.pct_league[m] + " vs " + p.pct[m] + ")"; })) + ": the numbers were built in a weaker league.");
+    if (metrics.some(function (m) { return p.per90[m] == null; })) out.push(he
+      ? lg(p.league) + " לא מפרסמת xG ו־xA, ולכן המדדים האלה חסרים ולא נחשבים כאפס."
+      : "The " + lg(p.league) + " publishes no xG or xA, so those metrics are missing here, not zero.");
+    var sims = p.similar.slice(0, 3).map(function (s) { var q = byId[s.id]; return q ? esc(q.name) + " (" + esc(q.team) + ")" : ""; }).filter(Boolean);
+    if (sims.length) out.push((he ? "הפרופילים הכי קרובים: " : "Closest statistical profiles: ") + list(sims) + ".");
+    $("note").innerHTML = "<h2>" + t("noteTitle") + "</h2>" + out.map(function (s) { return "<p>" + s + "</p>"; }).join("");
+  }
+
+  function renderSimilar() {
+    var p = current, metrics = D.meta.groups[p.group].metrics;
+    var keys = metrics.slice(0, 3);
+    var rows = p.similar.map(function (s) {
+      var q = byId[s.id]; if (!q) return "";
+      return '<tr data-id="' + esc(q.id) + '" class="' + (compare === q ? "on" : "") + '"><td class="num score">' + Math.round(s.score * 100) +
+        '%</td><td><a href="#' + encodeURIComponent(q.id) + '" class="n" data-open="' + esc(q.id) + '">' + esc(q.name) + "</a></td><td>" + esc(q.team) +
+        '</td><td><span class="chip">' + esc(lg(q.league)) + '</span></td><td class="num">' + q.minutes.toLocaleString() + "</td>" +
+        keys.map(function (m) { return '<td class="num">' + (q.pct[m] == null ? "–" : q.pct[m]) + "</td>"; }).join("") + "</tr>";
+    }).join("");
+    $("similar").innerHTML = "<table><thead><tr><th class=\"num\">" + t("sim") + "</th><th>" + t("player") + "</th><th>" + t("team") + "</th><th>" + t("league") +
+      '</th><th class="num">' + t("minutes") + "</th>" + keys.map(function (m) { return '<th class="num">' + esc(mName(m).replace(/ \(.*\)$/, "")) + "</th>"; }).join("") +
+      "</tr></thead><tbody>" + rows + "</tbody></table>";
+  }
+
+  /* ------------------------------------------------------------ finder */
+  function fillFilters() {
+    $("fGroup").innerHTML = GROUP_ORDER.map(function (g) { return '<option value="' + g + '">' + grp(g) + "</option>"; }).join("");
+    $("fLeague").innerHTML = '<option value="">' + t("allLeagues") + "</option>" +
+      D.meta.leagues.slice().sort(function (a, b) { return D.meta.league_factor[b] - D.meta.league_factor[a]; })
+        .map(function (c) { return '<option value="' + c + '">' + esc(lg(c)) + "</option>"; }).join("");
+  }
+  function fillMetrics() {
+    var g = $("fGroup").value, keep = $("fMetric").value, ms = D.meta.groups[g].metrics;
+    $("fMetric").innerHTML = ms.map(function (m) { return '<option value="' + m + '">' + esc(mName(m)) + "</option>"; }).join("");
+    $("fMetric").value = ms.indexOf(keep) >= 0 ? keep : ms[0];
+  }
+  function renderFinder() {
+    var g = $("fGroup").value, league = $("fLeague").value, m = $("fMetric").value;
+    var ms = D.meta.groups[g].metrics;
+    var rows = players.filter(function (p) { return p.group === g && (!league || p.league === league) && p.pct[m] != null; })
+      .sort(function (a, b) { return b.pct[m] - a.pct[m] || b.minutes - a.minutes; }).slice(0, 25);
+    var other = ms.filter(function (x) { return x !== m; }).slice(0, 3);
+    $("finder").innerHTML = "<table><thead><tr><th class=\"num\">#</th><th>" + t("player") + "</th><th>" + t("team") + "</th><th>" + t("league") +
+      '</th><th class="num">' + t("minutes") + '</th><th class="num">' + esc(mName(m).replace(/ \(.*\)$/, "")) + " " + t("per90") + '</th><th class="num">' + t("pctile") + "</th>" +
+      other.map(function (x) { return '<th class="num">' + esc(mName(x).replace(/ \(.*\)$/, "")) + "</th>"; }).join("") + "</tr></thead><tbody>" +
+      rows.map(function (p, i) {
+        return '<tr data-open="' + esc(p.id) + '" class="' + (current === p ? "on" : "") + '"><td class="num muted">' + (i + 1) + '</td><td><span class="n">' + esc(p.name) + "</span></td><td>" + esc(p.team) +
+          '</td><td><span class="chip">' + esc(lg(p.league)) + '</span></td><td class="num">' + p.minutes.toLocaleString() + '</td><td class="num">' + fmt(m, p.per90[m]) +
+          '</td><td class="num score">' + p.pct[m] + "</td>" + other.map(function (x) { return '<td class="num">' + (p.pct[x] == null ? "–" : p.pct[x]) + "</td>"; }).join("") + "</tr>";
+      }).join("") + "</tbody></table>";
+  }
+
+  /* ------------------------------------------------------------ chrome */
+  function renderStatic() {
+    document.querySelectorAll("[data-t]").forEach(function (el) { el.textContent = t(el.getAttribute("data-t")); });
+    $("q").placeholder = t("placeholder");
+    $("app").dir = $("note").dir = lang === "he" ? "rtl" : "ltr";
+    document.querySelector("header.hero").dir = $("method").dir = lang === "he" ? "rtl" : "ltr";
+    if (!D) return;
+    $("stats").innerHTML = "<span><b>" + players.length.toLocaleString() + "</b>" + t("players") + "</span><span><b>" + D.meta.leagues.length + "</b>" + t("leagues") +
+      "</span><span><b>" + Object.keys(D.meta.groups).length + "</b>" + t("positions") + "</span>";
+    $("method").innerHTML = lang === "he"
+      ? "<p>הנתונים: סטטיסטיקה לכל שחקן בכל משחק מ־FotMob (4,365 משחקים בעונת 2025-26), מסוכמת לעונה ומחושבת ל־90 דקות. נכללים רק שחקנים עם לפחות 900 דקות בליגה. עמדה נקבעת לפי המשבצת שבה השחקן פתח הכי הרבה.</p>" +
+        "<p>חוזק ליגה: ממוצע דירוג ClubElo של הקבוצות בכל ליגה. מדדי נפח התקפי (xG, בעיטות, מצבים שיצר וכו') מוכפלים ב־exp(0.06 × הפרש Elo / 100) מול הפרמייר ליג. זו הערכה ראשונית ולא מודל מכויל. השוואת שחקנים דומים היא דמיון קוסינוס על ערכים מתוקננים, בתוך אותה עמדה.</p>" +
+        '<p>הקוד: <a href="https://github.com/RShiri/RShiri.github.io/tree/main/scout-finder">scout-finder/pipeline</a>.</p>'
+      : "<p>Data: per-match player stats from FotMob (4,365 matches in 2025-26), summed to the season and expressed per 90 minutes. Only players with 900+ league minutes are ranked. Position is the slot a player started in most.</p>" +
+        "<p>League strength is the mean ClubElo rating of each league's clubs. Attacking volume (xG, shots, chances created and so on) is scaled by exp(0.06 × Elo gap / 100) against the Premier League; it is a first heuristic, not a calibrated model. Similar players are the cosine similarity of z-scored per-90 rates within the same position.</p>" +
+        '<p>Code: <a href="https://github.com/RShiri/RShiri.github.io/tree/main/scout-finder">scout-finder/pipeline</a>.</p>';
+    var g = $("fGroup").value, lgv = $("fLeague").value;
+    fillFilters(); $("fGroup").value = g || "W"; $("fLeague").value = lgv; fillMetrics(); renderFinder();
+    if (current) renderProfile();
+  }
+
+  function wire() {
+    $("q").addEventListener("input", showHits);
+    $("q").addEventListener("keydown", function (e) {
+      if (e.key === "ArrowDown") { e.preventDefault(); moveHit(1); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); moveHit(-1); }
+      else if (e.key === "Enter" && hitIdx >= 0) { e.preventDefault(); open(hitList[hitIdx].id); }
+      else if (e.key === "Escape") { $("hits").hidden = true; }
+    });
+    $("hits").addEventListener("mousedown", function (e) { var li = e.target.closest("li[data-id]"); if (li) { e.preventDefault(); open(li.getAttribute("data-id")); } });
+    document.addEventListener("click", function (e) { if (!e.target.closest(".search")) $("hits").hidden = true; });
+    $("card").addEventListener("click", function (e) { var b = e.target.closest("button[data-mode]"); if (b) { mode = b.getAttribute("data-mode"); renderProfile(); } });
+    $("similar").addEventListener("click", function (e) {
+      var a = e.target.closest("[data-open]");
+      if (a) { e.preventDefault(); open(a.getAttribute("data-open")); return; }
+      var tr = e.target.closest("tr[data-id]");
+      if (tr) { compare = byId[tr.getAttribute("data-id")]; renderRadar(); renderSimilar(); }
+    });
+    $("finder").addEventListener("click", function (e) { var tr = e.target.closest("tr[data-open]"); if (tr) open(tr.getAttribute("data-open")); });
+    $("fGroup").addEventListener("change", function () { fillMetrics(); renderFinder(); });
+    $("fLeague").addEventListener("change", renderFinder);
+    $("fMetric").addEventListener("change", renderFinder);
+    window.addEventListener("hashchange", function () { var id = decodeURIComponent(location.hash.slice(1)); if (byId[id] && byId[id] !== current) open(id, false); });
+    window.addEventListener("sitelangchange", function (e) { lang = e.detail === "he" ? "he" : "en"; renderStatic(); });
+  }
+
+  lang = document.documentElement.getAttribute("data-site-lang") === "he" ? "he" : "en";
+  renderStatic(); wire();
+  fetch(DATA_URL).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (d) {
+    D = d; players = d.players;
+    players.forEach(function (p) { byId[p.id] = p; p._key = fold(p.name + " " + p.team); });
+    $("loading").hidden = true; $("app").hidden = false;
+    renderStatic();
+    var start = decodeURIComponent(location.hash.slice(1));
+    current = byId[start] || byId["fotmob:1467236"] || players[0];   // Lamine Yamal by default
+    compare = current.similar.length ? byId[current.similar[0].id] : null;
+    $("fGroup").value = current.group; fillMetrics(); renderFinder();
+    renderProfile();
+  }).catch(function (err) { $("loading").textContent = "Could not load " + DATA_URL + " (" + err.message + ")"; });
+})();
+</script>
+</body>
+</html>

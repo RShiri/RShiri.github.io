@@ -1,7 +1,10 @@
-# Scout Finder: data pipeline
+# Scout Finder
 
-Pick a player, see positional percentiles and the most similar players. This
-folder is the data side only; the page comes next.
+Pick a player, see positional percentiles and the most similar players.
+`index.html` is the page (served at rshiri.github.io/scout-finder/): search,
+percentile bars and radar, similar players, a numbers-only scouting note and a
+position/league finder. It reads `data/universe_2025-26.json`; everything below
+is the pipeline that builds that file.
 
 ## Universe
 
