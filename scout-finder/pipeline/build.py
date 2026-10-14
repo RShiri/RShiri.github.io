@@ -54,8 +54,49 @@ LOWER_IS_BETTER = {"dispossessed"}
 # Below this many attempts per 90 over the season the ratio stays empty.
 MIN_ATTEMPTS_P90 = {"aerial_pct": 1.0, "ground_duel_pct": 1.5, "dribble_pct": 0.5,
                     "xg_per_shot": 0.5}
-PROFILE_FIELDS = ["age", "value_eur", "country", "height", "foot", "contract_end"]
+PROFILE_FIELDS = ["age", "value_eur", "country", "height", "foot", "contract_end",
+                  "birth_date", "current_team", "main_position",
+                  "starts", "rating", "team_share", "positions"]
+# Season totals shown next to the per-90s (volume matters too).
+TOTALS = ["goals", "assists", "xg", "xa", "shots", "key_passes"]
+
+
+def attach_profiles(df: pd.DataFrame, path: Path) -> pd.DataFrame:
+    """Merge pipeline.fetch_players output (FotMob's profile as of the fetch day).
+
+    Profile value_eur is today's; it replaces the in-season lineup value when present.
+    """
+    if not path.exists():
+        return df
+    profiles = json.loads(path.read_text(encoding="utf-8"))
+    fid = df["player_id"].str.extract(r"^fotmob:(\d+)")[0]
+    prof = pd.DataFrame([profiles.get(i, {}) if isinstance(i, str) else {} for i in fid],
+                        index=df.index)
+    df = df.copy()
+    for col in prof.columns:
+        df[col] = prof[col].combine_first(df[col]) if col in df else prof[col]
+    return df
 SIMILAR_N = 8
+
+
+# DM vs CM. FotMob's lineup slots cannot tell a 6 from an 8 (PROGRESS.md), so the
+# split is by the shape of a central midfielder's numbers: a 6 wins the ball back
+# and circulates it, and rarely arrives in the box or creates. Score = mean z of
+# DM_PLUS minus mean z of DM_MINUS, z within the season's CM pool; above the
+# threshold is DM. Checked on 30 well-known midfielders (about 80% agree with the
+# usual label); deep-lying playmakers (Kimmich, Paredes) mostly stay CM.
+DM_PLUS = ["interceptions_padj", "recoveries", "passes"]
+DM_MINUS = ["box_touches", "xa", "key_passes"]
+DM_THRESHOLD = 0.25
+
+
+def dm_score(rates: pd.DataFrame) -> pd.Series:
+    def z(c):
+        if c not in rates:
+            return pd.Series(0.0, index=rates.index)
+        return ((rates[c] - rates[c].mean()) / rates[c].std(ddof=0)).fillna(0)
+    return (sum(z(c) for c in DM_PLUS) / len(DM_PLUS)
+            - sum(z(c) for c in DM_MINUS) / len(DM_MINUS))
 
 
 def per90(df: pd.DataFrame) -> pd.DataFrame:
@@ -104,6 +145,19 @@ def similar(rates: pd.DataFrame, n: int = SIMILAR_N) -> dict[str, list[tuple[str
     return {ids[i]: [(ids[j], round(float(sim[i, j]), 3)) for j in top[i]] for i in range(len(ids))}
 
 
+def _extras(row: pd.Series) -> dict:
+    """Per-90 stats only some leagues have (progressive passes / carries, xT)."""
+    out = {f"{c}_p90": round(float(row[c]) / row["minutes"] * 90, 2)
+           for c in EXTRA_P90 if c in row and pd.notna(row[c]) and row["minutes"]}
+    if "xt_added_p90" in row and pd.notna(row["xt_added_p90"]):
+        out["xt_added_p90"] = round(float(row["xt_added_p90"]), 3)
+    return {"extras": out} if out else {}
+
+
+def _present(x) -> bool:
+    return isinstance(x, dict) and bool(x) or not isinstance(x, dict) and pd.notna(x)
+
+
 def _plain(x):
     """numpy scalars -> JSON-friendly Python values (ages and values as ints)."""
     if isinstance(x, (np.integer, np.floating)):
@@ -115,7 +169,11 @@ def _num(x):
     return None if pd.isna(x) else x
 
 
-def build(season_df: pd.DataFrame, league_factor: dict[str, float] | None = None) -> dict:
+EXTRA_P90 = ["prog_passes", "prog_carries"]   # only where Ram's XEPL/XLALIGA data exists
+
+
+def build(season_df: pd.DataFrame, league_factor: dict[str, float] | None = None,
+          meta: dict | None = None) -> dict:
     """One season, any number of leagues.
 
     pct_league: percentile among the same position in the same league.
@@ -130,6 +188,10 @@ def build(season_df: pd.DataFrame, league_factor: dict[str, float] | None = None
     floors = df.groupby("league")["minutes"].transform(min_minutes)
     df = df[(df["minutes"] >= floors) & df["pos_group"].notna()]
     raw = per90(df)
+    cm = df.index[df["pos_group"] == "CM"]
+    if len(cm) >= 10 and all(m in raw for m in DM_PLUS + DM_MINUS):
+        df = df.copy()
+        df.loc[cm[(dm_score(raw.loc[cm]) > DM_THRESHOLD).to_numpy()], "pos_group"] = "DM"
     factor = df["league"].map(league_factor).fillna(1.0)
     adj = raw.copy()
     for m in ADJUSTED & set(adj.columns):
@@ -148,6 +210,9 @@ def build(season_df: pd.DataFrame, league_factor: dict[str, float] | None = None
             continue
         used[group] = cols
         pct_all = percentiles(adj.loc[idx, cols])
+        # Overall level inside the group: mean of the universe percentiles (only the
+        # metrics the player's league publishes), ranked again so it spreads 0-100.
+        level = (pct_all.mean(axis=1).rank(pct=True) * 100).round(0)
         pct_lg = raw.loc[idx, cols].groupby(df.loc[idx, "league"]).transform(
             lambda s: s.rank(pct=True) * 100).round(0)
         for m in LOWER_IS_BETTER & set(cols):
@@ -158,8 +223,12 @@ def build(season_df: pd.DataFrame, league_factor: dict[str, float] | None = None
             players.append({
                 "id": pid, "name": row["name"], "team": row["team"], "league": row["league"],
                 "group": group, "matches": int(row["matches"]), "minutes": int(row["minutes"]),
-                **{f: _plain(row[f]) for f in PROFILE_FIELDS if f in row and pd.notna(row[f])},
+                **{f: _plain(row[f]) for f in PROFILE_FIELDS if f in row and _present(row[f])},
+                "totals": {c: _plain(round(float(row[c]), 2)) for c in TOTALS
+                           if c in row and pd.notna(row[c])},
+                **_extras(row),
                 "per90": {m: _num(round(float(raw.at[pid, m]), 3)) for m in cols},
+                "score": _num(level.at[pid]) and int(level.at[pid]),
                 "pct": {m: _num(p[m]) and int(p[m]) for m in cols},
                 "pct_league": {m: _num(pct_lg.at[pid, m]) and int(pct_lg.at[pid, m]) for m in cols},
                 # The raw material for a numbers-only scouting note.
@@ -173,6 +242,11 @@ def build(season_df: pd.DataFrame, league_factor: dict[str, float] | None = None
     return {
         "meta": {"source": first["source"], "season": first["season"], "leagues": leagues,
                  "league_factor": {lg: league_factor.get(lg, 1.0) for lg in leagues},
+                 "score_note": ("score = overall level inside the position group (mean of the "
+                                "universe percentiles, re-ranked 0-100). Solid for attackers; "
+                                "for CB and GK it leans on defending volume and one season of "
+                                "goals prevented, so treat it as a profile, not a ranking."),
+                 **(meta or {}),
                  "groups": {g: {"metrics": c, "players": sum(p["group"] == g for p in players)}
                             for g, c in used.items()}},
         "players": players,
@@ -180,8 +254,8 @@ def build(season_df: pd.DataFrame, league_factor: dict[str, float] | None = None
 
 
 def write(season_df: pd.DataFrame, out_dir: Path, name: str,
-          league_factor: dict[str, float] | None = None) -> Path:
-    data = build(season_df, league_factor)
+          league_factor: dict[str, float] | None = None, meta: dict | None = None) -> Path:
+    data = build(season_df, league_factor, meta)
     path = out_dir / f"{name}_{data['meta']['season']}.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
@@ -213,6 +287,8 @@ def main() -> None:
                     help="every CSV pipeline.fetch_fotmob wrote under data/fotmob/")
     ap.add_argument("--season", action="append", default=[],
                     help="with --fotmob: only these seasons (default: every CSV found)")
+    ap.add_argument("--no-ram-xg", action="store_true",
+                    help="keep FotMob's xG in the EPL and LaLiga (default: Ram's model)")
     ap.add_argument("--elo-date", help="YYYY-MM-DD for ClubElo league strength (default: none)")
     ap.add_argument("--understat", action="append", default=[], metavar="LEAGUE:SEASON")
     ap.add_argument("--out", type=Path, default=Path(__file__).resolve().parent.parent / "data")
@@ -220,20 +296,32 @@ def main() -> None:
     a = ap.parse_args()
 
     from .sources import fotmob, understat
-    factor = None
+    factor, beta_fit = None, None
     if a.elo_date:
-        from .league_strength import factors, league_elos
+        from .league_strength import factors, fitted_beta, league_elos
         elos = league_elos(a.elo_date, a.out / "raw")
-        factor = factors(elos)
-        print("league factors:", factor)
+        beta, beta_fit = fitted_beta(a.out / "beta_fit.json")
+        factor = factors(elos, beta)
+        print(f"league factors (beta {beta}):", factor)
     if a.xepl_csv:
         for _, season_df in fotmob.load_xepl_csv(a.xepl_csv).groupby("season"):
             print("wrote", write(season_df.reset_index(drop=True), a.out, "xepl", factor))
     if a.fotmob:
         paths = sorted(p for p in (a.out / "fotmob").glob("*.csv")
                        if not a.season or p.stem.split("_", 1)[1] in a.season)
-        for _, season_df in fotmob.load_fetched(paths).groupby("season"):
-            print("wrote", write(season_df.reset_index(drop=True), a.out, "universe", factor))
+        from .sources import ram_xg
+        universe = attach_profiles(fotmob.load_fetched(paths), a.out / "players.json")
+        if not a.no_ram_xg:
+            universe, _, xg_scale = ram_xg.apply(universe)
+            print("Ram's xG model, scale to FotMob level:", xg_scale)
+        for season, season_df in universe.groupby("season"):
+            meta = {"beta_fit": beta_fit} if beta_fit else {}
+            if not a.no_ram_xg:
+                meta["xg_source"] = {lg: "ram" if any(k.startswith(f"{lg} {season} ") for k in xg_scale)
+                                     else "fotmob" for lg in sorted(season_df["league"].unique())}
+                meta["xg_scale"] = {k.split(" ", 2)[0] + " " + k.split(" ", 2)[2]: v
+                                    for k, v in xg_scale.items() if f" {season} " in k}
+            print("wrote", write(season_df.reset_index(drop=True), a.out, "universe", factor, meta))
         write_season_index(a.out)
     for spec in a.understat:
         league, season = spec.split(":")

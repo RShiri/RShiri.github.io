@@ -32,9 +32,12 @@ const OUT = process.env.SHOTS;  // optional folder for screenshots
       finder: document.querySelectorAll("#finder tbody tr").length,
       h2h: document.querySelectorAll("#h2h .h2h-row").length,
       note: document.querySelectorAll("#note p").length,
+      dots: document.querySelectorAll("#scatter circle").length,
+      value: document.querySelectorAll("#value tbody tr").length,
+      overall: document.querySelector("#card .ovr b").textContent,
       overflow: document.documentElement.scrollWidth > window.innerWidth + 1,
     }));
-    check(s.bars >= 3 && s.similar === 10 && s.finder > 0 && s.h2h >= 3 && s.note >= 2, `${name}: page incomplete ${JSON.stringify(s)}`);
+    check(s.bars >= 3 && s.similar === 10 && s.finder > 0 && s.h2h >= 3 && s.note >= 2 && s.dots > 50 && /\d/.test(s.overall), `${name}: page incomplete ${JSON.stringify(s)}`);
     check(!s.overflow, `${name}: page scrolls sideways`);
     if (name === "c-en") {
       // Search, open, then compare through the head-to-head picker.
@@ -43,6 +46,13 @@ const OUT = process.env.SHOTS;  // optional folder for screenshots
       await page.fill("#q2", "rice"); await page.keyboard.press("Enter");
       await page.waitForFunction(() => /Rice/.test(document.querySelector("#h2h .side.b").textContent));
       check(decodeURIComponent(await page.evaluate(() => location.hash)).includes("~fotmob:654096"), "c-en: compare not in the URL");
+      // Star Pedri: the shortlist section appears with one row, and survives a reload.
+      await page.click("#card [data-act=star]");
+      check(await page.$$eval("#shortlist tbody tr", (r) => r.length) === 1, "c-en: shortlist did not take the star");
+      await page.reload(); await page.waitForSelector("#app:not([hidden]) #card h2");
+      check(await page.$$eval("#shortlist tbody tr", (r) => r.length) === 1, "c-en: shortlist lost after reload");
+      await page.click("#card [data-act=star]");
+      check(await page.$eval("#slBlock", (e) => e.hidden), "c-en: shortlist not hidden when empty");
       // The page's similarity must reproduce the pipeline's top-8 (rounding of per90 aside).
       const agree = await page.evaluate(async () => {
         const d = await (await fetch("data/universe_2025-26.json")).json();

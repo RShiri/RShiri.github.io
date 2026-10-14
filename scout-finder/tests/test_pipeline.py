@@ -1,5 +1,6 @@
 import json
 
+import numpy as np
 import pandas as pd
 
 from pipeline import build
@@ -48,6 +49,7 @@ def test_percentiles_and_similarity():
     assert by_id["p9"]["pct"]["xg"] == 100 and by_id["p0"]["pct"]["xg"] == 10
     assert by_id["p9"]["similar"][0]["id"] == "p8"
     assert "xg" in by_id["p9"]["strengths"]
+    assert 0 < by_id["p0"]["score"] <= 100 and by_id["p9"]["score"] >= by_id["p5"]["score"]
 
 
 def test_universe_missing_stat_and_league_factor():
@@ -174,3 +176,100 @@ def test_fotmob_wider_stats_profile_and_possession():
     gk = season.set_index("name").loc["Cody Gakpo"]
     assert abs(gk["tackles_padj"] - gk["tackles"] * 50 / 39) < 1e-9
     assert season.set_index("name").loc["Mohamed Salah", "country"] == "Egypt"
+
+
+def test_player_profile_from_live_response():
+    from pathlib import Path
+    from pipeline import fetch_players
+    path = Path(__file__).parent / "fixtures" / "fotmob_player_292462_trimmed.json"
+    p = fetch_players.profile(json.loads(path.read_text(encoding="utf-8")))
+    assert (p["height"], p["foot"], p["birth_date"], p["contract_end"]) == (
+        175, "left", "1992-06-15", "2028-06-30")
+    assert p["value_eur"] == 25590340 and p["main_position"] == "rightwinger"
+    assert p["main_position_id"] == 83 and p["current_team"] == "Trabzonspor"
+
+
+def test_attach_profiles_keeps_lineup_value_without_profile(tmp_path):
+    (tmp_path / "players.json").write_text(json.dumps(
+        {"7": {"height": 180, "value_eur": 5_000_000, "foot": "right"}}), encoding="utf-8")
+    df = pd.DataFrame({"player_id": ["fotmob:7@ENG1", "fotmob:8"],
+                       "value_eur": [1_000_000, 2_000_000]})
+    out = build.attach_profiles(df, tmp_path / "players.json")
+    assert out["value_eur"].tolist() == [5_000_000, 2_000_000]
+    assert out.loc[0, "height"] == 180 and pd.isna(out.loc[1, "height"])
+
+
+def test_dm_split_by_shape():
+    rows = []
+    for i in range(12):
+        six = i < 6
+        rows.append({"source": "fotmob", "season": "2025-26", "league": "ENG1",
+                     "player_id": f"p{i}", "name": f"P{i}", "team": "T", "pos_group": "CM",
+                     "matches": 30, "minutes": 2700,
+                     "interceptions_padj": 60.0 if six else 20.0, "recoveries": 200.0 if six else 120.0,
+                     "passes": 1800.0 + i, "passes_accurate": 1600.0,
+                     "box_touches": 15.0 if six else 90.0, "xa": 1.0 if six else 5.0,
+                     "key_passes": 20.0 if six else 60.0, "tackles_padj": 50.0,
+                     "final_third_passes": 100.0, "xg": 1.0})
+    data = build.build(pd.DataFrame(rows))
+    groups = {p["id"]: p["group"] for p in data["players"]}
+    assert [groups[f"p{i}"] for i in range(12)] == ["DM"] * 6 + ["CM"] * 6
+
+
+def test_ram_xg_shares_league_xg_at_fotmob_level(tmp_path):
+    from pipeline.sources import ram_xg
+    players = [{"name": n, "mins": 1800, "photo": f"https://x/playerimages/{fid}.png",
+                "xg": xg, "npxg": xg, "xa": 1.0, "prog_passes": 90}
+               for n, fid, xg in (("A", 1, 9.0), ("B", 2, 3.0))]
+    (tmp_path / "2025-26.js").write_text(
+        'window.LL_PLAYERS["2025-26"]=' + json.dumps(players) + ";\n", encoding="utf-8")
+    df = pd.DataFrame({"league": "ENG1", "season": "2025-26",
+                       "player_id": ["fotmob:1", "fotmob:2@ENG1"], "minutes": [900.0, 1800.0],
+                       "xg": [5.0, 5.0], "npxg": [5.0, 5.0], "xa": [1.0, 1.0]})
+    out, source, scale = ram_xg.apply(df, {"ENG1": tmp_path})
+    # Ram's rates over FotMob's minutes: A 4.5, B 3.0; scaled so the total stays 10.
+    assert source["ENG1"] == "ram" and scale["ENG1 2025-26 xg"] == round(10 / 7.5, 3)
+    assert out["xg"].round(3).tolist() == [6.0, 4.0]
+    assert out["prog_passes"].tolist() == [45.0, 90.0]
+
+
+def test_calibrate_recovers_beta_from_movers():
+    from pipeline import calibrate
+    rows, elo = [], {"ENG1": 1840, "NED1": 1555, "ISR1": 1430}
+    rng = np.random.default_rng(1)
+    for i in range(60):
+        a, b = [("NED1", "ENG1"), ("ISR1", "NED1"), ("ENG1", "ISR1")][i % 3]
+        ratio = np.exp(0.12 * (elo[a] - elo[b]) / 100 + rng.normal(0, 0.05))
+        for lg, season, k in ((a, "2024-25", 1.0), (b, "2025-26", ratio)):
+            rows.append({"player_id": f"fotmob:{i}", "name": f"P{i}", "league": lg,
+                         "season": season, "minutes": 1800.0,
+                         **{m: 40.0 * k for m in calibrate.METRICS}})
+    mv = calibrate.movers(calibrate.stints(pd.DataFrame(rows)), elo)
+    fit = calibrate.fit(mv, boot=200)
+    assert fit["n"] == 60 and abs(fit["beta"] - 0.12) < 0.01
+    assert fit["ci"][0] < 0.12 < fit["ci"][1]
+
+
+def test_update_current_season_turns_over_in_july():
+    import datetime
+    from pipeline.update import current_season
+    assert current_season(datetime.date(2026, 10, 15)) == "2026-27"
+    assert current_season(datetime.date(2027, 6, 30)) == "2026-27"
+    assert current_season(datetime.date(2027, 7, 1)) == "2027-28"
+
+
+def test_usage_starts_rating_team_share_positions():
+    base = {"league": "ENG1", "season": "2025-26", "team": "A", "player": "X", "player_id": 7}
+    rows = pd.DataFrame([
+        {**base, "match_id": 1, "date": "2025-08-16", "position": "AMR", "minutes": 90, "rating": 8.0},
+        {**base, "match_id": 2, "date": "2025-08-23", "position": "FW", "minutes": 60, "rating": 6.5},
+        {**base, "match_id": 3, "date": "2025-08-30", "position": "Sub:FW", "minutes": 30},
+        {**base, "match_id": 4, "date": "2025-09-13", "position": "AML", "minutes": 90, "rating": 7.0,
+         "player_id": 8, "player": "Y"},
+    ])
+    out = fotmob.from_match_rows(rows).set_index("name")
+    x = out.loc["X"]
+    assert x["starts"] == 2 and x["matches"] == 3
+    assert x["rating"] == round((8.0 * 90 + 6.5 * 60) / 150, 2)   # the cameo had no rating
+    assert x["team_share"] == round(180 / (90 * 4), 2)             # team A played 4 matches
+    assert x["positions"] == {"W": 0.5, "FW": 0.5}
