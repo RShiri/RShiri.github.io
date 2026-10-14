@@ -54,8 +54,46 @@ LOWER_IS_BETTER = {"dispossessed"}
 # Below this many attempts per 90 over the season the ratio stays empty.
 MIN_ATTEMPTS_P90 = {"aerial_pct": 1.0, "ground_duel_pct": 1.5, "dribble_pct": 0.5,
                     "xg_per_shot": 0.5}
-PROFILE_FIELDS = ["age", "value_eur", "country", "height", "foot", "contract_end"]
+PROFILE_FIELDS = ["age", "value_eur", "country", "height", "foot", "contract_end",
+                  "birth_date", "current_team", "main_position"]
+
+
+def attach_profiles(df: pd.DataFrame, path: Path) -> pd.DataFrame:
+    """Merge pipeline.fetch_players output (FotMob's profile as of the fetch day).
+
+    Profile value_eur is today's; it replaces the in-season lineup value when present.
+    """
+    if not path.exists():
+        return df
+    profiles = json.loads(path.read_text(encoding="utf-8"))
+    fid = df["player_id"].str.extract(r"^fotmob:(\d+)")[0]
+    prof = pd.DataFrame([profiles.get(i, {}) if isinstance(i, str) else {} for i in fid],
+                        index=df.index)
+    df = df.copy()
+    for col in prof.columns:
+        df[col] = prof[col].combine_first(df[col]) if col in df else prof[col]
+    return df
 SIMILAR_N = 8
+
+
+# DM vs CM. FotMob's lineup slots cannot tell a 6 from an 8 (PROGRESS.md), so the
+# split is by the shape of a central midfielder's numbers: a 6 wins the ball back
+# and circulates it, and rarely arrives in the box or creates. Score = mean z of
+# DM_PLUS minus mean z of DM_MINUS, z within the season's CM pool; above the
+# threshold is DM. Checked on 30 well-known midfielders (about 80% agree with the
+# usual label); deep-lying playmakers (Kimmich, Paredes) mostly stay CM.
+DM_PLUS = ["interceptions_padj", "recoveries", "passes"]
+DM_MINUS = ["box_touches", "xa", "key_passes"]
+DM_THRESHOLD = 0.25
+
+
+def dm_score(rates: pd.DataFrame) -> pd.Series:
+    def z(c):
+        if c not in rates:
+            return pd.Series(0.0, index=rates.index)
+        return ((rates[c] - rates[c].mean()) / rates[c].std(ddof=0)).fillna(0)
+    return (sum(z(c) for c in DM_PLUS) / len(DM_PLUS)
+            - sum(z(c) for c in DM_MINUS) / len(DM_MINUS))
 
 
 def per90(df: pd.DataFrame) -> pd.DataFrame:
@@ -130,6 +168,10 @@ def build(season_df: pd.DataFrame, league_factor: dict[str, float] | None = None
     floors = df.groupby("league")["minutes"].transform(min_minutes)
     df = df[(df["minutes"] >= floors) & df["pos_group"].notna()]
     raw = per90(df)
+    cm = df.index[df["pos_group"] == "CM"]
+    if len(cm) >= 10 and all(m in raw for m in DM_PLUS + DM_MINUS):
+        df = df.copy()
+        df.loc[cm[(dm_score(raw.loc[cm]) > DM_THRESHOLD).to_numpy()], "pos_group"] = "DM"
     factor = df["league"].map(league_factor).fillna(1.0)
     adj = raw.copy()
     for m in ADJUSTED & set(adj.columns):
@@ -232,7 +274,8 @@ def main() -> None:
     if a.fotmob:
         paths = sorted(p for p in (a.out / "fotmob").glob("*.csv")
                        if not a.season or p.stem.split("_", 1)[1] in a.season)
-        for _, season_df in fotmob.load_fetched(paths).groupby("season"):
+        universe = attach_profiles(fotmob.load_fetched(paths), a.out / "players.json")
+        for _, season_df in universe.groupby("season"):
             print("wrote", write(season_df.reset_index(drop=True), a.out, "universe", factor))
         write_season_index(a.out)
     for spec in a.understat:

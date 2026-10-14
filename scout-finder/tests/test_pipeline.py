@@ -174,3 +174,41 @@ def test_fotmob_wider_stats_profile_and_possession():
     gk = season.set_index("name").loc["Cody Gakpo"]
     assert abs(gk["tackles_padj"] - gk["tackles"] * 50 / 39) < 1e-9
     assert season.set_index("name").loc["Mohamed Salah", "country"] == "Egypt"
+
+
+def test_player_profile_from_live_response():
+    from pathlib import Path
+    from pipeline import fetch_players
+    path = Path(__file__).parent / "fixtures" / "fotmob_player_292462_trimmed.json"
+    p = fetch_players.profile(json.loads(path.read_text(encoding="utf-8")))
+    assert (p["height"], p["foot"], p["birth_date"], p["contract_end"]) == (
+        175, "left", "1992-06-15", "2028-06-30")
+    assert p["value_eur"] == 25590340 and p["main_position"] == "rightwinger"
+    assert p["main_position_id"] == 83 and p["current_team"] == "Trabzonspor"
+
+
+def test_attach_profiles_keeps_lineup_value_without_profile(tmp_path):
+    (tmp_path / "players.json").write_text(json.dumps(
+        {"7": {"height": 180, "value_eur": 5_000_000, "foot": "right"}}), encoding="utf-8")
+    df = pd.DataFrame({"player_id": ["fotmob:7@ENG1", "fotmob:8"],
+                       "value_eur": [1_000_000, 2_000_000]})
+    out = build.attach_profiles(df, tmp_path / "players.json")
+    assert out["value_eur"].tolist() == [5_000_000, 2_000_000]
+    assert out.loc[0, "height"] == 180 and pd.isna(out.loc[1, "height"])
+
+
+def test_dm_split_by_shape():
+    rows = []
+    for i in range(12):
+        six = i < 6
+        rows.append({"source": "fotmob", "season": "2025-26", "league": "ENG1",
+                     "player_id": f"p{i}", "name": f"P{i}", "team": "T", "pos_group": "CM",
+                     "matches": 30, "minutes": 2700,
+                     "interceptions_padj": 60.0 if six else 20.0, "recoveries": 200.0 if six else 120.0,
+                     "passes": 1800.0 + i, "passes_accurate": 1600.0,
+                     "box_touches": 15.0 if six else 90.0, "xa": 1.0 if six else 5.0,
+                     "key_passes": 20.0 if six else 60.0, "tackles_padj": 50.0,
+                     "final_third_passes": 100.0, "xg": 1.0})
+    data = build.build(pd.DataFrame(rows))
+    groups = {p["id"]: p["group"] for p in data["players"]}
+    assert [groups[f"p{i}"] for i in range(12)] == ["DM"] * 6 + ["CM"] * 6

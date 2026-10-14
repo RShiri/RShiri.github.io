@@ -1,0 +1,240 @@
+{
+ "id": 292462,
+ "name": "Mohamed Salah",
+ "birthDate": {
+  "utcTime": "1992-06-15T00:00:00.000Z",
+  "timezone": "UTC"
+ },
+ "contractEnd": {
+  "utcTime": "2028-06-30T00:00:00.000Z",
+  "timezone": "UTC"
+ },
+ "primaryTeam": {
+  "teamId": 9752,
+  "teamName": "Trabzonspor",
+  "onLoan": false,
+  "teamColors": {
+   "color": "#6e2330",
+   "colorAlternate": "#9e2736",
+   "colorAway": "#6bace3",
+   "colorAwayAlternate": "#6bace3"
+  }
+ },
+ "positionDescription": {
+  "positions": [
+   {
+    "strPos": {
+     "label": "Right Winger",
+     "key": "rightwinger"
+    },
+    "strPosShort": {
+     "label": "RW",
+     "key": "rightwinger_short"
+    },
+    "occurences": 29,
+    "position": "83",
+    "isMainPosition": true,
+    "pitchPositionData": {
+     "right": 0.83,
+     "top": 0.26
+    }
+   },
+   {
+    "strPos": {
+     "label": "Attacking Midfielder",
+     "key": "centerattackingmidfielder"
+    },
+    "strPosShort": {
+     "label": "AM",
+     "key": "centerattackingmidfielder_short"
+    },
+    "occurences": 5,
+    "position": "85",
+    "isMainPosition": false,
+    "pitchPositionData": {
+     "right": 0.5,
+     "top": 0.26,
+     "ratio": 0.30869565217391304
+    }
+   },
+   {
+    "strPos": {
+     "label": "Striker",
+     "key": "striker"
+    },
+    "strPosShort": {
+     "label": "ST",
+     "key": "striker_short"
+    },
+    "occurences": 12,
+    "position": "104",
+    "isMainPosition": false,
+    "pitchPositionData": {
+     "right": 0.5,
+     "top": 0.1,
+     "ratio": 0.4608695652173913
+    }
+   }
+  ],
+  "primaryPosition": {
+   "label": "Right Winger",
+   "key": "rightwinger"
+  },
+  "nonPrimaryPositions": [
+   {
+    "label": "Attacking Midfielder",
+    "key": "centerattackingmidfielder"
+   },
+   {
+    "label": "Striker",
+    "key": "striker"
+   }
+  ]
+ },
+ "playerInformation": [
+  {
+   "value": {
+    "numberValue": 175,
+    "key": null,
+    "fallback": "175 cm"
+   },
+   "title": "Height",
+   "translationKey": "height_sentencecase"
+  },
+  {
+   "value": {
+    "numberValue": 10,
+    "options": {},
+    "key": null,
+    "fallback": 10
+   },
+   "title": "Shirt",
+   "translationKey": "shirt"
+  },
+  {
+   "value": {
+    "numberValue": 34,
+    "options": {
+     "style": "unit",
+     "unit": "year",
+     "unitDisplay": "long"
+    },
+    "key": null,
+    "fallback": "34"
+   },
+   "title": "Age",
+   "translationKey": "age_sentencecase"
+  },
+  {
+   "value": {
+    "key": "left",
+    "fallback": "Left"
+   },
+   "title": "Preferred foot",
+   "translationKey": "preferred_foot"
+  },
+  {
+   "value": {
+    "key": null,
+    "fallback": "Egypt"
+   },
+   "title": "Country",
+   "translationKey": "country_sentencecase",
+   "icon": {
+    "type": "country",
+    "id": "EGY"
+   },
+   "countryCode": "EGY",
+   "nationalTeamId": 10255
+  },
+  {
+   "value": {
+    "numberValue": 25590340,
+    "key": null,
+    "fallback": "€25.6m"
+   },
+   "title": "Market value",
+   "translationKey": "transfer_value"
+  },
+  {
+   "value": {
+    "dateValue": "2028-06-30",
+    "key": null,
+    "fallback": {
+     "utcTime": "2028-06-30T00:00:00.000Z",
+     "timezone": "UTC"
+    }
+   },
+   "title": "Contract end",
+   "translationKey": "contract_end"
+  }
+ ],
+ "traits": {
+  "key": "stats_comparison_att_mid_wingers",
+  "title": "Stats compared to other attacking midfielders/wingers",
+  "items": [
+   {
+    "key": "chances_created",
+    "title": "Chances created",
+    "value": 0.96
+   },
+   {
+    "key": "aerials_won",
+    "title": "Aerial duels",
+    "value": 0.18
+   },
+   {
+    "key": "defensive_actions",
+    "title": "Defensive actions",
+    "value": 0.04
+   },
+   {
+    "key": "goals",
+    "title": "Goals",
+    "value": 0.93
+   },
+   {
+    "key": "shot_attempts",
+    "title": "Shot attempts",
+    "value": 0.89
+   },
+   {
+    "key": "touches",
+    "title": "Touches",
+    "value": 0.82
+   }
+  ]
+ },
+ "marketValues": {
+  "values": [
+   {
+    "date": "2026-09-01T00:00:00+00:00",
+    "value": 28433712,
+    "currency": "EUR",
+    "lowerBound": 25590340,
+    "upperBound": 31277083,
+    "source": "scisports",
+    "teamId": 9752,
+    "teamName": "Trabzonspor",
+    "teamColor": {
+     "lightMode": "#6e2330",
+     "darkMode": "#9e2736"
+    }
+   },
+   {
+    "date": "2026-10-01T00:00:00+00:00",
+    "value": 25590340,
+    "currency": "EUR",
+    "lowerBound": 23031306,
+    "upperBound": 28149374,
+    "source": "scisports",
+    "teamId": 9752,
+    "teamName": "Trabzonspor",
+    "teamColor": {
+     "lightMode": "#6e2330",
+     "darkMode": "#9e2736"
+    }
+   }
+  ]
+ }
+}
