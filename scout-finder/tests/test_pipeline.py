@@ -212,3 +212,20 @@ def test_dm_split_by_shape():
     data = build.build(pd.DataFrame(rows))
     groups = {p["id"]: p["group"] for p in data["players"]}
     assert [groups[f"p{i}"] for i in range(12)] == ["DM"] * 6 + ["CM"] * 6
+
+
+def test_ram_xg_shares_league_xg_at_fotmob_level(tmp_path):
+    from pipeline.sources import ram_xg
+    players = [{"name": n, "mins": 1800, "photo": f"https://x/playerimages/{fid}.png",
+                "xg": xg, "npxg": xg, "xa": 1.0, "prog_passes": 90}
+               for n, fid, xg in (("A", 1, 9.0), ("B", 2, 3.0))]
+    (tmp_path / "2025-26.js").write_text(
+        'window.LL_PLAYERS["2025-26"]=' + json.dumps(players) + ";\n", encoding="utf-8")
+    df = pd.DataFrame({"league": "ENG1", "season": "2025-26",
+                       "player_id": ["fotmob:1", "fotmob:2@ENG1"], "minutes": [900.0, 1800.0],
+                       "xg": [5.0, 5.0], "npxg": [5.0, 5.0], "xa": [1.0, 1.0]})
+    out, source, scale = ram_xg.apply(df, {"ENG1": tmp_path})
+    # Ram's rates over FotMob's minutes: A 4.5, B 3.0; scaled so the total stays 10.
+    assert source["ENG1"] == "ram" and scale["ENG1 2025-26 xg"] == round(10 / 7.5, 3)
+    assert out["xg"].round(3).tolist() == [6.0, 4.0]
+    assert out["prog_passes"].tolist() == [45.0, 90.0]

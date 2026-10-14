@@ -142,6 +142,15 @@ def similar(rates: pd.DataFrame, n: int = SIMILAR_N) -> dict[str, list[tuple[str
     return {ids[i]: [(ids[j], round(float(sim[i, j]), 3)) for j in top[i]] for i in range(len(ids))}
 
 
+def _extras(row: pd.Series) -> dict:
+    """Per-90 stats only some leagues have (progressive passes / carries, xT)."""
+    out = {f"{c}_p90": round(float(row[c]) / row["minutes"] * 90, 2)
+           for c in EXTRA_P90 if c in row and pd.notna(row[c]) and row["minutes"]}
+    if "xt_added_p90" in row and pd.notna(row["xt_added_p90"]):
+        out["xt_added_p90"] = round(float(row["xt_added_p90"]), 3)
+    return {"extras": out} if out else {}
+
+
 def _plain(x):
     """numpy scalars -> JSON-friendly Python values (ages and values as ints)."""
     if isinstance(x, (np.integer, np.floating)):
@@ -153,7 +162,11 @@ def _num(x):
     return None if pd.isna(x) else x
 
 
-def build(season_df: pd.DataFrame, league_factor: dict[str, float] | None = None) -> dict:
+EXTRA_P90 = ["prog_passes", "prog_carries"]   # only where Ram's XEPL/XLALIGA data exists
+
+
+def build(season_df: pd.DataFrame, league_factor: dict[str, float] | None = None,
+          meta: dict | None = None) -> dict:
     """One season, any number of leagues.
 
     pct_league: percentile among the same position in the same league.
@@ -201,6 +214,7 @@ def build(season_df: pd.DataFrame, league_factor: dict[str, float] | None = None
                 "id": pid, "name": row["name"], "team": row["team"], "league": row["league"],
                 "group": group, "matches": int(row["matches"]), "minutes": int(row["minutes"]),
                 **{f: _plain(row[f]) for f in PROFILE_FIELDS if f in row and pd.notna(row[f])},
+                **_extras(row),
                 "per90": {m: _num(round(float(raw.at[pid, m]), 3)) for m in cols},
                 "pct": {m: _num(p[m]) and int(p[m]) for m in cols},
                 "pct_league": {m: _num(pct_lg.at[pid, m]) and int(pct_lg.at[pid, m]) for m in cols},
@@ -215,6 +229,7 @@ def build(season_df: pd.DataFrame, league_factor: dict[str, float] | None = None
     return {
         "meta": {"source": first["source"], "season": first["season"], "leagues": leagues,
                  "league_factor": {lg: league_factor.get(lg, 1.0) for lg in leagues},
+                 **(meta or {}),
                  "groups": {g: {"metrics": c, "players": sum(p["group"] == g for p in players)}
                             for g, c in used.items()}},
         "players": players,
@@ -222,8 +237,8 @@ def build(season_df: pd.DataFrame, league_factor: dict[str, float] | None = None
 
 
 def write(season_df: pd.DataFrame, out_dir: Path, name: str,
-          league_factor: dict[str, float] | None = None) -> Path:
-    data = build(season_df, league_factor)
+          league_factor: dict[str, float] | None = None, meta: dict | None = None) -> Path:
+    data = build(season_df, league_factor, meta)
     path = out_dir / f"{name}_{data['meta']['season']}.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
@@ -255,6 +270,8 @@ def main() -> None:
                     help="every CSV pipeline.fetch_fotmob wrote under data/fotmob/")
     ap.add_argument("--season", action="append", default=[],
                     help="with --fotmob: only these seasons (default: every CSV found)")
+    ap.add_argument("--no-ram-xg", action="store_true",
+                    help="keep FotMob's xG in the EPL and LaLiga (default: Ram's model)")
     ap.add_argument("--elo-date", help="YYYY-MM-DD for ClubElo league strength (default: none)")
     ap.add_argument("--understat", action="append", default=[], metavar="LEAGUE:SEASON")
     ap.add_argument("--out", type=Path, default=Path(__file__).resolve().parent.parent / "data")
@@ -274,9 +291,19 @@ def main() -> None:
     if a.fotmob:
         paths = sorted(p for p in (a.out / "fotmob").glob("*.csv")
                        if not a.season or p.stem.split("_", 1)[1] in a.season)
+        from .sources import ram_xg
         universe = attach_profiles(fotmob.load_fetched(paths), a.out / "players.json")
-        for _, season_df in universe.groupby("season"):
-            print("wrote", write(season_df.reset_index(drop=True), a.out, "universe", factor))
+        if not a.no_ram_xg:
+            universe, _, xg_scale = ram_xg.apply(universe)
+            print("Ram's xG model, scale to FotMob level:", xg_scale)
+        for season, season_df in universe.groupby("season"):
+            meta = {}
+            if not a.no_ram_xg:
+                meta["xg_source"] = {lg: "ram" if any(k.startswith(f"{lg} {season} ") for k in xg_scale)
+                                     else "fotmob" for lg in sorted(season_df["league"].unique())}
+                meta["xg_scale"] = {k.split(" ", 2)[0] + " " + k.split(" ", 2)[2]: v
+                                    for k, v in xg_scale.items() if f" {season} " in k}
+            print("wrote", write(season_df.reset_index(drop=True), a.out, "universe", factor, meta))
         write_season_index(a.out)
     for spec in a.understat:
         league, season = spec.split(":")
