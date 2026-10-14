@@ -375,6 +375,15 @@ document.documentElement.setAttribute("data-style",v);})();</script>
       </dl></details>
     </li>
     <li>
+      <a href="scout-finder/" target="_blank" rel="noopener"><img class="bimg" src="assets/img/thumb/scout-finder.webp" alt="" width="96" height="60" loading="lazy" /><span class="n">09</span><span class="bt">Scout Finder</span><span class="bd">Percentiles and look-alikes for 3,880 players in 12 leagues</span><span class="bw">Python, Pandas</span><svg class="ic"><use href="#i-arrow"/></svg></a>
+      <details class="notes"><summary>How I built it</summary><dl>
+        <div><dt>Problem</dt><dd>Scouting starts with a question like "who plays like this, somewhere cheaper?". After FBref lost its advanced stats in 2026 there was no free tool to answer it across leagues.</dd></div>
+        <div><dt>Data</dt><dd>Per-match player stats from FotMob for all 4,365 league matches of 2025-26 in twelve leagues: the big five, Portugal, the Netherlands, Belgium, the Championship, Brazil, Argentina and Israel.</dd></div>
+        <div><dt>Method</dt><dd>Season totals become per-90 rates, ranked within each position. A ClubElo league-strength factor makes a Belgian winger comparable with a Premier League one, and cosine similarity on z-scored rates finds the closest profiles anywhere.</dd></div>
+        <div><dt>Result</dt><dd>Search any player for positional percentiles, a head to head, a replacement list and a scouting note written only from the numbers.</dd></div>
+      </dl></details>
+    </li>
+    <li>
       <a href="https://rshiri.github.io/BCNFINAL/" target="_blank" rel="noopener"><img class="bimg" src="assets/img/thumb/bcn.webp" alt="" width="96" height="60" loading="lazy" /><span class="n">09</span><span class="bt">Barça xG Lab</span><span class="bd">Every FC Barcelona fixture, 2025/26</span><span class="bw">Python, Pandas, XGBoost</span><svg class="ic"><use href="#i-arrow"/></svg></a>
       <details class="notes"><summary>How I built it</summary><dl>
         <div><dt>Problem</dt><dd>Follow one club&#x27;s whole season through the quality of its chances, not just its results.</dd></div>

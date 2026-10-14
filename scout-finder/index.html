@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en" class="rs-page rs-scout">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Scout Finder · Ram Shiri</title>
+<meta name="description" content="Pick any of 3,880 players across 12 leagues: positional percentiles, the most similar players anywhere, and a scouting note written only from the numbers." />
+<meta name="author" content="Ram Shiri" />
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/assets/brand/brand.css" />
+<script src="/assets/brand/brand.js"></script>
+<style>
+/* Scout Finder. Colours and type come from the brand kit's --rs-* tokens, so the
+   page follows the C (HUD) and A (Matchday) looks without its own theme file. */
+:root { --hi: #3ddc97; --lo: #ff6b6b; --maxw: 1180px; }
+html[data-site-style] { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--rs-bg); color: var(--rs-body); font: 15px/1.55 var(--rs-text); }
+html[data-site-lang="he"] body { font-family: "IBM Plex Sans Hebrew", var(--rs-text); }
+a { color: var(--rs-accent); }
+button, input, select { font: inherit; color: inherit; }
+.wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 clamp(16px, 3vw, 32px); }
+
+header.hero { padding: 40px 0 20px; border-bottom: 1px solid var(--rs-line); }
+.kicker { font: 600 12px/1 var(--rs-display); letter-spacing: .2em; text-transform: uppercase; color: var(--rs-accent); }
+h1 { margin: 10px 0 8px; font: 700 clamp(34px, 6vw, 58px)/1 var(--rs-display); color: var(--rs-ink); letter-spacing: .02em; text-transform: uppercase; }
+html[data-site-style="a"] h1, html[data-site-style="a"] h2 { font-style: italic; font-weight: 800; }
+.lead { max-width: 760px; margin: 0; color: var(--rs-body); }
+.stats { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 16px; font: 600 13px/1 var(--rs-display); letter-spacing: .1em; text-transform: uppercase; color: var(--rs-muted); }
+.stats b { color: var(--rs-ink); font-size: 18px; margin-inline-end: 6px; }
+
+h2 { margin: 0 0 12px; font: 700 20px/1.1 var(--rs-display); letter-spacing: .08em; text-transform: uppercase; color: var(--rs-ink); }
+.panel { background: var(--rs-panel); border: 1px solid var(--rs-line); padding: 18px; }
+.muted { color: var(--rs-muted); }
+.small { font-size: 13px; }
+
+/* search */
+.search { position: relative; margin: 22px 0 18px; }
+.search input { width: 100%; padding: 14px 16px; background: var(--rs-bg-soft); border: 1px solid var(--rs-line-strong); color: var(--rs-ink); font-size: 17px; outline: none; }
+.search input:focus { border-color: var(--rs-accent); }
+.hits { position: absolute; inset-inline: 0; top: 100%; z-index: 20; max-height: 360px; overflow: auto; margin: 0; padding: 0; list-style: none; background: var(--rs-panel-2); border: 1px solid var(--rs-line-strong); border-top: 0; }
+.hits li { display: flex; gap: 10px; align-items: baseline; padding: 9px 14px; cursor: pointer; }
+.hits li[aria-selected="true"], .hits li:hover { background: var(--rs-accent-soft); }
+.hits .n { color: var(--rs-ink); font-weight: 600; }
+.chip { display: inline-block; padding: 3px 7px; border: 1px solid var(--rs-line-strong); font: 600 11px/1 var(--rs-display); letter-spacing: .1em; color: var(--rs-muted); white-space: nowrap; }
+.chip.g { color: var(--rs-accent); border-color: var(--rs-accent); }
+html[data-site-style="a"] .chip { transform: skewX(-10deg); }
+
+/* profile */
+.profile { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; }
+@media (max-width: 860px) { .profile { grid-template-columns: 1fr; } }
+.who { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin-bottom: 4px; }
+.who h2 { font-size: clamp(26px, 4vw, 36px); margin: 0; letter-spacing: .03em; text-transform: none; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 16px; }
+.toggle { display: inline-flex; border: 1px solid var(--rs-line-strong); margin-bottom: 14px; }
+.toggle button { padding: 7px 12px; background: transparent; border: 0; cursor: pointer; font: 600 12px/1 var(--rs-display); letter-spacing: .1em; text-transform: uppercase; color: var(--rs-muted); }
+.toggle button[aria-pressed="true"] { background: var(--rs-accent); color: var(--rs-accent-ink); }
+.bars { display: grid; gap: 10px; }
+.bar { display: grid; grid-template-columns: minmax(120px, 190px) 1fr 44px; gap: 10px; align-items: center; }
+.bar .lab { color: var(--rs-ink); font-size: 14px; }
+.bar .lab small { display: block; color: var(--rs-muted); font-size: 12px; }
+.track { position: relative; height: 12px; background: var(--rs-bg-soft); border: 1px solid var(--rs-line); }
+.track i { position: absolute; inset-block: 0; inset-inline-start: 0; background: var(--rs-body); }
+.track i.hi { background: var(--hi); } .track i.lo { background: var(--lo); }
+.track::after { content: ""; position: absolute; inset-block: -3px; inset-inline-start: 50%; width: 1px; background: var(--rs-line-strong); }
+.bar .p { font: 700 16px/1 var(--rs-display); color: var(--rs-ink); text-align: end; }
+.bar .p.na { color: var(--rs-muted); font-weight: 500; font-size: 13px; }
+
+.radar svg { width: 100%; max-width: 480px; display: block; margin: 0 auto; }
+.radar .ax { stroke: var(--rs-line); fill: none; }
+.radar .ring { stroke: var(--rs-line); fill: none; }
+.radar .me { fill: var(--rs-accent-soft); stroke: var(--rs-accent); stroke-width: 2; }
+.radar .vs { fill: rgba(255, 61, 242, .10); stroke: var(--rs-goal); stroke-width: 1.5; stroke-dasharray: 5 4; }
+html[data-site-style="a"] .radar .vs { fill: rgba(255, 255, 255, .06); stroke: #f5f7fa; }
+.radar text { fill: var(--rs-muted); font: 500 11px var(--rs-text); }
+.legend { display: flex; gap: 16px; justify-content: center; font-size: 13px; margin-top: 6px; }
+.legend span::before { content: ""; display: inline-block; width: 14px; height: 3px; margin-inline-end: 6px; vertical-align: middle; background: var(--rs-accent); }
+.legend span.vs::before { background: var(--rs-goal); }
+html[data-site-style="a"] .legend span.vs::before { background: #f5f7fa; }
+
+.note { margin-top: 18px; border-inline-start: 3px solid var(--rs-accent); }
+.note p { margin: 0 0 10px; color: var(--rs-ink); }
+.note p:last-child { margin: 0; }
+.note b { color: var(--rs-accent); font-weight: 600; }
+
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: start; font: 600 11px/1 var(--rs-display); letter-spacing: .12em; text-transform: uppercase; color: var(--rs-muted); padding: 8px 8px; border-bottom: 1px solid var(--rs-line-strong); white-space: nowrap; }
+td { padding: 9px 8px; border-bottom: 1px solid var(--rs-line); }
+td.num, th.num { text-align: end; font-variant-numeric: tabular-nums; }
+tbody tr { cursor: pointer; }
+tbody tr:hover, tbody tr.on { background: var(--rs-accent-soft); }
+td .n { color: var(--rs-ink); font-weight: 600; }
+.score { font: 700 15px/1 var(--rs-display); color: var(--rs-accent); }
+.tablewrap { overflow-x: auto; }
+
+section.block { margin: 28px 0; }
+.filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+.filters label { display: grid; gap: 4px; font: 600 11px/1 var(--rs-display); letter-spacing: .12em; text-transform: uppercase; color: var(--rs-muted); }
+.filters select { min-width: 150px; padding: 8px 10px; background: var(--rs-bg-soft); border: 1px solid var(--rs-line-strong); color: var(--rs-ink); text-transform: none; letter-spacing: 0; font: 14px var(--rs-text); }
+footer { padding: 26px 0 50px; border-top: 1px solid var(--rs-line); font-size: 13px; color: var(--rs-muted); }
+footer p { max-width: 860px; }
+#loading { padding: 40px 0; }
+[hidden] { display: none !important; }
+/* ---- v2: head-to-head, filters, archetypes, seasons ---- */
+.hero-row { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px; }
+.season select, .filters select, .h2h-pick input { padding: 8px 10px; background: var(--rs-bg-soft); border: 1px solid var(--rs-line-strong); color: var(--rs-ink); font: 14px var(--rs-text); }
+.season { display: grid; gap: 4px; font: 600 11px/1 var(--rs-display); letter-spacing: .12em; text-transform: uppercase; color: var(--rs-muted); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.btn { padding: 8px 12px; background: transparent; border: 1px solid var(--rs-line-strong); color: var(--rs-ink); cursor: pointer; font: 600 12px/1 var(--rs-display); letter-spacing: .1em; text-transform: uppercase; }
+.btn:hover, .btn:focus-visible { border-color: var(--rs-accent); color: var(--rs-accent); }
+html[data-site-style="a"] .btn { transform: skewX(-10deg); }
+.chip.arch { color: var(--rs-accent-ink); background: var(--rs-accent); border-color: var(--rs-accent); }
+.h2h-head { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; margin-bottom: 14px; }
+.h2h-head .side { min-width: 0; }
+.h2h-head .side.b { text-align: end; }
+.h2h-head .nm { font: 700 22px/1.1 var(--rs-display); color: var(--rs-ink); }
+.h2h-head .vs { font: 700 14px/1 var(--rs-display); color: var(--rs-muted); letter-spacing: .2em; }
+.h2h-pick { position: relative; margin-bottom: 14px; max-width: 420px; }
+.h2h-pick input { width: 100%; }
+.h2h-row { display: grid; grid-template-columns: 70px 1fr minmax(110px, 170px) 1fr 70px; gap: 10px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--rs-line); }
+.h2h-row .v { font-variant-numeric: tabular-nums; color: var(--rs-ink); }
+.h2h-row .v.b { text-align: end; }
+.h2h-row .m { text-align: center; font-size: 13px; color: var(--rs-body); }
+.h2h-row .t { position: relative; height: 10px; background: var(--rs-bg-soft); }
+.h2h-row .t i { position: absolute; inset-block: 0; background: var(--rs-accent); }
+.h2h-row .t.a i { inset-inline-end: 0; }
+.h2h-row .t.b i { inset-inline-start: 0; background: var(--rs-goal); }
+html[data-site-style="a"] .h2h-row .t.b i { background: #f5f7fa; }
+.h2h-row .win { font-weight: 700; color: var(--rs-accent); }
+@media (max-width: 640px) { .h2h-row { grid-template-columns: 48px 1fr 90px 1fr 48px; font-size: 13px; } }
+.filters .opt[hidden] { display: none; }
+.empty { padding: 14px; color: var(--rs-muted); }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker" id="kicker">Scouting tool · 2025-26</div>
+    <h1>Scout Finder</h1>
+    <div class="hero-row">
+      <p class="lead" data-t="lead"></p>
+      <label class="season" id="seasonBox" hidden><span data-t="season">Season</span><select id="season"></select></label>
+    </div>
+    <div class="stats" id="stats"></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="search">
+    <input id="q" type="search" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="hits" />
+    <ul class="hits" id="hits" role="listbox" hidden></ul>
+  </div>
+
+  <p id="loading" class="muted" data-t="loading">Loading players…</p>
+
+  <div id="app" hidden>
+    <div class="profile">
+      <div class="panel" id="card"></div>
+      <div>
+        <div class="panel radar" id="radar"></div>
+        <div class="panel note" id="note"></div>
+      </div>
+    </div>
+
+    <section class="block" id="h2hBlock">
+      <h2 data-t="h2hTitle">Head to head</h2>
+      <div class="h2h-pick">
+        <input id="q2" type="search" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="hits2" />
+        <ul class="hits" id="hits2" role="listbox" hidden></ul>
+      </div>
+      <div class="panel" id="h2h"></div>
+    </section>
+
+    <section class="block">
+      <h2 data-t="simTitle">Most similar players</h2>
+      <p class="muted small" data-t="simLead"></p>
+      <div class="filters" id="simFilters"></div>
+      <div class="panel tablewrap" id="similar"></div>
+    </section>
+
+    <section class="block">
+      <h2 data-t="findTitle">Find players</h2>
+      <div class="filters">
+        <label><span data-t="pos">Position</span><select id="fGroup"></select></label>
+        <label><span data-t="league">League</span><select id="fLeague"></select></label>
+        <label><span data-t="sortBy">Sort by</span><select id="fMetric"></select></label>
+      </div>
+      <div class="filters" id="findFilters"></div>
+      <div class="panel tablewrap" id="finder"></div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap" id="method"></div>
+</footer>
+
+<script>
+/* About panel for the portfolio bar (brand.js). */
+window.RS_ABOUT = {
+  en: {
+    title: "How Scout Finder works",
+    intro: "A scouting engine over twelve leagues: every player's numbers per 90 minutes, ranked against the same position, with the most similar profiles anywhere and a scouting note written only from the numbers.",
+    sections: [
+      { h: "Data", p: "Per-match player stats from FotMob for every finished league match, summed to the season. Twelve leagues: the big five, Portugal, the Netherlands, Belgium, the Championship, Brazil, Argentina and Israel. Only players with 900+ league minutes are ranked (fewer early in a season)." },
+      { h: "Positions", p: "A player's position is the lineup slot he started in most. FotMob's slots cannot tell a holding midfielder from a box-to-box one, so central midfield is one group unless the data marks a separate defensive-midfield group by its stats." },
+      { h: "League strength", p: "Each league's strength is the mean ClubElo rating of its clubs. Attacking volume (xG, shots, chances created and so on) is scaled by exp(β × Elo gap / 100) against the Premier League, so 0.5 xG per 90 in Belgium is not read as 0.5 in England. The switch on each profile shows the unadjusted ranking within the player's own league." },
+      { h: "Similar players", p: "Cosine similarity of z-scored, league-adjusted per-90 rates within the same position. z-scoring compares a player's shape (more tackles than usual, fewer shots than usual), not raw volume. A metric a league does not publish counts as average." },
+      { h: "Limits", p: "No free source publishes progressive passes or carries. Israel's league publishes no xG or xA. The league adjustment is a first heuristic until it is calibrated on players who changed leagues." }
+    ]
+  },
+  he: {
+    title: "איך Scout Finder עובד",
+    intro: "מנוע סקאוטינג על 12 ליגות: הנתונים של כל שחקן ל־90 דקות, מדורגים מול אותה עמדה, עם הפרופילים הכי דומים בכל מקום ודוח סקאוטינג שנכתב רק מתוך המספרים.",
+    sections: [
+      { h: "נתונים", p: "סטטיסטיקה לכל שחקן בכל משחק ליגה שהסתיים, מ־FotMob, מסוכמת לעונה. 12 ליגות: חמש הגדולות, פורטוגל, הולנד, בלגיה, הצ'מפיונשיפ, ברזיל, ארגנטינה וליגת העל. מדורגים רק שחקנים עם 900 דקות ליגה ומעלה (פחות בתחילת עונה)." },
+      { h: "עמדות", p: "העמדה של שחקן היא המשבצת שבה פתח הכי הרבה. המשבצות של FotMob לא מבחינות בין קשר אחורי לקשר מרכזי, ולכן הקישור המרכזי הוא קבוצה אחת, אלא אם הנתונים מסמנים קבוצת קשרים אחוריים לפי הסטטיסטיקה." },
+      { h: "חוזק ליגה", p: "החוזק של כל ליגה הוא ממוצע דירוג ClubElo של הקבוצות שלה. מדדי נפח התקפי (xG, בעיטות, מצבים שיצר וכו') מוכפלים ב־exp(β × הפרש Elo / 100) מול הפרמייר ליג, כך ש־0.5 xG ל־90 בבלגיה לא נקרא כמו 0.5 באנגליה. המתג בכל פרופיל מציג את הדירוג בלי התאמה, בתוך הליגה של השחקן." },
+      { h: "שחקנים דומים", p: "דמיון קוסינוס על ערכים מתוקננים (z-score) ל־90 דקות, אחרי התאמה לחוזק הליגה, בתוך אותה עמדה. התקנון משווה את צורת הפרופיל (יותר תיקולים מהממוצע, פחות בעיטות), לא נפח גולמי. מדד שליגה לא מפרסמת נחשב ממוצע." },
+      { h: "מגבלות", p: "אף מקור חינמי לא מפרסם מסירות או נשיאות כדור מתקדמות. ליגת העל לא מפרסמת xG ו־xA. ההתאמה לחוזק ליגה היא הערכה ראשונית עד שתכויל על שחקנים שעברו ליגה." }
+    ]
+  }
+};
+</script>
+<script>
+(function () {
+  "use strict";
+  var DEFAULT_SEASON = "2025-26";  // replaced by data/seasons.json "default" when present
+
+  var LEAGUE = {
+    ENG1: ["Premier League", "פרמייר ליג"], ESP1: ["LaLiga", "לה ליגה"], ITA1: ["Serie A", "סרייה A"],
+    GER1: ["Bundesliga", "בונדסליגה"], FRA1: ["Ligue 1", "ליגה 1"], POR1: ["Liga Portugal", "הליגה הפורטוגלית"],
+    NED1: ["Eredivisie", "ארדיביזי"], BEL1: ["Belgian Pro League", "הליגה הבלגית"], ENG2: ["Championship", "צ'מפיונשיפ"],
+    BRA1: ["Brasileirão", "הליגה הברזילאית"], ARG1: ["Liga Profesional", "הליגה הארגנטינאית"], ISR1: ["Ligat ha'Al", "ליגת העל"]
+  };
+  var GROUP = {
+    GK: ["Goalkeeper", "שוער", "goalkeepers", "שוערים"], CB: ["Centre-back", "בלם", "centre-backs", "בלמים"],
+    FB: ["Full-back", "מגן", "full-backs", "מגנים"], DM: ["Defensive midfielder", "קשר אחורי", "defensive midfielders", "קשרים אחוריים"],
+    CM: ["Central midfielder", "קשר מרכזי", "central midfielders", "קשרים מרכזיים"],
+    AM: ["Attacking midfielder", "קשר התקפי", "attacking midfielders", "קשרים התקפיים"], W: ["Winger", "כנף", "wingers", "כנפיים"],
+    FW: ["Striker", "חלוץ", "strikers", "חלוצים"]
+  };
+  var GROUP_ORDER = ["FW", "W", "AM", "CM", "DM", "FB", "CB", "GK"];
+  // [English, Hebrew, decimals, unit]. Unknown keys from a newer data file get a readable fallback.
+  var METRIC = {
+    xg: ["xG", "xG", 2], npxg: ["Non-penalty xG", "xG ללא פנדלים", 2], xa: ["xA (expected assists)", "xA (בישולים צפויים)", 2],
+    xgot: ["xG on target", "xG למסגרת", 2], shots: ["Shots", "בעיטות", 2], shots_on_target: ["Shots on target", "בעיטות למסגרת", 2],
+    xg_per_shot: ["xG per shot", "xG לבעיטה", 2, "ratio"], key_passes: ["Chances created", "מצבים שיצר", 2],
+    big_chances_created: ["Big chances created", "מצבים גדולים שיצר", 2], big_chances_missed: ["Big chances missed (fewer is better)", "מצבים גדולים שהוחמצו (פחות זה טוב)", 2],
+    dribbles: ["Successful dribbles", "דריבלים מוצלחים", 2], touches: ["Touches", "נגיעות", 1],
+    touches_opp_box: ["Touches in the box", "נגיעות ברחבה", 2], dispossessed: ["Dispossessed (fewer is better)", "איבודי כדור (פחות זה טוב)", 2],
+    dribbled_past: ["Dribbled past (fewer is better)", "נעקף בדריבל (פחות זה טוב)", 2],
+    passes: ["Passes", "מסירות", 1], pass_pct: ["Pass completion", "דיוק מסירות", 0, "pct"],
+    passes_final_third: ["Passes into the final third", "מסירות לשליש האחרון", 2], long_balls: ["Accurate long balls", "כדורים ארוכים מדויקים", 2],
+    crosses: ["Accurate crosses", "הגבהות מדויקות", 2], tackles: ["Tackles", "תיקולים", 2], interceptions: ["Interceptions", "חטיפות", 2],
+    recoveries: ["Ball recoveries", "החזרות כדור", 2], ground_duels_won: ["Ground duels won", "דו־קרבים על הקרקע שנוצחו", 2],
+    clearances: ["Clearances", "הרחקות", 2], aerials_won: ["Aerials won", "דו־קרבים אוויריים שנוצחו", 2],
+    fouled: ["Fouls won", "עבירות שספג", 2], fouls: ["Fouls committed", "עבירות", 2],
+    tackles_padj: ["Tackles (possession-adjusted)", "תיקולים (מותאם להחזקה)", 2], interceptions_padj: ["Interceptions (possession-adjusted)", "חטיפות (מותאם להחזקה)", 2],
+    blocks: ["Blocks", "חסימות", 2], aerial_pct: ["Aerial duels won %", "אחוז דו־קרבים אוויריים", 0, "pct"], ground_duel_pct: ["Ground duels won %", "אחוז דו־קרבים על הקרקע", 0, "pct"],
+    long_balls_accurate: ["Accurate long balls", "כדורים ארוכים מדויקים", 2], crosses_accurate: ["Accurate crosses", "הגבהות מדויקות", 2],
+    final_third_passes: ["Passes into the final third", "מסירות לשליש האחרון", 2], box_touches: ["Touches in the box", "נגיעות ברחבה", 2],
+    dribble_pct: ["Dribble success %", "אחוז דריבלים מוצלחים", 0, "pct"], saves_inside_box: ["Saves inside the box", "הצלות מתוך הרחבה", 2],
+    sweeper_actions: ["Sweeper actions", "יציאות שוער", 2], high_claims: ["High claims", "תפיסות גבוהות", 2],
+    saves: ["Saves", "הצלות", 2], goals_prevented: ["Goals prevented", "שערים שנמנעו", 2], save_pct: ["Save percentage", "אחוז הצלות", 0, "pct"]
+  };
+  // Raw per-90 counts the pipeline scales by league strength (league_strength.ADJUSTED); meta.adjusted wins when present.
+  var ADJUSTED = ["goals", "assists", "xg", "npxg", "xa", "shots", "shots_on_target", "key_passes", "big_chances_created", "box_touches",
+    "final_third_passes", "dribbles", "crosses_accurate", "xg_chain"];
+  // Role labels from the shape of the percentile profile. Only metrics the group actually has count.
+  var ARCHETYPES = {
+    FW: [["poacher", ["xg", "npxg", "xg_per_shot", "touches_opp_box", "box_touches"]], ["target", ["aerials_won", "touches"]], ["linkup", ["xa", "key_passes", "touches", "passes"]], ["shooter", ["shots", "shots_on_target", "xgot"]]],
+    W: [["creator", ["key_passes", "xa", "big_chances_created", "crosses", "crosses_accurate"]], ["finisher", ["xg", "shots", "touches_opp_box", "box_touches"]], ["dribbler", ["dribbles", "dribble_pct", "touches"]]],
+    AM: [["creator", ["key_passes", "xa", "big_chances_created", "passes_final_third", "final_third_passes"]], ["goalthreat", ["xg", "shots", "touches_opp_box", "box_touches"]], ["carrier", ["dribbles", "dribble_pct", "touches"]]],
+    CM: [["playmaker", ["passes", "pass_pct", "key_passes", "passes_final_third", "final_third_passes", "long_balls", "long_balls_accurate"]], ["ballwinner", ["tackles", "interceptions", "tackles_padj", "interceptions_padj", "recoveries", "ground_duels_won"]], ["boxtobox", ["xg", "xa", "touches_opp_box", "box_touches"]]],
+    DM: [["anchor", ["tackles", "interceptions", "tackles_padj", "interceptions_padj", "recoveries", "ground_duels_won"]], ["deepplaymaker", ["passes", "pass_pct", "long_balls", "long_balls_accurate", "passes_final_third", "final_third_passes"]]],
+    FB: [["attacking", ["key_passes", "xa", "dribbles", "crosses", "crosses_accurate"]], ["defensive", ["tackles", "interceptions", "tackles_padj", "interceptions_padj", "clearances", "ground_duels_won"]], ["buildup", ["passes", "touches", "pass_pct", "passes_final_third", "final_third_passes"]]],
+    CB: [["ballplaying", ["passes", "pass_pct", "long_balls", "long_balls_accurate", "passes_final_third", "final_third_passes"]], ["stopper", ["tackles", "interceptions", "tackles_padj", "interceptions_padj", "ground_duels_won"]], ["aerial", ["aerials_won", "aerial_pct", "clearances", "blocks"]]],
+    GK: [["shotstopper", ["saves", "goals_prevented", "save_pct", "saves_inside_box"]], ["distributor", ["passes", "pass_pct", "long_balls", "long_balls_accurate", "sweeper_actions"]]]
+  };
+  var ARCH = {
+    poacher: ["Poacher", "חלוץ רחבה"], target: ["Target forward", "חלוץ מטרה"], linkup: ["Link-up forward", "חלוץ מקשר"], shooter: ["Volume shooter", "בועט נפח"],
+    creator: ["Creator", "יוצר"], finisher: ["Inside forward", "כנף מסיים"], dribbler: ["Dribbler", "כדרורן"],
+    goalthreat: ["Goal threat", "איום שערים"], carrier: ["Ball carrier", "מוביל כדור"],
+    playmaker: ["Playmaker", "מכוון משחק"], ballwinner: ["Ball winner", "גונב כדורים"], boxtobox: ["Box-to-box", "קשר מרחבה לרחבה"],
+    anchor: ["Anchor", "עוגן"], deepplaymaker: ["Deep-lying playmaker", "מכוון משחק אחורי"],
+    attacking: ["Attacking full-back", "מגן התקפי"], defensive: ["Defensive full-back", "מגן הגנתי"], buildup: ["Build-up full-back", "מגן בונה משחק"],
+    ballplaying: ["Ball-playing centre-back", "בלם מוסר"], stopper: ["Stopper", "בלם עוצר"], aerial: ["Aerial centre-back", "בלם אוויר"],
+    shotstopper: ["Shot-stopper", "שוער הצלות"], distributor: ["Distributor", "שוער משחק רגל"], balanced: ["All-round", "פרופיל מאוזן"]
+  };
+  var T = {
+    kicker: ["Scouting tool", "כלי סקאוטינג"],
+    lead: ["Pick a player. See how they rank against every player in the same position, find the most similar profiles in twelve leagues, and read a scouting note written only from the numbers.",
+           "בוחרים שחקן. רואים איך הוא מדורג מול כל השחקנים באותה עמדה, מוצאים את הפרופילים הכי דומים לו ב־12 ליגות, וקוראים דוח סקאוטינג שנכתב רק מתוך המספרים."],
+    loading: ["Loading players…", "טוען שחקנים…"], season: ["Season", "עונה"],
+    placeholder: ["Search a player or club, e.g. Yamal, Pedri, Maccabi", "חיפוש שחקן או קבוצה, למשל Yamal, Pedri, Maccabi"],
+    placeholder2: ["Compare with… (type a name)", "השוואה מול… (הקלד שם)"],
+    players: ["players", "שחקנים"], leagues: ["leagues", "ליגות"], positions: ["position groups", "קבוצות עמדה"],
+    h2hTitle: ["Head to head", "ראש בראש"],
+    simTitle: ["Most similar players", "השחקנים הכי דומים"],
+    simLead: ["Same position, any of the twelve leagues. Narrow it down to find a replacement within an age or budget limit. Click a row to put that player in the head to head.",
+              "אותה עמדה, בכל אחת מ־12 הליגות. אפשר לצמצם לפי גיל או תקציב כדי למצוא מחליף. לחיצה על שורה מכניסה את השחקן להשוואה ראש בראש."],
+    findTitle: ["Find players", "חיפוש שחקנים"], pos: ["Position", "עמדה"], league: ["League", "ליגה"], sortBy: ["Sort by", "מיון לפי"],
+    allLeagues: ["All twelve leagues", "כל 12 הליגות"], any: ["Any", "הכול"],
+    maxAge: ["Max age", "גיל מקסימלי"], maxValue: ["Max value", "שווי מקסימלי"], contract: ["Contract ends by", "חוזה מסתיים עד"],
+    vsAll: ["vs all 12 leagues", "מול כל 12 הליגות"], vsLeague: ["vs own league", "מול הליגה שלו"],
+    per90: ["per 90", "ל־90 דקות"], min: ["min", "דק'"], apps: ["apps", "הופעות"], yrs: ["yrs", "שנים"], cm: ["cm", "ס\"מ"],
+    foot: ["foot", "רגל"], left: ["Left", "שמאל"], right: ["Right", "ימין"], both: ["Both", "שתיהן"], until: ["until", "עד"],
+    noData: ["not published", "לא מפורסם"],
+    player: ["Player", "שחקן"], team: ["Club", "קבוצה"], minutes: ["Minutes", "דקות"], sim: ["Similarity", "דמיון"], age: ["Age", "גיל"], value: ["Value", "שווי"], profile: ["Profile", "פרופיל"],
+    pctile: ["Pctl", "אחוזון"],
+    radarNote: ["Percentile vs all 12 leagues, league-adjusted", "אחוזון מול כל 12 הליגות, אחרי התאמה לחוזק הליגה"],
+    noteTitle: ["Scouting note", "דוח סקאוטינג"], noHits: ["No player matches", "לא נמצא שחקן"], noRows: ["No player passes these filters.", "אין שחקן שעובר את הסינון."],
+    download: ["Download card", "הורדת כרטיס"], copyLink: ["Copy link", "העתקת קישור"], copied: ["Link copied", "הקישור הועתק"],
+    otherGroup: ["Different position: compared on the first player's metrics; percentiles are each within their own position.", "עמדה שונה: ההשוואה על המדדים של השחקן הראשון, והאחוזונים של כל אחד הם בתוך העמדה שלו."],
+    ramModel: ["Ram's xG model", "מודל ה־xG של רם"]
+  };
+
+  var D, byId = {}, players = [], lang = "en", mode = "all", current = null, compare = null;
+  var seasons = [DEFAULT_SEASON], season = DEFAULT_SEASON, cache = {}, vectors = {};
+  var has = { age: false, value: false, contract: false };
+  var $ = function (id) { return document.getElementById(id); };
+  var L = function () { return lang === "he" ? 1 : 0; };
+  var t = function (k) { return T[k][L()]; };
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+  var fold = function (s) { return String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/ø/g, "o").replace(/ß/g, "ss").replace(/ł/g, "l").toLowerCase(); };
+  var lg = function (code) { return LEAGUE[code] ? LEAGUE[code][L()] : code; };
+  var grp = function (g, plural) { return GROUP[g] ? GROUP[g][(plural ? 2 : 0) + L()] : g; };
+  function mName(m) {
+    if (METRIC[m]) return METRIC[m][L()];
+    var s = m.replace(/_/g, " "); return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+  var mShort = function (m) { return mName(m).replace(/ \(.*\)$/, ""); };
+  var unit = function (m) { return METRIC[m] && METRIC[m][3]; };
+  function fmt(m, v) {
+    if (v == null) return "–";
+    var spec = METRIC[m] || [m, m, 2];
+    if (spec[3] === "pct") return Math.round(v * 100) + "%";
+    return v.toFixed(spec[2]);
+  }
+  function money(v) {
+    if (v == null) return "–";
+    return "€" + (v >= 1e6 ? (v / 1e6).toFixed(v >= 1e7 ? 0 : 1) + "m" : Math.round(v / 1e3) + "k");
+  }
+  var metricsOf = function (g) { return D.meta.groups[g] ? D.meta.groups[g].metrics : []; };
+  function band(p) { return p == null ? "" : p >= 80 ? "hi" : p <= 20 ? "lo" : ""; }
+  function ordinal(n) {
+    if (lang === "he") return "אחוזון " + n;
+    var s = n % 100 >= 11 && n % 100 <= 13 ? "th" : ["th", "st", "nd", "rd"][n % 10] || "th";
+    return n + s + " percentile";
+  }
+  function listJoin(a) { return a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + (lang === "he" ? " ו" : " and ") + a[a.length - 1]; }
+
+  /* ------------------------------------------------------------ data */
+  function load(s) {
+    if (cache[s]) return Promise.resolve(cache[s]);
+    return fetch("data/universe_" + s + ".json").then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function (d) {
+        d.byId = {};
+        d.players.forEach(function (p) { d.byId[p.id] = p; p._key = fold(p.name + " " + p.team); });
+        cache[s] = d; return d;
+      });
+  }
+  function use(d) {
+    D = d; players = d.players; byId = d.byId; vectors = {};
+    has.age = players.some(function (p) { return p.age != null; });
+    has.value = players.some(function (p) { return p.value_eur != null; });
+    has.contract = players.some(function (p) { return p.contract_end; });
+    buildVectors();
+  }
+  // The pipeline's similarity, recomputed here so the list can be filtered (age, budget,
+  // league) and still rank every candidate: z-scored league-adjusted per-90s, cosine.
+  function buildVectors() {
+    var adjusted = D.meta.adjusted || ADJUSTED;
+    Object.keys(D.meta.groups).forEach(function (g) {
+      var ms = metricsOf(g), ps = players.filter(function (p) { return p.group === g; });
+      var val = function (p, m) {
+        var v = p.per90[m]; if (v == null) return null;
+        return adjusted.indexOf(m) >= 0 ? v * (D.meta.league_factor[p.league] || 1) : v;
+      };
+      var stats = ms.map(function (m) {
+        var xs = ps.map(function (p) { return val(p, m); }).filter(function (x) { return x != null; });
+        var mu = xs.reduce(function (a, b) { return a + b; }, 0) / (xs.length || 1);
+        var sd = Math.sqrt(xs.reduce(function (a, b) { return a + (b - mu) * (b - mu); }, 0) / (xs.length || 1)) || 1;
+        return [mu, sd];
+      });
+      ps.forEach(function (p) {
+        var v = ms.map(function (m, i) { var x = val(p, m); return x == null ? 0 : (x - stats[i][0]) / stats[i][1]; });
+        var n = Math.sqrt(v.reduce(function (a, b) { return a + b * b; }, 0)) || 1e-9;
+        vectors[p.id] = v.map(function (x) { return x / n; });
+      });
+    });
+  }
+  function simScore(a, b) {
+    var va = vectors[a.id], vb = vectors[b.id], s = 0;
+    for (var i = 0; i < va.length; i++) s += va[i] * vb[i];
+    return s;
+  }
+
+  /* ------------------------------------------------------------ archetype */
+  function archetype(p) {
+    var ms = metricsOf(p.group), best = null;
+    (ARCHETYPES[p.group] || []).forEach(function (a) {
+      var vals = a[1].filter(function (m) { return ms.indexOf(m) >= 0 && p.pct[m] != null; }).map(function (m) { return p.pct[m]; });
+      if (!vals.length) return;
+      var score = vals.reduce(function (x, y) { return x + y; }, 0) / vals.length;
+      if (!best || score > best.score) best = { key: a[0], score: score };
+    });
+    return best && best.score >= 62 ? best.key : "balanced";
+  }
+  var archName = function (k) { return ARCH[k][L()]; };
+
+  /* ------------------------------------------------------------ filters */
+  var AGE_OPTS = [21, 23, 25, 28, 31], VALUE_OPTS = [2e6, 5e6, 10e6, 20e6, 50e6];
+  function filterControls(prefix, withLeague) {
+    var h = "";
+    if (withLeague) h += '<label><span>' + t("league") + '</span><select data-f="league"><option value="">' + t("allLeagues") + "</option>" + leagueOptions() + "</select></label>";
+    if (has.age) h += '<label><span>' + t("maxAge") + '</span><select data-f="age"><option value="">' + t("any") + "</option>" + AGE_OPTS.map(function (a) { return '<option value="' + a + '">≤ ' + a + "</option>"; }).join("") + "</select></label>";
+    if (has.value) h += '<label><span>' + t("maxValue") + '</span><select data-f="value"><option value="">' + t("any") + "</option>" + VALUE_OPTS.map(function (v) { return '<option value="' + v + '">≤ ' + money(v) + "</option>"; }).join("") + "</select></label>";
+    if (has.contract) {
+      var y = parseInt(season.slice(0, 4), 10) + 1;
+      h += '<label><span>' + t("contract") + '</span><select data-f="contract"><option value="">' + t("any") + "</option>" + [y, y + 1, y + 2].map(function (yy) { return '<option value="' + yy + '-06-30">' + t("until") + " " + yy + "</option>"; }).join("") + "</select></label>";
+    }
+    return h;
+  }
+  function readFilters(box) {
+    var f = {};
+    box.querySelectorAll("select[data-f]").forEach(function (s) { if (s.value) f[s.getAttribute("data-f")] = s.value; });
+    return f;
+  }
+  function passes(p, f) {
+    if (f.league && p.league !== f.league) return false;
+    if (f.age && (p.age == null || p.age > +f.age)) return false;
+    if (f.value && (p.value_eur == null || p.value_eur > +f.value)) return false;
+    if (f.contract && (!p.contract_end || p.contract_end > f.contract)) return false;
+    return true;
+  }
+  function keepSelects(box, html) {
+    var old = readFilters(box); box.innerHTML = html;
+    box.querySelectorAll("select[data-f]").forEach(function (s) { var k = s.getAttribute("data-f"); if (old[k]) s.value = old[k]; });
+  }
+  function leagueOptions() {
+    return D.meta.leagues.slice().sort(function (a, b) { return (D.meta.league_factor[b] || 0) - (D.meta.league_factor[a] || 0); })
+      .map(function (c) { return '<option value="' + c + '">' + esc(lg(c)) + "</option>"; }).join("");
+  }
+
+  /* ------------------------------------------------------------ search */
+  function search(q, group) {
+    q = fold(q.trim());
+    if (q.length < 2) return [];
+    var words = q.split(/\s+/), out = [];
+    players.forEach(function (p) {
+      for (var w = 0; w < words.length; w++) if (p._key.indexOf(words[w]) < 0) return;
+      out.push(p);
+    });
+    var starts = function (p) { var n = fold(p.name); return n.indexOf(q) === 0 || n.indexOf(" " + q) >= 0 ? 0 : 1; };
+    out.sort(function (a, b) {
+      return (group ? (a.group === group ? 0 : 1) - (b.group === group ? 0 : 1) : 0) || starts(a) - starts(b) || b.minutes - a.minutes;
+    });
+    return out.slice(0, 12);
+  }
+  // One combobox helper for the main search and the head-to-head picker.
+  function combobox(input, list, onPick, groupHint) {
+    var hits = [], idx = -1;
+    function show() {
+      var q = input.value;
+      hits = search(q, groupHint && groupHint()); idx = hits.length ? 0 : -1;
+      if (q.trim().length < 2) { list.hidden = true; input.setAttribute("aria-expanded", "false"); return; }
+      list.innerHTML = hits.length ? hits.map(function (p, i) {
+        return '<li role="option" data-id="' + esc(p.id) + '" aria-selected="' + (i === 0) + '"><span class="n">' + esc(p.name) +
+          '</span><span class="muted small">' + esc(p.team) + " · " + esc(lg(p.league)) + '</span><span class="chip g">' + p.group + "</span></li>";
+      }).join("") : '<li class="muted">' + t("noHits") + "</li>";
+      list.hidden = false; input.setAttribute("aria-expanded", "true");
+    }
+    function move(d) {
+      if (!hits.length) return;
+      idx = (idx + d + hits.length) % hits.length;
+      [].forEach.call(list.children, function (li, i) { li.setAttribute("aria-selected", i === idx); });
+      list.children[idx].scrollIntoView({ block: "nearest" });
+    }
+    function pick(id) { list.hidden = true; input.value = ""; input.setAttribute("aria-expanded", "false"); onPick(id); }
+    input.addEventListener("input", show);
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowDown") { e.preventDefault(); move(1); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); move(-1); }
+      else if (e.key === "Enter" && idx >= 0) { e.preventDefault(); pick(hits[idx].id); }
+      else if (e.key === "Escape") list.hidden = true;
+    });
+    list.addEventListener("mousedown", function (e) { var li = e.target.closest("li[data-id]"); if (li) { e.preventDefault(); pick(li.getAttribute("data-id")); } });
+    document.addEventListener("click", function (e) { if (e.target !== input && !list.contains(e.target)) list.hidden = true; });
+  }
+
+  /* ------------------------------------------------------------ routing */
+  function setHash() {
+    var h = "#" + encodeURIComponent(current.id) + (compare ? "~" + encodeURIComponent(compare.id) : "") + (season !== DEFAULT_SEASON ? "@" + season : "");
+    if (location.hash !== h) history.replaceState(null, "", h);
+  }
+  function parseHash() {
+    var h = location.hash.slice(1), s = null;
+    var at = h.lastIndexOf("@");
+    if (at >= 0 && /^\d{4}-\d{2}$/.test(h.slice(at + 1))) { s = h.slice(at + 1); h = h.slice(0, at); }
+    var parts = h.split("~").map(function (x) { return decodeURIComponent(x); });
+    return { a: parts[0], b: parts[1], season: s };
+  }
+  function open(id, cmpId, scroll) {
+    var p = byId[id]; if (!p) return;
+    current = p;
+    compare = (cmpId && byId[cmpId] && byId[cmpId] !== p) ? byId[cmpId] : topSimilar(p, {}, 1)[0] || null;
+    if (compare && compare.p) compare = compare.p;
+    setHash();
+    $("fGroup").value = p.group; fillMetrics(); renderFinder();
+    renderProfile();
+    if (scroll !== false) window.scrollTo({ top: $("app").offsetTop - 20, behavior: "smooth" });
+  }
+  function setCompare(id) {
+    var q = byId[id]; if (!q || q === current) return;
+    compare = q; setHash(); renderRadar(); renderH2H(); renderSimilar();
+  }
+
+  /* ------------------------------------------------------------ profile */
+  function chipsFor(p) {
+    var c = ['<span class="chip g">' + grp(p.group) + "</span>", '<span class="chip arch">' + archName(archetype(p)) + "</span>",
+      '<span class="chip">' + esc(p.team) + "</span>", '<span class="chip">' + esc(lg(p.league)) + "</span>"];
+    if (p.age != null) c.push('<span class="chip">' + t("age") + " " + p.age + "</span>");
+    if (p.country) c.push('<span class="chip">' + esc(p.country) + "</span>");
+    if (p.height) c.push('<span class="chip">' + p.height + " " + t("cm") + "</span>");
+    if (p.foot) c.push('<span class="chip">' + t("foot") + ": " + esc(T[String(p.foot).toLowerCase()] ? t(String(p.foot).toLowerCase()) : p.foot) + "</span>");
+    if (p.value_eur != null) c.push('<span class="chip">' + money(p.value_eur) + "</span>");
+    if (p.contract_end) c.push('<span class="chip">' + (lang === "he" ? "חוזה עד " : "Contract to ") + esc(p.contract_end.slice(0, 7)) + "</span>");
+    c.push('<span class="chip">' + p.minutes.toLocaleString() + " " + t("min") + "</span>", '<span class="chip">' + p.matches + " " + t("apps") + "</span>");
+    return c.join("");
+  }
+  function xgTag(m, p) {
+    var src = D.meta.xg_source && D.meta.xg_source[p.league];
+    return src === "ram" && /^(xg|npxg|xg_per_shot)$/.test(m) ? " · " + t("ramModel") : "";
+  }
+  function renderProfile() {
+    var p = current, metrics = metricsOf(p.group), pct = mode === "all" ? p.pct : p.pct_league;
+    var factor = D.meta.league_factor[p.league] || 1, n = D.meta.groups[p.group].players;
+    $("card").innerHTML = '<div class="who"><h2>' + esc(p.name) + "</h2></div>" +
+      '<div class="meta">' + chipsFor(p) + "</div>" +
+      '<div class="toggle" role="group"><button data-mode="all" aria-pressed="' + (mode === "all") + '">' + t("vsAll") +
+      '</button><button data-mode="league" aria-pressed="' + (mode === "league") + '">' + t("vsLeague") + "</button></div>" +
+      '<div class="bars">' + metrics.map(function (m) {
+        var v = p.per90[m], q = pct[m];
+        return '<div class="bar"><div class="lab">' + esc(mName(m)) + "<small>" + (v == null ? t("noData") : fmt(m, v) + (unit(m) ? "" : " " + t("per90")) + xgTag(m, p)) +
+          '</small></div><div class="track"><i class="' + band(q) + '" style="width:' + (q || 0) + '%"></i></div><div class="p' + (q == null ? " na" : "") + '">' +
+          (q == null ? "–" : q) + "</div></div>";
+      }).join("") + "</div>" +
+      '<p class="muted small" style="margin:14px 0 0">' + (mode === "all"
+        ? (lang === "he" ? "אחוזון מול כל ה" + grp(p.group, true) + " ב־12 הליגות (" + n + "). נפח התקפי מוכפל במקדם חוזק הליגה: ×" + factor.toFixed(2) + "."
+                         : "Percentile among all " + n + " " + grp(p.group, true) + " in the twelve leagues. Attacking volume is scaled by league strength: ×" + factor.toFixed(2) + ".")
+        : (lang === "he" ? "אחוזון מול ה" + grp(p.group, true) + " ב" + lg(p.league) + " בלבד, בלי התאמה."
+                         : "Percentile among " + grp(p.group, true) + " in the " + lg(p.league) + " only, unadjusted.")) + "</p>" +
+      '<div class="actions"><button class="btn" data-act="png">' + t("download") + '</button><button class="btn" data-act="link">' + t("copyLink") + "</button></div>";
+    renderRadar(); renderNote(); renderH2H(); renderSimilarFilters(); renderSimilar();
+  }
+
+  function radarSvg(p, q, opts) {
+    opts = opts || {};
+    var metrics = metricsOf(p.group), n = metrics.length, W = opts.w || 560, H = opts.h || 400, cx = opts.cx || 280, cy = opts.cy || 200, R = opts.r || 140;
+    function pt(i, r) { var a = -Math.PI / 2 + 2 * Math.PI * i / n; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; }
+    function poly(x) { return metrics.map(function (m, i) { var v = x.pct[m]; return pt(i, R * (v == null ? 0 : v) / 100).map(function (z) { return z.toFixed(1); }).join(","); }).join(" "); }
+    var c = opts.colors || {};
+    var s = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + (opts.vb || "0 0 " + W + " " + H) + '" role="img" aria-label="' + esc(p.name) + '">';
+    [25, 50, 75, 100].forEach(function (r) { s += '<polygon class="ring" fill="none" stroke="' + (c.line || "") + '" points="' + metrics.map(function (m, i) { return pt(i, R * r / 100).join(","); }).join(" ") + '"/>'; });
+    metrics.forEach(function (m, i) {
+      var e = pt(i, R), l = pt(i, R + 20), anchor = Math.abs(l[0] - cx) < 8 ? "middle" : l[0] > cx ? "start" : "end";
+      s += '<line class="ax" stroke="' + (c.line || "") + '" x1="' + cx + '" y1="' + cy + '" x2="' + e[0].toFixed(1) + '" y2="' + e[1].toFixed(1) + '"/>';
+      s += '<text fill="' + (c.muted || "") + '" font-size="' + (opts.fs || 11) + '" font-family="sans-serif" x="' + l[0].toFixed(1) + '" y="' + (l[1] + 4).toFixed(1) + '" text-anchor="' + anchor + '">' + esc(mShort(m)) + "</text>";
+    });
+    if (q && q.group === p.group) s += '<polygon class="vs" ' + (c.vs ? 'fill="none" stroke-dasharray="6 4" stroke-width="2" stroke="' + c.vs + '"' : "") + ' points="' + poly(q) + '"/>';
+    s += '<polygon class="me" ' + (c.accent ? 'fill="' + c.accentSoft + '" stroke-width="2.5" stroke="' + c.accent + '"' : "") + ' points="' + poly(p) + '"/></svg>';
+    return s;
+  }
+  function renderRadar() {
+    var p = current, q = compare && compare.group === p.group ? compare : null;
+    $("radar").innerHTML = radarSvg(p, q, { vb: "-70 0 560 400", w: 420, cx: 210 }) +
+      '<div class="legend"><span>' + esc(p.name) + "</span>" + (q ? '<span class="vs">' + esc(q.name) + "</span>" : "") + "</div>" +
+      '<p class="muted small" style="text-align:center;margin:6px 0 0">' + t("radarNote") + "</p>";
+  }
+
+  /* A scouting note from the numbers only: role, strengths, weaknesses, where the league
+     view and the universe view disagree, contract and age context, last season, and who
+     else plays like this. */
+  function renderNote() {
+    var p = current, metrics = metricsOf(p.group), he = lang === "he";
+    var line = function (m) { return "<b>" + esc(mShort(m)) + "</b> (" + fmt(m, p.per90[m]) + (unit(m) ? "" : " " + t("per90")) + ", " + ordinal(p.pct[m]) + ")"; };
+    var top = metrics.filter(function (m) { return p.pct[m] != null; }).sort(function (a, b) { return p.pct[b] - p.pct[a]; });
+    var strong = p.strengths.filter(function (m) { return p.pct[m] != null; }).sort(function (a, b) { return p.pct[b] - p.pct[a]; });
+    var weak = p.weaknesses.filter(function (m) { return p.pct[m] != null; }).sort(function (a, b) { return p.pct[a] - p.pct[b]; });
+    var arch = archetype(p), out = [];
+    var who = esc(p.name) + (p.age != null ? " (" + p.age + ")" : "");
+    out.push(he
+      ? who + ", " + grp(p.group) + " ב" + esc(p.team) + " (" + lg(p.league) + "), " + p.minutes.toLocaleString() + " דקות ב־" + p.matches + " הופעות בעונת " + season + "."
+      : who + ", " + grp(p.group).toLowerCase() + " at " + esc(p.team) + " (" + lg(p.league) + "), " + p.minutes.toLocaleString() + " minutes in " + p.matches + " appearances in " + season + ".");
+    if (arch !== "balanced") out.push(he ? "הפרופיל הסטטיסטי: <b>" + archName(arch) + "</b>." : "Statistical profile: <b>" + archName(arch) + "</b>.");
+    if (strong.length) out.push((he ? "בולט מול כל ה" + grp(p.group, true) + " ב־12 הליגות ב: " : "Stands out against all " + grp(p.group, true) + " in the twelve leagues for ") + listJoin(strong.slice(0, 3).map(line)) + ".");
+    else if (top.length) out.push((he ? "אין מדד באחוזון 80 ומעלה. הצד החזק ביותר: " : "No metric reaches the 80th percentile. Best area: ") + line(top[0]) + ".");
+    if (weak.length) out.push((he ? "מתחת לרמה ב: " : "Below par for ") + listJoin(weak.slice(0, 3).map(line)) + ".");
+    var gap = metrics.filter(function (m) { return p.pct[m] != null && p.pct_league[m] != null && p.pct_league[m] - p.pct[m] >= 25; });
+    if (gap.length) out.push(he
+      ? "בתוך " + lg(p.league) + " הוא מדורג גבוה יותר ב" + listJoin(gap.slice(0, 2).map(function (m) { return mShort(m) + " (" + p.pct_league[m] + " מול " + p.pct[m] + ")"; })) + ": המספרים נבנו בליגה חלשה יותר."
+      : "Within the " + lg(p.league) + " the ranking is higher on " + listJoin(gap.slice(0, 2).map(function (m) { return mShort(m).toLowerCase() + " (" + p.pct_league[m] + " vs " + p.pct[m] + ")"; })) + ": the numbers were built in a weaker league.");
+    // Last season, when the data has it: metrics that moved 15+ percentile points.
+    var prevS = seasons[seasons.indexOf(season) + 1], prev = prevS && cache[prevS] && cache[prevS].byId[p.id];
+    if (prev && prev.group === p.group) {
+      var moved = metrics.filter(function (m) { return p.pct[m] != null && prev.pct[m] != null && Math.abs(p.pct[m] - prev.pct[m]) >= 15; })
+        .sort(function (a, b) { return Math.abs(p.pct[b] - prev.pct[b]) - Math.abs(p.pct[a] - prev.pct[a]); }).slice(0, 3);
+      if (moved.length) out.push((he ? "לעומת " + prevS + ": " : "Compared with " + prevS + ": ") + listJoin(moved.map(function (m) {
+        return esc(mShort(m)) + " " + prev.pct[m] + " → " + p.pct[m];
+      })) + ".");
+    }
+    if (p.contract_end) {
+      var endYear = parseInt(season.slice(0, 4), 10) + 1;
+      if (p.contract_end <= endYear + "-06-30" && p.contract_end >= (endYear - 1) + "-07-01") out.push(he ? "החוזה מסתיים ב־" + p.contract_end.slice(0, 7) + ": יכול להיות זמין בזול או בחינם." : "Contract ends " + p.contract_end.slice(0, 7) + ": could be available cheaply or on a free.");
+    }
+    if (metrics.some(function (m) { return p.per90[m] == null; })) out.push(he
+      ? lg(p.league) + " לא מפרסמת חלק מהמדדים (למשל xG ו־xA), ולכן הם חסרים כאן ולא נחשבים כאפס."
+      : "The " + lg(p.league) + " does not publish some of these metrics (such as xG and xA), so they are missing here, not zero.");
+    var sims = topSimilar(p, {}, 3).map(function (s) { return esc(s.p.name) + " (" + esc(s.p.team) + ")"; });
+    if (sims.length) out.push((he ? "הפרופילים הכי קרובים: " : "Closest statistical profiles: ") + listJoin(sims) + ".");
+    $("note").innerHTML = "<h2>" + t("noteTitle") + "</h2>" + out.map(function (s) { return "<p>" + s + "</p>"; }).join("");
+  }
+
+  /* ------------------------------------------------------------ head to head */
+  function renderH2H() {
+    var a = current, b = compare;
+    $("q2").placeholder = t("placeholder2");
+    if (!b) { $("h2h").innerHTML = '<p class="empty">' + t("placeholder2") + "</p>"; return; }
+    var ms = metricsOf(a.group), same = a.group === b.group;
+    var side = function (p, cls) {
+      return '<div class="side ' + cls + '"><div class="nm">' + esc(p.name) + '</div><div class="muted small">' + esc(p.team) + " · " + esc(lg(p.league)) + " · " + grp(p.group) +
+        (p.age != null ? " · " + p.age : "") + (p.value_eur != null ? " · " + money(p.value_eur) : "") + "</div></div>";
+    };
+    var rows = ms.map(function (m) {
+      var pa = a.pct[m], pb = b.pct ? b.pct[m] : null, va = a.per90[m], vb = b.per90 ? b.per90[m] : null;
+      var wa = pa != null && pb != null && pa > pb, wb = pa != null && pb != null && pb > pa;
+      return '<div class="h2h-row"><div class="v' + (wa ? " win" : "") + '">' + fmt(m, va) + ' <span class="muted small">' + (pa == null ? "" : pa) + "</span></div>" +
+        '<div class="t a"><i style="width:' + (pa || 0) + '%"></i></div><div class="m">' + esc(mShort(m)) + "</div>" +
+        '<div class="t b"><i style="width:' + (pb || 0) + '%"></i></div><div class="v b' + (wb ? " win" : "") + '"><span class="muted small">' + (pb == null ? "" : pb) + "</span> " + fmt(m, vb) + "</div></div>";
+    }).join("");
+    var sc = same ? '<span class="score">' + Math.round(simScore(a, b) * 100) + "%</span>" : "";
+    $("h2h").innerHTML = '<div class="h2h-head">' + side(a, "a") + '<div class="vs">VS<br>' + sc + "</div>" + side(b, "b") + "</div>" + rows +
+      (same ? "" : '<p class="muted small" style="margin:12px 0 0">' + t("otherGroup") + "</p>");
+  }
+
+  /* ------------------------------------------------------------ similar / replacement */
+  function topSimilar(p, f, n) {
+    if (!vectors[p.id]) return [];
+    var out = [];
+    players.forEach(function (q) { if (q !== p && q.group === p.group && vectors[q.id] && passes(q, f)) out.push({ p: q, score: simScore(p, q) }); });
+    out.sort(function (x, y) { return y.score - x.score; });
+    return out.slice(0, n);
+  }
+  function renderSimilarFilters() { keepSelects($("simFilters"), filterControls("s", true)); }
+  function renderSimilar() {
+    var p = current, keys = metricsOf(p.group).slice(0, 3), list = topSimilar(p, readFilters($("simFilters")), 10);
+    var cols = (has.age ? '<th class="num">' + t("age") + "</th>" : "") + (has.value ? '<th class="num">' + t("value") + "</th>" : "");
+    $("similar").innerHTML = list.length ? "<table><thead><tr><th class=\"num\">" + t("sim") + "</th><th>" + t("player") + "</th><th>" + t("team") + "</th><th>" + t("league") +
+      "</th>" + cols + '<th class="num">' + t("minutes") + "</th>" + keys.map(function (m) { return '<th class="num">' + esc(mShort(m)) + "</th>"; }).join("") +
+      "</tr></thead><tbody>" + list.map(function (s) {
+        var q = s.p;
+        return '<tr data-id="' + esc(q.id) + '" class="' + (compare === q ? "on" : "") + '"><td class="num score">' + Math.round(s.score * 100) +
+          '%</td><td><a href="#' + encodeURIComponent(q.id) + '" class="n" data-open="' + esc(q.id) + '">' + esc(q.name) + "</a></td><td>" + esc(q.team) +
+          '</td><td><span class="chip">' + esc(lg(q.league)) + "</span></td>" +
+          (has.age ? '<td class="num">' + (q.age == null ? "–" : q.age) + "</td>" : "") + (has.value ? '<td class="num">' + money(q.value_eur) + "</td>" : "") +
+          '<td class="num">' + q.minutes.toLocaleString() + "</td>" +
+          keys.map(function (m) { return '<td class="num">' + (q.pct[m] == null ? "–" : q.pct[m]) + "</td>"; }).join("") + "</tr>";
+      }).join("") + "</tbody></table>" : '<p class="empty">' + t("noRows") + "</p>";
+  }
+
+  /* ------------------------------------------------------------ finder */
+  function fillFilters() {
+    var groups = GROUP_ORDER.filter(function (g) { return D.meta.groups[g]; });
+    var g = $("fGroup").value, l = $("fLeague").value;
+    $("fGroup").innerHTML = groups.map(function (x) { return '<option value="' + x + '">' + grp(x) + "</option>"; }).join("");
+    $("fLeague").innerHTML = '<option value="">' + t("allLeagues") + "</option>" + leagueOptions();
+    $("fGroup").value = groups.indexOf(g) >= 0 ? g : "W"; $("fLeague").value = l;
+    keepSelects($("findFilters"), filterControls("f", false));
+  }
+  function fillMetrics() {
+    var keep = $("fMetric").value, ms = metricsOf($("fGroup").value);
+    $("fMetric").innerHTML = ms.map(function (m) { return '<option value="' + m + '">' + esc(mName(m)) + "</option>"; }).join("");
+    $("fMetric").value = ms.indexOf(keep) >= 0 ? keep : ms[0];
+  }
+  function renderFinder() {
+    var g = $("fGroup").value, m = $("fMetric").value, f = readFilters($("findFilters"));
+    f.league = $("fLeague").value;
+    var ms = metricsOf(g);
+    var rows = players.filter(function (p) { return p.group === g && p.pct[m] != null && passes(p, f); })
+      .sort(function (a, b) { return b.pct[m] - a.pct[m] || b.minutes - a.minutes; }).slice(0, 25);
+    var other = ms.filter(function (x) { return x !== m; }).slice(0, 3);
+    var cols = (has.age ? '<th class="num">' + t("age") + "</th>" : "") + (has.value ? '<th class="num">' + t("value") + "</th>" : "");
+    $("finder").innerHTML = rows.length ? "<table><thead><tr><th class=\"num\">#</th><th>" + t("player") + "</th><th>" + t("team") + "</th><th>" + t("league") +
+      "</th><th>" + t("profile") + "</th>" + cols + '<th class="num">' + t("minutes") + '</th><th class="num">' + esc(mShort(m)) + " " + t("per90") + '</th><th class="num">' + t("pctile") + "</th>" +
+      other.map(function (x) { return '<th class="num">' + esc(mShort(x)) + "</th>"; }).join("") + "</tr></thead><tbody>" +
+      rows.map(function (p, i) {
+        return '<tr data-open="' + esc(p.id) + '" class="' + (current === p ? "on" : "") + '"><td class="num muted">' + (i + 1) + '</td><td><span class="n">' + esc(p.name) + "</span></td><td>" + esc(p.team) +
+          '</td><td><span class="chip">' + esc(lg(p.league)) + '</span></td><td class="small">' + archName(archetype(p)) + "</td>" +
+          (has.age ? '<td class="num">' + (p.age == null ? "–" : p.age) + "</td>" : "") + (has.value ? '<td class="num">' + money(p.value_eur) + "</td>" : "") +
+          '<td class="num">' + p.minutes.toLocaleString() + '</td><td class="num">' + fmt(m, p.per90[m]) +
+          '</td><td class="num score">' + p.pct[m] + "</td>" + other.map(function (x) { return '<td class="num">' + (p.pct[x] == null ? "–" : p.pct[x]) + "</td>"; }).join("") + "</tr>";
+      }).join("") + "</tbody></table>" : '<p class="empty">' + t("noRows") + "</p>";
+  }
+
+  /* ------------------------------------------------------------ share card */
+  function downloadCard() {
+    var p = current, cs = getComputedStyle(document.documentElement), v = function (k) { return cs.getPropertyValue(k).trim(); };
+    var col = { bg: v("--rs-bg"), panel: v("--rs-panel"), ink: v("--rs-ink"), body: v("--rs-body"), muted: v("--rs-muted"), accent: v("--rs-accent"), line: v("--rs-line-strong") };
+    var radar = radarSvg(p, null, { w: 560, h: 520, cx: 280, cy: 270, r: 190, fs: 15,
+      colors: { line: col.line, muted: col.body, accent: col.accent, accentSoft: col.accent + "33" } });
+    var ms = metricsOf(p.group).filter(function (m) { return p.pct[m] != null; }).sort(function (a, b) { return p.pct[b] - p.pct[a]; }).slice(0, 6);
+    var bars = ms.map(function (m, i) {
+      var y = 250 + i * 52;
+      return '<text x="640" y="' + y + '" fill="' + col.ink + '" font-size="20" font-family="sans-serif">' + esc(mShort(m)) + "</text>" +
+        '<text x="1130" y="' + y + '" fill="' + col.ink + '" font-size="22" font-weight="700" font-family="sans-serif" text-anchor="end">' + p.pct[m] + "</text>" +
+        '<rect x="640" y="' + (y + 10) + '" width="490" height="10" fill="' + col.panel + '"/><rect x="640" y="' + (y + 10) + '" width="' + (4.9 * p.pct[m]) + '" height="10" fill="' + col.accent + '"/>';
+    }).join("");
+    var sub = [p.team, lg(p.league), grp(p.group), archName(archetype(p))].concat(p.age != null ? [t("age") + " " + p.age] : []).join(" · ");
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">' +
+      '<rect width="1200" height="630" fill="' + col.bg + '"/><rect x="0" y="0" width="1200" height="6" fill="' + col.accent + '"/>' +
+      '<text x="60" y="88" fill="' + col.ink + '" font-size="54" font-weight="700" font-family="sans-serif">' + esc(p.name) + "</text>" +
+      '<text x="60" y="130" fill="' + col.body + '" font-size="22" font-family="sans-serif">' + esc(sub) + "</text>" +
+      '<text x="640" y="200" fill="' + col.muted + '" font-size="16" font-family="sans-serif" letter-spacing="2">' + esc(t("radarNote").toUpperCase()) + "</text>" + bars +
+      '<g transform="translate(40,90)">' + radar.replace(/^<svg[^>]*>/, "").replace(/<\/svg>$/, "") + "</g>" +
+      '<text x="60" y="600" fill="' + col.muted + '" font-size="16" font-family="sans-serif">SCOUT FINDER · ' + season + " · rshiri.github.io/scout-finder</text></svg>";
+    var img = new Image();
+    img.onload = function () {
+      var c = document.createElement("canvas"); c.width = 1200; c.height = 630;
+      c.getContext("2d").drawImage(img, 0, 0);
+      var a = document.createElement("a"); a.download = "scout-finder-" + fold(p.name).replace(/[^a-z0-9]+/g, "-") + ".png";
+      a.href = c.toDataURL("image/png"); a.click();
+    };
+    img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+  }
+
+  /* ------------------------------------------------------------ chrome */
+  function renderStatic() {
+    document.querySelectorAll("[data-t]").forEach(function (el) { el.textContent = t(el.getAttribute("data-t")); });
+    $("kicker").textContent = t("kicker") + " · " + season;
+    $("q").placeholder = t("placeholder"); $("q2").placeholder = t("placeholder2");
+    var dir = lang === "he" ? "rtl" : "ltr";
+    $("app").dir = $("method").dir = dir; document.querySelector("header.hero").dir = dir;
+    if (!D) return;
+    $("stats").innerHTML = "<span><b>" + players.length.toLocaleString() + "</b>" + t("players") + "</span><span><b>" + D.meta.leagues.length + "</b>" + t("leagues") +
+      "</span><span><b>" + Object.keys(D.meta.groups).length + "</b>" + t("positions") + "</span>";
+    var beta = D.meta.beta_fit, b = beta ? beta.beta : 0.06;
+    var ram = D.meta.xg_source ? Object.keys(D.meta.xg_source).filter(function (k) { return D.meta.xg_source[k] === "ram"; }).map(lg) : [];
+    $("method").innerHTML = lang === "he"
+      ? "<p>הנתונים: סטטיסטיקה לכל שחקן בכל משחק מ־FotMob, מסוכמת לעונה ומחושבת ל־90 דקות. נכללים רק שחקנים עם לפחות 900 דקות בליגה (פחות בתחילת עונה). עמדה נקבעת לפי המשבצת שבה השחקן פתח הכי הרבה.</p>" +
+        "<p>חוזק ליגה: ממוצע דירוג ClubElo של הקבוצות בכל ליגה. מדדי נפח התקפי מוכפלים ב־exp(" + b + " × הפרש Elo / 100) מול הפרמייר ליג. " +
+        (beta ? "המקדם כויל על " + beta.n + " שחקנים שעברו ליגה" + (beta.ci ? " (טווח " + beta.ci[0] + "–" + beta.ci[1] + ")" : "") + "." : "זו הערכה ראשונית ולא מודל מכויל.") +
+        " השוואת שחקנים דומים היא דמיון קוסינוס על ערכים מתוקננים, בתוך אותה עמדה. הפרופיל (יוצר, עוגן וכו') נקבע לפי קבוצת המדדים עם האחוזון הממוצע הגבוה ביותר.</p>" +
+        (ram.length ? "<p>ה־xG ב" + listJoin(ram) + " מגיע ממודל ה־xG של רם; בשאר הליגות מ־FotMob.</p>" : "") +
+        '<p>הקוד: <a href="https://github.com/RShiri/RShiri.github.io/tree/main/scout-finder">scout-finder/pipeline</a>.</p>'
+      : "<p>Data: per-match player stats from FotMob, summed to the season and expressed per 90 minutes. Only players with 900+ league minutes are ranked (fewer early in a season). Position is the slot a player started in most.</p>" +
+        "<p>League strength is the mean ClubElo rating of each league's clubs. Attacking volume is scaled by exp(" + b + " × Elo gap / 100) against the Premier League; " +
+        (beta ? "β was fitted on " + beta.n + " players who changed leagues" + (beta.ci ? " (range " + beta.ci[0] + "–" + beta.ci[1] + ")" : "") + "." : "it is a first heuristic, not a calibrated model.") +
+        " Similar players are the cosine similarity of z-scored per-90 rates within the same position. The profile label (creator, anchor and so on) is the metric family with the highest mean percentile.</p>" +
+        (ram.length ? "<p>xG in the " + listJoin(ram) + " comes from Ram's own xG model; elsewhere from FotMob.</p>" : "") +
+        '<p>Code: <a href="https://github.com/RShiri/RShiri.github.io/tree/main/scout-finder">scout-finder/pipeline</a>.</p>';
+    if (seasons.length > 1) {
+      $("seasonBox").hidden = false;
+      $("season").innerHTML = seasons.map(function (s) { return '<option value="' + s + '">' + s + "</option>"; }).join("");
+      $("season").value = season;
+    }
+    fillFilters(); fillMetrics(); renderFinder();
+    if (current) renderProfile();
+  }
+
+  function switchSeason(s, wantA, wantB) {
+    $("loading").hidden = false;
+    return load(s).then(function (d) {
+      season = s; use(d); $("loading").hidden = true; $("app").hidden = false;
+      var a = byId[wantA] || (current && byId[current.id]) || byId["fotmob:1467236"] || players[0];
+      renderStatic(); open(a.id, wantB, false);
+      // The previous season feeds the note's "compared with" line; fetch it quietly.
+      var prev = seasons[seasons.indexOf(s) + 1];
+      if (prev && !cache[prev]) load(prev).then(function () { if (season === s) renderNote(); }).catch(function () {});
+    });
+  }
+
+  function wire() {
+    combobox($("q"), $("hits"), function (id) { open(id); });
+    combobox($("q2"), $("hits2"), setCompare, function () { return current && current.group; });
+    $("card").addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-mode]");
+      if (b) { mode = b.getAttribute("data-mode"); renderProfile(); return; }
+      var act = e.target.closest("button[data-act]"); if (!act) return;
+      if (act.getAttribute("data-act") === "png") downloadCard();
+      else if (navigator.clipboard) navigator.clipboard.writeText(location.href).then(function () { act.textContent = t("copied"); }).catch(function () {});
+    });
+    $("similar").addEventListener("click", function (e) {
+      var a = e.target.closest("[data-open]");
+      if (a) { e.preventDefault(); open(a.getAttribute("data-open")); return; }
+      var tr = e.target.closest("tr[data-id]");
+      if (tr) { setCompare(tr.getAttribute("data-id")); $("h2hBlock").scrollIntoView({ behavior: "smooth", block: "start" }); }
+    });
+    $("simFilters").addEventListener("change", renderSimilar);
+    $("finder").addEventListener("click", function (e) { var tr = e.target.closest("tr[data-open]"); if (tr) open(tr.getAttribute("data-open")); });
+    $("fGroup").addEventListener("change", function () { fillMetrics(); renderFinder(); });
+    $("fLeague").addEventListener("change", renderFinder);
+    $("fMetric").addEventListener("change", renderFinder);
+    $("findFilters").addEventListener("change", renderFinder);
+    $("season").addEventListener("change", function () { switchSeason($("season").value, current && current.id); });
+    window.addEventListener("hashchange", function () {
+      var h = parseHash();
+      if (h.season && h.season !== season && seasons.indexOf(h.season) >= 0) { switchSeason(h.season, h.a, h.b); return; }
+      if (byId[h.a] && (byId[h.a] !== current || (h.b && byId[h.b] !== compare))) open(h.a, h.b, false);
+    });
+    window.addEventListener("sitelangchange", function (e) { lang = e.detail === "he" ? "he" : "en"; renderStatic(); });
+  }
+
+  lang = document.documentElement.getAttribute("data-site-lang") === "he" ? "he" : "en";
+  renderStatic(); wire();
+  // data/seasons.json lists the season files when there is more than one; without it, one season.
+  fetch("data/seasons.json").then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }).then(function (s) {
+    if (s && s.seasons && s.seasons.length) { seasons = s.seasons; season = DEFAULT_SEASON = s["default"] || s.seasons[0]; }
+    var h = parseHash();
+    if (h.season && seasons.indexOf(h.season) >= 0) season = h.season;
+    return switchSeason(season, h.a, h.b);
+  }).catch(function (err) { $("loading").textContent = "Could not load the data (" + err.message + ")"; });
+})();
+</script>
+</body>
+</html>
