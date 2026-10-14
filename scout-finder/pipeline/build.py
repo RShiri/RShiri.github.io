@@ -21,27 +21,40 @@ from .league_strength import ADJUSTED
 # listed in RATIOS. A metric is skipped when the source does not publish it,
 # so the same profile works for FotMob (wide) and Understat (narrow).
 PROFILES = {
-    "CB": ["tackles", "interceptions", "clearances", "aerials_won", "passes", "pass_pct",
+    "CB": ["tackles_padj", "interceptions_padj", "clearances", "blocks", "aerials_won",
+           "aerial_pct", "ground_duel_pct", "passes", "pass_pct", "long_balls_accurate",
            "xg_buildup"],
-    "FB": ["tackles", "interceptions", "key_passes", "xa", "dribbles", "passes", "touches",
+    "FB": ["tackles_padj", "interceptions_padj", "recoveries", "ground_duel_pct",
+           "crosses_accurate", "key_passes", "xa", "final_third_passes", "dribbles", "touches",
            "xg_chain"],
-    "DM": ["tackles", "interceptions", "passes", "pass_pct", "key_passes", "dispossessed",
+    "DM": ["tackles_padj", "interceptions_padj", "recoveries", "ground_duel_pct", "passes",
+           "pass_pct", "long_balls_accurate", "final_third_passes", "dispossessed",
            "xg_buildup"],
-    "CM": ["passes", "pass_pct", "key_passes", "xa", "tackles", "interceptions", "xg",
-           "xg_buildup"],
-    "AM": ["key_passes", "xa", "xg", "shots", "dribbles", "touches", "dispossessed",
-           "xg_chain"],
-    "W":  ["xg", "xa", "shots", "key_passes", "dribbles", "touches", "dispossessed",
-           "xg_chain"],
-    "FW": ["xg", "npxg", "shots", "xg_per_shot", "shots_on_target", "xa", "aerials_won",
-           "touches"],
-    "GK": ["saves", "passes", "pass_pct"],
+    "CM": ["passes", "pass_pct", "final_third_passes", "key_passes", "xa", "xg",
+           "box_touches", "tackles_padj", "interceptions_padj", "recoveries", "xg_buildup"],
+    "AM": ["key_passes", "big_chances_created", "xa", "xg", "shots", "box_touches",
+           "dribbles", "dribble_pct", "final_third_passes", "dispossessed", "xg_chain"],
+    "W":  ["xg", "xa", "shots", "key_passes", "big_chances_created", "dribbles", "dribble_pct",
+           "crosses_accurate", "box_touches", "dispossessed", "xg_chain"],
+    "FW": ["xg", "npxg", "shots", "xg_per_shot", "shots_on_target", "xa", "box_touches",
+           "aerials_won", "aerial_pct"],
+    "GK": ["save_pct", "goals_prevented", "saves_inside_box", "sweeper_actions",
+           "high_claims", "passes", "pass_pct", "long_balls_accurate"],
 }
 RATIOS = {
     "pass_pct": ("passes_accurate", "passes"),
     "xg_per_shot": ("xg", "shots"),
+    "aerial_pct": ("aerials_won", "aerials"),
+    "ground_duel_pct": ("ground_duels_won", "ground_duels"),
+    "dribble_pct": ("dribbles", "dribbles_attempted"),
+    "save_pct": ("saves", "shots_faced"),
 }
 LOWER_IS_BETTER = {"dispossessed"}
+# A ratio built on a handful of attempts is noise (2 of 2 aerials is not 100%).
+# Below this many attempts per 90 over the season the ratio stays empty.
+MIN_ATTEMPTS_P90 = {"aerial_pct": 1.0, "ground_duel_pct": 1.5, "dribble_pct": 0.5,
+                    "xg_per_shot": 0.5}
+PROFILE_FIELDS = ["age", "value_eur", "country", "height", "foot", "contract_end"]
 SIMILAR_N = 8
 
 
@@ -52,8 +65,11 @@ def per90(df: pd.DataFrame) -> pd.DataFrame:
     for m in metrics:
         if m in RATIOS:
             num, den = RATIOS[m]
+            if den == "shots_faced" and "saves" in df and "goals_conceded" in df:
+                df = df.assign(shots_faced=df["saves"] + df["goals_conceded"])
             if num in df and den in df:
-                out[m] = df[num] / df[den].where(df[den] > 0)
+                floor = MIN_ATTEMPTS_P90.get(m, 0) * df["minutes"] / 90
+                out[m] = df[num] / df[den].where((df[den] > 0) & (df[den] >= floor))
         elif m in df and df[m].notna().any():
             out[m] = df[m] / df["minutes"] * 90
     return out
@@ -88,6 +104,13 @@ def similar(rates: pd.DataFrame, n: int = SIMILAR_N) -> dict[str, list[tuple[str
     return {ids[i]: [(ids[j], round(float(sim[i, j]), 3)) for j in top[i]] for i in range(len(ids))}
 
 
+def _plain(x):
+    """numpy scalars -> JSON-friendly Python values (ages and values as ints)."""
+    if isinstance(x, (np.integer, np.floating)):
+        return int(x) if float(x).is_integer() else round(float(x), 1)
+    return x
+
+
 def _num(x):
     return None if pd.isna(x) else x
 
@@ -118,6 +141,10 @@ def build(season_df: pd.DataFrame, league_factor: dict[str, float] | None = None
         # Keep a metric when at least half the group has it (xG is missing in some leagues).
         cols = [m for m in profile if m in raw and raw.loc[idx, m].notna().mean() >= 0.5]
         if len(idx) < 5 or not cols:
+            # Skipping a group drops its players from the file: say so (PROGRESS.md, Rodri).
+            if len(idx):
+                print(f"WARNING: group {group} skipped ({len(idx)} players, metrics {cols})"
+                      f" - its players are not in the output")
             continue
         used[group] = cols
         pct_all = percentiles(adj.loc[idx, cols])
@@ -131,6 +158,7 @@ def build(season_df: pd.DataFrame, league_factor: dict[str, float] | None = None
             players.append({
                 "id": pid, "name": row["name"], "team": row["team"], "league": row["league"],
                 "group": group, "matches": int(row["matches"]), "minutes": int(row["minutes"]),
+                **{f: _plain(row[f]) for f in PROFILE_FIELDS if f in row and pd.notna(row[f])},
                 "per90": {m: _num(round(float(raw.at[pid, m]), 3)) for m in cols},
                 "pct": {m: _num(p[m]) and int(p[m]) for m in cols},
                 "pct_league": {m: _num(pct_lg.at[pid, m]) and int(pct_lg.at[pid, m]) for m in cols},
@@ -160,11 +188,31 @@ def write(season_df: pd.DataFrame, out_dir: Path, name: str,
     return path
 
 
+def write_season_index(out_dir: Path, default: str | None = None) -> Path:
+    """data/seasons.json: the built universe seasons, newest first, and which to open.
+
+    The default is the newest season with a full set of players: early in a season
+    the current one is thin, so the page opens on the last finished one.
+    """
+    seasons = sorted((p.stem.split("_", 1)[1] for p in out_dir.glob("universe_*.json")),
+                     reverse=True)
+    if default is None:
+        sizes = {s: len(json.loads((out_dir / f"universe_{s}.json").read_text(
+            encoding="utf-8"))["players"]) for s in seasons}
+        full = [s for s in seasons if sizes[s] >= 0.8 * max(sizes.values())]
+        default = full[0] if full else (seasons[0] if seasons else None)
+    path = out_dir / "seasons.json"
+    path.write_text(json.dumps({"seasons": seasons, "default": default}), encoding="utf-8")
+    return path
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--xepl-csv", type=Path, help="XEPL player_match_stats.csv (FotMob, EPL)")
     ap.add_argument("--fotmob", action="store_true",
                     help="every CSV pipeline.fetch_fotmob wrote under data/fotmob/")
+    ap.add_argument("--season", action="append", default=[],
+                    help="with --fotmob: only these seasons (default: every CSV found)")
     ap.add_argument("--elo-date", help="YYYY-MM-DD for ClubElo league strength (default: none)")
     ap.add_argument("--understat", action="append", default=[], metavar="LEAGUE:SEASON")
     ap.add_argument("--out", type=Path, default=Path(__file__).resolve().parent.parent / "data")
@@ -182,9 +230,11 @@ def main() -> None:
         for _, season_df in fotmob.load_xepl_csv(a.xepl_csv).groupby("season"):
             print("wrote", write(season_df.reset_index(drop=True), a.out, "xepl", factor))
     if a.fotmob:
-        paths = sorted((a.out / "fotmob").glob("*.csv"))
+        paths = sorted(p for p in (a.out / "fotmob").glob("*.csv")
+                       if not a.season or p.stem.split("_", 1)[1] in a.season)
         for _, season_df in fotmob.load_fetched(paths).groupby("season"):
             print("wrote", write(season_df.reset_index(drop=True), a.out, "universe", factor))
+        write_season_index(a.out)
     for spec in a.understat:
         league, season = spec.split(":")
         df = understat.load(league, season, a.out / "raw", refresh=a.refresh)

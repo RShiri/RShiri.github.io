@@ -29,7 +29,8 @@ from .leagues import LEAGUES
 BETA = 0.06
 REFERENCE = "ENG1"
 ADJUSTED = {"goals", "assists", "xg", "npxg", "xa", "shots", "shots_on_target",
-            "key_passes", "dribbles", "xg_chain"}
+            "key_passes", "big_chances_created", "box_touches", "final_third_passes",
+            "dribbles", "crosses_accurate", "xg_chain"}
 
 # Last resort when ClubElo has no rating for a league (it did not rate South
 # American clubs until recently). Rough placement between the Championship and

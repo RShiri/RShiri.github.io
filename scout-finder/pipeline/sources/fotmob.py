@@ -19,12 +19,29 @@ from ..positions import group_from_slot
 # XEPL column -> schema column. Everything here is summed over the season.
 SUM_COLS = {
     "goals": "goals", "assists": "assists", "xg": "xg", "npxg": "npxg", "xa": "xa",
-    "shots": "shots", "sot": "shots_on_target", "keyPasses": "key_passes",
-    "passes": "passes", "passAcc": "passes_accurate", "touches": "touches",
-    "dribbles": "dribbles", "tackles": "tackles", "interceptions": "interceptions",
-    "clearances": "clearances", "aerials": "aerials_won",
-    "dispossessed": "dispossessed", "saves": "saves",
+    "xgot": "xgot", "shots": "shots", "sot": "shots_on_target",
+    "bigChancesMissed": "big_chances_missed", "keyPasses": "key_passes",
+    "bigChancesCreated": "big_chances_created",
+    "passes": "passes", "passAcc": "passes_accurate", "finalThirdPasses": "final_third_passes",
+    "crosses": "crosses", "crossesAcc": "crosses_accurate",
+    "longBalls": "long_balls", "longBallsAcc": "long_balls_accurate",
+    "touches": "touches", "boxTouches": "box_touches",
+    "dribbles": "dribbles", "dribblesAtt": "dribbles_attempted",
+    "dispossessed": "dispossessed", "wasFouled": "was_fouled",
+    "tackles": "tackles", "interceptions": "interceptions",
+    "tacklesPadj": "tackles_padj", "interceptionsPadj": "interceptions_padj",
+    "recoveries": "recoveries", "clearances": "clearances", "blocks": "blocks",
+    "dribbledPast": "dribbled_past", "fouls": "fouls",
+    "groundDuels": "ground_duels", "groundDuelsWon": "ground_duels_won",
+    "aerials": "aerials_won", "aerialsAtt": "aerials",
+    "saves": "saves", "savesInsideBox": "saves_inside_box", "goalsConceded": "goals_conceded",
+    "xgotFaced": "xgot_faced", "goalsPrevented": "goals_prevented",
+    "sweeperActions": "sweeper_actions", "highClaims": "high_claims",
 }
+# Possession adjustment (PAdj): a defender facing a side that has the ball 65% of
+# the time gets more chances to tackle. Each match's count is scaled to what it
+# would be at 50% opponent possession.
+PADJ = {"tackles": "tacklesPadj", "interceptions": "interceptionsPadj"}
 
 
 def season_of(date: str) -> str:
@@ -49,6 +66,11 @@ def from_match_rows(df: pd.DataFrame, league: str = "ENG1") -> pd.DataFrame:
     if "season" not in df:
         df["season"] = df["date"].astype(str).map(season_of)
     df = df.sort_values("date")
+    if "oppPossession" in df:
+        scale = 50 / df["oppPossession"].where(df["oppPossession"] > 0)
+        for raw, adj in PADJ.items():
+            if raw in df:
+                df[adj] = df[raw] * scale
     if "league" not in df:
         df["league"] = league
     keys = ["league", "season", "player_id"]
@@ -63,6 +85,10 @@ def from_match_rows(df: pd.DataFrame, league: str = "ENG1") -> pd.DataFrame:
         minutes=("minutes", "sum"),
         pos_group=("position", _main_group),
     )
+    # Age, market value and nationality: the latest the lineups gave this season.
+    for col, out_col in (("age", "age"), ("valueEur", "value_eur"), ("country", "country")):
+        if col in df:
+            info[out_col] = df.dropna(subset=[col]).groupby(keys)[col].last()
     out = info.join(totals).reset_index()
     out["source"] = "fotmob"
     out["player_id"] = "fotmob:" + out["player_id"].astype(str)

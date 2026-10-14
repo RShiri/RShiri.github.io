@@ -145,3 +145,32 @@ def test_fotmob_pivots_are_central_midfielders():
     group = lambda pid: group_from_slot(ff.slot_from_fotmob({"positionId": pid}))
     # 4-2-3-1 double pivot (64/66), 4-3-1-2 three (63/65/67), 4-1-4-1 anchor (65).
     assert [group(p) for p in (63, 64, 65, 66, 67)] == ["CM"] * 5
+
+
+def test_fotmob_wider_stats_profile_and_possession():
+    from pathlib import Path
+    from pipeline import fetch_fotmob as ff
+    path = Path(__file__).parent / "fixtures" / "fotmob_match_4813374_trimmed.json"
+    details = json.loads(path.read_text(encoding="utf-8"))
+    # Lineup profile and match possession, as the live response carries them.
+    lineup = details["content"]["lineup"]["homeTeam"]
+    for p in lineup["starters"]:
+        if p["id"] == 292462:
+            p.update(age=33, marketValue=30000000, countryName="Egypt")
+    details["content"]["stats"] = {"Periods": {"All": {"stats": [{"stats": [
+        {"key": "BallPossesion", "stats": [61, 39]}]}]}}}
+    rows = {r["player"]: r for r in ff.player_rows({"id": 4813374, "date": "2025-08-15"},
+                                                   details, "ENG1")}
+    salah, gakpo, keeper = rows["Mohamed Salah"], rows["Cody Gakpo"], rows["Djordje Petrovic"]
+    assert (salah["age"], salah["valueEur"], salah["country"]) == (33, 30000000, "Egypt")
+    assert salah["oppPossession"] == 39 and keeper["oppPossession"] == 61
+    assert (salah["boxTouches"], salah["finalThirdPasses"], salah["xgot"]) == (9, 3, 0.71)
+    assert (gakpo["dribbles"], gakpo["dribblesAtt"]) == (2, 7)
+    assert (gakpo["groundDuelsWon"], gakpo["groundDuels"], gakpo["aerialsAtt"]) == (6, 12, 11)
+    assert (keeper["goalsPrevented"], keeper["longBallsAcc"]) == (-0.95, 12)
+    # Possession adjustment: Liverpool's players faced 39% possession, so their
+    # tackles scale up by 50/39 in the season roll-up.
+    season = fotmob.from_match_rows(pd.DataFrame(list(rows.values())))
+    gk = season.set_index("name").loc["Cody Gakpo"]
+    assert abs(gk["tackles_padj"] - gk["tackles"] * 50 / 39) < 1e-9
+    assert season.set_index("name").loc["Mohamed Salah", "country"] == "Egypt"
