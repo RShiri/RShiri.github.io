@@ -1,5 +1,6 @@
 import json
 
+import numpy as np
 import pandas as pd
 
 from pipeline import build
@@ -229,3 +230,28 @@ def test_ram_xg_shares_league_xg_at_fotmob_level(tmp_path):
     assert source["ENG1"] == "ram" and scale["ENG1 2025-26 xg"] == round(10 / 7.5, 3)
     assert out["xg"].round(3).tolist() == [6.0, 4.0]
     assert out["prog_passes"].tolist() == [45.0, 90.0]
+
+
+def test_calibrate_recovers_beta_from_movers():
+    from pipeline import calibrate
+    rows, elo = [], {"ENG1": 1840, "NED1": 1555, "ISR1": 1430}
+    rng = np.random.default_rng(1)
+    for i in range(60):
+        a, b = [("NED1", "ENG1"), ("ISR1", "NED1"), ("ENG1", "ISR1")][i % 3]
+        ratio = np.exp(0.12 * (elo[a] - elo[b]) / 100 + rng.normal(0, 0.05))
+        for lg, season, k in ((a, "2024-25", 1.0), (b, "2025-26", ratio)):
+            rows.append({"player_id": f"fotmob:{i}", "name": f"P{i}", "league": lg,
+                         "season": season, "minutes": 1800.0,
+                         **{m: 40.0 * k for m in calibrate.METRICS}})
+    mv = calibrate.movers(calibrate.stints(pd.DataFrame(rows)), elo)
+    fit = calibrate.fit(mv, boot=200)
+    assert fit["n"] == 60 and abs(fit["beta"] - 0.12) < 0.01
+    assert fit["ci"][0] < 0.12 < fit["ci"][1]
+
+
+def test_update_current_season_turns_over_in_july():
+    import datetime
+    from pipeline.update import current_season
+    assert current_season(datetime.date(2026, 10, 15)) == "2026-27"
+    assert current_season(datetime.date(2027, 6, 30)) == "2026-27"
+    assert current_season(datetime.date(2027, 7, 1)) == "2027-28"

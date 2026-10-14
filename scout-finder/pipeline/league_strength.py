@@ -116,6 +116,18 @@ def _site_league_elos(cache_dir: Path) -> dict[str, dict]:
     return out
 
 
-def factors(elos: dict[str, dict]) -> dict[str, float]:
+def factors(elos: dict[str, dict], beta: float = BETA) -> dict[str, float]:
     ref = elos[REFERENCE]["elo"]
-    return {code: round(math.exp(BETA * (e["elo"] - ref) / 100), 3) for code, e in elos.items()}
+    return {code: round(math.exp(beta * (e["elo"] - ref) / 100), 3) for code, e in elos.items()}
+
+
+MIN_FIT_N = 100   # movers needed before the fitted BETA replaces the default
+
+
+def fitted_beta(path: Path) -> tuple[float, dict | None]:
+    """BETA from pipeline.calibrate (data/beta_fit.json) when enough movers back it."""
+    if not path.exists():
+        return BETA, None
+    fit = json.loads(path.read_text(encoding="utf-8"))
+    used = fit.get("n", 0) >= MIN_FIT_N
+    return (fit["beta"] if used else BETA), {**fit, "used": used, "default": BETA}

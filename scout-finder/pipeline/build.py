@@ -279,12 +279,13 @@ def main() -> None:
     a = ap.parse_args()
 
     from .sources import fotmob, understat
-    factor = None
+    factor, beta_fit = None, None
     if a.elo_date:
-        from .league_strength import factors, league_elos
+        from .league_strength import factors, fitted_beta, league_elos
         elos = league_elos(a.elo_date, a.out / "raw")
-        factor = factors(elos)
-        print("league factors:", factor)
+        beta, beta_fit = fitted_beta(a.out / "beta_fit.json")
+        factor = factors(elos, beta)
+        print(f"league factors (beta {beta}):", factor)
     if a.xepl_csv:
         for _, season_df in fotmob.load_xepl_csv(a.xepl_csv).groupby("season"):
             print("wrote", write(season_df.reset_index(drop=True), a.out, "xepl", factor))
@@ -297,7 +298,7 @@ def main() -> None:
             universe, _, xg_scale = ram_xg.apply(universe)
             print("Ram's xG model, scale to FotMob level:", xg_scale)
         for season, season_df in universe.groupby("season"):
-            meta = {}
+            meta = {"beta_fit": beta_fit} if beta_fit else {}
             if not a.no_ram_xg:
                 meta["xg_source"] = {lg: "ram" if any(k.startswith(f"{lg} {season} ") for k in xg_scale)
                                      else "fotmob" for lg in sorted(season_df["league"].unique())}
