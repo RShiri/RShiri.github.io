@@ -114,7 +114,10 @@ html[data-site-style="a"] .btn { transform: skewX(-10deg); }
 .h2h-head .side { min-width: 0; }
 .h2h-head .side.b { text-align: end; }
 .h2h-head .nm { font: 700 22px/1.1 var(--rs-display); color: var(--rs-ink); }
-.h2h-head .vs { font: 700 14px/1 var(--rs-display); color: var(--rs-muted); letter-spacing: .2em; }
+.h2h-head .vs { display: grid; justify-items: center; gap: 4px; text-align: center; min-width: 96px; }
+.h2h-head .vs span { font: 700 12px/1 var(--rs-display); color: var(--rs-muted); letter-spacing: .2em; padding-inline-start: .2em; }
+.h2h-head .vs b { font: 700 26px/1 var(--rs-display); color: var(--rs-accent); letter-spacing: 0; }
+.h2h-head .vs small { font: 600 10px/1 var(--rs-display); color: var(--rs-muted); letter-spacing: .12em; text-transform: uppercase; }
 .h2h-pick { position: relative; margin-bottom: 14px; max-width: 420px; }
 .h2h-pick input { width: 100%; }
 .h2h-row { display: grid; grid-template-columns: 70px 1fr minmax(110px, 170px) 1fr 70px; gap: 10px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--rs-line); }
@@ -127,7 +130,7 @@ html[data-site-style="a"] .btn { transform: skewX(-10deg); }
 .h2h-row .t.b i { inset-inline-start: 0; background: var(--rs-goal); }
 html[data-site-style="a"] .h2h-row .t.b i { background: #f5f7fa; }
 .h2h-row .win { font-weight: 700; color: var(--rs-accent); }
-@media (max-width: 640px) { .h2h-row { grid-template-columns: 48px 1fr 90px 1fr 48px; font-size: 13px; } }
+@media (max-width: 640px) { .h2h-row { grid-template-columns: 66px 1fr 84px 1fr 66px; gap: 6px; font-size: 12px; } .h2h-row .v { white-space: nowrap; } .h2h-row .m { font-size: 11px; } }
 .filters .opt[hidden] { display: none; }
 .empty { padding: 14px; color: var(--rs-muted); }
 /* v3: overall score, player map, best value, shortlist */
@@ -727,8 +730,8 @@ window.RS_ABOUT = {
         '<div class="t a"><i style="width:' + (pa || 0) + '%"></i></div><div class="m">' + esc(mShort(m)) + "</div>" +
         '<div class="t b"><i style="width:' + (pb || 0) + '%"></i></div><div class="v b' + (wb ? " win" : "") + '"><span class="muted small">' + (pb == null ? "" : pb) + "</span> " + fmt(m, vb) + "</div></div>";
     }).join("");
-    var sc = same ? '<span class="score">' + Math.round(simScore(a, b) * 100) + "%</span>" : "";
-    $("h2h").innerHTML = '<div class="h2h-head">' + side(a, "a") + '<div class="vs">VS<br>' + sc + "</div>" + side(b, "b") + "</div>" + rows +
+    var sc = same ? "<b>" + Math.round(simScore(a, b) * 100) + "%</b><small>" + t("sim") + "</small>" : "";
+    $("h2h").innerHTML = '<div class="h2h-head">' + side(a, "a") + '<div class="vs"><span>VS</span>' + sc + "</div>" + side(b, "b") + "</div>" + rows +
       (same ? "" : '<p class="muted small" style="margin:12px 0 0">' + t("otherGroup") + "</p>");
   }
 
