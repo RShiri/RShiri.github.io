@@ -130,6 +130,25 @@ html[data-site-style="a"] .h2h-row .t.b i { background: #f5f7fa; }
 @media (max-width: 640px) { .h2h-row { grid-template-columns: 48px 1fr 90px 1fr 48px; font-size: 13px; } }
 .filters .opt[hidden] { display: none; }
 .empty { padding: 14px; color: var(--rs-muted); }
+/* v3: overall score, player map, best value, shortlist */
+.who .ovr { margin-inline-start: auto; text-align: center; }
+.who .ovr b { display: block; font: 700 40px/1 var(--rs-display); color: var(--rs-accent); }
+.who .ovr span { font: 600 10px/1 var(--rs-display); letter-spacing: .14em; text-transform: uppercase; color: var(--rs-muted); }
+.btn.on { border-color: var(--rs-accent); color: var(--rs-accent-ink); background: var(--rs-accent); }
+.scatter { position: relative; }
+.scatter svg { width: 100%; height: auto; display: block; }
+.scatter .dot { fill: var(--rs-muted); opacity: .45; cursor: pointer; }
+.scatter .dot:hover { opacity: 1; fill: var(--rs-ink); }
+.scatter .dot.me { fill: var(--rs-accent); opacity: 1; }
+.scatter .dot.vs { fill: var(--rs-goal); opacity: 1; }
+html[data-site-style="a"] .scatter .dot.vs { fill: #f5f7fa; }
+.scatter .dot.sl { stroke: var(--rs-accent); stroke-width: 1.5; opacity: .9; }
+.scatter .grid { stroke: var(--rs-line); }
+.scatter text { fill: var(--rs-muted); font: 500 11px var(--rs-text); }
+.scatter text.lab { fill: var(--rs-ink); font-weight: 600; }
+.scatter .tip { position: absolute; pointer-events: none; background: var(--rs-panel-2); border: 1px solid var(--rs-line-strong); padding: 6px 8px; font-size: 12px; color: var(--rs-ink); white-space: nowrap; }
+td.good { color: var(--hi); font-weight: 600; }
+
 </style>
 </head>
 <body>
@@ -172,6 +191,17 @@ html[data-site-style="a"] .h2h-row .t.b i { background: #f5f7fa; }
     </section>
 
     <section class="block">
+      <h2 data-t="mapTitle">Player map</h2>
+      <p class="muted small" data-t="mapLead"></p>
+      <div class="filters">
+        <label><span data-t="league">League</span><select id="mLeague"></select></label>
+        <label><span>X</span><select id="mX"></select></label>
+        <label><span>Y</span><select id="mY"></select></label>
+      </div>
+      <div class="panel scatter" id="scatter"></div>
+    </section>
+
+    <section class="block">
       <h2 data-t="simTitle">Most similar players</h2>
       <p class="muted small" data-t="simLead"></p>
       <div class="filters" id="simFilters"></div>
@@ -187,6 +217,23 @@ html[data-site-style="a"] .h2h-row .t.b i { background: #f5f7fa; }
       </div>
       <div class="filters" id="findFilters"></div>
       <div class="panel tablewrap" id="finder"></div>
+    </section>
+
+    <section class="block" id="valueBlock" hidden>
+      <h2 data-t="valueTitle">Best value</h2>
+      <p class="muted small" data-t="valueLead"></p>
+      <div class="filters">
+        <label><span data-t="pos">Position</span><select id="vGroup"></select></label>
+        <label><span data-t="league">League</span><select id="vLeague"></select></label>
+        <label><span data-t="maxAge">Max age</span><select id="vAge"></select></label>
+      </div>
+      <div class="panel tablewrap" id="value"></div>
+    </section>
+
+    <section class="block" id="slBlock" hidden>
+      <h2 data-t="slTitle">Shortlist</h2>
+      <p class="muted small" data-t="slLead"></p>
+      <div class="panel tablewrap" id="shortlist"></div>
     </section>
   </div>
 </main>
@@ -313,7 +360,18 @@ window.RS_ABOUT = {
     noteTitle: ["Scouting note", "דוח סקאוטינג"], noHits: ["No player matches", "לא נמצא שחקן"], noRows: ["No player passes these filters.", "אין שחקן שעובר את הסינון."],
     download: ["Download card", "הורדת כרטיס"], copyLink: ["Copy link", "העתקת קישור"], copied: ["Link copied", "הקישור הועתק"],
     otherGroup: ["Different position: compared on the first player's metrics; percentiles are each within their own position.", "עמדה שונה: ההשוואה על המדדים של השחקן הראשון, והאחוזונים של כל אחד הם בתוך העמדה שלו."],
-    ramModel: ["Ram's xG model", "מודל ה־xG של רם"]
+    ramModel: ["Ram's xG model", "מודל ה־xG של רם"],
+    overall: ["Overall", "ציון כולל"], overallLong: ["Overall (mean percentile)", "ציון כולל (ממוצע אחוזונים)"],
+    mapTitle: ["Player map", "מפת שחקנים"],
+    mapLead: ["Every player in this position on two metrics of your choice, league-adjusted. The selected player is highlighted, the head-to-head opponent in the second colour. Click a dot to open that player.",
+              "כל השחקנים בעמדה הזו על שני מדדים לבחירתך, אחרי התאמה לחוזק הליגה. השחקן הנבחר מודגש, והיריב בהשוואה בצבע השני. לחיצה על נקודה פותחת את השחקן."],
+    valueTitle: ["Best value", "הכי משתלם"],
+    valueLead: ["Players whose overall score is furthest above what their market value predicts, within the same position. A straight-line fit of overall score against log market value; the gap is in percentile points.",
+                "שחקנים שהציון הכולל שלהם הכי גבוה ביחס למה ששווי השוק שלהם מנבא, בתוך אותה עמדה. התאמה ליניארית של ציון כולל מול לוג שווי שוק; הפער באחוזונים."],
+    expected: ["Expected at this price", "צפוי במחיר הזה"], gap: ["Above price", "מעל המחיר"],
+    slTitle: ["Shortlist", "רשימת מעקב"], slLead: ["Players you starred. Saved in this browser only.", "שחקנים שסימנת בכוכב. נשמר רק בדפדפן הזה."],
+    star: ["☆ Shortlist", "☆ לרשימת המעקב"], starred: ["★ On shortlist", "★ ברשימת המעקב"], remove: ["Remove", "הסרה"],
+    exportCsv: ["Download CSV", "הורדת CSV"]
   };
 
   var D, byId = {}, players = [], lang = "en", mode = "all", current = null, compare = null;
@@ -366,6 +424,13 @@ window.RS_ABOUT = {
     has.age = players.some(function (p) { return p.age != null; });
     has.value = players.some(function (p) { return p.value_eur != null; });
     has.contract = players.some(function (p) { return p.contract_end; });
+    // Overall = mean percentile over the position's profile: one number to sort and compare by.
+    players.forEach(function (p) {
+      var xs = metricsOf(p.group).map(function (m) { return p.pct[m]; }).filter(function (x) { return x != null; });
+      // The pipeline's own "score" wins when the data carries it.
+      p._full = xs.length === metricsOf(p.group).length;
+      p._overall = p.score != null ? Math.round(p.score) : xs.length ? Math.round(xs.reduce(function (a, b) { return a + b; }, 0) / xs.length) : null;
+    });
     buildVectors();
   }
   // The pipeline's similarity, recomputed here so the list can be filtered (age, budget,
@@ -530,6 +595,20 @@ window.RS_ABOUT = {
     c.push('<span class="chip">' + p.minutes.toLocaleString() + " " + t("min") + "</span>", '<span class="chip">' + p.matches + " " + t("apps") + "</span>");
     return c.join("");
   }
+  // Season totals and usage, when the data has them.
+  function seasonLine(p) {
+    var bits = [], tt = p.totals || {}, he = lang === "he";
+    if (tt.goals != null) bits.push((he ? "שערים " : "Goals ") + tt.goals);
+    if (tt.assists != null) bits.push((he ? "בישולים " : "Assists ") + tt.assists);
+    if (tt.xg != null) bits.push("xG " + (+tt.xg).toFixed(1));
+    if (tt.xa != null) bits.push("xA " + (+tt.xa).toFixed(1));
+    if (p.rating != null) bits.push((he ? "ציון FotMob " : "FotMob rating ") + (+p.rating).toFixed(2));
+    if (p.starts != null) bits.push((he ? "פתח " : "Started ") + p.starts + "/" + p.matches);
+    if (p.team_share != null) bits.push(Math.round(p.team_share * 100) + "% " + (he ? "מדקות הקבוצה" : "of club minutes"));
+    var pos = p.positions ? Object.keys(p.positions).filter(function (g) { return p.positions[g] >= 0.1; }) : [];
+    if (pos.length > 1) bits.push(pos.map(function (g) { return grp(g) + " " + Math.round(p.positions[g] * 100) + "%"; }).join(" · "));
+    return bits.length ? '<p class="muted small" style="margin:-6px 0 14px">' + esc(bits.join(" · ")) + "</p>" : "";
+  }
   function xgTag(m, p) {
     var src = D.meta.xg_source && D.meta.xg_source[p.league];
     return src === "ram" && /^(xg|npxg|xg_per_shot)$/.test(m) ? " · " + t("ramModel") : "";
@@ -537,8 +616,9 @@ window.RS_ABOUT = {
   function renderProfile() {
     var p = current, metrics = metricsOf(p.group), pct = mode === "all" ? p.pct : p.pct_league;
     var factor = D.meta.league_factor[p.league] || 1, n = D.meta.groups[p.group].players;
-    $("card").innerHTML = '<div class="who"><h2>' + esc(p.name) + "</h2></div>" +
-      '<div class="meta">' + chipsFor(p) + "</div>" +
+    var starredNow = shortlist.indexOf(p.id) >= 0;
+    $("card").innerHTML = '<div class="who"><h2>' + esc(p.name) + '</h2><div class="ovr" title="' + esc(t("overallLong")) + '"><b>' + (p._overall == null ? "–" : p._overall) + "</b><span>" + t("overall") + "</span></div></div>" +
+      '<div class="meta">' + chipsFor(p) + "</div>" + seasonLine(p) +
       '<div class="toggle" role="group"><button data-mode="all" aria-pressed="' + (mode === "all") + '">' + t("vsAll") +
       '</button><button data-mode="league" aria-pressed="' + (mode === "league") + '">' + t("vsLeague") + "</button></div>" +
       '<div class="bars">' + metrics.map(function (m) {
@@ -552,8 +632,8 @@ window.RS_ABOUT = {
                          : "Percentile among all " + n + " " + grp(p.group, true) + " in the twelve leagues. Attacking volume is scaled by league strength: ×" + factor.toFixed(2) + ".")
         : (lang === "he" ? "אחוזון מול ה" + grp(p.group, true) + " ב" + lg(p.league) + " בלבד, בלי התאמה."
                          : "Percentile among " + grp(p.group, true) + " in the " + lg(p.league) + " only, unadjusted.")) + "</p>" +
-      '<div class="actions"><button class="btn" data-act="png">' + t("download") + '</button><button class="btn" data-act="link">' + t("copyLink") + "</button></div>";
-    renderRadar(); renderNote(); renderH2H(); renderSimilarFilters(); renderSimilar();
+      '<div class="actions"><button class="btn' + (starredNow ? " on" : "") + '" data-act="star">' + t(starredNow ? "starred" : "star") + '</button><button class="btn" data-act="png">' + t("download") + '</button><button class="btn" data-act="link">' + t("copyLink") + "</button></div>";
+    renderRadar(); renderNote(); renderH2H(); renderSimilarFilters(); renderSimilar(); renderScatter();
   }
 
   function radarSvg(p, q, opts) {
@@ -611,6 +691,13 @@ window.RS_ABOUT = {
         return esc(mShort(m)) + " " + prev.pct[m] + " → " + p.pct[m];
       })) + ".");
     }
+    var ex = p.extras;
+    if (ex && ex.prog_passes_p90 != null) out.push(he
+      ? "מנתוני האירועים של הפרמייר ליג: " + ex.prog_passes_p90.toFixed(1) + " מסירות מתקדמות ו־" + (ex.prog_carries_p90 || 0).toFixed(1) + " הובלות מתקדמות ל־90, ו־" + (ex.xt_added_p90 || 0).toFixed(3) + " xT ל־90."
+      : "From Premier League event data: " + ex.prog_passes_p90.toFixed(1) + " progressive passes and " + (ex.prog_carries_p90 || 0).toFixed(1) + " progressive carries per 90, and " + (ex.xt_added_p90 || 0).toFixed(3) + " xT added per 90.");
+    if (p.team_share != null && p.team_share < 0.4) out.push(he
+      ? "שיחק רק " + Math.round(p.team_share * 100) + "% מדקות הקבוצה: מדגם קטן יותר, והמספרים פחות יציבים."
+      : "Played only " + Math.round(p.team_share * 100) + "% of the club's minutes: a smaller sample, so the numbers are less stable.");
     if (p.contract_end) {
       var endYear = parseInt(season.slice(0, 4), 10) + 1;
       if (p.contract_end <= endYear + "-06-30" && p.contract_end >= (endYear - 1) + "-07-01") out.push(he ? "החוזה מסתיים ב־" + p.contract_end.slice(0, 7) + ": יכול להיות זמין בזול או בחינם." : "Contract ends " + p.contract_end.slice(0, 7) + ": could be available cheaply or on a free.");
@@ -681,27 +768,141 @@ window.RS_ABOUT = {
   }
   function fillMetrics() {
     var keep = $("fMetric").value, ms = metricsOf($("fGroup").value);
-    $("fMetric").innerHTML = ms.map(function (m) { return '<option value="' + m + '">' + esc(mName(m)) + "</option>"; }).join("");
-    $("fMetric").value = ms.indexOf(keep) >= 0 ? keep : ms[0];
+    $("fMetric").innerHTML = '<option value="_overall">' + esc(t("overallLong")) + "</option>" + ms.map(function (m) { return '<option value="' + m + '">' + esc(mName(m)) + "</option>"; }).join("");
+    $("fMetric").value = keep === "_overall" || ms.indexOf(keep) >= 0 ? keep : "_overall";
   }
   function renderFinder() {
     var g = $("fGroup").value, m = $("fMetric").value, f = readFilters($("findFilters"));
     f.league = $("fLeague").value;
     var ms = metricsOf(g);
-    var rows = players.filter(function (p) { return p.group === g && p.pct[m] != null && passes(p, f); })
-      .sort(function (a, b) { return b.pct[m] - a.pct[m] || b.minutes - a.minutes; }).slice(0, 25);
+    var ov = m === "_overall", pc = function (p) { return ov ? p._overall : p.pct[m]; };
+    var rows = players.filter(function (p) { return p.group === g && pc(p) != null && passes(p, f); })
+      .sort(function (a, b) { return pc(b) - pc(a) || b.minutes - a.minutes; }).slice(0, 25);
     var other = ms.filter(function (x) { return x !== m; }).slice(0, 3);
     var cols = (has.age ? '<th class="num">' + t("age") + "</th>" : "") + (has.value ? '<th class="num">' + t("value") + "</th>" : "");
     $("finder").innerHTML = rows.length ? "<table><thead><tr><th class=\"num\">#</th><th>" + t("player") + "</th><th>" + t("team") + "</th><th>" + t("league") +
-      "</th><th>" + t("profile") + "</th>" + cols + '<th class="num">' + t("minutes") + '</th><th class="num">' + esc(mShort(m)) + " " + t("per90") + '</th><th class="num">' + t("pctile") + "</th>" +
+      "</th><th>" + t("profile") + "</th>" + cols + '<th class="num">' + t("minutes") + '</th><th class="num">' + (ov ? t("overall") : esc(mShort(m)) + " " + t("per90")) + '</th><th class="num">' + t("pctile") + "</th>" +
       other.map(function (x) { return '<th class="num">' + esc(mShort(x)) + "</th>"; }).join("") + "</tr></thead><tbody>" +
       rows.map(function (p, i) {
         return '<tr data-open="' + esc(p.id) + '" class="' + (current === p ? "on" : "") + '"><td class="num muted">' + (i + 1) + '</td><td><span class="n">' + esc(p.name) + "</span></td><td>" + esc(p.team) +
           '</td><td><span class="chip">' + esc(lg(p.league)) + '</span></td><td class="small">' + archName(archetype(p)) + "</td>" +
           (has.age ? '<td class="num">' + (p.age == null ? "–" : p.age) + "</td>" : "") + (has.value ? '<td class="num">' + money(p.value_eur) + "</td>" : "") +
-          '<td class="num">' + p.minutes.toLocaleString() + '</td><td class="num">' + fmt(m, p.per90[m]) +
-          '</td><td class="num score">' + p.pct[m] + "</td>" + other.map(function (x) { return '<td class="num">' + (p.pct[x] == null ? "–" : p.pct[x]) + "</td>"; }).join("") + "</tr>";
+          '<td class="num">' + p.minutes.toLocaleString() + '</td><td class="num">' + (ov ? p._overall : fmt(m, p.per90[m])) +
+          '</td><td class="num score">' + pc(p) + "</td>" + other.map(function (x) { return '<td class="num">' + (p.pct[x] == null ? "–" : p.pct[x]) + "</td>"; }).join("") + "</tr>";
       }).join("") + "</tbody></table>" : '<p class="empty">' + t("noRows") + "</p>";
+  }
+
+  /* ------------------------------------------------------------ player map */
+  function fillMapControls() {
+    var ms = metricsOf(current.group), x = $("mX").value, y = $("mY").value, l = $("mLeague").value;
+    var opts = ms.map(function (m) { return '<option value="' + m + '">' + esc(mName(m)) + "</option>"; }).join("");
+    $("mX").innerHTML = opts; $("mY").innerHTML = opts;
+    $("mX").value = ms.indexOf(x) >= 0 ? x : ms[0]; $("mY").value = ms.indexOf(y) >= 0 && y !== $("mX").value ? y : ms[Math.min(1, ms.length - 1)];
+    $("mLeague").innerHTML = '<option value="">' + t("allLeagues") + "</option>" + leagueOptions(); $("mLeague").value = l;
+  }
+  // League-adjusted per-90s: the scale the universe percentiles rank on.
+  function adjVal(p, m) {
+    var v = p.per90[m]; if (v == null) return null;
+    return (D.meta.adjusted || ADJUSTED).indexOf(m) >= 0 ? v * (D.meta.league_factor[p.league] || 1) : v;
+  }
+  function renderScatter() {
+    fillMapControls();
+    var g = current.group, mx = $("mX").value, my = $("mY").value, l = $("mLeague").value;
+    var pts = players.filter(function (p) { return p.group === g && (!l || p.league === l || p === current || p === compare) && adjVal(p, mx) != null && adjVal(p, my) != null; });
+    if (!pts.length) { $("scatter").innerHTML = '<p class="empty">' + t("noRows") + "</p>"; return; }
+    var W = 760, H = 420, P = { l: 56, r: 16, t: 14, b: 44 };
+    var ext = function (m) { var xs = pts.map(function (p) { return adjVal(p, m); }); var lo = Math.min.apply(null, xs), hi = Math.max.apply(null, xs); return hi > lo ? [lo, hi] : [lo - 1, hi + 1]; };
+    var ex = ext(mx), ey = ext(my);
+    var sx = function (v) { return P.l + (v - ex[0]) / (ex[1] - ex[0]) * (W - P.l - P.r); };
+    var sy = function (v) { return H - P.b - (v - ey[0]) / (ey[1] - ey[0]) * (H - P.t - P.b); };
+    var s = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + esc(mName(mx) + " / " + mName(my)) + '">';
+    for (var i = 0; i <= 4; i++) {
+      var gx = ex[0] + (ex[1] - ex[0]) * i / 4, gy = ey[0] + (ey[1] - ey[0]) * i / 4;
+      s += '<line class="grid" x1="' + sx(gx) + '" x2="' + sx(gx) + '" y1="' + P.t + '" y2="' + (H - P.b) + '"/><text x="' + sx(gx) + '" y="' + (H - P.b + 16) + '" text-anchor="middle">' + fmt(mx, gx) + "</text>";
+      s += '<line class="grid" x1="' + P.l + '" x2="' + (W - P.r) + '" y1="' + sy(gy) + '" y2="' + sy(gy) + '"/><text x="' + (P.l - 6) + '" y="' + (sy(gy) + 4) + '" text-anchor="end">' + fmt(my, gy) + "</text>";
+    }
+    s += '<text class="lab" x="' + (W - P.r) + '" y="' + (H - 8) + '" text-anchor="end">' + esc(mName(mx)) + " →</text>";
+    s += '<text class="lab" x="' + P.l + '" y="' + (P.t + 4) + '" dx="6">↑ ' + esc(mName(my)) + "</text>";
+    var special = [];
+    pts.forEach(function (p) {
+      if (p === current || p === compare) { special.push(p); return; }
+      s += '<circle class="dot' + (shortlist.indexOf(p.id) >= 0 ? " sl" : "") + '" data-id="' + esc(p.id) + '" cx="' + sx(adjVal(p, mx)).toFixed(1) + '" cy="' + sy(adjVal(p, my)).toFixed(1) + '" r="3.5"/>';
+    });
+    special.forEach(function (p) {
+      var cx = sx(adjVal(p, mx)), cy = sy(adjVal(p, my)), right = cx > W - 180;
+      s += '<circle class="dot ' + (p === current ? "me" : "vs") + '" data-id="' + esc(p.id) + '" cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="7"/>' +
+        '<text class="lab" x="' + (right ? cx - 10 : cx + 10).toFixed(1) + '" y="' + (cy - 8).toFixed(1) + '" text-anchor="' + (right ? "end" : "start") + '">' + esc(p.name) + "</text>";
+    });
+    $("scatter").innerHTML = s + '</svg><div class="tip" hidden></div>';
+  }
+
+  /* ------------------------------------------------------------ best value */
+  // Overall score against log10(value) by least squares within one position; the residual is how
+  // far a player sits above (or below) what the market pays for that score.
+  function valueFit(g) {
+    // Only complete profiles: a league without xG would otherwise score on its easier metrics alone.
+    var ps = players.filter(function (p) { return p.group === g && p.value_eur > 0 && p._overall != null && p._full; });
+    var xs = ps.map(function (p) { return Math.log10(p.value_eur); }), ys = ps.map(function (p) { return p._overall; });
+    var n = xs.length || 1, mx = xs.reduce(function (a, b) { return a + b; }, 0) / n, my = ys.reduce(function (a, b) { return a + b; }, 0) / n;
+    var sxy = 0, sxx = 0;
+    for (var i = 0; i < xs.length; i++) { sxy += (xs[i] - mx) * (ys[i] - my); sxx += (xs[i] - mx) * (xs[i] - mx); }
+    var b = sxx ? sxy / sxx : 0, a = my - b * mx;
+    return { ps: ps, pred: function (p) { return a + b * Math.log10(p.value_eur); } };
+  }
+  function fillValueControls() {
+    var groups = GROUP_ORDER.filter(function (g) { return D.meta.groups[g]; }), g = $("vGroup").value, l = $("vLeague").value, a = $("vAge").value;
+    $("vGroup").innerHTML = groups.map(function (x) { return '<option value="' + x + '">' + grp(x) + "</option>"; }).join("");
+    $("vGroup").value = groups.indexOf(g) >= 0 ? g : (current ? current.group : "W");
+    $("vLeague").innerHTML = '<option value="">' + t("allLeagues") + "</option>" + leagueOptions(); $("vLeague").value = l;
+    $("vAge").innerHTML = '<option value="">' + t("any") + "</option>" + AGE_OPTS.map(function (x) { return '<option value="' + x + '">≤ ' + x + "</option>"; }).join(""); $("vAge").value = a;
+  }
+  function renderValue() {
+    $("valueBlock").hidden = !has.value;
+    if (!has.value) return;
+    var fit = valueFit($("vGroup").value), l = $("vLeague").value, age = $("vAge").value;
+    var rows = fit.ps.filter(function (p) { return (!l || p.league === l) && (!age || (p.age != null && p.age <= +age)); })
+      .map(function (p) { return { p: p, e: fit.pred(p), gap: p._overall - fit.pred(p) }; })
+      .sort(function (x, y) { return y.gap - x.gap; }).slice(0, 20);
+    $("value").innerHTML = rows.length ? '<table><thead><tr><th class="num">#</th><th>' + t("player") + "</th><th>" + t("team") + "</th><th>" + t("league") + "</th><th>" + t("profile") +
+      '</th><th class="num">' + t("age") + '</th><th class="num">' + t("value") + '</th><th class="num">' + t("overall") + '</th><th class="num">' + t("expected") + '</th><th class="num">' + t("gap") + "</th></tr></thead><tbody>" +
+      rows.map(function (r, i) {
+        var p = r.p;
+        return '<tr data-open="' + esc(p.id) + '"><td class="num muted">' + (i + 1) + '</td><td><span class="n">' + esc(p.name) + "</span></td><td>" + esc(p.team) +
+          '</td><td><span class="chip">' + esc(lg(p.league)) + '</span></td><td class="small">' + archName(archetype(p)) + '</td><td class="num">' + (p.age == null ? "–" : p.age) +
+          '</td><td class="num">' + money(p.value_eur) + '</td><td class="num score">' + p._overall + '</td><td class="num">' + Math.round(r.e) + '</td><td class="num good">+' + Math.round(r.gap) + "</td></tr>";
+      }).join("") + "</tbody></table>" : '<p class="empty">' + t("noRows") + "</p>";
+  }
+
+  /* ------------------------------------------------------------ shortlist */
+  // Per-viewer convenience: kept in this browser's localStorage, never sent anywhere.
+  var SL_KEY = "scout-finder-shortlist", shortlist = [];
+  try { shortlist = JSON.parse(localStorage.getItem(SL_KEY) || "[]"); if (!Array.isArray(shortlist)) shortlist = []; } catch (e) { shortlist = []; }
+  function saveShortlist() { try { localStorage.setItem(SL_KEY, JSON.stringify(shortlist)); } catch (e) {} }
+  function toggleStar(id) {
+    var i = shortlist.indexOf(id);
+    if (i >= 0) shortlist.splice(i, 1); else shortlist.push(id);
+    saveShortlist(); renderShortlist();
+  }
+  function renderShortlist() {
+    var ps = shortlist.map(function (id) { return byId[id]; }).filter(Boolean);
+    $("slBlock").hidden = !ps.length;
+    if (!ps.length) { $("shortlist").innerHTML = ""; return; }
+    $("shortlist").innerHTML = "<table><thead><tr><th>" + t("player") + "</th><th>" + t("team") + "</th><th>" + t("league") + "</th><th>" + t("pos") + "</th><th>" + t("profile") +
+      "</th>" + (has.age ? '<th class="num">' + t("age") + "</th>" : "") + (has.value ? '<th class="num">' + t("value") + "</th>" : "") + '<th class="num">' + t("overall") + "</th><th></th></tr></thead><tbody>" +
+      ps.map(function (p) {
+        return '<tr data-open="' + esc(p.id) + '"><td><span class="n">' + esc(p.name) + "</span></td><td>" + esc(p.team) + '</td><td><span class="chip">' + esc(lg(p.league)) + "</span></td><td>" + grp(p.group) +
+          '</td><td class="small">' + archName(archetype(p)) + "</td>" + (has.age ? '<td class="num">' + (p.age == null ? "–" : p.age) + "</td>" : "") + (has.value ? '<td class="num">' + money(p.value_eur) + "</td>" : "") +
+          '<td class="num score">' + (p._overall == null ? "–" : p._overall) + '</td><td><button class="btn" data-unstar="' + esc(p.id) + '">' + t("remove") + "</button></td></tr>";
+      }).join("") + '</tbody></table><div class="actions" style="padding:0 8px 8px"><button class="btn" data-act="csv">' + t("exportCsv") + "</button></div>";
+  }
+  function shortlistCsv() {
+    var head = ["name", "team", "league", "position", "profile", "age", "value_eur", "overall", "minutes"];
+    var q = function (v) { v = v == null ? "" : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    var lines = [head.join(",")].concat(shortlist.map(function (id) { return byId[id]; }).filter(Boolean).map(function (p) {
+      return [p.name, p.team, p.league, p.group, ARCH[archetype(p)][0], p.age, p.value_eur, p._overall, p.minutes].map(q).join(",");
+    }));
+    var a = document.createElement("a"); a.download = "scout-finder-shortlist-" + season + ".csv";
+    a.href = "data:text/csv;charset=utf-8," + encodeURIComponent("﻿" + lines.join("\n")); a.click();
   }
 
   /* ------------------------------------------------------------ share card */
@@ -745,18 +946,20 @@ window.RS_ABOUT = {
     if (!D) return;
     $("stats").innerHTML = "<span><b>" + players.length.toLocaleString() + "</b>" + t("players") + "</span><span><b>" + D.meta.leagues.length + "</b>" + t("leagues") +
       "</span><span><b>" + Object.keys(D.meta.groups).length + "</b>" + t("positions") + "</span>";
-    var beta = D.meta.beta_fit, b = beta ? beta.beta : 0.06;
+    var beta = D.meta.beta_fit, used = beta && beta.used !== false, b = used ? beta.beta : (beta && beta["default"]) || 0.06;
     var ram = D.meta.xg_source ? Object.keys(D.meta.xg_source).filter(function (k) { return D.meta.xg_source[k] === "ram"; }).map(lg) : [];
     $("method").innerHTML = lang === "he"
       ? "<p>הנתונים: סטטיסטיקה לכל שחקן בכל משחק מ־FotMob, מסוכמת לעונה ומחושבת ל־90 דקות. נכללים רק שחקנים עם לפחות 900 דקות בליגה (פחות בתחילת עונה). עמדה נקבעת לפי המשבצת שבה השחקן פתח הכי הרבה.</p>" +
         "<p>חוזק ליגה: ממוצע דירוג ClubElo של הקבוצות בכל ליגה. מדדי נפח התקפי מוכפלים ב־exp(" + b + " × הפרש Elo / 100) מול הפרמייר ליג. " +
-        (beta ? "המקדם כויל על " + beta.n + " שחקנים שעברו ליגה" + (beta.ci ? " (טווח " + beta.ci[0] + "–" + beta.ci[1] + ")" : "") + "." : "זו הערכה ראשונית ולא מודל מכויל.") +
+        (used ? "המקדם כויל על " + beta.n + " שחקנים שעברו ליגה" + (beta.ci ? " (טווח " + beta.ci[0] + "–" + beta.ci[1] + ")" : "") + "."
+              : "זו הערכה ראשונית." + (beta ? " כיול ראשון על " + beta.n + " שחקנים שעברו ליגה נותן β≈" + beta.beta + (beta.ci ? " (" + beta.ci[0] + "–" + beta.ci[1] + ")" : "") + ", כלומר פער גדול יותר בין ליגות; הוא ייכנס לשימוש כשיהיו מעל 100 מעברים." : "")) +
         " השוואת שחקנים דומים היא דמיון קוסינוס על ערכים מתוקננים, בתוך אותה עמדה. הפרופיל (יוצר, עוגן וכו') נקבע לפי קבוצת המדדים עם האחוזון הממוצע הגבוה ביותר.</p>" +
         (ram.length ? "<p>ה־xG ב" + listJoin(ram) + " מגיע ממודל ה־xG של רם; בשאר הליגות מ־FotMob.</p>" : "") +
         '<p>הקוד: <a href="https://github.com/RShiri/RShiri.github.io/tree/main/scout-finder">scout-finder/pipeline</a>.</p>'
       : "<p>Data: per-match player stats from FotMob, summed to the season and expressed per 90 minutes. Only players with 900+ league minutes are ranked (fewer early in a season). Position is the slot a player started in most.</p>" +
         "<p>League strength is the mean ClubElo rating of each league's clubs. Attacking volume is scaled by exp(" + b + " × Elo gap / 100) against the Premier League; " +
-        (beta ? "β was fitted on " + beta.n + " players who changed leagues" + (beta.ci ? " (range " + beta.ci[0] + "–" + beta.ci[1] + ")" : "") + "." : "it is a first heuristic, not a calibrated model.") +
+        (used ? "β was fitted on " + beta.n + " players who changed leagues" + (beta.ci ? " (range " + beta.ci[0] + "–" + beta.ci[1] + ")" : "") + "."
+              : "it is a first heuristic." + (beta ? " A first fit on " + beta.n + " players who changed leagues gives β≈" + beta.beta + (beta.ci ? " (" + beta.ci[0] + "–" + beta.ci[1] + ")" : "") + ", a bigger gap between leagues; it takes over once 100+ moves back it." : "")) +
         " Similar players are the cosine similarity of z-scored per-90 rates within the same position. The profile label (creator, anchor and so on) is the metric family with the highest mean percentile.</p>" +
         (ram.length ? "<p>xG in the " + listJoin(ram) + " comes from Ram's own xG model; elsewhere from FotMob.</p>" : "") +
         '<p>Code: <a href="https://github.com/RShiri/RShiri.github.io/tree/main/scout-finder">scout-finder/pipeline</a>.</p>';
@@ -765,7 +968,7 @@ window.RS_ABOUT = {
       $("season").innerHTML = seasons.map(function (s) { return '<option value="' + s + '">' + s + "</option>"; }).join("");
       $("season").value = season;
     }
-    fillFilters(); fillMetrics(); renderFinder();
+    fillFilters(); fillMetrics(); renderFinder(); fillValueControls(); renderValue(); renderShortlist();
     if (current) renderProfile();
   }
 
@@ -788,7 +991,8 @@ window.RS_ABOUT = {
       var b = e.target.closest("button[data-mode]");
       if (b) { mode = b.getAttribute("data-mode"); renderProfile(); return; }
       var act = e.target.closest("button[data-act]"); if (!act) return;
-      if (act.getAttribute("data-act") === "png") downloadCard();
+      if (act.getAttribute("data-act") === "star") { toggleStar(current.id); renderProfile(); }
+      else if (act.getAttribute("data-act") === "png") downloadCard();
       else if (navigator.clipboard) navigator.clipboard.writeText(location.href).then(function () { act.textContent = t("copied"); }).catch(function () {});
     });
     $("similar").addEventListener("click", function (e) {
@@ -803,6 +1007,24 @@ window.RS_ABOUT = {
     $("fLeague").addEventListener("change", renderFinder);
     $("fMetric").addEventListener("change", renderFinder);
     $("findFilters").addEventListener("change", renderFinder);
+    ["mX", "mY", "mLeague"].forEach(function (id) { $(id).addEventListener("change", renderScatter); });
+    $("scatter").addEventListener("click", function (e) { var c = e.target.closest("circle[data-id]"); if (c && byId[c.getAttribute("data-id")] !== current) open(c.getAttribute("data-id")); });
+    $("scatter").addEventListener("mousemove", function (e) {
+      var tip = $("scatter").querySelector(".tip"); if (!tip) return;
+      var c = e.target.closest("circle[data-id]"), p = c && byId[c.getAttribute("data-id")];
+      if (!p) { tip.hidden = true; return; }
+      var box = $("scatter").getBoundingClientRect(), mx = $("mX").value, my = $("mY").value;
+      tip.textContent = p.name + " · " + p.team + " · " + fmt(mx, adjVal(p, mx)) + " / " + fmt(my, adjVal(p, my));
+      tip.style.left = Math.min(e.clientX - box.left + 12, box.width - 220) + "px"; tip.style.top = (e.clientY - box.top + 12) + "px"; tip.hidden = false;
+    });
+    ["vGroup", "vLeague", "vAge"].forEach(function (id) { $(id).addEventListener("change", renderValue); });
+    $("value").addEventListener("click", function (e) { var tr = e.target.closest("tr[data-open]"); if (tr) open(tr.getAttribute("data-open")); });
+    $("shortlist").addEventListener("click", function (e) {
+      var u = e.target.closest("[data-unstar]");
+      if (u) { toggleStar(u.getAttribute("data-unstar")); if (current) renderProfile(); return; }
+      if (e.target.closest("[data-act=csv]")) { shortlistCsv(); return; }
+      var tr = e.target.closest("tr[data-open]"); if (tr) open(tr.getAttribute("data-open"));
+    });
     $("season").addEventListener("change", function () { switchSeason($("season").value, current && current.id); });
     window.addEventListener("hashchange", function () {
       var h = parseHash();
