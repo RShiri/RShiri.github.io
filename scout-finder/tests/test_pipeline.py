@@ -255,3 +255,20 @@ def test_update_current_season_turns_over_in_july():
     assert current_season(datetime.date(2026, 10, 15)) == "2026-27"
     assert current_season(datetime.date(2027, 6, 30)) == "2026-27"
     assert current_season(datetime.date(2027, 7, 1)) == "2027-28"
+
+
+def test_usage_starts_rating_team_share_positions():
+    base = {"league": "ENG1", "season": "2025-26", "team": "A", "player": "X", "player_id": 7}
+    rows = pd.DataFrame([
+        {**base, "match_id": 1, "date": "2025-08-16", "position": "AMR", "minutes": 90, "rating": 8.0},
+        {**base, "match_id": 2, "date": "2025-08-23", "position": "FW", "minutes": 60, "rating": 6.5},
+        {**base, "match_id": 3, "date": "2025-08-30", "position": "Sub:FW", "minutes": 30},
+        {**base, "match_id": 4, "date": "2025-09-13", "position": "AML", "minutes": 90, "rating": 7.0,
+         "player_id": 8, "player": "Y"},
+    ])
+    out = fotmob.from_match_rows(rows).set_index("name")
+    x = out.loc["X"]
+    assert x["starts"] == 2 and x["matches"] == 3
+    assert x["rating"] == round((8.0 * 90 + 6.5 * 60) / 150, 2)   # the cameo had no rating
+    assert x["team_share"] == round(180 / (90 * 4), 2)             # team A played 4 matches
+    assert x["positions"] == {"W": 0.5, "FW": 0.5}

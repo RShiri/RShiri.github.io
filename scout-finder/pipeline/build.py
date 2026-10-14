@@ -55,7 +55,10 @@ LOWER_IS_BETTER = {"dispossessed"}
 MIN_ATTEMPTS_P90 = {"aerial_pct": 1.0, "ground_duel_pct": 1.5, "dribble_pct": 0.5,
                     "xg_per_shot": 0.5}
 PROFILE_FIELDS = ["age", "value_eur", "country", "height", "foot", "contract_end",
-                  "birth_date", "current_team", "main_position"]
+                  "birth_date", "current_team", "main_position",
+                  "starts", "rating", "team_share", "positions"]
+# Season totals shown next to the per-90s (volume matters too).
+TOTALS = ["goals", "assists", "xg", "xa", "shots", "key_passes"]
 
 
 def attach_profiles(df: pd.DataFrame, path: Path) -> pd.DataFrame:
@@ -151,6 +154,10 @@ def _extras(row: pd.Series) -> dict:
     return {"extras": out} if out else {}
 
 
+def _present(x) -> bool:
+    return isinstance(x, dict) and bool(x) or not isinstance(x, dict) and pd.notna(x)
+
+
 def _plain(x):
     """numpy scalars -> JSON-friendly Python values (ages and values as ints)."""
     if isinstance(x, (np.integer, np.floating)):
@@ -213,7 +220,9 @@ def build(season_df: pd.DataFrame, league_factor: dict[str, float] | None = None
             players.append({
                 "id": pid, "name": row["name"], "team": row["team"], "league": row["league"],
                 "group": group, "matches": int(row["matches"]), "minutes": int(row["minutes"]),
-                **{f: _plain(row[f]) for f in PROFILE_FIELDS if f in row and pd.notna(row[f])},
+                **{f: _plain(row[f]) for f in PROFILE_FIELDS if f in row and _present(row[f])},
+                "totals": {c: _plain(round(float(row[c]), 2)) for c in TOTALS
+                           if c in row and pd.notna(row[c])},
                 **_extras(row),
                 "per90": {m: _num(round(float(raw.at[pid, m]), 3)) for m in cols},
                 "pct": {m: _num(p[m]) and int(p[m]) for m in cols},

@@ -61,6 +61,33 @@ def _main_group(slots: pd.Series) -> str | None:
     return groups.mode().iat[0] if not groups.empty else None
 
 
+def _usage(df: pd.DataFrame, keys: list[str]) -> pd.DataFrame:
+    """How a player was used: starts, rating, share of his team's minutes, positions.
+
+    team_share: minutes / (90 x the matches his last club played in that league-season).
+    positions: share of starts per position group, most-played first (top 3).
+    """
+    pos = df["position"].where(df["position"].notna(), "").astype(str)
+    started = (pos != "") & ~pos.str.startswith("Sub")
+    g = df.assign(started=started, group=pos.map(group_from_slot)).groupby(keys)
+    out = pd.DataFrame({"starts": g["started"].sum().astype(int)})
+    if "rating" in df:
+        w = df.assign(rw=df["rating"] * df["minutes"],
+                      rm=df["minutes"].where(df["rating"].notna()))
+        rg = w.groupby(keys)
+        out["rating"] = (rg["rw"].sum(min_count=1) / rg["rm"].sum()).round(2)
+    team_games = df.groupby(["league", "season", "team"])["match_id"].nunique()
+    last_team = g["team"].last()
+    games = pd.Series([team_games.get((lg, se, t)) for (lg, se, _), t in last_team.items()],
+                      index=last_team.index)
+    out["team_share"] = (g["minutes"].sum() / (90 * games)).clip(upper=1).round(2)
+    starts = df[started].assign(group=pos[started].map(group_from_slot)).dropna(subset=["group"])
+    shares = starts.groupby(keys)["group"].value_counts(normalize=True).round(2)
+    out["positions"] = pd.Series({k: dict(list(v.droplevel(keys).items())[:3])
+                                  for k, v in shares.groupby(level=keys)}, dtype=object)
+    return out
+
+
 def from_match_rows(df: pd.DataFrame, league: str = "ENG1") -> pd.DataFrame:
     df = df.copy()
     if "season" not in df:
@@ -89,6 +116,7 @@ def from_match_rows(df: pd.DataFrame, league: str = "ENG1") -> pd.DataFrame:
     for col, out_col in (("age", "age"), ("valueEur", "value_eur"), ("country", "country")):
         if col in df:
             info[out_col] = df.dropna(subset=[col]).groupby(keys)[col].last()
+    info = info.join(_usage(df, keys))
     out = info.join(totals).reset_index()
     out["source"] = "fotmob"
     out["player_id"] = "fotmob:" + out["player_id"].astype(str)
