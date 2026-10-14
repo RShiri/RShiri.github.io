@@ -210,6 +210,9 @@ def build(season_df: pd.DataFrame, league_factor: dict[str, float] | None = None
             continue
         used[group] = cols
         pct_all = percentiles(adj.loc[idx, cols])
+        # Overall level inside the group: mean of the universe percentiles (only the
+        # metrics the player's league publishes), ranked again so it spreads 0-100.
+        level = (pct_all.mean(axis=1).rank(pct=True) * 100).round(0)
         pct_lg = raw.loc[idx, cols].groupby(df.loc[idx, "league"]).transform(
             lambda s: s.rank(pct=True) * 100).round(0)
         for m in LOWER_IS_BETTER & set(cols):
@@ -225,6 +228,7 @@ def build(season_df: pd.DataFrame, league_factor: dict[str, float] | None = None
                            if c in row and pd.notna(row[c])},
                 **_extras(row),
                 "per90": {m: _num(round(float(raw.at[pid, m]), 3)) for m in cols},
+                "score": _num(level.at[pid]) and int(level.at[pid]),
                 "pct": {m: _num(p[m]) and int(p[m]) for m in cols},
                 "pct_league": {m: _num(pct_lg.at[pid, m]) and int(pct_lg.at[pid, m]) for m in cols},
                 # The raw material for a numbers-only scouting note.
@@ -238,6 +242,10 @@ def build(season_df: pd.DataFrame, league_factor: dict[str, float] | None = None
     return {
         "meta": {"source": first["source"], "season": first["season"], "leagues": leagues,
                  "league_factor": {lg: league_factor.get(lg, 1.0) for lg in leagues},
+                 "score_note": ("score = overall level inside the position group (mean of the "
+                                "universe percentiles, re-ranked 0-100). Solid for attackers; "
+                                "for CB and GK it leans on defending volume and one season of "
+                                "goals prevented, so treat it as a profile, not a ranking."),
                  **(meta or {}),
                  "groups": {g: {"metrics": c, "players": sum(p["group"] == g for p in players)}
                             for g, c in used.items()}},

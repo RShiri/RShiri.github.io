@@ -49,6 +49,7 @@ def test_percentiles_and_similarity():
     assert by_id["p9"]["pct"]["xg"] == 100 and by_id["p0"]["pct"]["xg"] == 10
     assert by_id["p9"]["similar"][0]["id"] == "p8"
     assert "xg" in by_id["p9"]["strengths"]
+    assert 0 < by_id["p0"]["score"] <= 100 and by_id["p9"]["score"] >= by_id["p5"]["score"]
 
 
 def test_universe_missing_stat_and_league_factor():
