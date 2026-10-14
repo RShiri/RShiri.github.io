@@ -91,8 +91,11 @@ def league_elos(date: str, cache_dir: Path) -> dict[str, dict]:
 
 def _site_league_elos(cache_dir: Path) -> dict[str, dict]:
     import requests
-    today = datetime.date.today().isoformat()
-    cache = cache_dir / f"clubelo_site_{today}.html"
+    # Reuse the newest saved page so a rebuild gives the same factors; delete
+    # data/raw/clubelo_site_*.html to take today's ratings instead.
+    saved = sorted(cache_dir.glob("clubelo_site_*.html"))
+    cache = saved[-1] if saved else cache_dir / f"clubelo_site_{datetime.date.today()}.html"
+    today = cache.stem.removeprefix("clubelo_site_")
     if cache.exists():
         html = cache.read_text(encoding="utf-8")
     else:

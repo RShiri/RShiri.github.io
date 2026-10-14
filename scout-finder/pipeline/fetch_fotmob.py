@@ -156,12 +156,17 @@ def _positions(details: dict) -> dict[int, str]:
 # Checked against live lineups and their pitch coordinates: 83/87 are the wide
 # men of a 4-2-3-1 (mostly forwards by trade), 84/86 the two 8s of a 4-1-4-1 or
 # the two 10s of a 3-4-2-1, 62/68 the wing-backs of a 3-4-x.
+# The 6x row is mapped to central midfield, not DM: 64/66 are the double pivot of
+# a 4-2-3-1 / 3-4-2-1 (Pedri, Rice), 63/67 the side men of a 4-3-1-2, and 65 the
+# lone pivot of a 4-1-4-1 or 3-1-4-2. FotMob draws a 4-3-3's anchor level with
+# the 8s (75), so 65 alone left a DM group of 4 players (Rodri among them), too
+# few to rank, and they fell out of the build. So the universe has no DM group.
 # Unknown ids fall back to the coarse usualPlayingPositionId (0 GK, 1 DEF, 2 MID, 3 FWD).
 POSITION_ID = {
     11: "GK",
     32: "DR", 33: "DC", 34: "DC", 35: "DC", 36: "DC", 37: "DC", 38: "DL",
     51: "DMR", 59: "DML", 62: "DMR", 68: "DML",
-    63: "DMC", 64: "DMC", 65: "DMC", 66: "DMC", 67: "DMC",
+    63: "MC", 64: "MC", 65: "MC", 66: "MC", 67: "MC",
     71: "MR", 72: "MR", 73: "MC", 74: "MC", 75: "MC", 76: "MC", 77: "MC", 78: "ML", 79: "ML",
     82: "AMR", 83: "AMR", 84: "AMC", 85: "AMC", 86: "AMC", 87: "AML", 88: "AML",
     103: "FWR", 104: "FW", 105: "FW", 106: "FW", 107: "FWL", 115: "FW",

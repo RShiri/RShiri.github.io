@@ -137,3 +137,11 @@ def test_fotmob_mid_season_move_gets_one_entry_per_league():
                          {**base, "league": "ENG1", "match_id": 2, "player_id": 8}])
     out = fotmob.from_match_rows(rows)
     assert sorted(out["player_id"]) == ["fotmob:7@BRA1", "fotmob:7@ENG1", "fotmob:8"]
+
+
+def test_fotmob_pivots_are_central_midfielders():
+    from pipeline import fetch_fotmob as ff
+    from pipeline.positions import group_from_slot
+    group = lambda pid: group_from_slot(ff.slot_from_fotmob({"positionId": pid}))
+    # 4-2-3-1 double pivot (64/66), 4-3-1-2 three (63/65/67), 4-1-4-1 anchor (65).
+    assert [group(p) for p in (63, 64, 65, 66, 67)] == ["CM"] * 5

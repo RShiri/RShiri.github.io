@@ -22,7 +22,10 @@ npxG and xA in Ligat ha'Al; every other league has them.
 
 Positions come from the starting slot (FotMob positionId, mapped in
 `fetch_fotmob.POSITION_ID`); a player's group is his most-started slot. Bench
-appearances only count for players who never started. A player who changed
+appearances only count for players who never started. FotMob's slots do not
+separate a holding midfielder from a box-to-box one (a 4-3-3's anchor sits level
+with the 8s, a 4-2-3-1's pivot pair are often 8s), so every central midfielder
+is CM and the FotMob universe has seven groups, no DM. A player who changed
 leagues mid-season gets one entry per league (`fotmob:<id>@<league>`).
 
 League strength: the ClubElo API was down when `data/universe_2025-26.json` was
