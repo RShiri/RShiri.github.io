@@ -265,7 +265,8 @@ window.RS_ABOUT = {
     saves: ["Saves", "הצלות", 2], goals_prevented: ["Goals prevented", "שערים שנמנעו", 2], save_pct: ["Save percentage", "אחוז הצלות", 0, "pct"]
   };
   // Raw per-90 counts the pipeline scales by league strength (league_strength.ADJUSTED); meta.adjusted wins when present.
-  var ADJUSTED = ["goals", "assists", "xg", "npxg", "xa", "shots", "shots_on_target", "key_passes", "dribbles", "xg_chain"];
+  var ADJUSTED = ["goals", "assists", "xg", "npxg", "xa", "shots", "shots_on_target", "key_passes", "big_chances_created", "box_touches",
+    "final_third_passes", "dribbles", "crosses_accurate", "xg_chain"];
   // Role labels from the shape of the percentile profile. Only metrics the group actually has count.
   var ARCHETYPES = {
     FW: [["poacher", ["xg", "npxg", "xg_per_shot", "touches_opp_box", "box_touches"]], ["target", ["aerials_won", "touches"]], ["linkup", ["xa", "key_passes", "touches", "passes"]], ["shooter", ["shots", "shots_on_target", "xgot"]]],
