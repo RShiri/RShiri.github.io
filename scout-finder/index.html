@@ -151,6 +151,49 @@ html[data-site-style="a"] .scatter .dot.vs { fill: #f5f7fa; }
 .scatter text.lab { fill: var(--rs-ink); font-weight: 600; }
 .scatter .tip { position: absolute; pointer-events: none; background: var(--rs-panel-2); border: 1px solid var(--rs-line-strong); padding: 6px 8px; font-size: 12px; color: var(--rs-ink); white-space: nowrap; }
 td.good { color: var(--hi); font-weight: 600; }
+/* v4: photos, crests, identity header, fact tiles */
+.av { --s: 32px; position: relative; flex: none; display: inline-grid; place-items: center; width: var(--s); height: var(--s); border-radius: 50%; overflow: hidden;
+  background: radial-gradient(circle at 50% 30%, var(--rs-panel-2), var(--rs-bg-soft)); border: 1px solid var(--rs-line-strong); vertical-align: middle; }
+.av img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 15%; }
+.av .ini { font: 700 calc(var(--s) * .36)/1 var(--rs-display); letter-spacing: .02em; color: var(--rs-muted); }
+.av.sm { --s: 28px; } .av.md { --s: 56px; } .av.xl { --s: 104px; border: 2px solid var(--rs-accent); }
+.av.xl::after { content: ""; position: absolute; inset: 0; border-radius: 50%; box-shadow: inset 0 0 0 3px var(--rs-panel); }
+.crest { width: 18px; height: 18px; object-fit: contain; vertical-align: -4px; margin-inline-end: 6px; flex: none; }
+.lglogo { width: 16px; height: 16px; object-fit: contain; vertical-align: -3px; margin-inline-end: 5px; flex: none; }
+.pc { display: inline-flex; align-items: center; gap: 10px; min-width: 0; }
+a.pc { text-decoration: none; } a.pc .n { text-decoration: underline; text-underline-offset: 3px; }
+.pc .n { white-space: nowrap; }
+.tc { display: inline-flex; align-items: center; white-space: nowrap; }
+.hits li { align-items: center; }
+.hits li .who2 { display: grid; gap: 2px; min-width: 0; flex: 1; }
+.idrow { display: flex; align-items: center; gap: 18px; margin-bottom: 16px; }
+.idrow .idtext { min-width: 0; flex: 1; }
+.idrow .eyebrow { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.idrow h2 { margin: 0; font-size: clamp(26px, 4vw, 38px); letter-spacing: .02em; text-transform: none; line-height: 1.05; }
+.idrow .club { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin-top: 8px; color: var(--rs-body); font-size: 15px; }
+.ring { --v: 0; position: relative; flex: none; display: grid; place-items: center; align-content: center; gap: 3px; width: 92px; height: 92px; border-radius: 50%;
+  background: conic-gradient(var(--rs-accent) calc(var(--v) * 1%), var(--rs-line) 0); }
+.ring::before { content: ""; position: absolute; inset: 5px; border-radius: 50%; background: var(--rs-panel); }
+.ring b, .ring span { position: relative; }
+.ring b { font: 700 34px/1 var(--rs-display); color: var(--rs-ink); }
+.ring span { font: 600 9px/1 var(--rs-display); letter-spacing: .14em; text-transform: uppercase; color: var(--rs-muted); }
+.facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); margin: 0 0 16px; padding: 1px 0 0 1px; }
+.facts div { background: var(--rs-bg-soft); border: 1px solid var(--rs-line); margin: -1px 0 0 -1px; padding: 9px 11px; min-width: 0; }
+.facts dt { font: 600 10px/1 var(--rs-display); letter-spacing: .14em; text-transform: uppercase; color: var(--rs-muted); }
+.facts dd { margin: 5px 0 0; font: 700 17px/1.1 var(--rs-display); color: var(--rs-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.h2h-head .side { display: flex; align-items: center; gap: 12px; }
+.h2h-head .side.b { flex-direction: row-reverse; }
+.h2h-head .side > div { min-width: 0; }
+section.block > h2 { display: flex; align-items: center; gap: 10px; }
+section.block > h2::before { content: ""; width: 4px; height: 18px; background: var(--rs-accent); flex: none; }
+html[data-site-style="a"] section.block > h2::before { transform: skewX(-12deg); }
+.panel { box-shadow: 0 1px 0 rgba(255, 255, 255, .03) inset, 0 12px 30px -18px rgba(0, 0, 0, .6); }
+th { position: sticky; top: 0; background: var(--rs-panel); z-index: 1; }
+@media (max-width: 640px) {
+  .idrow { gap: 12px; } .av.xl { --s: 76px; } .ring { width: 72px; height: 72px; } .ring b { font-size: 26px; }
+  .h2h-head .side { flex-direction: column; align-items: flex-start; gap: 6px; } .h2h-head .side.b { flex-direction: column; align-items: flex-end; }
+  .av.md { --s: 44px; } .h2h-head .nm { font-size: 17px; }
+}
 
 </style>
 </head>
@@ -403,6 +446,34 @@ window.RS_ABOUT = {
     if (v == null) return "–";
     return "€" + (v >= 1e6 ? (v / 1e6).toFixed(v >= 1e7 ? 0 : 1) + "m" : Math.round(v / 1e3) + "k");
   }
+  // Player photos and club crests come from FotMob's image CDN. Every image falls back
+  // cleanly: the avatar shows initials underneath, and a missing crest just disappears.
+  var LEAGUE_FOTMOB = { ENG1: 47, ESP1: 87, ITA1: 55, GER1: 54, FRA1: 53, POR1: 61, NED1: 57, BEL1: 40, ENG2: 48, BRA1: 268, ARG1: 112, ISR1: 127 };
+  function imgTpl(k, dflt) { return (D && D.meta.images && D.meta.images[k]) || dflt; }
+  function photoUrl(p) {
+    var id = String(p.id).replace(/^fotmob:/, "").replace(/@.*$/, "");
+    return /^\d+$/.test(id) ? imgTpl("player", "https://images.fotmob.com/image_resources/playerimages/{id}.png").replace("{id}", id) : "";
+  }
+  function initials(n) {
+    var w = String(n).replace(/[^\p{L}\s'-]/gu, "").trim().split(/\s+/).filter(Boolean);
+    return ((w[0] || "?").charAt(0) + (w.length > 1 ? w[w.length - 1].charAt(0) : "")).toUpperCase();
+  }
+  function avatar(p, size) {
+    var u = photoUrl(p);
+    return '<span class="av ' + (size || "") + '" aria-hidden="true"><span class="ini">' + esc(initials(p.name)) + "</span>" +
+      (u ? '<img src="' + esc(u) + '" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">' : "") + "</span>";
+  }
+  function crest(p) {
+    if (p.team_id == null) return "";
+    var u = imgTpl("crest", "https://images.fotmob.com/image_resources/logo/teamlogo/{team_id}.png").replace("{team_id}", p.team_id);
+    return '<img class="crest" src="' + esc(u) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">';
+  }
+  function leagueLogo(code) {
+    var id = LEAGUE_FOTMOB[code];
+    return id ? '<img class="lglogo" src="https://images.fotmob.com/image_resources/logo/leaguelogo/' + id + '.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">' : "";
+  }
+  var playerCell = function (p) { return '<span class="pc">' + avatar(p, "sm") + '<span class="n">' + esc(p.name) + "</span></span>"; };
+  var teamCell = function (p) { return '<span class="tc">' + crest(p) + esc(p.team) + "</span>"; };
   var metricsOf = function (g) { return D.meta.groups[g] ? D.meta.groups[g].metrics : []; };
   function band(p) { return p == null ? "" : p >= 80 ? "hi" : p <= 20 ? "lo" : ""; }
   function ordinal(n) {
@@ -535,8 +606,8 @@ window.RS_ABOUT = {
       hits = search(q, groupHint && groupHint()); idx = hits.length ? 0 : -1;
       if (q.trim().length < 2) { list.hidden = true; input.setAttribute("aria-expanded", "false"); return; }
       list.innerHTML = hits.length ? hits.map(function (p, i) {
-        return '<li role="option" data-id="' + esc(p.id) + '" aria-selected="' + (i === 0) + '"><span class="n">' + esc(p.name) +
-          '</span><span class="muted small">' + esc(p.team) + " · " + esc(lg(p.league)) + '</span><span class="chip g">' + p.group + "</span></li>";
+        return '<li role="option" data-id="' + esc(p.id) + '" aria-selected="' + (i === 0) + '">' + avatar(p, "sm") + '<span class="who2"><span class="n">' + esc(p.name) +
+          '</span><span class="muted small">' + esc(p.team) + " · " + esc(lg(p.league)) + '</span></span><span class="chip g">' + p.group + "</span></li>";
       }).join("") : '<li class="muted">' + t("noHits") + "</li>";
       list.hidden = false; input.setAttribute("aria-expanded", "true");
     }
@@ -586,6 +657,19 @@ window.RS_ABOUT = {
   }
 
   /* ------------------------------------------------------------ profile */
+  function factsFor(p) {
+    var he = lang === "he", f = [];
+    var add = function (k, v) { if (v != null && v !== "") f.push("<div><dt>" + k + "</dt><dd>" + v + "</dd></div>"); };
+    add(t("age"), p.age);
+    add(he ? "לאום" : "Nation", p.country ? esc(p.country) : null);
+    add(he ? "גובה" : "Height", p.height ? p.height + " " + t("cm") : null);
+    add(he ? "רגל" : "Foot", p.foot ? esc(T[String(p.foot).toLowerCase()] ? t(String(p.foot).toLowerCase()) : p.foot) : null);
+    add(t("value"), p.value_eur != null ? money(p.value_eur) : null);
+    add(he ? "חוזה עד" : "Contract", p.contract_end ? esc(p.contract_end.slice(0, 7)) : null);
+    add(t("minutes"), p.minutes.toLocaleString());
+    add(he ? "הופעות" : "Apps", p.matches);
+    return '<dl class="facts">' + f.join("") + "</dl>";
+  }
   function chipsFor(p) {
     var c = ['<span class="chip g">' + grp(p.group) + "</span>", '<span class="chip arch">' + archName(archetype(p)) + "</span>",
       '<span class="chip">' + esc(p.team) + "</span>", '<span class="chip">' + esc(lg(p.league)) + "</span>"];
@@ -620,8 +704,11 @@ window.RS_ABOUT = {
     var p = current, metrics = metricsOf(p.group), pct = mode === "all" ? p.pct : p.pct_league;
     var factor = D.meta.league_factor[p.league] || 1, n = D.meta.groups[p.group].players;
     var starredNow = shortlist.indexOf(p.id) >= 0;
-    $("card").innerHTML = '<div class="who"><h2>' + esc(p.name) + '</h2><div class="ovr" title="' + esc(t("overallLong")) + '"><b>' + (p._overall == null ? "–" : p._overall) + "</b><span>" + t("overall") + "</span></div></div>" +
-      '<div class="meta">' + chipsFor(p) + "</div>" + seasonLine(p) +
+    var ov = p._overall == null ? null : p._overall;
+    $("card").innerHTML = '<div class="idrow">' + avatar(p, "xl") + '<div class="idtext"><div class="eyebrow"><span class="chip g">' + grp(p.group) + '</span><span class="chip arch">' + archName(archetype(p)) + "</span></div>" +
+      "<h2>" + esc(p.name) + '</h2><div class="club"><span class="tc">' + crest(p) + esc(p.team) + '</span><span class="tc">' + leagueLogo(p.league) + esc(lg(p.league)) + "</span></div></div>" +
+      '<div class="ring" style="--v:' + (ov || 0) + '" title="' + esc(t("overallLong")) + '"><b>' + (ov == null ? "–" : ov) + "</b><span>" + t("overall") + "</span></div></div>" +
+      factsFor(p) + seasonLine(p) +
       '<div class="toggle" role="group"><button data-mode="all" aria-pressed="' + (mode === "all") + '">' + t("vsAll") +
       '</button><button data-mode="league" aria-pressed="' + (mode === "league") + '">' + t("vsLeague") + "</button></div>" +
       '<div class="bars">' + metrics.map(function (m) {
@@ -720,8 +807,8 @@ window.RS_ABOUT = {
     if (!b) { $("h2h").innerHTML = '<p class="empty">' + t("placeholder2") + "</p>"; return; }
     var ms = metricsOf(a.group), same = a.group === b.group;
     var side = function (p, cls) {
-      return '<div class="side ' + cls + '"><div class="nm">' + esc(p.name) + '</div><div class="muted small">' + esc(p.team) + " · " + esc(lg(p.league)) + " · " + grp(p.group) +
-        (p.age != null ? " · " + p.age : "") + (p.value_eur != null ? " · " + money(p.value_eur) : "") + "</div></div>";
+      return '<div class="side ' + cls + '">' + avatar(p, "md") + '<div><div class="nm">' + esc(p.name) + '</div><div class="muted small">' + crest(p) + esc(p.team) + " · " + esc(lg(p.league)) + " · " + grp(p.group) +
+        (p.age != null ? " · " + p.age : "") + (p.value_eur != null ? " · " + money(p.value_eur) : "") + "</div></div></div>";
     };
     var rows = ms.map(function (m) {
       var pa = a.pct[m], pb = b.pct ? b.pct[m] : null, va = a.per90[m], vb = b.per90 ? b.per90[m] : null;
@@ -752,7 +839,7 @@ window.RS_ABOUT = {
       "</tr></thead><tbody>" + list.map(function (s) {
         var q = s.p;
         return '<tr data-id="' + esc(q.id) + '" class="' + (compare === q ? "on" : "") + '"><td class="num score">' + Math.round(s.score * 100) +
-          '%</td><td><a href="#' + encodeURIComponent(q.id) + '" class="n" data-open="' + esc(q.id) + '">' + esc(q.name) + "</a></td><td>" + esc(q.team) +
+          '%</td><td><a href="#' + encodeURIComponent(q.id) + '" class="pc" data-open="' + esc(q.id) + '">' + avatar(q, "sm") + '<span class="n">' + esc(q.name) + "</span></a></td><td>" + teamCell(q) +
           '</td><td><span class="chip">' + esc(lg(q.league)) + "</span></td>" +
           (has.age ? '<td class="num">' + (q.age == null ? "–" : q.age) + "</td>" : "") + (has.value ? '<td class="num">' + money(q.value_eur) + "</td>" : "") +
           '<td class="num">' + q.minutes.toLocaleString() + "</td>" +
@@ -787,7 +874,7 @@ window.RS_ABOUT = {
       "</th><th>" + t("profile") + "</th>" + cols + '<th class="num">' + t("minutes") + '</th><th class="num">' + (ov ? t("overall") : esc(mShort(m)) + " " + t("per90")) + '</th><th class="num">' + t("pctile") + "</th>" +
       other.map(function (x) { return '<th class="num">' + esc(mShort(x)) + "</th>"; }).join("") + "</tr></thead><tbody>" +
       rows.map(function (p, i) {
-        return '<tr data-open="' + esc(p.id) + '" class="' + (current === p ? "on" : "") + '"><td class="num muted">' + (i + 1) + '</td><td><span class="n">' + esc(p.name) + "</span></td><td>" + esc(p.team) +
+        return '<tr data-open="' + esc(p.id) + '" class="' + (current === p ? "on" : "") + '"><td class="num muted">' + (i + 1) + '</td><td>' + playerCell(p) + "</td><td>" + teamCell(p) +
           '</td><td><span class="chip">' + esc(lg(p.league)) + '</span></td><td class="small">' + archName(archetype(p)) + "</td>" +
           (has.age ? '<td class="num">' + (p.age == null ? "–" : p.age) + "</td>" : "") + (has.value ? '<td class="num">' + money(p.value_eur) + "</td>" : "") +
           '<td class="num">' + p.minutes.toLocaleString() + '</td><td class="num">' + (ov ? p._overall : fmt(m, p.per90[m])) +
@@ -870,7 +957,7 @@ window.RS_ABOUT = {
       '</th><th class="num">' + t("age") + '</th><th class="num">' + t("value") + '</th><th class="num">' + t("overall") + '</th><th class="num">' + t("expected") + '</th><th class="num">' + t("gap") + "</th></tr></thead><tbody>" +
       rows.map(function (r, i) {
         var p = r.p;
-        return '<tr data-open="' + esc(p.id) + '"><td class="num muted">' + (i + 1) + '</td><td><span class="n">' + esc(p.name) + "</span></td><td>" + esc(p.team) +
+        return '<tr data-open="' + esc(p.id) + '"><td class="num muted">' + (i + 1) + '</td><td>' + playerCell(p) + "</td><td>" + teamCell(p) +
           '</td><td><span class="chip">' + esc(lg(p.league)) + '</span></td><td class="small">' + archName(archetype(p)) + '</td><td class="num">' + (p.age == null ? "–" : p.age) +
           '</td><td class="num">' + money(p.value_eur) + '</td><td class="num score">' + p._overall + '</td><td class="num">' + Math.round(r.e) + '</td><td class="num good">+' + Math.round(r.gap) + "</td></tr>";
       }).join("") + "</tbody></table>" : '<p class="empty">' + t("noRows") + "</p>";
@@ -893,7 +980,7 @@ window.RS_ABOUT = {
     $("shortlist").innerHTML = "<table><thead><tr><th>" + t("player") + "</th><th>" + t("team") + "</th><th>" + t("league") + "</th><th>" + t("pos") + "</th><th>" + t("profile") +
       "</th>" + (has.age ? '<th class="num">' + t("age") + "</th>" : "") + (has.value ? '<th class="num">' + t("value") + "</th>" : "") + '<th class="num">' + t("overall") + "</th><th></th></tr></thead><tbody>" +
       ps.map(function (p) {
-        return '<tr data-open="' + esc(p.id) + '"><td><span class="n">' + esc(p.name) + "</span></td><td>" + esc(p.team) + '</td><td><span class="chip">' + esc(lg(p.league)) + "</span></td><td>" + grp(p.group) +
+        return '<tr data-open="' + esc(p.id) + '"><td>' + playerCell(p) + "</td><td>" + teamCell(p) + '</td><td><span class="chip">' + esc(lg(p.league)) + "</span></td><td>" + grp(p.group) +
           '</td><td class="small">' + archName(archetype(p)) + "</td>" + (has.age ? '<td class="num">' + (p.age == null ? "–" : p.age) + "</td>" : "") + (has.value ? '<td class="num">' + money(p.value_eur) + "</td>" : "") +
           '<td class="num score">' + (p._overall == null ? "–" : p._overall) + '</td><td><button class="btn" data-unstar="' + esc(p.id) + '">' + t("remove") + "</button></td></tr>";
       }).join("") + '</tbody></table><div class="actions" style="padding:0 8px 8px"><button class="btn" data-act="csv">' + t("exportCsv") + "</button></div>";
@@ -926,15 +1013,34 @@ window.RS_ABOUT = {
       '<rect width="1200" height="630" fill="' + col.bg + '"/><rect x="0" y="0" width="1200" height="6" fill="' + col.accent + '"/>' +
       '<text x="60" y="88" fill="' + col.ink + '" font-size="54" font-weight="700" font-family="sans-serif">' + esc(p.name) + "</text>" +
       '<text x="60" y="130" fill="' + col.body + '" font-size="22" font-family="sans-serif">' + esc(sub) + "</text>" +
+      (p._overall != null ? '<text x="1000" y="104" fill="' + col.accent + '" font-size="56" font-weight="700" font-family="sans-serif" text-anchor="end">' + p._overall +
+        '</text><text x="1000" y="130" fill="' + col.muted + '" font-size="14" font-family="sans-serif" text-anchor="end" letter-spacing="2">' + esc(t("overall").toUpperCase()) + "</text>" : "") +
       '<text x="640" y="200" fill="' + col.muted + '" font-size="16" font-family="sans-serif" letter-spacing="2">' + esc(t("radarNote").toUpperCase()) + "</text>" + bars +
       '<g transform="translate(40,90)">' + radar.replace(/^<svg[^>]*>/, "").replace(/<\/svg>$/, "") + "</g>" +
       '<text x="60" y="600" fill="' + col.muted + '" font-size="16" font-family="sans-serif">SCOUT FINDER · ' + season + " · rshiri.github.io/scout-finder</text></svg>";
     var img = new Image();
     img.onload = function () {
       var c = document.createElement("canvas"); c.width = 1200; c.height = 630;
-      c.getContext("2d").drawImage(img, 0, 0);
-      var a = document.createElement("a"); a.download = "scout-finder-" + fold(p.name).replace(/[^a-z0-9]+/g, "-") + ".png";
-      a.href = c.toDataURL("image/png"); a.click();
+      var g = c.getContext("2d"), done = false;
+      g.drawImage(img, 0, 0);
+      var save = function () {
+        if (done) return; done = true;
+        var a = document.createElement("a"); a.download = "scout-finder-" + fold(p.name).replace(/[^a-z0-9]+/g, "-") + ".png";
+        try { a.href = c.toDataURL("image/png"); } catch (e) { g.drawImage(img, 0, 0); a.href = c.toDataURL("image/png"); }
+        a.click();
+      };
+      // The photo is drawn only when the image CDN allows cross-origin use; otherwise the card goes out without it.
+      var u = photoUrl(p);
+      if (!u) return save();
+      var ph = new Image(); ph.crossOrigin = "anonymous";
+      ph.onload = function () {
+        if (done) return;
+        g.save(); g.beginPath(); g.arc(1100, 90, 62, 0, Math.PI * 2); g.fillStyle = col.panel; g.fill(); g.clip();
+        g.drawImage(ph, 1038, 28, 124, 124); g.restore();
+        g.beginPath(); g.arc(1100, 90, 62, 0, Math.PI * 2); g.lineWidth = 4; g.strokeStyle = col.accent; g.stroke();
+        save();
+      };
+      ph.onerror = save; setTimeout(save, 3000); ph.src = u;
     };
     img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
   }
