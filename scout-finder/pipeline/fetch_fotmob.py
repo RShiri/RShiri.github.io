@@ -239,7 +239,7 @@ def player_rows(match: dict, details: dict, league: str) -> list[dict]:
     rows = []
     for pid, p in (details.get("content", {}).get("playerStats") or {}).items():
         row = {"league": league, "match_id": match["id"], "date": match["date"],
-               "player_id": int(pid), "player": p.get("name"),
+               "player_id": int(pid), "player": p.get("name"), "teamId": p.get("teamId"),
                "team": teams.get(p.get("teamId")) or p.get("teamName"),
                "position": positions.get(int(pid), "")}
         row.update({k: v for k, v in profile.get(int(pid), {}).items() if v is not None})
@@ -273,7 +273,8 @@ def player_rows(match: dict, details: dict, league: str) -> list[dict]:
     return rows
 
 
-COLUMNS = ["league", "season", "match_id", "date", "team", "player_id", "player", "position",
+COLUMNS = ["league", "season", "match_id", "date", "team", "teamId", "player_id", "player",
+           "position",
            "age", "valueEur", "country", "oppPossession", "minutes", "rating"] + sorted(
     COUNT_COLS)
 

@@ -54,7 +54,7 @@ LOWER_IS_BETTER = {"dispossessed"}
 # Below this many attempts per 90 over the season the ratio stays empty.
 MIN_ATTEMPTS_P90 = {"aerial_pct": 1.0, "ground_duel_pct": 1.5, "dribble_pct": 0.5,
                     "xg_per_shot": 0.5}
-PROFILE_FIELDS = ["age", "value_eur", "country", "height", "foot", "contract_end",
+PROFILE_FIELDS = ["team_id", "age", "value_eur", "country", "height", "foot", "contract_end",
                   "birth_date", "current_team", "main_position",
                   "starts", "rating", "team_share", "positions"]
 # Season totals shown next to the per-90s (volume matters too).
@@ -242,6 +242,11 @@ def build(season_df: pd.DataFrame, league_factor: dict[str, float] | None = None
     return {
         "meta": {"source": first["source"], "season": first["season"], "leagues": leagues,
                  "league_factor": {lg: league_factor.get(lg, 1.0) for lg in leagues},
+                 # FotMob's image CDN: {id} = numeric FotMob player id, {team_id} = club id.
+                 "images": {
+                     "player": "https://images.fotmob.com/image_resources/playerimages/{id}.png",
+                     "crest": "https://images.fotmob.com/image_resources/logo/teamlogo/{team_id}.png",
+                 },
                  "score_note": ("score = overall level inside the position group (mean of the "
                                 "universe percentiles, re-ranked 0-100). Solid for attackers; "
                                 "for CB and GK it leans on defending volume and one season of "
@@ -265,15 +270,17 @@ def write(season_df: pd.DataFrame, out_dir: Path, name: str,
 def write_season_index(out_dir: Path, default: str | None = None) -> Path:
     """data/seasons.json: the built universe seasons, newest first, and which to open.
 
-    The default is the newest season with a full set of players: early in a season
-    the current one is thin, so the page opens on the last finished one.
+    The default is the newest season that has run most of its course (its busiest
+    player has 80% of the minutes the busiest player of any season has): early in
+    a season the minutes floor drops, so player counts alone would pick it.
     """
     seasons = sorted((p.stem.split("_", 1)[1] for p in out_dir.glob("universe_*.json")),
                      reverse=True)
     if default is None:
-        sizes = {s: len(json.loads((out_dir / f"universe_{s}.json").read_text(
-            encoding="utf-8"))["players"]) for s in seasons}
-        full = [s for s in seasons if sizes[s] >= 0.8 * max(sizes.values())]
+        played = {s: max(p["minutes"] for p in json.loads((out_dir / f"universe_{s}.json")
+                                                          .read_text(encoding="utf-8"))["players"])
+                  for s in seasons}
+        full = [s for s in seasons if played[s] >= 0.8 * max(played.values())]
         default = full[0] if full else (seasons[0] if seasons else None)
     path = out_dir / "seasons.json"
     path.write_text(json.dumps({"seasons": seasons, "default": default}), encoding="utf-8")

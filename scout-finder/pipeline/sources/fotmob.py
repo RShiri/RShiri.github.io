@@ -113,7 +113,8 @@ def from_match_rows(df: pd.DataFrame, league: str = "ENG1") -> pd.DataFrame:
         pos_group=("position", _main_group),
     )
     # Age, market value and nationality: the latest the lineups gave this season.
-    for col, out_col in (("age", "age"), ("valueEur", "value_eur"), ("country", "country")):
+    for col, out_col in (("age", "age"), ("valueEur", "value_eur"), ("country", "country"),
+                         ("teamId", "team_id")):
         if col in df:
             info[out_col] = df.dropna(subset=[col]).groupby(keys)[col].last()
     info = info.join(_usage(df, keys))
@@ -133,4 +134,7 @@ def load_xepl_csv(path: Path, league: str = "ENG1") -> pd.DataFrame:
 
 def load_fetched(paths: list[Path]) -> pd.DataFrame:
     """CSVs written by pipeline.fetch_fotmob (they carry their own league column)."""
-    return from_match_rows(pd.concat([pd.read_csv(p) for p in paths], ignore_index=True))
+    # An empty CSV (Israel 2024-25: FotMob has no player data for it) would turn every
+    # column into object dtype in the concat, so it is left out.
+    frames = [f for f in (pd.read_csv(p) for p in paths) if len(f)]
+    return from_match_rows(pd.concat(frames, ignore_index=True))
