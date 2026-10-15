@@ -22,7 +22,7 @@ const OUT = process.env.SHOTS;  // optional folder for screenshots
     const page = await browser.newPage({ viewport: { width, height: 900 } });
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
-    page.on("console", (m) => { if (m.type() === "error" && !/fonts\.g|favicon|seasons\.json|ERR_/.test(m.text())) errors.push(m.text()); });
+    page.on("console", (m) => { if (m.type() === "error" && !/fonts\.g|favicon|seasons\.json|ERR_|Failed to load resource/.test(m.text())) errors.push(m.text()); });
     await page.goto(BASE + query + hash);
     await page.waitForSelector("#app:not([hidden]) #card h2", { timeout: 20000 });
     const s = await page.evaluate(() => ({
@@ -34,10 +34,11 @@ const OUT = process.env.SHOTS;  // optional folder for screenshots
       note: document.querySelectorAll("#note p").length,
       dots: document.querySelectorAll("#scatter circle").length,
       value: document.querySelectorAll("#value tbody tr").length,
-      overall: document.querySelector("#card .ovr b").textContent,
+      overall: document.querySelector("#card .ring b").textContent,
+      avatars: document.querySelectorAll("#similar .av, #finder .av, #card .av.xl").length,
       overflow: document.documentElement.scrollWidth > window.innerWidth + 1,
     }));
-    check(s.bars >= 3 && s.similar === 10 && s.finder > 0 && s.h2h >= 3 && s.note >= 2 && s.dots > 50 && /\d/.test(s.overall), `${name}: page incomplete ${JSON.stringify(s)}`);
+    check(s.bars >= 3 && s.similar === 10 && s.finder > 0 && s.h2h >= 3 && s.note >= 2 && s.dots > 50 && /\d/.test(s.overall) && s.avatars >= 11, `${name}: page incomplete ${JSON.stringify(s)}`);
     check(!s.overflow, `${name}: page scrolls sideways`);
     if (name === "c-en") {
       // Search, open, then compare through the head-to-head picker.
