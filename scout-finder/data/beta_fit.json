@@ -1,0 +1,22 @@
+{
+ "beta": 0.099,
+ "ci": [
+  0.084,
+  0.115
+ ],
+ "n": 765,
+ "method": "weighted least squares through the origin on movers' mean log change in attacking per-90s; 90% bootstrap interval",
+ "metrics": [
+  "shots",
+  "key_passes",
+  "box_touches",
+  "dribbles",
+  "xg",
+  "xa"
+ ],
+ "seasons": [
+  "2024-25",
+  "2025-26",
+  "2026-27"
+ ]
+}
