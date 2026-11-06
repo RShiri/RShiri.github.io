@@ -273,3 +273,22 @@ def test_usage_starts_rating_team_share_positions():
     assert x["rating"] == round((8.0 * 90 + 6.5 * 60) / 150, 2)   # the cameo had no rating
     assert x["team_share"] == round(180 / (90 * 4), 2)             # team A played 4 matches
     assert x["positions"] == {"W": 0.5, "FW": 0.5}
+
+
+def test_export_stints_keeps_low_minutes_and_one_id_per_player():
+    from pipeline import export_stints
+    rows = pd.DataFrame([
+        {"match_id": 1, "date": "2025-09-01", "league": "ENG1", "team": "A", "player_id": 7,
+         "player": "X", "position": "DC", "minutes": 90},
+        {"match_id": 2, "date": "2026-01-20", "league": "ESP1", "team": "B", "player_id": 7,
+         "player": "X", "position": "Sub", "minutes": 12},
+        {"match_id": 3, "date": "2025-09-01", "league": "ENG1", "team": "A", "player_id": 8,
+         "player": "Y", "position": "ST", "minutes": 5},
+    ])
+    for c in fotmob.SUM_COLS:
+        rows[c] = 0
+    out = export_stints.stints(fotmob.from_match_rows(rows))
+    assert len(out) == 3                                   # a 5-minute stint is kept
+    assert set(out["player_id"]) == {"fotmob:7", "fotmob:8"}   # no "@league" suffix
+    x = out[out["player_id"] == "fotmob:7"].set_index("league")
+    assert x.loc["ESP1", "team"] == "B" and x.loc["ESP1", "minutes"] == 12
