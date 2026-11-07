@@ -275,6 +275,19 @@ def test_usage_starts_rating_team_share_positions():
     assert x["positions"] == {"W": 0.5, "FW": 0.5}
 
 
+def test_team_share_counts_only_the_last_club_after_a_same_league_move():
+    base = {"league": "ENG1", "season": "2025-26", "position": "DC"}
+    rows = pd.DataFrame([
+        {**base, "match_id": 1, "date": "2025-08-16", "team": "A", "player_id": 7, "player": "X", "minutes": 90},
+        {**base, "match_id": 2, "date": "2025-08-23", "team": "A", "player_id": 7, "player": "X", "minutes": 90},
+        {**base, "match_id": 3, "date": "2026-02-01", "team": "B", "player_id": 7, "player": "X", "minutes": 45},
+        {**base, "match_id": 4, "date": "2026-02-08", "team": "B", "player_id": 8, "player": "Y", "minutes": 90},
+    ])
+    x = fotmob.from_match_rows(rows).set_index("name").loc["X"]
+    assert x["team"] == "B" and x["minutes"] == 225          # season totals still cover both clubs
+    assert x["team_share"] == round(45 / (90 * 2), 2)        # B played 2 matches, X gave B 45 min
+
+
 def test_export_stints_keeps_low_minutes_and_one_id_per_player():
     from pipeline import export_stints
     rows = pd.DataFrame([
