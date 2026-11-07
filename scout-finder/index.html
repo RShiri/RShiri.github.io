@@ -786,8 +786,8 @@ window.RS_ABOUT = {
       ? "מנתוני האירועים של הפרמייר ליג: " + ex.prog_passes_p90.toFixed(1) + " מסירות מתקדמות ו־" + (ex.prog_carries_p90 || 0).toFixed(1) + " הובלות מתקדמות ל־90, ו־" + (ex.xt_added_p90 || 0).toFixed(3) + " xT ל־90."
       : "From Premier League event data: " + ex.prog_passes_p90.toFixed(1) + " progressive passes and " + (ex.prog_carries_p90 || 0).toFixed(1) + " progressive carries per 90, and " + (ex.xt_added_p90 || 0).toFixed(3) + " xT added per 90.");
     if (p.team_share != null && p.team_share < 0.4) out.push(he
-      ? "שיחק רק " + Math.round(p.team_share * 100) + "% מדקות הקבוצה: מדגם קטן יותר, והמספרים פחות יציבים."
-      : "Played only " + Math.round(p.team_share * 100) + "% of the club's minutes: a smaller sample, so the numbers are less stable.");
+      ? "שיחק " + Math.round(p.team_share * 100) + "% מדקות הליגה של " + esc(p.team) + " העונה."
+      : "Played " + Math.round(p.team_share * 100) + "% of " + esc(p.team) + "'s league minutes this season.");
     if (p.contract_end) {
       var endYear = parseInt(season.slice(0, 4), 10) + 1;
       if (p.contract_end <= endYear + "-06-30" && p.contract_end >= (endYear - 1) + "-07-01") out.push(he ? "החוזה מסתיים ב־" + p.contract_end.slice(0, 7) + ": יכול להיות זמין בזול או בחינם." : "Contract ends " + p.contract_end.slice(0, 7) + ": could be available cheaply or on a free.");
