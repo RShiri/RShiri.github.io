@@ -286,6 +286,7 @@ th { position: sticky; top: 0; background: var(--rs-panel); z-index: 1; }
 
 <footer>
   <div class="wrap" id="method"></div>
+  <div class="wrap" id="backtest-link"></div>
 </footer>
 
 <script>
@@ -1057,6 +1058,8 @@ window.RS_ABOUT = {
       "</span><span><b>" + Object.keys(D.meta.groups).length + "</b>" + t("positions") + "</span>";
     var beta = D.meta.beta_fit, used = beta && beta.used !== false, b = used ? beta.beta : (beta && beta["default"]) || 0.06;
     var ram = D.meta.xg_source ? Object.keys(D.meta.xg_source).filter(function (k) { return D.meta.xg_source[k] === "ram"; }).map(lg) : [];
+    $("backtest-link").dir = dir;
+    $("backtest-link").innerHTML = '<p><a href="backtest.html">' + (lang === "he" ? "בדיקה מול העברות אמיתיות" : "Back-test against real transfers") + "</a></p>";
     $("method").innerHTML = lang === "he"
       ? "<p>הנתונים: סטטיסטיקה לכל שחקן בכל משחק מ־FotMob, מסוכמת לעונה ומחושבת ל־90 דקות. נכללים רק שחקנים עם לפחות 900 דקות בליגה (פחות בתחילת עונה). עמדה נקבעת לפי המשבצת שבה השחקן פתח הכי הרבה.</p>" +
         "<p>חוזק ליגה: ממוצע דירוג ClubElo של הקבוצות בכל ליגה. מדדי נפח התקפי מוכפלים ב־exp(" + b + " × הפרש Elo / 100) מול הפרמייר ליג. " +
