@@ -64,7 +64,8 @@ def _main_group(slots: pd.Series) -> str | None:
 def _usage(df: pd.DataFrame, keys: list[str]) -> pd.DataFrame:
     """How a player was used: starts, rating, share of his team's minutes, positions.
 
-    team_share: minutes / (90 x the matches his last club played in that league-season).
+    team_share: minutes for his last club / (90 x the matches that club played in that
+    league-season).
     positions: share of starts per position group, most-played first (top 3).
     """
     pos = df["position"].where(df["position"].notna(), "").astype(str)
@@ -76,11 +77,21 @@ def _usage(df: pd.DataFrame, keys: list[str]) -> pd.DataFrame:
                       rm=df["minutes"].where(df["rating"].notna()))
         rg = w.groupby(keys)
         out["rating"] = (rg["rw"].sum(min_count=1) / rg["rm"].sum()).round(2)
-    team_games = df.groupby(["league", "season", "team"])["match_id"].nunique()
-    last_team = g["team"].last()
-    games = pd.Series([team_games.get((lg, se, t)) for (lg, se, _), t in last_team.items()],
-                      index=last_team.index)
-    out["team_share"] = (g["minutes"].sum() / (90 * games)).clip(upper=1).round(2)
+    # A club by teamId where FotMob gave one: the same club can be spelled two ways in
+    # one season ('Lanús' and 'Lanus'), which would split its matches.
+    club = df["team"]
+    if "teamId" in df:
+        club = df["teamId"].astype("string").fillna(club)
+    df = df.assign(club=club)
+    team_games = df.groupby(["league", "season", "club"])["match_id"].nunique()
+    last_club = df.groupby(keys)["club"].last()
+    games = pd.Series([team_games.get((lg, se, c)) for (lg, se, _), c in last_club.items()],
+                      index=last_club.index)
+    # Only the minutes for that last club: a player who changed clubs inside one league
+    # would otherwise add his old club's minutes to the new club's denominator.
+    df = df.join(last_club.rename("last_club"), on=keys)
+    at_last = df[df["club"] == df["last_club"]].groupby(keys)["minutes"].sum()
+    out["team_share"] = (at_last / (90 * games)).clip(upper=1).round(2)
     starts = df[started].assign(group=pos[started].map(group_from_slot)).dropna(subset=["group"])
     shares = starts.groupby(keys)["group"].value_counts(normalize=True).round(2)
     out["positions"] = pd.Series({k: dict(list(v.droplevel(keys).items())[:3])

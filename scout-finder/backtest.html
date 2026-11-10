@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" class="rs-page rs-scout">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Transfer Back-test · Ram Shiri</title>
+<meta name="description" content="Does what we know about a player predict whether his transfer works out? A back-test on 1,469 real moves." />
+<meta name="author" content="Ram Shiri" />
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/assets/brand/brand.css" />
+<script src="/assets/brand/brand.js"></script>
+<style>
+html[data-site-style] { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--rs-bg); color: var(--rs-body); font: 15px/1.6 var(--rs-text); }
+html[data-site-lang="he"] body { font-family: "IBM Plex Sans Hebrew", var(--rs-text); }
+a { color: var(--rs-accent); }
+.wrap { max-width: 920px; margin: 0 auto; padding: 0 clamp(16px, 3vw, 32px); }
+header { padding: 40px 0 24px; border-bottom: 1px solid var(--rs-line); }
+.kicker { font: 600 12px/1 var(--rs-display); letter-spacing: .2em; text-transform: uppercase; color: var(--rs-accent); }
+h1 { margin: 10px 0 10px; font: 700 clamp(32px, 6vw, 52px)/1.05 var(--rs-display); color: var(--rs-ink); }
+h2 { margin: 0 0 10px; font: 700 24px/1.2 var(--rs-display); color: var(--rs-ink); }
+section { padding: 28px 0; border-bottom: 1px solid var(--rs-line); }
+p { margin: 0 0 12px; max-width: 72ch; }
+.note { color: var(--rs-muted); font-size: 13px; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.tile { background: var(--rs-panel); border: 1px solid var(--rs-line); padding: 14px; }
+.tile b { display: block; font: 700 30px/1.1 var(--rs-display); color: var(--rs-ink); }
+.scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+th, td { padding: 8px 10px; border-bottom: 1px solid var(--rs-line); text-align: start; white-space: nowrap; }
+th { color: var(--rs-muted); font-weight: 600; }
+tr.model td { color: var(--rs-ink); font-weight: 600; }
+.charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px; }
+.chart h3 { margin: 0 0 12px; font: 600 16px/1.3 var(--rs-display); color: var(--rs-ink); }
+.bar { margin-bottom: 10px; }
+.bar-label { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; }
+.bar-label b { color: var(--rs-ink); font-variant-numeric: tabular-nums; }
+.track { height: 8px; margin-top: 4px; background: var(--rs-panel-2); }
+.fill { height: 100%; background: var(--rs-accent); border-start-end-radius: 4px; border-end-end-radius: 4px; }
+.calib { display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: 24px; align-items: start; }
+.calib svg { width: 100%; height: auto; display: block; }
+.calib text { fill: var(--rs-muted); font: 11px var(--rs-text); }
+@media (max-width: 680px) { .calib { grid-template-columns: 1fr; } }
+ul { margin: 0; padding-inline-start: 20px; max-width: 72ch; }
+li { margin-bottom: 8px; }
+footer { padding: 24px 0 48px; }
+</style>
+</head>
+<body>
+<main class="wrap" id="app"><p>Loading…</p></main>
+<script>
+(function () {
+  var D, lang = "en";
+  var pct = function (x) { return Math.round(x * 100) + "%"; };
+  var num = function (x) { return x.toLocaleString("en-US"); };
+  var T = {
+    en: {
+      back: "← Scout Finder", kicker: "Transfer back-test", title: "Can a player's numbers predict a transfer?",
+      lead: function () { return "Every player who changed main club between " + D.season_t + " and " + D.season_t1 + " across our 12 leagues, including those who barely played afterwards. Only data known at the time of the move goes in."; },
+      tiles: ["Transfers", "Reached half the minutes", "Missing the next season", "Stayed at their club"],
+      verdict: "The result", metric: ["Prediction", "Brier (lower is better)", "Log loss (lower is better)", "AUC (higher is better)"],
+      names: { base_rate: "Everyone gets the average", prev_share: "Previous club minutes share only", model: "Full model" },
+      read: function (g, m, s) { return "The full model ranks transfers a little better than knowing only how much he played before: AUC " + m.auc.toFixed(3) + " against " + s.auc.toFixed(3) + " (90% interval for the gain " + g.auc[0].toFixed(3) + " to " + g.auc[1].toFixed(3) + "). The probabilities are not clearly better: the Brier interval, " + g.brier[0].toFixed(3) + " to " + g.brier[1].toFixed(3) + ", includes zero. An AUC near 0.63 is a weak signal, useful as a screen and not as a verdict."; },
+      ev: function () { return "Evaluated by " + D.evaluation.replace("5-fold CV", "5-fold cross-validation") + ", on this season pair only. Success: at least 50% of the new club's minutes from the player's first appearance."; },
+      desc: "Who succeeds", groups: { direction: "By direction", age: "By age", value: "By market value" },
+      labels: { up: "To a stronger league", same: "Same league", down: "To a weaker league", unknown: "Unknown" },
+      overall: function () { return "Overall rate: " + pct(D.success_rate) + ". These are raw rates: no group controls for the others."; },
+      calib: "Are the probabilities honest?", calibText: "Each dot is a tenth of the transfers, sorted by predicted chance. On the line, predictions match what happened.",
+      axes: ["Predicted chance", "What happened"], calTable: ["Predicted", "Happened", "Transfers"],
+      limits: "Limits",
+      lim: function () { return [
+        "No test result yet. 2026-27 is unfinished, so the 2025-26 to 2026-27 pair stays unreported until the season ends. Cross-validation on one summer is weaker evidence than a later season.",
+        num(D.counts.gone) + " players from " + D.season_t + " appear in none of the 12 leagues next season. They are excluded, since we can't tell a failure from a move elsewhere, so the model is likely optimistic.",
+        "FotMob does not separate loans from purchases, so loans count as transfers.",
+        "Counting from the first appearance protects late arrivals, but a player benched for months who then plays counts as a success. " + D.successes_under_5_games + " successes rest on fewer than 5 club matches.",
+        "League strength comes from one Elo snapshot (October 2026), later than these transfers. League averages move slowly, but it is not strictly data from the day of the move.",
+        "Argentina and Brazil play calendar-year seasons, so their transfer windows don't line up with Europe."
+      ]; }
+    },
+    he: {
+      back: "Scout Finder →", kicker: "בדיקה מול העברות", title: "האם המספרים של שחקן מנבאים העברה?",
+      lead: function () { return "כל שחקן שהחליף מועדון עיקרי בין " + D.season_t + " ל־" + D.season_t1 + " ב־12 הליגות שלנו, כולל מי שכמעט לא שיחק אחר כך. נכנס למודל רק מה שהיה ידוע בזמן המעבר."; },
+      tiles: ["העברות", "הגיעו לחצי מהדקות", "לא מופיעים בעונה הבאה", "נשארו במועדון"],
+      verdict: "התוצאה", metric: ["חיזוי", "Brier (נמוך יותר טוב)", "Log loss (נמוך יותר טוב)", "AUC (גבוה יותר טוב)"],
+      names: { base_rate: "לכולם את הממוצע", prev_share: "רק חלק הדקות במועדון הקודם", model: "המודל המלא" },
+      read: function (g, m, s) { return "המודל המלא מדרג העברות קצת יותר טוב מאשר לדעת רק כמה השחקן שיחק קודם: AUC של " + m.auc.toFixed(3) + " לעומת " + s.auc.toFixed(3) + " (רווח של " + g.auc[0].toFixed(3) + " עד " + g.auc[1].toFixed(3) + " ברווח סמך של 90%). ההסתברויות לא טובות יותר באופן ברור: רווח הסמך של Brier, ‏" + g.brier[0].toFixed(3) + " עד " + g.brier[1].toFixed(3) + ", כולל אפס. AUC של כ־0.63 הוא סיגנל חלש: טוב לסינון ראשוני, לא לפסק דין."; },
+      ev: function () { return "נבדק ב־cross-validation של 5 חלקים, מקובץ לפי מועדון היעד, על זוג העונות הזה בלבד. הצלחה: לפחות 50% מדקות המועדון החדש מההופעה הראשונה של השחקן."; },
+      desc: "מי מצליח", groups: { direction: "לפי כיוון", age: "לפי גיל", value: "לפי שווי שוק" },
+      labels: { up: "לליגה חזקה יותר", same: "באותה ליגה", down: "לליגה חלשה יותר", unknown: "לא ידוע" },
+      overall: function () { return "שיעור כללי: " + pct(D.success_rate) + ". אלה שיעורים גולמיים: אף קבוצה לא מנוכה מהאחרות."; },
+      calib: "האם ההסתברויות אמינות?", calibText: "כל נקודה היא עשירית מההעברות, לפי הסיכוי שנחזה. על הקו, החיזוי תואם את מה שקרה.",
+      axes: ["סיכוי שנחזה", "מה שקרה"], calTable: ["נחזה", "קרה", "העברות"],
+      limits: "מגבלות",
+      lim: function () { return [
+        "עדיין אין תוצאת test. עונת 2026-27 לא נגמרה, ולכן הזוג 2025-26 ל־2026-27 לא מדווח עד סוף העונה. Cross-validation על קיץ אחד הוא ראיה חלשה יותר מעונה מאוחרת.",
+        num(D.counts.gone) + " שחקנים מ־" + D.season_t + " לא מופיעים באף אחת מ־12 הליגות בעונה שאחרי. הם הוצאו, כי אי אפשר להבדיל בין כישלון למעבר לליגה אחרת, ולכן המודל כנראה אופטימי.",
+        "FotMob לא מבחין בין השאלה לרכישה, ולכן השאלות נספרות כהעברות.",
+        "ספירה מההופעה הראשונה מגינה על מי שהגיע מאוחר, אבל שחקן שישב על הספסל חודשים ואז שיחק נחשב הצלחה. " + D.successes_under_5_games + " הצלחות נשענות על פחות מ־5 משחקים של המועדון.",
+        "חוזק הליגות מגיע מתמונת Elo אחת (אוקטובר 2026), מאוחרת להעברות האלה. ממוצעי ליגה זזים לאט, אבל זה לא בדיוק מידע מיום המעבר.",
+        "בארגנטינה ובברזיל העונה קלנדרית, ולכן חלונות ההעברות שלהן לא מתיישרים עם אירופה."
+      ]; }
+    }
+  };
+
+  function bars(rows, t) {
+    return rows.map(function (r) {
+      var name = t.labels[r.label] || r.label;
+      return '<div class="bar" title="' + name + ": " + pct(r.rate) + " (n=" + r.n + ')"><div class="bar-label"><span>' + name +
+        ' <span class="note">n=' + r.n + "</span></span><b>" + pct(r.rate) + '</b></div><div class="track"><div class="fill" style="width:' + (r.rate * 100) + '%"></div></div></div>';
+    }).join("");
+  }
+
+  function calibration(rows, t) {
+    var S = 360, L = 44, R = 12, B = 40, top = 12, max = 0.8, w = S - L - R, h = S - top - B;
+    var x = function (v) { return L + v / max * w; }, y = function (v) { return top + h - v / max * h; };
+    var ticks = [0, 0.2, 0.4, 0.6, 0.8], grid = "";
+    ticks.forEach(function (v) {
+      grid += '<line x1="' + L + '" x2="' + (S - R) + '" y1="' + y(v) + '" y2="' + y(v) + '" stroke="var(--rs-line)"/>' +
+        '<text x="' + (L - 6) + '" y="' + (y(v) + 4) + '" text-anchor="end">' + pct(v) + "</text>" +
+        '<text x="' + x(v) + '" y="' + (top + h + 16) + '" text-anchor="middle">' + pct(v) + "</text>";
+    });
+    var dots = rows.map(function (r) {
+      return '<circle cx="' + x(r.predicted) + '" cy="' + y(r.observed) + '" r="5" fill="var(--rs-accent)" stroke="var(--rs-bg)" stroke-width="2"><title>' +
+        t.calTable[0] + " " + pct(r.predicted) + ", " + t.calTable[1] + " " + pct(r.observed) + ", " + t.calTable[2] + " " + r.n + "</title></circle>";
+    }).join("");
+    return '<svg dir="ltr" viewBox="0 0 ' + S + " " + S + '" role="img" aria-label="' + t.calib + '">' + grid +
+      '<line x1="' + x(0) + '" y1="' + y(0) + '" x2="' + x(max) + '" y2="' + y(max) + '" stroke="var(--rs-muted)" stroke-dasharray="4 4"/>' + dots +
+      '<text x="' + (L + w / 2) + '" y="' + (S - 6) + '" text-anchor="middle">' + t.axes[0] + "</text>" +
+      '<text transform="translate(11 ' + (top + h / 2) + ') rotate(-90)" text-anchor="middle">' + t.axes[1] + "</text></svg>";
+  }
+
+  function render() {
+    if (!D) return;
+    var t = T[lang], m = D.metrics, c = D.counts;
+    var tiles = [num(D.transfers), pct(D.success_rate), num(c.gone), num(c.stayed)].map(function (v, i) {
+      return '<div class="tile"><b>' + v + "</b>" + t.tiles[i] + "</div>";
+    }).join("");
+    var rows = ["base_rate", "prev_share", "model"].map(function (k) {
+      return '<tr class="' + k + '"><td>' + t.names[k] + "</td><td>" + m[k].brier.toFixed(4) + "</td><td>" + m[k].log_loss.toFixed(4) + "</td><td>" + (k === "base_rate" ? "0.500" : m[k].auc.toFixed(3)) + "</td></tr>";
+    }).join("");
+    var charts = ["direction", "age", "value"].map(function (k) {
+      return '<div class="chart"><h3>' + t.groups[k] + "</h3>" + bars(D.by[k], t) + "</div>";
+    }).join("");
+    var cal = D.calibration.map(function (r) {
+      return "<tr><td>" + pct(r.predicted) + "</td><td>" + pct(r.observed) + "</td><td>" + r.n + "</td></tr>";
+    }).join("");
+    document.getElementById("app").dir = lang === "he" ? "rtl" : "ltr";
+    document.getElementById("app").innerHTML =
+      '<header><a href="./">' + t.back + '</a><div class="kicker" style="margin-top:18px">' + t.kicker + "</div><h1>" + t.title + "</h1><p>" + t.lead() + "</p></header>" +
+      '<section><div class="tiles">' + tiles + "</div></section>" +
+      "<section><h2>" + t.verdict + '</h2><p>' + t.read(D.model_minus_prev_share, m.model, m.prev_share) + '</p><div class="scroll"><table dir="ltr"><thead><tr>' +
+      t.metric.map(function (h) { return "<th>" + h + "</th>"; }).join("") + "</tr></thead><tbody>" + rows + '</tbody></table></div><p class="note" style="margin-top:12px">' + t.ev() + "</p></section>" +
+      "<section><h2>" + t.desc + '</h2><div class="charts">' + charts + '</div><p class="note">' + t.overall() + "</p></section>" +
+      "<section><h2>" + t.calib + "</h2><p>" + t.calibText + '</p><div class="calib">' + calibration(D.calibration, t) + '<div class="scroll"><table><thead><tr>' +
+      t.calTable.map(function (h) { return "<th>" + h + "</th>"; }).join("") + "</tr></thead><tbody>" + cal + "</tbody></table></div></div></section>" +
+      "<section><h2>" + t.limits + "</h2><ul>" + t.lim().map(function (x) { return "<li>" + x + "</li>"; }).join("") + "</ul></section>";
+  }
+
+  window.addEventListener("sitelangchange", function (e) { lang = e.detail === "he" ? "he" : "en"; render(); });
+  lang = document.documentElement.getAttribute("data-site-lang") === "he" ? "he" : "en";
+  fetch("data/backtest_train.json").then(function (r) { return r.json(); }).then(function (d) { D = d; render(); });
+})();
+</script>
+</body>
+</html>
